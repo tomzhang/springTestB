@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.persistence.mapper.RelationLabelMapper">
+    <sql id="baseQuery">
+        site_id,id,buyer_id,label_name,storeadmin_ids,storeadmin_count,label_type,create_time,update_time
+    </sql>
+    <insert id="insertRelationLabel">
+        insert into b_relation_label
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="buyerId != null">
+                buyer_id,
+            </if>
+            <if test="labelName != null">
+                label_name,
+            </if>
+            <if test="storeadminIds != null">
+                storeadmin_ids,
+            </if>
+            <if test="storeadminCount != null">
+                storeadmin_count,
+            </if>
+            <if test="labelType != null">
+                label_type,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="buyerId != null">
+                #{buyerId,jdbcType=INTEGER},
+            </if>
+            <if test="labelName != null">
+                #{labelName,jdbcType=VARCHAR},
+            </if>
+            <if test="storeadminIds != null">
+                #{storeadminIds,jdbcType=VARCHAR},
+            </if>
+            <if test="storeadminCount != null">
+                #{storeadminCount,jdbcType=INTEGER},
+            </if>
+            <if test="labelType != null">
+                #{labelType,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="deleteCountAndStoreadminId">
+        update b_relation_label
+        <set>
+            <if test="newStoreadminIds != null">
+                storeadmin_ids = #{newStoreadminIds,jdbcType=VARCHAR},
+            </if>
+            <if test="count != null">
+                storeadmin_count = #{count,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where site_id = #{siteId} AND buyer_id=#{buyerId} AND label_name=#{labelName}
+    </update>
+    <select id="getRelationLabelAllByMemberId" resultType="map">
+        SELECT id,label_name labelName,storeadmin_ids storeadminIds,storeadmin_count storeadminCount,label_type labelType
+        FROM b_relation_label
+        WHERE site_id=#{siteId} AND buyer_id=#{buyerId} AND is_del=0 and storeadmin_count > 0
+    </select>
+    <select id="getStoreadminIdsByLbelName" resultType="map">
+        SELECT storeadmin_ids
+        FROM b_relation_label
+        WHERE site_id=#{siteId} AND buyer_id=#{buyerId} AND label_name=#{labelName} AND is_del=0
+    </select>
+    <select id="getRelationLabelForCustom" resultType="map">
+        SELECT id,label_name labelName,storeadmin_count storeadminCount,storeadmin_ids storeadminIds
+        FROM b_relation_label
+        WHERE site_id=#{siteId} AND buyer_id=#{buyerId} AND label_type=1 AND storeadmin_count>0 AND is_del=0
+    </select>
+    <select id="getRelationLabelForSlow" resultType="map">
+        SELECT id,label_name labelName,storeadmin_count storeadminCount,storeadmin_ids storeadminIds
+        FROM b_relation_label
+        WHERE site_id=#{siteId} AND buyer_id=#{buyerId} AND label_type=0 AND storeadmin_count>0 AND is_del=0
+    </select>
+    <select id="getStoreadminIdsById" resultType="String">
+        SELECT storeadmin_ids
+        FROM b_relation_label
+        WHERE site_id=#{siteId} AND id=#{id} AND is_del=0
+    </select>
+    <select id="getStoreadminNameAndMobile" resultType="map">
+        SELECT
+        storeadmin_id storeadminId,
+        name,
+        mobile
+        FROM b_store_adminext
+        WHERE site_id=#{siteId} AND storeadmin_id=#{storeadminId}
+    </select>
+    <select id="getStoreadminIdsByIdAndCount" resultType="map">
+        SELECT
+        storeadmin_ids storeadminIds,
+        storeadmin_count storeadminCount
+        FROM b_relation_label
+        WHERE site_id=#{siteId} AND id=#{id}
+    </select>
+    <update id="updateCountAndIds">
+        update b_relation_label SET storeadmin_ids=#{newStoreadminIds},storeadmin_count=#{count} WHERE site_id=#{siteId} AND id=#{id}
+    </update>
+    <select id="getStoreadminToMember" resultType="String">
+        SELECT
+        label_name
+        FROM b_relation_label
+        WHERE site_id=#{siteId} AND buyer_id=#{buyerId} AND find_in_set(#{storeadminId},storeadmin_ids) AND label_type=#{type} AND is_del=0
+    </select>
+    <select id="getStoreadminIdsAndByLbelName" resultType="map">
+        SELECT
+        storeadmin_ids storeadminIds,
+        storeadmin_count storeadminCount
+        FROM b_relation_label
+        WHERE site_id=#{siteId} AND buyer_id=#{buyerId} AND label_name=#{labelName} AND is_del=0
+    </select>
+    <select id="getmemberIds" resultType="Integer">
+        SELECT
+        buyer_id
+        FROM b_relation_label
+        WHERE site_id=#{siteId} AND label_name=#{labelName} AND label_type=#{type} AND is_del=0
+    </select>
+    <update id="updateLabelName">
+        update b_relation_label SET label_name=#{labelName} WHERE site_id=#{siteId} AND label_name=#{customName} AND label_type=1
+    </update>
+    <update id="deleteCustemLabelName">
+        update b_relation_label SET is_del=1 WHERE site_id=#{siteId} AND label_name=#{customName} AND label_type=1
+    </update>
+    <select id="getMemberCount" resultType="Integer">
+        SELECT
+        COUNT(*)
+        FROM b_relation_label
+        WHERE site_id=#{siteId} AND label_name=#{labelName} AND label_type=1 AND is_del=0
+    </select>
+    <select id="getBuyerIdByLabelName" resultType="String">
+        SELECT
+        open_id
+        FROM b_member
+        WHERE site_id=#{siteId} AND buyer_id IN
+        <foreach collection="buyerIds" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+    <select id="getMemberIdBybuyerId" resultType="String">
+        SELECT
+        member_id
+        FROM b_member
+        WHERE site_id=#{siteId} AND buyer_id IN
+        <foreach collection="buyerIds" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+    <select id="getBuyerIdByMobile" resultType="Integer">
+        SELECT
+        buyer_id
+        FROM b_member
+        WHERE site_id=#{siteId} AND mobile=#{mobile}
+    </select>
+    <select id="booleanBuyerId" resultType="Integer">
+        SELECT
+        COUNT(*)
+        FROM b_relation_label
+        WHERE site_id=#{siteId} AND buyer_id=#{buyerId} AND label_name=#{labelName} AND label_type=1 AND is_del=0
+    </select>
+    <select id="getStoreadminCountByLabelName" resultType="Integer">
+        SELECT
+        storeadmin_count
+        FROM b_relation_label
+        WHERE site_id=#{siteId} AND buyer_id=#{buyerId} AND label_name=#{labelName} AND is_del=0
+    </select>
+    <update id="updateStoreadminCount">
+        update b_relation_label SET storeadmin_count=#{count},storeadmin_ids=#{ids} WHERE site_id=#{siteId} AND label_name=#{labelName} AND buyer_id=#{buyerId} AND label_type=1 AND is_del=0
+    </update>
+    <select id="getLabelNameByBuyerId" resultType="String">
+        SELECT
+        label_name
+        FROM b_relation_label
+        WHERE site_id=#{siteId} AND buyer_id=#{buyerId} AND label_type=#{type} AND is_del=0
+    </select>
+    <select id="getIdsByLabelName" resultType="map">
+        SELECT
+        storeadmin_ids storeadminIds,
+        storeadmin_count storeadminCount
+        FROM b_relation_label
+        WHERE site_id=#{siteId} AND buyer_id=#{buyerId} AND label_name=#{labelName} AND label_type=#{type} AND is_del=0
+    </select>
+    <update id="updateCountAndIdsByLabelName">
+        update b_relation_label
+        SET storeadmin_count=#{count},storeadmin_ids=#{newIds}
+        WHERE site_id=#{siteId} AND label_name=#{labelName} AND buyer_id=#{buyerId} AND label_type=#{labelType} AND is_del=0
+    </update>
+    <select id="getCustomNameAll" resultType="String">
+        SELECT
+        label_name
+        FROM b_custom_label
+        WHERE site_id=#{siteId} AND is_del=0
+    </select>
+    <select id="getCustomOpenIdAll" resultType="Integer">
+        SELECT
+        buyer_id
+        FROM b_relation_label
+        WHERE site_id=#{siteId} AND label_name=#{labelName} AND label_type=1 AND is_del=0
+    </select>
+
+    <select id="getCustomMemberIdAll"  resultType="string">
+     SELECT
+	  bm.member_id
+      FROM
+	  b_relation_label brl
+      LEFT JOIN b_member bm on brl.buyer_id = bm.buyer_id and brl.site_id=bm.site_id
+    WHERE
+	 brl.site_id = #{siteId} AND brl.label_name IN
+        <foreach collection="labelName" item="item" separator="," open="(" close=")">
+        #{item}
+        </foreach>
+    AND brl.label_type=1 AND brl.is_del=0
+    </select>
+
+    <select id="getCustomMemberIdAll2"  resultType="string">
+        SELECT
+        bm.member_id
+        FROM
+        b_relation_label brl
+        LEFT JOIN b_member bm on brl.buyer_id = bm.buyer_id and brl.site_id=bm.site_id
+        WHERE
+        brl.site_id = #{siteId} AND brl.label_name IN
+        <foreach collection="labelName" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        AND brl.label_type=1 AND brl.is_del=0
+    </select>
+
+    <select id="getOpenIdByBuyerId" resultType="map">
+        SELECT
+        open_id openId,ali_user_id userId
+        FROM b_member
+        WHERE site_id=#{siteId} AND buyer_id IN
+        <foreach collection="idsList" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach> AND (open_id IS NOT NULL OR ali_user_id IS NOT NULL)
+        GROUP BY openId
+    </select>
+    <select id="getAllMemberOpenId" resultType="map">
+        SELECT
+        open_id openId,ali_user_id userId
+        FROM b_member
+        WHERE site_id=#{siteId} AND (open_id IS NOT NULL OR ali_user_id IS NOT NULL)
+        GROUP BY openId
+    </select>
+    <select id="getMemberData" resultType="map">
+        SELECT member_id buyerId, tag tag
+        FROM b_member_info
+        WHERE site_id=#{siteId} AND tag != ''
+    </select>
+    <select id="getLabelCustomByStoreAsminIdAndMemberId" resultType="String" parameterType="map">
+        SELECT label_name FROM b_relation_label
+        WHERE site_id=#{siteId} AND buyer_id=#{buyerId} AND label_type = #{labelType} AND find_in_set(#{storeadminId},storeadmin_ids) AND is_del=0
+    </select>
+    <select id="getBuyerId" resultType="Integer" parameterType="map">
+        SELECT buyer_id FROM b_member WHERE site_id=#{siteId} AND member_id=#{memberId}
+    </select>
+    <select id="getAllLabelByCustom" resultType="map" parameterType="map">
+        SELECT id,label_name name FROM b_custom_label WHERE site_id=#{siteId} AND is_del=0
+    </select>
+    <select id="getCuoJiluList" resultType="map" >
+        SELECT id,storeadmin_ids storeadminIds,storeadmin_count count
+        FROM b_relation_label
+        WHERE storeadmin_count>1 AND is_del=0 AND storeadmin_ids !='' AND storeadmin_ids IS NOT NULL
+    </select>
+    <update id="updateCuoJilu">
+        update b_relation_label
+        SET storeadmin_ids=#{str}
+        WHERE id=#{id}
+    </update>
+    <select id="getType" resultType="Integer" >
+        SELECT user_type FROM b_store_admin WHERE site_id=#{siteId} AND id=#{storeadminId}
+    </select>
+    <select id="getStoreName" resultType="String" >
+        SELECT s.name
+        FROM b_stores s
+        LEFT JOIN b_store_admin ssa ON ssa.site_id=s.site_id AND s.id=ssa.store_id
+        WHERE s.site_id=#{siteId}
+        AND ssa.id=#{storeadminId}
+    </select>
+    <select id="getMemberMapList" resultType="map" >
+        SELECT site_id siteId,member_id memberId ,tag FROM b_member_info WHERE (tag IS NOT NULL AND tag != '')
+    </select>
+    <select id="getlabelList" resultType="String" >
+        SELECT * FROM b_relation_label
+        WHERE site_id=#{siteId}
+        AND buyer_id=#{buyerId}
+        AND is_del=0
+        AND label_type=0
+        AND FIND_IN_SET('0',storeadmin_ids)=0
+    </select>
+    <update id="updateSlowCountAndIds">
+        UPDATE b_relation_label
+        SET storeadmin_ids=CONCAT(storeadmin_ids,'0,'),storeadmin_count = storeadmin_count+1
+        WHERE site_id=#{siteId} AND buyer_id=#{buyerId} AND label_name=#{label} AND label_type=0 AND is_del=0
+    </update>
+    <insert id="insertSlowCountAndIds">
+        INSERT INTO b_relation_label(site_id,buyer_id,label_name,storeadmin_ids,storeadmin_count,label_type) VALUES(#{siteId},#{buyerId},#{label},'0,',1,0)
+    </insert>
+</mapper>

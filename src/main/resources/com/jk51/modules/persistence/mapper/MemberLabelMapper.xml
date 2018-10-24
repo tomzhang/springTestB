@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.persistence.mapper.MemberLabelMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.merchant.MemberLabel">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="crowd_name" jdbcType="VARCHAR" property="crowdName"/>
+        <result column="store_ids" jdbcType="VARCHAR" property="storeIds"/>
+        <result column="crowd_sort" jdbcType="INTEGER" property="crowdSort"/>
+        <result column="crowd_type" jdbcType="INTEGER" property="crowdType"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="count" jdbcType="INTEGER" property="labelCount"/>
+        <result column="label_sort" jdbcType="INTEGER" property="labelSort"/>
+        <result column="scene" jdbcType="VARCHAR" property="scene"/>
+        <result column="label_group" jdbcType="VARCHAR" property="labelGroup"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createtime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updatetime"/>
+        <result column="is_del" jdbcType="INTEGER" property="isDel"/>
+        <result column="custom_ids" jdbcType="VARCHAR" property="customIds"/>
+        <result column="crowd_ids" jdbcType="VARCHAR" property="crowdIds"/>
+    </resultMap>
+    <insert id="insertLabel" parameterType="com.jk51.model.merchant.MemberLabel">
+        insert into b_member_label
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="id != null">
+                id,
+            </if>
+            <if test="crowdName != null">
+                crowd_name,
+            </if>
+            <if test="storeIds != null">
+                store_ids,
+            </if>
+            <if test="crowdSort != null">
+                crowd_sort,
+            </if>
+            <if test="crowdType != null">
+                crowd_type,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="labelCount != null">
+                count,
+            </if>
+            <if test="labelSort != null">
+                label_sort,
+            </if>
+            <if test="scene != null">
+                scene,
+            </if>
+            <if test="labelGroup != null">
+                label_group,
+            </if>
+            <if test="customIds != null">
+                custom_ids,
+            </if>
+            <if test="crowdIds != null">
+                crowd_ids,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="crowdName != null">
+                #{crowdName,jdbcType=VARCHAR},
+            </if>
+            <if test="storeIds != null">
+                #{storeIds,jdbcType=VARCHAR},
+            </if>
+            <if test="crowdSort != null">
+                #{crowdSort,jdbcType=INTEGER},
+            </if>
+            <if test="crowdType != null">
+                #{crowdType,jdbcType=INTEGER},
+            </if>
+            <if test="description != null">
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="labelCount != null">
+                #{labelCount,jdbcType=INTEGER},
+            </if>
+            <if test="labelSort != null">
+                #{labelSort,jdbcType=INTEGER},
+            </if>
+            <if test="scene != null">
+                #{scene,jdbcType=VARCHAR},
+            </if>
+            <if test="labelGroup != null">
+                #{labelGroup,jdbcType=VARCHAR},
+            </if>
+            <if test="customIds != null">
+                #{customIds,jdbcType=VARCHAR},
+            </if>
+            <if test="crowdIds != null">
+                #{crowdIds,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <select id="getLabelAll" resultType="com.jk51.model.merchant.MemberLabel" resultMap="BaseResultMap">
+        select * from b_member_label
+        <where>
+            1=1
+            <if test="siteId!=null">
+                and site_id=#{siteId}
+            </if>
+            <if test="crowdSort!=null">
+                and crowd_sort=#{crowdSort}
+            </if>
+            AND is_del=0
+        </where>
+        ORDER BY id desc
+    </select>
+    <select id="getLabelById" resultType="com.jk51.model.merchant.MemberLabel" resultMap="BaseResultMap">
+        select * from b_member_label where 1=1
+        <if test="siteId!=null">
+            and site_id=#{siteId}
+        </if>
+        <if test="id!=null">
+            and id=#{id}
+        </if>
+        <if test="crowdSort!=null">
+            and crowd_sort=#{crowdSort}
+        </if>
+        AND is_del=0
+        ORDER BY id desc
+    </select>
+    <select id="getLabelByName" resultType="com.jk51.model.merchant.MemberLabel" resultMap="BaseResultMap">
+        select * from b_member_label where 1=1
+        <if test="siteId!=null">
+            and site_id=#{siteId}
+        </if>
+        <if test="crowdSort!=null">
+            and crowd_sort=#{crowdSort}
+        </if>
+        <if test="crowdName!=null">
+            and crowd_name like CONCAT('%',#{crowdName},'%')
+        </if>
+        AND is_del=0
+        ORDER BY id desc
+    </select>
+    <update id="updateLabel" parameterType="com.jk51.model.merchant.MemberLabel">
+        update b_member_label
+        <set>
+            <if test="crowdName != null">
+                crowd_name = #{crowdName,jdbcType=VARCHAR},
+            </if>
+            <if test="storeIds != null">
+                store_ids = #{storeIds,jdbcType=VARCHAR},
+            </if>
+            <if test="labelCount != null">
+                count = #{labelCount,jdbcType=INTEGER},
+            </if>
+            <if test="labelSort != null">
+                label_sort = #{labelSort,jdbcType=INTEGER},
+            </if>
+            crowd_type = 0,
+            description = #{description,jdbcType=VARCHAR},
+            scene = #{scene,jdbcType=VARCHAR},
+            label_group = #{labelGroup,jdbcType=VARCHAR},
+            <if test="customIds != null">
+                custom_ids = #{customIds,jdbcType=VARCHAR},
+            </if>
+            <if test="crowdIds != null">
+                crowd_ids = #{crowdIds,jdbcType=VARCHAR},
+            </if>
+            <if test="createtime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatetime != null">
+                update_time = #{updatetime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER} and site_id=#{siteId,jdbcType=INTEGER} and crowd_sort = #{crowdSort,jdbcType=INTEGER}
+    </update>
+    <update id="deleteLabel" parameterType="com.jk51.model.merchant.MemberLabel">
+        update b_member_label
+        SET is_del = 1
+        where id = #{id,jdbcType=INTEGER} and site_id=#{siteId,jdbcType=INTEGER} and crowd_sort=#{crowdSort}
+    </update>
+
+    <select id="getLabelCount" resultType="java.lang.Integer"  parameterType="Map">
+        SELECT
+        count(DISTINCT a.buyer_id) membercount
+        FROM
+        b_member  a
+        <if test="ageMinA != null or ageMinB != null or ageMaxB != null or ageMinC != null or ageMaxC != null or ageMinD != null or ageMaxD != null or ageMinE != null or ageMaxE != null or ageMaxF != null or area != null or ageMinF != null or ageMinG != null">
+            LEFT JOIN b_member_info bmi ON a.buyer_id = bmi.member_id AND bmi.site_id = a.site_id
+        </if>
+        <if test="area != null" >
+            LEFT JOIN b_address ad ON a.buyer_id = ad.buyer_id AND ad.site_id=a.site_id
+        </if>
+        <if test="payMin != null or payMax != null or apCountMin != null or apCountMax != null or countMin != null or countMax != null" >
+            LEFT JOIN  (SELECT buyer_id,deal_finish_status,is_refund,count(trades_id) num,SUM(real_pay)*0.01 pay FROM b_trades WHERE site_id=#{siteId} AND deal_finish_status=1 AND (is_refund=0 OR is_refund=110) GROUP BY buyer_id) ts  ON a.buyer_id = ts.buyer_id
+        </if>
+        <if test="datePay != null or storesList!=null" >
+            LEFT JOIN  (SELECT buyer_id,create_time,trades_store,self_taken_store FROM b_trades WHERE site_id=#{siteId} GROUP BY buyer_id) td  ON a.buyer_id = td.buyer_id
+        </if>
+        <if test="customList != null" >
+            LEFT JOIN b_relation_label br ON br.site_id=a.site_id AND a.buyer_id=br.buyer_id AND br.label_type=1
+        </if>
+        <if test="slowList != null" >
+            LEFT JOIN b_relation_label brl ON brl.site_id=a.site_id AND a.buyer_id=brl.buyer_id AND brl.label_type=0
+        </if>
+        <if test="diatanceMinA != null or diatanceMaxA != null or diatanceMinB != null or diatanceMaxB != null or diatanceMinC != null or diatanceMaxC != null or diatanceMinD != null or diatanceMaxD != null or diatanceMinE != null or diatanceMaxE != null or diatanceMinF != null or diatanceMaxF != null or diatanceMinG != null or diatanceMaxG != null or diatanceMinH != null or diatanceMaxH != null or diatanceMinI != null" >
+            LEFT JOIN b_user_stores_distance bus ON bus.site_id=a.site_id AND bus.user_id=a.member_id
+        </if>
+        WHERE
+        a.site_id=#{siteId}
+        <if test="sexCount0 != null or sexCount1 != null">
+            AND (a.sex = #{sexCount0} OR a.sex = #{sexCount1})
+        </if>
+        <if test="ageMinA != null or ageMinB != null or ageMaxB != null or ageMinC != null or ageMaxC != null or ageMinD != null or ageMaxD != null or ageMinE != null or ageMaxE != null or ageMaxF != null or ageMinF != null or ageMinG != null" >
+            AND ((bmi.birthday <![CDATA[ >= ]]> #{ageMinA}) OR (bmi.birthday <![CDATA[ >= ]]> #{ageMinB} AND bmi.birthday <![CDATA[ <= ]]> #{ageMaxB}) OR (bmi.birthday <![CDATA[ >= ]]> #{ageMinC} AND bmi.birthday <![CDATA[ <= ]]> #{ageMaxC})OR (bmi.birthday <![CDATA[ >= ]]> #{ageMinD} AND bmi.birthday <![CDATA[ <= ]]> #{ageMaxD})OR (bmi.birthday <![CDATA[ >= ]]> #{ageMinE} AND bmi.birthday <![CDATA[ <= ]]> #{ageMaxE})OR (bmi.birthday <![CDATA[ <= ]]> #{ageMaxF} AND bmi.birthday <![CDATA[ >= ]]> #{ageMinF}) OR (bmi.birthday <![CDATA[ >= ]]> #{ageMinG}))
+        </if>
+        <if test="area != null" >
+            AND
+            <foreach item="item" collection="area" separator="or" open="(" close=")" index="" >
+                (ad.country !='' AND ad.country in (SELECT areaid FROM yb_area ya WHERE ya.name
+
+                =#{item} AND ad.is_default=1 )) OR (bmi.area !=0 AND bmi.area in (SELECT areaid FROM yb_area ya WHERE ya.name
+
+                =#{item} ))
+            </foreach>
+        </if>
+        <if test="payMin != null and payMax == null" >
+            AND ts.pay <![CDATA[ <= ]]> #{payMin}
+        </if>
+        <if test="payMin == null and payMax != null" >
+            AND ts.pay <![CDATA[ >= ]]> #{payMax}
+        </if>
+        <if test="payMin != null and payMax != null" >
+            AND (ts.pay <![CDATA[ <= ]]> #{payMin}  AND ts.pay <![CDATA[ >= ]]> #{payMax} )
+        </if>
+        <if test="countMin != null and countMax == null" >
+            AND ts.num  <![CDATA[ <= ]]> #{countMin}
+        </if>
+        <if test="countMin == null and countMax != null" >
+            AND ts.num <![CDATA[ >= ]]>#{countMax}
+        </if>
+        <if test="countMin != null and countMax != null" >
+            AND (ts.num  <![CDATA[ <= ]]> #{countMin}  AND ts.num <![CDATA[ >= ]]>#{countMax} )
+        </if>
+        <if test="datePay != null" >
+            AND td.create_time <![CDATA[ >= ]]> #{datePay}
+        </if>
+        <if test="apCountMin != null and apCountMax == null" >
+            AND ts.pay/ts.num <![CDATA[ <= ]]>#{apCountMin}
+        </if>
+        <if test="apCountMin == null and apCountMax != null" >
+            AND ts.pay/ts.num <![CDATA[ >= ]]>#{apCountMax}
+        </if>
+        <if test="apCountMin != null and apCountMax != null" >
+            AND (ts.pay/ts.num <![CDATA[ <= ]]>#{apCountMin}  AND ts.pay/ts.num <![CDATA[ >= ]]>#{apCountMax} )
+        </if>
+        <if test="customList != null" >
+            AND br.label_name IN
+            <foreach collection="customList" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="slowList != null" >
+            AND brl.label_name IN
+            <foreach collection="slowList" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="storesList != null" >
+            AND (
+                a.register_stores IN
+                <foreach collection="storesList" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+                OR
+                td.trades_store IN
+                <foreach collection="storesList" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+                OR
+                td.self_taken_store IN
+                <foreach collection="storesList" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            )
+        </if>
+        <if test="diatanceMinA != null or diatanceMaxA != null or diatanceMinB != null or diatanceMaxB != null or diatanceMinC != null or diatanceMaxC != null or diatanceMinD != null or diatanceMaxD != null or diatanceMinE != null or diatanceMaxE != null or diatanceMinF != null or diatanceMaxF != null or diatanceMinG != null or diatanceMaxG != null or diatanceMinH != null or diatanceMaxH != null or diatanceMinI != null" >
+            AND ((bus.distribution_distance BETWEEN #{diatanceMinA} AND #{diatanceMaxA}) OR (bus.distribution_distance BETWEEN #{diatanceMinB} AND #{diatanceMaxB}) OR (bus.distribution_distance BETWEEN #{diatanceMinC} AND #{diatanceMaxC}) OR (bus.distribution_distance BETWEEN #{diatanceMinD} AND #{diatanceMaxD}) OR (bus.distribution_distance BETWEEN #{diatanceMinE} AND #{diatanceMaxE}) OR (bus.distribution_distance BETWEEN #{diatanceMinF} AND #{diatanceMaxF}) OR (bus.distribution_distance BETWEEN #{diatanceMinG} AND #{diatanceMaxG}) OR (bus.distribution_distance BETWEEN #{diatanceMinH} AND #{diatanceMaxH}) OR (bus.distribution_distance > #{diatanceMinI}))
+        </if>
+    </select>
+    <select id="getBooleanByName" resultType="com.jk51.model.merchant.MemberLabel" resultMap="BaseResultMap">
+        select * from b_member_label where site_id=#{siteId}
+        <if test="crowdName!=null">
+            and crowd_name=#{crowdName}
+        </if>
+        <if test="crowdSort!=null">
+            and crowd_sort=#{crowdSort}
+        </if>
+        AND is_del=0
+    </select>
+    <select id="getLabelAllForCouponActive" resultType="com.jk51.model.merchant.MemberLabel" resultMap="BaseResultMap">
+        select * from b_member_label
+        where site_id=#{siteId}
+        <if test="lablelist!=null ">
+            and id  in
+            <foreach collection="lablelist" item="lableid" index="index"
+                     open="(" close=")" separator=",">
+                #{lableid}
+            </foreach>
+        </if>
+        AND is_del=0
+    </select>
+    <select id="getLabelReport" resultType="java.util.Map" parameterType="java.util.Map">
+        SELECT crowd_name 人群名称,description 人群用途,label_group 标签组,count 人群数量,create_time 创建时间
+        FROM b_member_label
+        WHERE site_id=#{siteId} AND crowd_sort=#{crowdSort} AND is_del=0
+    </select>
+
+
+    <!-- 与查询标签数量（getLabelCount）代码一致，同步更新，不同的是查询标签数量查数量，下面这个查会员ID -->
+    <select id="getLabelCountInsert" resultType="java.lang.Integer"  parameterType="Map">
+        SELECT
+        DISTINCT a.member_id
+        FROM
+        b_member  a
+        <if test="ageMinA != null or ageMinB != null or ageMaxB != null or ageMinC != null or ageMaxC != null or ageMinD != null or ageMaxD != null or ageMinE != null or ageMaxE != null or ageMaxF != null or area != null or ageMinF != null or ageMinG != null">
+            LEFT JOIN b_member_info bmi ON a.buyer_id = bmi.member_id AND bmi.site_id = a.site_id
+        </if>
+        <if test="area != null" >
+            LEFT JOIN b_address ad ON a.buyer_id = ad.buyer_id AND ad.site_id=a.site_id
+        </if>
+        <if test="payMin != null or payMax != null or apCountMin != null or apCountMax != null or countMin != null or countMax != null" >
+            LEFT JOIN  (SELECT buyer_id,deal_finish_status,is_refund,count(trades_id) num,SUM(real_pay)*0.01 pay FROM b_trades WHERE site_id=#{siteId} AND deal_finish_status=1 AND (is_refund=0 OR is_refund=110) GROUP BY buyer_id) ts  ON a.buyer_id = ts.buyer_id
+        </if>
+        <if test="datePay != null or storesList!=null" >
+            LEFT JOIN  (SELECT buyer_id,create_time,trades_store,self_taken_store FROM b_trades WHERE site_id=#{siteId} GROUP BY buyer_id) td  ON a.buyer_id = td.buyer_id
+        </if>
+        <if test="customList != null" >
+            LEFT JOIN b_relation_label br ON br.site_id=a.site_id AND a.buyer_id=br.buyer_id AND br.label_type=1
+        </if>
+        <if test="slowList != null" >
+            LEFT JOIN b_relation_label brl ON brl.site_id=a.site_id AND a.buyer_id=brl.buyer_id AND brl.label_type=0
+        </if>
+        <if test="diatanceMinA != null or diatanceMaxA != null or diatanceMinB != null or diatanceMaxB != null or diatanceMinC != null or diatanceMaxC != null or diatanceMinD != null or diatanceMaxD != null or diatanceMinE != null or diatanceMaxE != null or diatanceMinF != null or diatanceMaxF != null or diatanceMinG != null or diatanceMaxG != null or diatanceMinH != null or diatanceMaxH != null or diatanceMinI != null" >
+            LEFT JOIN b_user_stores_distance bus ON bus.site_id=a.site_id AND bus.user_id=a.member_id
+        </if>
+        WHERE
+        a.site_id=#{siteId}
+        <if test="sexCount0 != null or sexCount1 != null">
+            AND (a.sex = #{sexCount0} OR a.sex = #{sexCount1})
+        </if>
+        <if test="ageMinA != null or ageMinB != null or ageMaxB != null or ageMinC != null or ageMaxC != null or ageMinD != null or ageMaxD != null or ageMinE != null or ageMaxE != null or ageMaxF != null or ageMinF != null or ageMinG != null" >
+            AND ((bmi.birthday <![CDATA[ >= ]]> #{ageMinA}) OR (bmi.birthday <![CDATA[ >= ]]> #{ageMinB} AND bmi.birthday <![CDATA[ <= ]]> #{ageMaxB}) OR (bmi.birthday <![CDATA[ >= ]]> #{ageMinC} AND bmi.birthday <![CDATA[ <= ]]> #{ageMaxC})OR (bmi.birthday <![CDATA[ >= ]]> #{ageMinD} AND bmi.birthday <![CDATA[ <= ]]> #{ageMaxD})OR (bmi.birthday <![CDATA[ >= ]]> #{ageMinE} AND bmi.birthday <![CDATA[ <= ]]> #{ageMaxE})OR (bmi.birthday <![CDATA[ <= ]]> #{ageMaxF} AND bmi.birthday <![CDATA[ >= ]]> #{ageMinF}) OR (bmi.birthday <![CDATA[ >= ]]> #{ageMinG}))
+        </if>
+        <if test="area != null" >
+            AND
+            <foreach item="item" collection="area" separator="or" open="(" close=")" index="" >
+                (ad.country !='' AND ad.country in (SELECT areaid FROM yb_area ya WHERE ya.name
+
+                =#{item} AND ad.is_default=1 )) OR (bmi.area !=0 AND bmi.area in (SELECT areaid FROM yb_area ya WHERE ya.name
+
+                =#{item} ))
+            </foreach>
+        </if>
+        <if test="payMin != null and payMax == null" >
+            AND ts.pay <![CDATA[ <= ]]> #{payMin}
+        </if>
+        <if test="payMin == null and payMax != null" >
+            AND ts.pay <![CDATA[ >= ]]> #{payMax}
+        </if>
+        <if test="payMin != null and payMax != null" >
+            AND (ts.pay <![CDATA[ <= ]]> #{payMin}  AND ts.pay <![CDATA[ >= ]]> #{payMax} )
+        </if>
+        <if test="countMin != null and countMax == null" >
+            AND ts.num  <![CDATA[ <= ]]> #{countMin}
+        </if>
+        <if test="countMin == null and countMax != null" >
+            AND ts.num <![CDATA[ >= ]]>#{countMax}
+        </if>
+        <if test="countMin != null and countMax != null" >
+            AND (ts.num  <![CDATA[ <= ]]> #{countMin}  AND ts.num <![CDATA[ >= ]]>#{countMax} )
+        </if>
+        <if test="datePay != null" >
+            AND td.create_time <![CDATA[ >= ]]> #{datePay}
+        </if>
+        <if test="apCountMin != null and apCountMax == null" >
+            AND ts.pay/ts.num <![CDATA[ <= ]]>#{apCountMin}
+        </if>
+        <if test="apCountMin == null and apCountMax != null" >
+            AND ts.pay/ts.num <![CDATA[ >= ]]>#{apCountMax}
+        </if>
+        <if test="apCountMin != null and apCountMax != null" >
+            AND (ts.pay/ts.num <![CDATA[ <= ]]>#{apCountMin}  AND ts.pay/ts.num <![CDATA[ >= ]]>#{apCountMax} )
+        </if>
+        <if test="customList != null" >
+            AND br.label_name IN
+            <foreach collection="customList" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="slowList != null" >
+            AND brl.label_name IN
+            <foreach collection="slowList" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="storesList != null" >
+            AND (
+            a.register_stores IN
+            <foreach collection="storesList" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+            OR
+            td.trades_store IN
+            <foreach collection="storesList" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+            OR
+            td.self_taken_store IN
+            <foreach collection="storesList" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+            )
+        </if>
+        <if test="diatanceMinA != null or diatanceMaxA != null or diatanceMinB != null or diatanceMaxB != null or diatanceMinC != null or diatanceMaxC != null or diatanceMinD != null or diatanceMaxD != null or diatanceMinE != null or diatanceMaxE != null or diatanceMinF != null or diatanceMaxF != null or diatanceMinG != null or diatanceMaxG != null or diatanceMinH != null or diatanceMaxH != null or diatanceMinI != null" >
+            AND ((bus.distribution_distance BETWEEN #{diatanceMinA} AND #{diatanceMaxA}) OR (bus.distribution_distance BETWEEN #{diatanceMinB} AND #{diatanceMaxB}) OR (bus.distribution_distance BETWEEN #{diatanceMinC} AND #{diatanceMaxC}) OR (bus.distribution_distance BETWEEN #{diatanceMinD} AND #{diatanceMaxD}) OR (bus.distribution_distance BETWEEN #{diatanceMinE} AND #{diatanceMaxE}) OR (bus.distribution_distance BETWEEN #{diatanceMinF} AND #{diatanceMaxF}) OR (bus.distribution_distance BETWEEN #{diatanceMinG} AND #{diatanceMaxG}) OR (bus.distribution_distance BETWEEN #{diatanceMinH} AND #{diatanceMaxH}) OR (bus.distribution_distance > #{diatanceMinI}))
+        </if>
+    </select>
+    <update id="deleteLabelByName" parameterType="map">
+        update b_member_label
+        SET label_sort = 1,scene=#{ids},count=#{count},custom_ids=#{custom_ids}
+        where site_id=#{siteId,jdbcType=INTEGER} and crowd_name=#{crowdname}
+    </update>
+    <select id="getMemberIDs" parameterType="map" resultType="map">
+        SELECT crowd_ids crowd_ids,custom_ids custom_ids FROM b_member_label WHERE site_id=#{siteId} AND crowd_name=#{crowdname}
+    </select>
+    <update id="updateCrowdCount" parameterType="map">
+        update b_member_label
+        SET count = #{crowdCount},crowd_type=1
+        where site_id=#{siteId,jdbcType=INTEGER} and crowd_name=#{crowdname}
+    </update>
+    <select id="getIdAndName" parameterType="map" resultType="map">
+        SELECT id id,label_group labelgroup FROM b_member_label WHERE site_id=#{siteId}
+    </select>
+    <update id="updateCrowdLabelGroup">
+        update b_member_label
+        SET label_group = #{labelgroup}
+        where site_id=#{siteId,jdbcType=INTEGER} and id=#{id}
+    </update>
+    <select id="getCrowdNameAll" resultType="String">
+        SELECT crowd_name FROM b_member_label WHERE site_id=#{siteId} AND is_del=0
+    </select>
+    <select id="getCrowdOpenIdAll" resultType="String">
+        SELECT scene FROM b_member_label WHERE site_id=#{siteId} AND crowd_name=#{labelName}
+    </select>
+    <select id="getOpenIdByMemberId" resultType="map">
+        SELECT open_id openId,ali_user_id userId
+        FROM b_member
+        WHERE site_id=#{siteId} AND member_id IN
+        <foreach collection="idsList" item="memberId" index="index"
+                 open="(" close=")" separator=",">
+            #{memberId}
+        </foreach> AND (open_id IS NOT NULL OR ali_user_id IS NOT NULL)
+        GROUP BY openId
+    </select>
+
+    <select id="queryMemberInfoById" resultType="java.lang.String">
+      SELECT DISTINCT a.member_id memberId FROM b_member a
+      LEFT JOIN b_relation_label b ON a.site_id = b.site_id AND a.buyer_id = b.buyer_id
+       WHERE a.site_id = #{siteId} AND b.is_del = 0
+       <if test="memberIds != null and memberIds != ''" >
+           AND b.label_name IN
+           <foreach collection="memberIds" item="tagName" index="index" open="(" close=")" separator=",">
+               #{tagName}
+           </foreach>
+       </if>
+    </select>
+</mapper>

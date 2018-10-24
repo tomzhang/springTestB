@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.balance.mapper.SmsFeeMapper">
+    <!--短信收费模块设置-->
+    <resultMap id="BaseResultMap1" type="com.jk51.model.balance.SmsFeeSet">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="code" jdbcType="VARCHAR" property="code"/>
+        <result column="msg_switch" jdbcType="INTEGER" property="msgSwitch"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+
+    <sql id="base_column_list1">
+        id, site_id, code, create_time, update_time
+    </sql>
+
+    <select id="getSmsFeeSet" parameterType="int" resultMap="BaseResultMap1">
+        SELECT b_sms_fee_set.*,b.msg_switch FROM b_sms_fee_set LEFT JOIN b_balance b ON b_sms_fee_set.site_id=b.site_id WHERE b_sms_fee_set.site_id=#{siteId}
+    </select>
+
+    <insert id="addSmsFeeSet" parameterType="com.jk51.model.balance.SmsFeeSet" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO b_sms_fee_set (site_id, code, create_time, update_time)
+        VALUES (#{siteId}, #{code}, now(), now())
+    </insert>
+
+    <update id="updSmsFeeSet" parameterType="com.jk51.model.balance.SmsFeeSet">
+        UPDATE b_sms_fee_set SET code=#{code} WHERE site_id=#{siteId}
+    </update>
+
+
+
+    <!--===========================================================分割线==================================================================-->
+
+
+    <!--短信收费规则-->
+    <resultMap id="BaseResultMap2" type="com.jk51.model.balance.SmsFeeRule">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="fee" jdbcType="INTEGER" property="fee"/>
+        <result column="sml_num" jdbcType="INTEGER" property="smlNum"/>
+        <result column="big_num" jdbcType="INTEGER" property="bigNum"/>
+        <result column="is_del" jdbcType="INTEGER" property="isDel"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="base_column_list2">
+        id, site_id, fee, sml_num, big_num, is_del, create_time, update_time
+    </sql>
+
+    <select id="getSmsFeeRuleLst" parameterType="int" resultMap="BaseResultMap2">
+        SELECT <include refid="base_column_list2"/> FROM b_sms_fee_rule WHERE site_id=#{siteId} AND is_del=1
+    </select>
+
+    <insert id="addSmsFeeRule" parameterType="com.jk51.model.balance.SmsFeeRule" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO b_sms_fee_rule (site_id, fee, sml_num, big_num, is_del, create_time, update_time)
+        VALUES (#{siteId}, #{fee}, #{smlNum}, #{bigNum}, 1, now(), now())
+    </insert>
+
+    <update id="updSmsFeeRule" parameterType="com.jk51.model.balance.SmsFeeRule">
+        UPDATE b_sms_fee_rule
+        <set>
+            <if test="fee != null">
+                fee=#{fee},
+            </if>
+            <if test="smlNum != null">
+                sml_num=#{smlNum},
+            </if>
+            <if test="bigNum != null">
+                big_num=#{bigNum},
+            </if>
+        </set>
+        WHERE site_id=#{siteId} AND id=#{id}
+    </update>
+
+    <update id="delSmsFeeRule" parameterType="int">
+        UPDATE b_sms_fee_rule SET is_del=0 WHERE site_id=#{siteId} AND id=#{id}
+    </update>
+
+</mapper>

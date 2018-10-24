@@ -1,0 +1,1 @@
+ALTER TABLE `b_integral_goods` ADD COLUMN `num`  int UNSIGNED NULL DEFAULT 0 COMMENT '已使用积分兑换商品数量' AFTER `goods_id`;

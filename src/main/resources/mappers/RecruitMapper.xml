@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.distribution.mapper.RecruitMapper">
+
+
+    <select id="getRecruitById" resultType="com.jk51.model.distribute.Recruit" parameterType="java.lang.String">
+        SELECT * from d_recruit WHERE id = #{id}
+    </select>
+
+    <select id="getRecruitListByOwner" resultType="com.jk51.model.distribute.Recruit" parameterType="java.lang.String">
+        SELECT * from d_recruit WHERE owner = #{owner} ORDER BY id DESC
+    </select>
+
+
+    <!--<insert id="insertRecruit" parameterTycom.jk51.model.distribute.Recruitruit">
+        insert INTO recruit (owner,deposit,rule,total_recruit,audit_mode,template,is_diposit,create_time,update_time,distribut_type) values (#{recruit.owner},#{recruit.deposit},#{recruit.rule},#{recruit.total_recruit},#{recruit.audit_mode},#{recruit.template},#{recruit.is_diposit},CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,#{recruit.distribut_type})
+    </insert>-->
+
+    <insert id="insertRecruit" parameterType="com.jk51.model.distribute.Recruit">
+        insert INTO d_recruit
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="owner != null">
+                owner,
+            </if>
+            <if test="deposit != null">
+                deposit,
+            </if>
+            <if test="rule != null">
+                rule,
+            </if>
+            <if test="total_recruit != null">
+                total_recruit,
+            </if>
+            <if test="audit_mode != null">
+                audit_mode,
+            </if>
+            <if test="template != null">
+                template,
+            </if>
+            <if test="is_diposit != null">
+                is_diposit,
+            </if>
+            <if test="distribut_type != null" >
+                distribut_type,
+            </if>
+                create_time,
+                update_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="owner != null">
+                #{owner},
+            </if>
+            <if test="deposit != null">
+                #{deposit},
+            </if>
+            <if test="rule != null">
+                #{rule},
+            </if>
+            <if test="total_recruit != null">
+                #{total_recruit},
+            </if>
+            <if test="audit_mode != null">
+                #{audit_mode},
+            </if>
+            <if test="template != null">
+                #{template},
+            </if>
+            <if test="is_diposit != null">
+                #{is_diposit},
+            </if>
+            <if test="distribut_type != null">
+                #{distribut_type},
+            </if>
+            CURRENT_TIMESTAMP,
+            CURRENT_TIMESTAMP,
+        </trim>
+    </insert>
+
+    <update id="updateRecruit" parameterType="com.jk51.model.distribute.Recruit">
+        UPDATE d_recruit SET owner=#{owner}, deposit=#{deposit}, rule=#{rule}, total_recruit=#{total_recruit}, audit_mode=#{audit_mode}, template=#{template}, is_diposit=#{is_diposit},distribut_type= #{distribut_type} ,update_time=CURRENT_TIMESTAMP where id=#{id}
+    </update>
+</mapper>

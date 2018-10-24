@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.coupon.mapper.CouponClerkMapper">
+    <resultMap type="com.jk51.model.coupon.CouponClerk" id="commentRM" autoMapping="true">
+        <result column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="rule_id" jdbcType="INTEGER" property="ruleId"/>
+        <result column="use_coupon_num" jdbcType="INTEGER" property="useCouponNum"/>
+        <result column="manager_id" jdbcType="VARCHAR" property="managerId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="active_id" jdbcType="INTEGER" property="activeId"/>
+    </resultMap>
+
+
+    <insert id="addCouponClerk" parameterType="com.jk51.model.coupon.CouponClerk">
+        insert into b_coupon_clerk
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">site_id,</if>
+            <if test="ruleId != null">rule_id,</if>
+            <if test="useCouponNum != null">use_coupon_num,</if>
+            <if test="managerId != null">manager_id,</if>
+            <if test="activeId != null">active_id,</if>
+            create_time,update_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">#{siteId},</if>
+            <if test="ruleId != null">#{ruleId},</if>
+            <if test="useCouponNum != null">#{useCouponNum},</if>
+            <if test="managerId != null">#{managerId},</if>
+            <if test="activeId != null">#{activeId},</if>
+            CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,
+        </trim>
+    </insert>
+
+    <insert id="addCouponClerkList" parameterType="java.util.List">
+        insert into b_coupon_clerk
+        (site_id,
+        rule_id,
+        use_coupon_num,
+        manager_id,
+        active_id,
+        create_time,update_time)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.siteId},
+            #{item.ruleId},
+            #{item.useCouponNum},
+            #{item.managerId},
+            #{item.activeId},
+            CURRENT_TIMESTAMP,CURRENT_TIMESTAMP
+            )
+        </foreach>
+    </insert>
+
+    <select id="findManagerCoupon" resultType="java.util.Map">
+        SELECT
+            a.use_coupon_num,
+            a.manager_id,
+            a.active_id,
+            b.rule_id,
+            b.site_id,
+            b.aim_at,
+            b.amount,
+            b.area_rule,
+            b.coupon_type,
+            date_format(
+                b.create_time,
+                '%Y-%m-%d %H:%i:%S'
+            ) AS create_time,
+            b.marked_words,
+            b.order_rule,
+            b.rule_name,
+            b.time_rule,
+            b.goods_rule,
+            b.limit_rule
+        FROM
+            b_coupon_clerk a
+        INNER JOIN b_coupon_rule b ON a.rule_id = b.rule_id
+        AND a.site_id = b.site_id
+        WHERE a.site_id = #{0}
+        AND a.manager_id = #{1}
+    </select>
+
+    <select id="findClerkIsExist" resultType="java.util.Map">
+        SELECT
+            admin.site_id,
+            admin.id,
+            admin.store_id,
+            admin.storeadmin_id,
+            admin.mobile,
+            admin.name,
+            admin.sex,
+            admin.idcard_number,
+            admin.birthday,
+            admin.age,
+            admin.email,
+            admin.qq,
+            admin.clerk_job,
+            admin.memo,
+            admin.clerk_invitation_code,
+            admin.qrcode_url,
+            admin.employee_number,
+            admin.storeadmin_status,
+            admin.is_del,
+            admin.create_time,
+            admin.update_time,
+            admin.avatar
+        FROM `b_store_adminext` admin WHERE site_id = #{0} AND mobile = #{1};
+    </select>
+
+    <select id="getByActivityIdAndSiteId" resultMap="commentRM">
+        select
+           site_id,
+           id,
+           rule_id,
+           active_id,
+           use_coupon_num,
+           manager_id,
+           create_time,
+           update_time
+          from b_coupon_clerk where site_id = #{0} and active_id = #{1}
+    </select>
+
+    <select id="getClerkUsableCoupons" resultType="java.util.Map">
+        SELECT
+                a.use_coupon_num,
+                a.manager_id,
+                a.active_id,
+                b.rule_id,
+                b.site_id,
+                b.aim_at,
+                b.amount,
+                b.area_rule,
+                b.coupon_type,
+                date_format(
+                    b.create_time,
+                    '%Y-%m-%d %H:%i:%S'
+                ) AS create_time,
+                b.marked_words,
+                b.order_rule,
+                b.rule_name,
+                b.time_rule,
+                b.goods_rule,
+                ca.image,
+                b.limit_rule
+        FROM
+            b_coupon_clerk a
+        INNER JOIN b_coupon_rule b ON a.rule_id = b.rule_id
+        AND a.site_id = b.site_id
+        LEFT JOIN b_coupon_activity ca ON a.active_id=ca.id
+        WHERE
+            a.site_id = #{0}
+        AND a.manager_id = #{1}
+        AND b.`status`=0
+        AND ca.`status`=0
+    </select>
+</mapper>

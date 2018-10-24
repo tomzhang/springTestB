@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.distribution.mapper.DWithdrawRecordMapper">
+  
+  <insert id="withdrawRecordAdd" parameterType="com.jk51.model.distribute.DWithdrawRecord">
+INSERT INTO `d_withdraw_record` (id,trades_id,
+distributor_id,`owner`, account,`type`,amount,withdraw_style,withdraw_fee,total_fee,pay_status,checking_status,settlement_status,pay_result,trades_time,create_time,update_time,money_record_id)
+
+VALUES (#{id,jdbcType=INTEGER},#{tradesId,jdbcType=BIGINT},
+ #{distributorId,jdbcType=INTEGER},#{owner,jdbcType=INTEGER}, #{account,jdbcType=VARCHAR}, #{type,jdbcType=TINYINT},
+    #{amount,jdbcType=INTEGER}, #{withdrawStyle,jdbcType=VARCHAR}, #{withdrawFee,jdbcType=INTEGER},
+    #{totalFee,jdbcType=INTEGER}, #{payStatus,jdbcType=TINYINT}, #{checkingStatus,jdbcType=SMALLINT},
+    #{settlementStatus,jdbcType=SMALLINT},#{payResult,jdbcType=LONGVARCHAR}, #{tradesTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP},
+    #{updateTime,jdbcType=TIMESTAMP}, #{moneyRecordId,jdbcType=INTEGER})
+  </insert>
+
+    <update id="updateWithdrawRecordPayStatus">
+
+        UPDATE
+          d_withdraw_record
+        SET
+          pay_status = #{payStatus}
+        WHERE
+          money_record_id = #{moneyRecordId}
+          and owner = #{siteId}
+
+    </update>
+    
+    
+</mapper>

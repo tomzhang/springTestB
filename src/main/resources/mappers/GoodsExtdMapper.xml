@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.goods.mapper.GoodsExtdMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.GoodsExtd">
+        <id column="goodsextd_id" jdbcType="INTEGER" property="goodsextdId" />
+        <result column="goods_id" jdbcType="INTEGER" property="goodsId" />
+        <result column="browse_number" jdbcType="INTEGER" property="browseNumber" />
+        <result column="trans_mumber" jdbcType="INTEGER" property="transMumber" />
+        <result column="shopping_number" jdbcType="INTEGER" property="shoppingNumber" />
+        <result column="product_date" jdbcType="DATE" property="productDate" />
+        <result column="goods_batch_no" jdbcType="VARCHAR" property="goodsBatchNo" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="net_wt" jdbcType="VARCHAR" property="netWt"/>
+    </resultMap>
+
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.jk51.model.GoodsExtdWithBLOBs">
+        <result column="main_ingredient" jdbcType="LONGVARCHAR" property="mainIngredient" />
+        <result column="goods_indications" jdbcType="LONGVARCHAR" property="goodsIndications" />
+        <result column="goods_action" jdbcType="LONGVARCHAR" property="goodsAction" />
+        <result column="adverse_reactioins" jdbcType="LONGVARCHAR" property="adverseReactioins" />
+        <result column="goods_note" jdbcType="LONGVARCHAR" property="goodsNote" />
+        <result column="goods_use_method" jdbcType="LONGVARCHAR" property="goodsUseMethod" />
+        <result column="goods_contd" jdbcType="LONGVARCHAR" property="goodsContd" />
+        <result column="goods_desc" jdbcType="LONGVARCHAR" property="goodsDesc" />
+        <result column="goods_mobile_desc" jdbcType="LONGVARCHAR" property="goodsMobileDesc" />
+        <result column="goods_description" jdbcType="LONGVARCHAR" property="goodsDescription" />
+        <result column="goods_usage" jdbcType="LONGVARCHAR" property="goodsUsage" />
+        <result column="goods_deposit" jdbcType="LONGVARCHAR" property="goodsDeposit" />
+        <result column="forpeople_desc" jdbcType="LONGVARCHAR" property="forpeopleDesc" />
+        <result column="qualification" jdbcType="LONGVARCHAR" property="qualification" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        goodsextd_id, goods_id, browse_number, trans_mumber, shopping_number, product_date,
+        goods_batch_no, create_time, update_time
+    </sql>
+    <sql id="Blob_Column_List">
+        main_ingredient, goods_indications, goods_action, adverse_reactioins, goods_note,
+        goods_use_method, goods_contd, goods_desc, goods_mobile_desc, goods_description,
+        goods_usage, goods_deposit, forpeople_desc, qualification
+    </sql>
+
+    <insert id="add" parameterType="com.jk51.model.GoodsExtdWithBLOBs">
+        INSERT INTO `b_goodsextd`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            `site_id`, `goods_id`,
+            <if test="mainIngredient != null">
+                `main_ingredient`,
+            </if>
+            <if test="goodsIndications != null">
+                `goods_indications`,
+            </if>
+            <if test="goodsAction != null">
+                `goods_action`,
+            </if>
+            <if test="adverseReactioins != null">
+                `adverse_reactioins`,
+            </if>
+            <if test="goodsNote != null">
+                `goods_note`,
+            </if>
+            <if test="goodsUseMethod != null">
+                `goods_use_method`,
+            </if>
+            <if test="goodsContd != null">
+                `goods_contd`,
+            </if>
+            <if test="goodsDesc != null">
+                `goods_desc`,
+            </if>
+            <if test="goodsMobileDesc != null">
+                `goods_mobile_desc`,
+            </if>
+            <if test="goodsDescription != null">
+                `goods_description`,
+            </if>
+            <if test="productDate != null">
+                `product_date`,
+            </if>
+            <if test="goodsUsage != null">
+                `goods_usage`,
+            </if>
+            <if test="goodsDeposit != null">
+                `goods_deposit`,
+            </if>
+            <if test="forpeopleDesc != null">
+                `forpeople_desc`,
+            </if>
+            <if test="qualification != null">
+                `qualification`,
+            </if>
+            <if test="goodsBatchNo != null">
+                `goods_batch_no`,
+            </if>
+            <if test="netWt != null">
+                `net_wt`,
+            </if>
+        </trim>
+        <trim prefix="VALUE (" suffix=")" suffixOverrides=",">
+            #{siteId}, #{goodsId},
+            <if test="mainIngredient != null">
+                #{mainIngredient},
+            </if>
+            <if test="goodsIndications != null">
+                #{goodsIndications},
+            </if>
+            <if test="goodsAction != null">
+                #{goodsAction},
+            </if>
+            <if test="adverseReactioins != null">
+                #{adverseReactioins},
+            </if>
+            <if test="goodsNote != null">
+                #{goodsNote},
+            </if>
+            <if test="goodsUseMethod != null">
+                #{goodsUseMethod},
+            </if>
+            <if test="goodsContd != null">
+                #{goodsContd},
+            </if>
+            <if test="goodsDesc != null">
+                #{goodsDesc},
+            </if>
+            <if test="goodsMobileDesc != null">
+                #{goodsMobileDesc},
+            </if>
+            <if test="goodsDescription != null">
+                #{goodsDescription},
+            </if>
+            <if test="productDate != null">
+                #{productDate},
+            </if>
+            <if test="goodsUsage != null">
+                #{goodsUsage},
+            </if>
+            <if test="goodsDeposit != null">
+                #{goodsDeposit},
+            </if>
+            <if test="forpeopleDesc != null">
+                #{forpeopleDesc},
+            </if>
+            <if test="qualification != null">
+                #{qualification},
+            </if>
+            <if test="goodsBatchNo != null">
+                #{goodsBatchNo},
+            </if>
+            <if test="netWt != null">
+                #{netWt},
+            </if>
+        </trim>
+    </insert>
+    
+    <update id="updateByGoodsId" parameterType="com.jk51.model.GoodsExtdWithBLOBs" flushCache="true">
+        update `b_goodsextd`
+        <trim prefix="set" suffixOverrides=",">
+            `goods_id` = #{goodsId},
+            <if test="mainIngredient != null">
+                `main_ingredient` = #{mainIngredient},
+            </if>
+            <if test="goodsIndications != null">
+                `goods_indications` = #{goodsIndications},
+            </if>
+            <if test="goodsAction != null">
+                `goods_action` = #{goodsAction},
+            </if>
+            <if test="adverseReactioins != null">
+                `adverse_reactioins` = #{adverseReactioins},
+            </if>
+            <if test="goodsNote != null">
+                `goods_note` = #{goodsNote},
+            </if>
+            <if test="goodsUseMethod != null">
+                `goods_use_method` = #{goodsUseMethod},
+            </if>
+            <if test="goodsContd != null">
+                `goods_contd` = #{goodsContd},
+            </if>
+            <if test="goodsDesc != null">
+                `goods_desc` = #{goodsDesc},
+            </if>
+            <if test="goodsMobileDesc != null">
+                `goods_mobile_desc` = #{goodsMobileDesc},
+            </if>
+            <if test="goodsDescription != null">
+                `goods_description` = #{goodsDescription},
+            </if>
+            <if test="productDate != null">
+                `product_date` = #{productDate},
+            </if>
+            <if test="goodsUsage != null">
+                `goods_usage` = #{goodsUsage},
+            </if>
+            <if test="goodsDeposit != null">
+                `goods_deposit` = #{goodsDeposit},
+            </if>
+            <if test="forpeopleDesc != null">
+                `forpeople_desc` = #{forpeopleDesc},
+            </if>
+            <if test="qualification != null">
+                `qualification` = #{qualification},
+            </if>
+            <if test="goodsBatchNo != null">
+                `goods_batch_no` = #{goodsBatchNo},
+            </if>
+            <if test="netWt != null">
+                `net_wt` = #{netWt},
+            </if>
+        </trim>
+        <where>
+            goods_id = #{goodsId} AND site_id = #{siteId}
+        </where>
+    </update>
+</mapper>

@@ -1,0 +1,632 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.distribution.mapper.DistributeMoneyRecordMapper">
+
+    <!--*********************************查询推荐人奖励分页列表**********************************-->
+    <select id="selectDistributorMoneyList" resultType="com.jk51.modules.distribution.result.DistributorReward"
+            parameterType="java.util.Map">
+        SELECT
+            d.distributor_id AS distributorId,
+            mobile,
+            d.rewardCount,
+            d.expenditureCount,
+            (
+                d.rewardCount - d.expenditureCount
+            ) AS remainingCount,
+            d.owner
+        FROM
+        <!-- **********************行转列start****************************** -->
+            (
+                SELECT
+                    c.distributor_id,
+                    c.owner,
+                    c.type,
+                    (
+                        CASE c.type
+                        WHEN 1 THEN
+                            c.change_money_count
+                        ELSE
+                            0
+                        END
+                    ) AS rewardCount,
+                    (
+                        CASE c.type
+                        WHEN 2 THEN
+                            c.change_money_count
+                        ELSE
+                            0
+                        END
+                    ) AS expenditureCount
+                    <if test="mobile != null">
+                        ,c.mobile
+                    </if>
+                FROM
+                <!-- ***************************分组查询 奖励和支出金额start*****************-->
+                    (
+                        SELECT
+                            a.distributor_id,
+                            a.owner,
+                            a.type,
+                            a.reward_id,
+                            SUM(a.change_money) AS change_money_count
+                            <if test="mobile != null">
+                                ,b.mobile AS mobile
+                            </if>
+                        FROM
+                            d_distributor_money_record AS a
+                            <if test="mobile != null">
+                                ,d_distributor_ext AS b
+                            </if>
+                        WHERE
+                            a.owner = #{siteId}
+                            AND a.status = 2
+                            <if test="mobile != null">
+                                AND b.mobile = #{mobile}
+                                AND a.distributor_id = b.did
+                            </if>
+                        GROUP BY
+                            a.distributor_id,
+                            a.type
+                    ) AS c
+                <!-- ***************************分组查询 奖励和支出金额end*****************-->
+                GROUP BY
+                    c.distributor_id
+                ORDER BY
+                    c.distributor_id ASC
+                <!-- 分页 -->
+                LIMIT   <if test="rowsIndex != null">
+                            #{rowsIndex}
+                        </if>
+                        <if test="rowsIndex == null">
+                            0
+                        </if>,
+                        <if test="pageSize != null">
+                            #{pageSize}
+                        </if>
+                        <if test="pageSize == null">
+                            15
+                        </if>
+            ) d
+        <!-- **********************行转列end***************************** -->
+        <if test="mobile == null">
+            LEFT JOIN d_distributor_ext b ON d.distributor_id = b.did
+        </if>
+    </select>
+
+    <!--********************************************查询推荐人总数********************************************-->
+    <select id="selectDistributorMoneyListCount" resultType="java.lang.Long" parameterType="java.util.Map">
+        SELECT
+	        count(c.distributor_id)
+        FROM
+            (
+                SELECT
+                    a.distributor_id
+                FROM
+                    d_distributor_money_record AS a
+                    <if test="mobile != null">
+                        ,d_distributor_ext AS b
+                    </if>
+                WHERE
+                    a.owner = #{siteId}
+                    AND a.status = 2
+                    <if test="mobile != null">
+                        AND b.mobile = #{mobile}
+                        AND a.distributor_id = b.did
+                    </if>
+                GROUP BY
+                    a.distributor_id
+                ORDER BY
+                    a.distributor_id DESC
+            ) AS c
+    </select>
+
+    <!--********************************************查询商户下推荐人奖励总计********************************************-->
+    <select id="selectDistributorMoneyTotal" resultType="com.jk51.modules.distribution.result.DistributorReward"
+            parameterType="java.util.Map">
+        SELECT
+            *,
+            (c.rewardCount - c.expenditureCount) AS remainingCount
+        FROM
+            (
+                SELECT
+                    owner,
+                    (
+                        CASE b.type
+                        WHEN 1 THEN
+                            b.change_money_count
+                        ELSE
+                            0
+                        END
+                    ) AS rewardCount,
+                    (
+                        CASE b.type
+                        WHEN 2 THEN
+                            b.change_money_count
+                        ELSE
+                            0
+                        END
+                    ) AS expenditureCount
+                FROM
+                    (
+                        SELECT
+                            a.owner,
+                            a.type,
+                            SUM(a.change_money) AS change_money_count
+                        FROM
+                            d_distributor_money_record a
+                        WHERE
+                            a.owner = #{siteId}
+                        AND a.status = 2
+                        GROUP BY
+                            a.type
+                    ) b
+                GROUP BY
+                    b.owner
+            ) c
+    </select>
+
+   <!--********************************推荐人奖励明细列表**********************************-->
+    <select id="selectDistributorMoneyDetailList" resultType="com.jk51.modules.distribution.result.DistributorRewardDetail"
+            parameterType="java.util.Map">
+        SELECT
+            a.id,
+            a.owner,
+            a.reward_id AS rewardId,
+            a.distributor_id AS distributorId,
+            a.from_did AS fromDid,
+            b.user_name AS mobile,
+            a.type,
+            a.change_money AS changeMoney,
+            a.withdraw_fee AS withdrawFee,
+            a.remaining_money AS remainingMoney,
+            a.status,
+            a.update_time AS updateTime,
+            a.create_time AS recordCreateTime,
+            b.level,
+            cast(d.order_id AS CHAR) AS orderId,
+            e.create_time AS createTime,
+            g.mobile AS orderUsername,
+            e.total_fee AS totalFee,
+            h.withdraw_style AS withdrawStyle
+        FROM
+            d_distributor_money_record AS a
+            LEFT JOIN d_distributor AS b ON a.distributor_id = b.id
+            LEFT JOIN d_reward AS d ON a.reward_id = d.id
+            LEFT JOIN b_trades AS e ON d.order_id = e.trades_id
+            LEFT JOIN d_distributor_ext AS g ON a.from_did = g.did
+            LEFT JOIN d_withdraw_record h ON a.id = h.money_record_id
+        WHERE
+            a.owner = #{siteId}
+            AND a.distributor_id = b.id
+            <if test="mobile != null">
+                AND b.user_name = #{mobile}
+            </if>
+            <if test="type != null">
+                AND a.type = #{type}
+            </if>
+            <if test="status &gt; 0">
+                AND a.status =  #{status}
+            </if>
+          <if test="orderByType == 1">
+              <if test="startTime != null">
+                  AND a.update_time &gt;= #{startTime}
+              </if>
+              <if test="endTime != null">
+                  AND a.update_time  &lt;= #{endTime}
+              </if>
+              ORDER BY a.update_time DESC
+          </if>
+
+          <if test="orderByType == 2">
+              <if test="startTime != null">
+                  AND e.create_time &gt;= #{startTime}
+              </if>
+              <if test="endTime != null">
+                  AND e.create_time  &lt;= #{endTime}
+              </if>
+              ORDER BY e.create_time DESC
+          </if>
+
+          <if test="orderByType == 3">
+              <if test="startTime != null">
+                  AND a.create_time &gt;= #{startTime}
+              </if>
+              <if test="endTime != null">
+                  AND a.create_time  &lt;= #{endTime}
+              </if>
+              ORDER BY a.create_time DESC
+          </if>
+            <!-- 分页 -->
+        LIMIT
+            <if test="rowsIndex != null">
+                #{rowsIndex}
+            </if>
+            <if test="rowsIndex == null">
+                0
+            </if>,
+            <if test="pageSize != null">
+                #{pageSize}
+            </if>
+            <if test="pageSize == null">
+                15
+            </if>
+
+    </select>
+
+    <select id="selectDistributorMoneyDetailUnconfirmed" resultType="com.jk51.modules.distribution.result.DistributorRewardDetail"
+            parameterType="java.util.Map">
+        SELECT
+            reward.id AS rewardId,
+            reward.owner,
+            distributor.id AS distributorId,
+            distributorExt.mobile AS orderUsername,
+            cast(reward.order_id AS CHAR) AS orderId,
+            trades.create_time AS createTime,
+            trades.total_fee AS totalFee,
+            reward.level_1_award AS awardOne,
+            reward.level_2_award AS awardTwo,
+            reward.level_3_award AS awardThree,
+            reward.create_time AS recordCreateTime
+        FROM
+            d_reward AS reward
+            LEFT JOIN d_distributor AS distributor ON reward.distributor_id = distributor.id
+            LEFT JOIN d_distributor_ext AS distributorExt ON reward.distributor_id = distributorExt.did
+            LEFT JOIN b_trades AS trades ON reward.order_id = trades.trades_id
+            WHERE
+            reward.owner = #{siteId}
+            AND distributor.id IN
+            <foreach collection="distributorIdList" open="(" close=")" separator="," item="distributorId">
+                #{distributorId}
+            </foreach>
+            AND reward.reward_status = 0
+            AND reward.order_status IN (1,2)
+            <if test="startTime != null">
+                AND reward.create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND reward.create_time  &lt;= #{endTime}
+            </if>
+        ORDER BY trades.create_time DESC
+        <!-- 分页 -->
+        LIMIT
+        <if test="rowsIndex != null">
+            #{rowsIndex}
+        </if>
+        <if test="rowsIndex == null">
+            0
+        </if>,
+        <if test="pageSize != null">
+            #{pageSize}
+        </if>
+        <if test="pageSize == null">
+            15
+        </if>
+    </select>
+
+    <!--*************************************推荐人奖励明细总数*********************************-->
+    <select id="selectDistributorMoneyDetailListCount" resultType="java.lang.Long" parameterType="java.util.Map">
+        SELECT
+            count(a.id)
+        FROM
+            d_distributor_money_record AS a
+            LEFT JOIN d_distributor AS b ON a.distributor_id = b.id
+            LEFT JOIN d_reward AS d ON a.reward_id = d.id
+            LEFT JOIN b_trades AS e ON d.order_id = e.trades_id
+            LEFT JOIN d_distributor_ext AS g ON a.from_did = g.did
+            LEFT JOIN d_withdraw_record h ON a.id = h.money_record_id
+        WHERE
+            a.owner = #{siteId}
+            AND a.distributor_id = b.id
+            <if test="mobile != null">
+                AND b.user_name = #{mobile}
+            </if>
+            <if test="type != null">
+                AND a.type = #{type}
+            </if>
+            <if test="status &gt; 0">
+                AND a.status =  #{status}
+            </if>
+            <if test="orderByType = 1">
+                <if test="startTime != null">
+                    AND a.update_time &gt;= #{startTime}
+                </if>
+                <if test="endTime != null">
+                    AND a.update_time  &lt;= #{endTime}
+                </if>
+            </if>
+
+            <if test="orderByType = 2">
+                <if test="startTime != null">
+                    AND e.create_time &gt;= #{startTime}
+                </if>
+                <if test="endTime != null">
+                    AND e.create_time  &lt;= #{endTime}
+                </if>
+            </if>
+
+            <if test="orderByType = 3">
+                <if test="startTime != null">
+                    AND a.create_time &gt;= #{startTime}
+                </if>
+                <if test="endTime != null">
+                    AND a.create_time  &lt;= #{endTime}
+                </if>
+            </if>
+    </select>
+
+    <!--*************************************推荐人奖励明细总计*********************************-->
+    <select id="selectDistributorMoneyDetailListTotal" resultType="java.lang.Long" parameterType="java.util.Map">
+
+        SELECT
+          SUM(f.change_money)
+        FROM
+            (SELECT
+                a.change_money
+            FROM  d_distributor_money_record AS a ,d_distributor AS b
+            WHERE
+                a.distributor_id = b.id
+                AND a.owner = #{siteId}
+                <if test="mobile != null">
+                    AND b.user_name = #{mobile}
+                </if>
+                <if test="type != null">
+                    AND a.type = #{type}
+                </if>
+                <if test="status &gt; 0">
+                    AND a.status =  #{status}
+                </if>
+                <if test="startTime != null">
+                    AND a.update_time &gt;= #{startTime}
+                </if>
+                <if test="endTime != null">
+                    AND a.update_time  &lt;= #{endTime}
+                </if>
+            ) AS f
+    </select>
+
+    <select id="selectDistributorMoneyDetailListTotalUnconfirmed" resultType="java.lang.Long" parameterType="java.util.Map">
+        SELECT
+          SUM(reward.level_1_award)
+        FROM
+            d_reward AS reward
+            LEFT JOIN d_distributor AS distributor ON reward.distributor_id = distributor.id
+            LEFT JOIN d_distributor_ext AS distributorExt ON reward.distributor_id = distributorExt.did
+            LEFT JOIN b_trades AS trades ON reward.order_id = trades.trades_id
+        WHERE
+            reward.owner = #{siteId}
+            AND distributor.id IN
+            <foreach collection="distributorIdList" open="(" close=")" separator="," item="distributorId">
+                #{distributorId}
+            </foreach>
+            AND reward.reward_status = 0
+            AND reward.order_status IN (1,2)
+    </select>
+
+    <!--*************************************财务处理更新奖励记录************************************-->
+    <update id="updateDistributorMoneyDetailById">
+        UPDATE d_distributor_money_record
+        SET
+
+            <if test="status != null">
+                update_time = current_timestamp(),
+                status = #{status},
+            </if>
+            <if test="accountBalance != null">
+                remaining_money = #{accountBalance},
+            </if>
+            <if test="remark !=null">
+                remark = #{remark}
+            </if>
+
+        WHERE
+          id = #{id}
+          AND owner = #{siteId}
+    </update>
+
+    <!--*********************************************插入奖励记录***********************************************-->
+    <insert id="insertDistributorMoneyRecord" keyProperty="id" useGeneratedKeys="true" parameterType="com.jk51.model.distribute.DdistributorMoneyRecord">
+
+        INSERT INTO d_distributor_money_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+
+            <if test="distributorId != null">
+                distributor_id,
+            </if>
+            <if test="rewardId != null">
+                reward_id,
+            </if>
+            <if test="fromDid != null">
+                from_did,
+            </if>
+            <if test="owner != null">
+                owner,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="changeMoney != null">
+                change_money,
+            </if>
+            <if test="remainingMoney!=null">
+                remaining_money,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="orderStatus != null">
+                order_status,
+            </if>
+            <if test="tradeId != null">
+                trade_id,
+            </if>
+            <if test="withdrawFee != null">
+                withdraw_fee,
+            </if>
+            <if test="momentRewardPattern != null">
+                moment_reward_pattern,
+            </if>
+            <if test="remark != null">
+                remark
+            </if>
+
+
+
+        </trim>
+
+        <trim prefix="VALUE (" suffix=")" suffixOverrides=",">
+
+            <if test="distributorId != null">
+                #{distributorId},
+            </if>
+            <if test="rewardId != null">
+                #{rewardId},
+            </if>
+            <if test="fromDid != null">
+                #{fromDid},
+            </if>
+            <if test="owner != null">
+                #{owner},
+            </if>
+            <if test="type != null">
+                #{type},
+            </if>
+            <if test="changeMoney != null">
+                #{changeMoney},
+            </if>
+            <if test="remainingMoney!=null">
+                #{remainingMoney},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <if test="orderStatus != null">
+                #{orderStatus},
+            </if>
+            <if test="tradeId != null">
+                #{tradeId},
+            </if>
+            <if test="withdrawFee != null">
+                #{withdrawFee},
+            </if>
+            <if test="momentRewardPattern != null">
+                #{momentRewardPattern},
+            </if>
+            <if test="remark != null">
+                #{remark}
+            </if>
+
+
+        </trim>
+
+    </insert>
+
+    <!--****************************************个人账户总计查询*******************************************-->
+    <select id="selectReferrerAccountTotal" resultType="java.util.Map">
+        SELECT
+        owner,
+        distributor_id AS distributorId,
+        type,
+        status,
+        SUM(change_money) as changeMoneyTotal
+        FROM
+          d_distributor_money_record
+        WHERE
+            owner = #{siteId}
+            AND status &lt;&gt; 3
+            AND distributor_id = #{distributorId}
+        GROUP BY
+        type,
+        status
+    </select>
+
+    <select id="selectReferrerTotal" resultType="java.util.Map">
+        SELECT
+            owner,
+            distributor_id AS distributorId,
+            type,
+            status,
+            IFNULL(SUM(change_money),0) as changeMoneyTotal
+        FROM
+            d_distributor_money_record
+            WHERE
+            owner = #{siteId}
+            AND distributor_id = #{distributorId}
+            AND type = #{type}
+            AND status = #{status}
+    </select>
+
+    <select id="selectRewardTotal" resultType="java.lang.Integer">
+        SELECT
+          IFNULL(a.total1,0) + IFNULL(b.total2,0) + IFNULL(c.total3,0) AS total
+        FROM
+            (
+                SELECT
+                  SUM(level_1_award) AS total1
+                FROM
+                d_reward
+                WHERE
+                distributor_id = #{distributorId}
+                AND owner = #{siteId}
+                AND reward_status = #{rewardStatus}
+                AND order_status IN (1,2)
+            ) a,
+            (
+                SELECT
+                SUM(level_2_award) AS total2
+                FROM
+                d_reward
+                WHERE
+                distributor_father_id = #{distributorId}
+                AND owner = #{siteId}
+                AND reward_status = #{rewardStatus}
+                AND order_status IN (1,2)
+            ) b,
+            (
+                SELECT
+                SUM(level_3_award) AS total3
+                FROM
+                d_reward
+                WHERE
+                distributor_grandfather_id = #{distributorId}
+                AND owner = #{siteId}
+                AND reward_status = #{rewardStatus}
+                AND order_status IN (1,2)
+            ) c
+    </select>
+
+    <select id="selectDistributorRewardDetailById" resultType="com.jk51.modules.distribution.result.DistributorRewardDetail">
+        SELECT a.id,
+                a.owner,
+                a.reward_id AS rewardId,
+                a.distributor_id AS distributorId ,
+                a.from_did AS fromDid,
+                a.type,
+                a.change_money AS changeMoney,
+                a.withdraw_fee AS withdrawFee,
+                a.remaining_money AS remainingMoney,
+                a.status
+        FROM d_distributor_money_record AS a
+        WHERE a.id = #{id} AND a.owner = #{siteId}
+    </select>
+
+    <select id="getMyTotalReward" resultType="java.lang.Integer">
+        select IFNULL(SUM(change_money),0) from `d_distributor_money_record` WHERE `distributor_id` = #{distributorId} AND `owner`=#{siteId} AND `type`=1
+        <if test="orderStatus != null and orderStatus == -1">
+            and order_status != 0
+        </if>
+        <if test="orderStatus != null and orderStatus >0">
+            and order_status = #{orderStatus}
+        </if>
+    </select>
+
+    <select id="getWithdraw" resultType="java.lang.Integer">
+        select IFNULL(SUM(change_money),0) from d_distributor_money_record WHERE distributor_id=#{distributorId} AND `owner`=#{siteId} AND type=2
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
+</mapper>

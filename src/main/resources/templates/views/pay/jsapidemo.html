@@ -1,0 +1,38 @@
+
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.1.0.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+        $.ajax({
+            url: '/pay/wx/getconfig',
+            type: 'post',
+            cache: false,
+            data: {"url":location.href.split('#')[0],'site_id':100030},
+            dataType: "json",
+            success: function(res){
+                    var data = res.value;
+                    wx.config({
+                        debug: true,
+                        appId: data.appId,
+                        timestamp: data.timestamp,
+                        nonceStr: data.noncestr,
+                        signature: data.signature,
+                        jsApiList: ['chooseWXPay','getLocation']
+                    });
+            }
+        });
+        wx.ready(function(){
+//            pay();
+            getLocation();
+        });
+        function getLocation() {
+            wx.getLocation({
+                success: function (res) {
+                    alert(JSON.stringify(res));
+                },
+                cancel: function (res) {
+                    alert('用户拒绝授权获取地理位置');
+                }
+            });
+        }
+
+    </script>

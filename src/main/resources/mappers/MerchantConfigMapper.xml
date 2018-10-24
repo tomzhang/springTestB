@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.account.mapper.MerchantConfigMapper">
+
+    <select id="getAll" resultType="com.jk51.model.account.models.MerchantConfig" >
+
+        select * from yb_settlementday_config;
+
+    </select>
+
+    <select id="get" resultType="com.jk51.model.account.models.MerchantConfig" parameterType="Integer">
+
+        select * from yb_settlementday_config where site_id = #{id};
+
+    </select>
+
+    <update id="update" parameterType="com.jk51.model.account.models.MerchantConfig">
+
+        update yb_settlementday_config set thelast_time = #{thelast_time} where id = #{id}
+
+    </update>
+
+</mapper>

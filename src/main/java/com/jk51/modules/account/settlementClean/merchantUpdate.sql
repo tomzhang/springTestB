@@ -1,0 +1,24 @@
+update yb_settlementday_config set  thelast_time='2017-4-27	23:59:59'   where site_id='100196';
+update yb_settlementday_config set  thelast_time='2017-5-1	23:59:59'   where site_id='100197';
+update yb_settlementday_config set  thelast_time='2017-5-2	23:59:59'   where site_id='100198';
+update yb_settlementday_config set  thelast_time='2017-5-2	23:59:59'   where site_id='100199';
+update yb_settlementday_config set  thelast_time='2017-5-2	23:59:59'   where site_id='100200';
+update yb_settlementday_config set  thelast_time='2017-5-2	23:59:59'   where site_id='100201';
+update yb_settlementday_config set  thelast_time='2017-5-2	23:59:59'   where site_id='100202';
+update yb_settlementday_config set  thelast_time='2017-5-7	23:59:59'   where site_id='100203';
+update yb_settlementday_config set  thelast_time='2017-5-17	23:59:59'   where site_id='100204';
+update yb_settlementday_config set  thelast_time='2017-5-17	23:59:59'   where site_id='100206';
+update yb_settlementday_config set  thelast_time='2017-5-17	23:59:59'   where site_id='100207';
+update yb_settlementday_config set  thelast_time='2017-5-17	23:59:59'   where site_id='100208';
+update yb_settlementday_config set  thelast_time='2017-5-17	23:59:59'   where site_id='100209';
+update yb_settlementday_config set  thelast_time='2017-5-18	23:59:59'   where site_id='100210';
+update yb_settlementday_config set  thelast_time='2017-5-21	23:59:59'   where site_id='100211';
+update yb_settlementday_config set  thelast_time='2017-5-31	23:59:59'   where site_id='100212';
+update yb_settlementday_config set  thelast_time='2017-6-6	23:59:59'   where site_id='100213';
+update yb_settlementday_config set  thelast_time='2017-6-6	23:59:59'   where site_id='100214';
+update yb_settlementday_config set  thelast_time='2017-6-6	23:59:59'   where site_id='100215';
+update yb_settlementday_config set  thelast_time='2017-6-8	23:59:59'   where site_id='100216';
+update yb_settlementday_config set  thelast_time='2017-6-8	23:59:59'   where site_id='100217';
+update yb_settlementday_config set  thelast_time='2017-6-21	23:59:59'   where site_id='100223';
+
+update  yb_settlementday_config  set pay_day_value=3  where pay_day_value is null;

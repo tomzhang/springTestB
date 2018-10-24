@@ -1,0 +1,657 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.task.mapper.BTaskplanMapper">
+  <resultMap id="BaseResultMap" type="com.jk51.model.task.BTaskplan">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="site_id" jdbcType="INTEGER" property="siteId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="task_ids" jdbcType="VARCHAR" property="taskIds" />
+    <result column="join_type" jdbcType="TINYINT" property="joinType" />
+    <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="active_type" jdbcType="TINYINT" property="activeType" />
+    <result column="day_num" jdbcType="VARCHAR" property="dayNum" />
+    <result column="source_type" jdbcType="TINYINT" property="sourceType" />
+    <result column="admin_id" jdbcType="INTEGER" property="adminId" />
+    <result column="admin_name" jdbcType="VARCHAR" property="adminName" />
+    <result column="app_position" jdbcType="TINYINT" property="appPosition" />
+    <result column="explan" jdbcType="VARCHAR" property="explan" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.jk51.model.task.BTaskplan">
+    <result column="join_ids" jdbcType="LONGVARCHAR" property="joinIds" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, site_id, `name`, task_ids, join_type, start_time, end_time, active_type, day_num,
+    source_type, admin_id, admin_name, app_position, `explan`, `status`, create_time, update_time
+  </sql>
+  <sql id="Blob_Column_List">
+    join_ids
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.jk51.model.task.BTaskplanExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from b_taskplan
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.jk51.model.task.BTaskplanExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from b_taskplan
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limit != null">
+      <if test="offset != null">
+        limit ${offset}, ${limit}
+      </if>
+      <if test="offset == null">
+        limit ${limit}
+      </if>
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from b_taskplan
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from b_taskplan
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jk51.model.task.BTaskplanExample">
+    delete from b_taskplan
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jk51.model.task.BTaskplan">
+    insert into b_taskplan (id, site_id, name, 
+      task_ids, join_type, start_time, 
+      end_time, active_type, day_num, 
+      source_type, admin_id, admin_name, 
+      app_position, `explan`, status,
+      create_time, update_time, join_ids
+      )
+    values (#{id,jdbcType=INTEGER}, #{siteId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+      #{taskIds,jdbcType=VARCHAR}, #{joinType,jdbcType=TINYINT}, #{startTime,jdbcType=TIMESTAMP}, 
+      #{endTime,jdbcType=TIMESTAMP}, #{activeType,jdbcType=TINYINT}, #{dayNum,jdbcType=VARCHAR}, 
+      #{sourceType,jdbcType=TINYINT}, #{adminId,jdbcType=INTEGER}, #{adminName,jdbcType=VARCHAR}, 
+      #{appPosition,jdbcType=TINYINT}, #{explan,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{joinIds,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" keyProperty="id" useGeneratedKeys="true" parameterType="com.jk51.model.task.BTaskplan">
+    insert into b_taskplan
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="siteId != null">
+        site_id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="taskIds != null">
+        task_ids,
+      </if>
+      <if test="joinType != null">
+        join_type,
+      </if>
+      <if test="startTime != null">
+        start_time,
+      </if>
+      <if test="endTime != null">
+        end_time,
+      </if>
+      <if test="activeType != null">
+        active_type,
+      </if>
+      <if test="dayNum != null">
+        day_num,
+      </if>
+      <if test="sourceType != null">
+        source_type,
+      </if>
+      <if test="adminId != null">
+        admin_id,
+      </if>
+      <if test="adminName != null">
+        admin_name,
+      </if>
+      <if test="appPosition != null">
+        app_position,
+      </if>
+      <if test="explan != null">
+        `explan`,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="joinIds != null">
+        join_ids,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="siteId != null">
+        #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="taskIds != null">
+        #{taskIds,jdbcType=VARCHAR},
+      </if>
+      <if test="joinType != null">
+        #{joinType,jdbcType=TINYINT},
+      </if>
+      <if test="startTime != null">
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null">
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="activeType != null">
+        #{activeType,jdbcType=TINYINT},
+      </if>
+      <if test="dayNum != null">
+        #{dayNum,jdbcType=VARCHAR},
+      </if>
+      <if test="sourceType != null">
+        #{sourceType,jdbcType=TINYINT},
+      </if>
+      <if test="adminId != null">
+        #{adminId,jdbcType=INTEGER},
+      </if>
+      <if test="adminName != null">
+        #{adminName,jdbcType=VARCHAR},
+      </if>
+      <if test="appPosition != null">
+        #{appPosition,jdbcType=TINYINT},
+      </if>
+      <if test="explan != null">
+        #{explan,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="joinIds != null">
+        #{joinIds,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jk51.model.task.BTaskplanExample" resultType="java.lang.Long">
+    select count(*) from b_taskplan
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update b_taskplan
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.siteId != null">
+        site_id = #{record.siteId,jdbcType=INTEGER},
+      </if>
+      <if test="record.name != null">
+        name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.taskIds != null">
+        task_ids = #{record.taskIds,jdbcType=VARCHAR},
+      </if>
+      <if test="record.joinType != null">
+        join_type = #{record.joinType,jdbcType=TINYINT},
+      </if>
+      <if test="record.startTime != null">
+        start_time = #{record.startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.endTime != null">
+        end_time = #{record.endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.activeType != null">
+        active_type = #{record.activeType,jdbcType=TINYINT},
+      </if>
+      <if test="record.dayNum != null">
+        day_num = #{record.dayNum,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sourceType != null">
+        source_type = #{record.sourceType,jdbcType=TINYINT},
+      </if>
+      <if test="record.adminId != null">
+        admin_id = #{record.adminId,jdbcType=INTEGER},
+      </if>
+      <if test="record.adminName != null">
+        admin_name = #{record.adminName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.appPosition != null">
+        app_position = #{record.appPosition,jdbcType=TINYINT},
+      </if>
+      <if test="record.explan != null">
+        `explan` = #{record.explan,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=TINYINT},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.joinIds != null">
+        join_ids = #{record.joinIds,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update b_taskplan
+    set id = #{record.id,jdbcType=INTEGER},
+      site_id = #{record.siteId,jdbcType=INTEGER},
+      name = #{record.name,jdbcType=VARCHAR},
+      task_ids = #{record.taskIds,jdbcType=VARCHAR},
+      join_type = #{record.joinType,jdbcType=TINYINT},
+      start_time = #{record.startTime,jdbcType=TIMESTAMP},
+      end_time = #{record.endTime,jdbcType=TIMESTAMP},
+      active_type = #{record.activeType,jdbcType=TINYINT},
+      day_num = #{record.dayNum,jdbcType=VARCHAR},
+      source_type = #{record.sourceType,jdbcType=TINYINT},
+      admin_id = #{record.adminId,jdbcType=INTEGER},
+      admin_name = #{record.adminName,jdbcType=VARCHAR},
+      app_position = #{record.appPosition,jdbcType=TINYINT},
+      `explan` = #{record.explan,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=TINYINT},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      join_ids = #{record.joinIds,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update b_taskplan
+    set id = #{record.id,jdbcType=INTEGER},
+      site_id = #{record.siteId,jdbcType=INTEGER},
+      name = #{record.name,jdbcType=VARCHAR},
+      task_ids = #{record.taskIds,jdbcType=VARCHAR},
+      join_type = #{record.joinType,jdbcType=TINYINT},
+      start_time = #{record.startTime,jdbcType=TIMESTAMP},
+      end_time = #{record.endTime,jdbcType=TIMESTAMP},
+      active_type = #{record.activeType,jdbcType=TINYINT},
+      day_num = #{record.dayNum,jdbcType=VARCHAR},
+      source_type = #{record.sourceType,jdbcType=TINYINT},
+      admin_id = #{record.adminId,jdbcType=INTEGER},
+      admin_name = #{record.adminName,jdbcType=VARCHAR},
+      app_position = #{record.appPosition,jdbcType=TINYINT},
+      `explan` = #{record.explan,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=TINYINT},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.task.BTaskplan">
+    update b_taskplan
+    <set>
+      <if test="siteId != null">
+        site_id = #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="taskIds != null">
+        task_ids = #{taskIds,jdbcType=VARCHAR},
+      </if>
+      <if test="joinType != null">
+        join_type = #{joinType,jdbcType=TINYINT},
+      </if>
+      <if test="startTime != null">
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null">
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="activeType != null">
+        active_type = #{activeType,jdbcType=TINYINT},
+      </if>
+      <if test="dayNum != null">
+        day_num = #{dayNum,jdbcType=VARCHAR},
+      </if>
+      <if test="sourceType != null">
+        source_type = #{sourceType,jdbcType=TINYINT},
+      </if>
+      <if test="adminId != null">
+        admin_id = #{adminId,jdbcType=INTEGER},
+      </if>
+      <if test="adminName != null">
+        admin_name = #{adminName,jdbcType=VARCHAR},
+      </if>
+      <if test="appPosition != null">
+        app_position = #{appPosition,jdbcType=TINYINT},
+      </if>
+      <if test="explan != null">
+        `explan` = #{explan,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="joinIds != null">
+        join_ids = #{joinIds,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.jk51.model.task.BTaskplan">
+    update b_taskplan
+    set site_id = #{siteId,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},
+      task_ids = #{taskIds,jdbcType=VARCHAR},
+      join_type = #{joinType,jdbcType=TINYINT},
+      start_time = #{startTime,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      active_type = #{activeType,jdbcType=TINYINT},
+      day_num = #{dayNum,jdbcType=VARCHAR},
+      source_type = #{sourceType,jdbcType=TINYINT},
+      admin_id = #{adminId,jdbcType=INTEGER},
+      admin_name = #{adminName,jdbcType=VARCHAR},
+      app_position = #{appPosition,jdbcType=TINYINT},
+      `explan` = #{explan,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      join_ids = #{joinIds,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jk51.model.task.BTaskplan">
+    update b_taskplan
+    set site_id = #{siteId,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},
+      task_ids = #{taskIds,jdbcType=VARCHAR},
+      join_type = #{joinType,jdbcType=TINYINT},
+      start_time = #{startTime,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      active_type = #{activeType,jdbcType=TINYINT},
+      day_num = #{dayNum,jdbcType=VARCHAR},
+      source_type = #{sourceType,jdbcType=TINYINT},
+      admin_id = #{adminId,jdbcType=INTEGER},
+      admin_name = #{adminName,jdbcType=VARCHAR},
+      app_position = #{appPosition,jdbcType=TINYINT},
+      `explan` = #{explan,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+    <select id="getDetails" parameterType="java.lang.Integer" resultType="java.util.Map">
+        SELECT
+            TP.name,
+            TP.join_type,
+            TP.join_ids,
+            TP.active_type,
+            TP.source_type,
+            TP.app_position,
+            TP.create_time,
+            TP.task_ids,
+            TP.active_type,
+            TP.day_num,
+            TP.source_type,
+            TP.app_position,
+            TP.explan,
+            TP.start_time,
+            TP.end_time,
+            TP.site_id
+        FROM b_taskplan TP
+        WHERE id = #{id}
+    </select>
+
+    <select id="getAllStart" resultType="java.lang.Integer">
+        SELECT `site_id`
+        FROM b_taskplan
+        WHERE `status` = 20 GROUP BY site_id
+    </select>
+
+    <select id="taskIsExist" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM b_taskplan
+        WHERE `status` IN (10,20) AND FIND_IN_SET(#{id}, task_ids)
+    </select>
+
+    <select id="selectWillChangeStatusList" resultType="com.jk51.modules.task.domain.TaskPlanChangeStatus">
+        <![CDATA[
+        SELECT
+            `second`, GROUP_CONCAT(id) AS ids, `status`
+        FROM
+        (
+            SELECT
+                IF (TIMESTAMPDIFF(SECOND, now(), start_time) < 0, 0, TIMESTAMPDIFF(SECOND, now(), start_time)) AS `second`,
+                id,
+                `status`
+            FROM
+                b_taskplan
+            WHERE
+                `status` = 10
+            UNION ALL
+            SELECT
+                IF (TIMESTAMPDIFF(SECOND, now(), end_time) < 0, 0, TIMESTAMPDIFF(SECOND, now(), end_time)) AS `second`,
+                id,
+                `status`
+            FROM
+                b_taskplan
+            WHERE
+                `status` = 20 AND end_time != 0
+        ) AS b
+        GROUP BY
+        b.`second`,
+        b.`status`
+        HAVING second <= 60
+        ]]>
+    </select>
+
+
+    <select id="getTaskPlan" resultType="java.util.Map">
+        select
+        *
+        from b_taskplan AS tp
+        LEFT JOIN b_task AS t ON tp.site_id = t.site_id
+        AND t.id IN (tp.task_ids)
+        LEFT JOIN t_quota AS tq ON tq.id = t.target_id
+        where
+        1=1
+        <if test="siteId!=null and siteId!=0">
+            AND tp.site_id = #{siteId,jdbcType=INTEGER}
+        </if>
+        <if test="id!=null and id!=''">
+            AND  tp.id = #{id}
+        </if>
+        <if test="name!=null and name!=''">
+            AND  tp.name   like  concat('%',#{name},'%' )
+        </if>
+        <if test="startTime!=null">
+            AND  tp.start_time &lt;= #{startTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="endTime!=null">
+            AND  tp.end_time &gt;= #{endTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="storeId != null and storeId != ''">
+          AND tp.admin_id IN (
+          SELECT id FROM b_store_admin WHERE store_id = #{storeId}
+          )
+        </if>
+        <if test="targetId!=null and targetId!=''">
+            AND  tq.id= #{targetId}
+        </if>
+        <if test="sourceType!=null and sourceType!=''">
+            AND  tp.source_type= #{sourceType}
+        </if>
+        AND  tp.status=#{status}
+        ORDER BY  tp.id  DESC
+    </select>
+
+    <select id="queryPlanIdsByJoin" resultType="Integer">
+        SELECT id FROM b_taskplan WHERE (site_id = #{siteId} OR site_id = 0)  and `status` = 20
+        <if test="taskId != null and taskId != ''">
+            and find_in_set(#{taskId},task_ids)
+        </if>
+        AND ((join_type = 20 AND FIND_IN_SET(#{joinId}, join_ids)) OR (join_type = 10 AND FIND_IN_SET(#{storeId}, join_ids)))
+    </select>
+
+    <select id="queryPlanListById" parameterType="java.util.Map" resultMap="ResultMapWithBLOBs">
+        SELECT *
+        from b_taskplan where site_id=#{siteId}
+        <if test="planIdList != null">
+            and id in
+            <foreach close=")" collection="planIdList" item="planId" open="(" separator=",">
+                #{planId}
+            </foreach>
+        </if>
+
+        <choose>
+            <when test="status != null and status != '' ">
+                and status = #{status}
+            </when>
+            <otherwise>
+                and status != 40
+            </otherwise>
+        </choose>
+
+        <if test="start!=null and start!=''">
+            AND  start_time  <![CDATA[ >= ]]> #{start}
+        </if>
+
+        <if test="end!=null and end!=''">
+            AND  end_time <![CDATA[ >= ]]> #{end}
+        </if>
+    </select>
+
+    <select id="queryTaskIdsById" resultType="java.lang.String">
+        SELECT task_ids FROM b_taskplan WHERE id=#{id}
+    </select>
+
+    <select id="queryTaskPlanTime" resultType="java.util.Map">
+        SELECT start_time AS startTime, end_time AS endTime, `name` FROM b_taskplan WHERE id=#{id}
+    </select>
+
+    <select id="queryTaskPlanForGoodsId" parameterType="com.jk51.modules.es.entity.GoodsInfosAdminReq" resultType="string">
+      SELECT c.goodsId from b_taskplan b
+        INNER JOIN (
+            SELECT a.id,a.site_id,IFNULL(bl.goods_id,'all') goodsId
+        FROM
+            b_task AS a
+        INNER JOIN t_quota AS b ON a.`target_id` = b.`id` and b.group_id =1
+            INNER  JOIN b_task_blob AS bl ON bl.`task_id` = a.`id`
+        where
+             a.site_id = #{siteId}
+             and a.task_source =0
+        ) c on b.site_id =c.site_id and FIND_IN_SET(c.id,b.task_ids)
+        where
+         b.site_id = #{siteId} and b.`status` = 20
+        and IF(b.join_type = 10 ,  FIND_IN_SET(#{storeId},join_ids), FIND_IN_SET(#{storeAdminId},join_ids))
+    </select>
+ </mapper>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.official.mapper.ApplyUserMapper">
+    <select id="login" resultType="com.jk51.model.official.ApplyUser">
+        select * from apply_userinfo
+         where uphone = #{uphone}
+         and upwd = #{upwd}
+    </select>
+    <select id="sendCode" resultType="com.jk51.model.official.ApplyUser">
+        select * from apply_userinfo
+         where uphone = #{uphone}
+    </select>
+    <insert id="registUser" parameterType="com.jk51.model.official.ApplyUser">
+        insert into  apply_userinfo
+        values (default ,#{uname},#{upwd},#{uphone},#{umail},now())
+    </insert>
+    <select id="queryUser" parameterType="java.util.Map" resultType="com.jk51.model.goods.PageData">
+        SELECT
+        a.uid, a.uname,a.uphone, a.umail, DATE_FORMAT(a.create_time,'%Y-%m-%d %H:%i:%s') AS create_time , b.approval_status ,b.company_name,b.merchant_id
+        FROM
+	      apply_userinfo a
+        LEFT JOIN yb_merchant_apply c ON a.uid = c.applicant_id
+        LEFT JOIN yb_merchant b ON b.merchant_id = c.merchant_id
+        <trim prefix="WHERE" prefixOverrides="and |or ">
+            <if test="uname !=null and uname !=''">
+              and a.uname LIKE CONCAT("%",#{uname},"%")
+            </if>
+            <if test="uphone !=null and uphone !=''">
+                and a.uphone LIKE CONCAT("%",#{uphone},"%")
+            </if>
+            <if test="status !=null and status !=''">
+                and b.approval_status = #{status}
+            </if>
+            <if test="create_time !=null and create_time !=''">
+                and a.create_time
+                between CONCAT(#{create_time}," 00:00:00")
+                and
+                CONCAT(#{create_time}," 23:59:59")
+            </if>
+        </trim>
+        ORDER BY
+	    uid
+    </select>
+</mapper>

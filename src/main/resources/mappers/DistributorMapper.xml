@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.distribution.mapper.DistributorMapper">
+    
+    <select id="getList" resultType="com.jk51.model.distribute.Distributor" useCache="false" timeout="1800" flushCache="false" parameterType="java.util.Map">
+        SELECT id,uid,user_name userName, real_name realName,wechat_name wechatName,alipay_name alipayName,apply_type applyType,is_root isRoot,`level`,status,note,owner,DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s') createTime,DATE_FORMAT(update_time,'%Y-%m-%d %H:%i:%s') updateTime,is_open isOpen from d_distributor
+        <where>
+            `owner` = #{siteId}
+              <if test="username!=null and username !=''">
+                  AND   user_name = #{username}
+              </if>
+            <if test="applyType!=null and applyType!=2">
+                AND   apply_type = #{applyType}
+            </if>
+            <if test="level!=null and level!=9">
+                AND   `level` = #{level}
+            </if>
+            <if test="status!=null and status !=''">
+                AND   status = #{status}
+            </if>
+            <if test="start!=null and start != ''">
+                AND create_time &gt;= #{start}
+            </if>
+            <if test="end!=null and end != ''">
+                AND create_time &lt;= #{end}
+            </if>
+        </where>
+        order by id DESC 
+
+    </select>
+    
+    <select id="getDistributorByID" resultType="java.util.Map" parameterType="java.lang.Integer">
+        SELECT a.*, b.*, b.id extId,b.status extStatus,c.name nickname,c.account accountNum,c.type accountType FROM d_distributor AS a LEFT JOIN d_distributor_ext AS b ON a.id = b.did LEFT JOIN (select * from  d_withdraw_account where `owner`=#{siteId} and distributor_id=#{id} order by id DESC limit 1) c ON a.id = c.distributor_id where a.owner = #{siteId} AND a.id = #{id}
+    </select>
+
+
+    <select id="selectBindUsers" resultType="java.util.Map">
+        SELECT user_name,real_name FROM d_distributor where user_name !='' and real_name !='' ORDER BY create_time desc LIMIT 10
+    </select>
+
+    <select id="getDistributorTotalByOwner" resultType="java.lang.Integer" >
+        SELECT COUNT(*) FROM d_distributor WHERE owner = #{owner}
+        <if test="status!=null and status !=''">
+            AND   status = #{status}
+        </if>
+    </select>
+
+    <!--<resultMap id="distributor" type="java.util.Map">-->
+        <!--<id column="id" property="id"/>-->
+        <!--<result column="uid"  property="uid"/>-->
+        <!--<result column="user_name" property="user_name"/>-->
+        <!--<result column="real_name" property="real_name"/>-->
+        <!--<result column="wechat_name" property="wechat_name"/>-->
+        <!--<result column="alipay_name" property="alipay_name"/>-->
+        <!--<result column="apply_type" property="apply_type"/>-->
+        <!--<result column="is_root" property="is_root"/>-->
+        <!--<result column="level" property="level"/>-->
+        <!--<result column="status" property="status"/>-->
+        <!--<result column="note" property="note"/>-->
+        <!--<result column="owner" property="owner"/>-->
+        <!--<result column="create_time" property="create_time"/>-->
+        <!--<result column="update_time" property="update_time"/>-->
+        <!--<result column="is_open" property="is_open"/>-->
+        <!--<result column="did" property="did"/>-->
+        <!--<result column="parent_id" property="parent_id"/>-->
+        <!--<result column="mobile" property="obile"/>-->
+        <!--<result column="account" property="account"/>-->
+        <!--<result column="frozen_account" property="frozen_account"/>-->
+        <!--<result column="store_account" property="store_account"/>-->
+        <!--<result column="reward_account" property="eward_account"/>-->
+        <!--<result column="invitation_code" property="invitation_code"/>-->
+        <!--<result column="is_del" property="is_del"/>-->
+        <!--<result column="charge_account" property="charge_account"/>-->
+    <!--</resultMap>-->
+
+    <select id="getDistributor"  resultType="java.util.Map">
+        SELECT
+          dd.*, dxx.invitation_code AS parent_invitation_code
+        FROM
+        (
+            SELECT
+            d.id,
+            d.uid,
+            d.user_name,
+            d.real_name,
+            d.wechat_name,
+            d.alipay_name,
+            d.apply_type,
+            d.is_root,
+            d.level,
+            d.status,
+            d.note,
+            d.owner,
+            d.create_time,
+            d.update_time,
+            d.is_open,
+    --         			dx.id,
+            dx.did,
+    --         			uid,
+            dx.parent_id,
+            dx.mobile,
+    --         			user_name,
+            dx.account,
+            dx.frozen_account,
+            dx.store_account,
+            dx.reward_account,
+    --         			dx.status,
+    --         			dx.note,
+            dx.invitation_code,
+            dx.is_del,
+            dx.charge_account
+            FROM
+            d_distributor d
+            LEFT JOIN d_distributor_ext dx ON d.id = dx.did
+            WHERE
+            d.user_name = #{phone}
+            AND d.owner = #{owner}
+            LIMIT 1
+        ) dd
+        LEFT JOIN d_distributor_ext dxx ON dd.parent_id = dxx.did
+    </select>
+    
+    <select id="selectDistributorById" resultType="java.util.Map">
+        SELECT
+          a.id AS distributorId,
+          a.is_root AS isRoot,
+          b.parent_id AS parentId,
+          b.mobile
+        FROM  d_distributor AS a
+        LEFT JOIN d_distributor_ext b
+        on a.id=b.did
+        where a.owner = #{siteId}
+              AND a.id = #{distributorId}
+    </select>
+
+    <select id="selectDistributorIdByUsername" resultType="java.lang.Integer">
+        SELECT
+        a.id AS distributorId
+        FROM  d_distributor AS a
+        where a.owner = #{siteId}
+        AND a.user_name = #{distributorName}
+    </select>
+
+    <select id="getDistributorInfoByID" resultType="java.util.Map" parameterType="java.lang.Integer">
+        SELECT * FROM d_distributor WHERE owner = #{siteId} AND id = #{id}
+    </select>
+
+    <select id="selectDistributorInfo" resultType="com.jk51.model.distribute.Distributor">
+        SELECT
+         id,
+            uid,
+            user_name AS userName,
+            real_name AS realName,
+            wechat_name AS wechatName,
+            alipay_name as alipayName,
+            apply_type AS applyType,
+            is_root AS isRoot,
+            level,
+            status,
+            note,
+            owner,
+            create_time AS createTime,
+            update_time AS updateTime,
+            is_open AS isOpen
+        FROM d_distributor WHERE owner = #{siteId} AND id = #{id}
+    </select>
+
+    <select id="getDistributorBySiteId" resultType="java.util.Map" parameterType="java.lang.Integer">
+        SELECT * FROM `d_distribution_store` WHERE owner = #{siteId} ORDER by id desc limit 1
+    </select>
+
+    <insert id="createDistributorStore" parameterType="java.util.Map">
+        INSERT into `d_distribution_store` (owner,is_open,create_time,update_time) VALUES (#{siteId},#{isOpen},CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
+    </insert>
+
+    <insert id="createDistributor" parameterType="java.util.Map" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert INTO d_distributor
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="uid != null">
+                uid,
+            </if>
+            <if test="user_name != null">
+                user_name,
+            </if>
+            <if test="real_name != null">
+                real_name,
+            </if>
+            <if test="wechat_name != null">
+                wechat_name,
+            </if>
+            <if test="alipay_name != null">
+                alipay_name,
+            </if>
+            <if test="apply_type != null">
+                apply_type,
+            </if>
+            <if test="is_root != null">
+                is_root,
+            </if>
+            <if test="level != null" >
+                level,
+            </if>
+            <if test="status != null" >
+                status,
+            </if>
+            <if test="note != null" >
+                note,
+            </if>
+            <if test="owner != null" >
+                owner,
+            </if>
+            <if test="is_open != null" >
+                is_open,
+            </if>
+            create_time,
+            update_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="uid != null">
+                #{uid},
+            </if>
+            <if test="user_name != null">
+                #{user_name},
+            </if>
+            <if test="real_name != null">
+                #{real_name},
+            </if>
+            <if test="wechat_name != null">
+                #{wechat_name},
+            </if>
+            <if test="alipay_name != null">
+                #{alipay_name},
+            </if>
+            <if test="apply_type != null">
+                #{apply_type},
+            </if>
+            <if test="is_root != null">
+                #{is_root},
+            </if>
+            <if test="level != null">
+                #{level},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <if test="note != null">
+                #{note},
+            </if>
+            <if test="owner != null">
+                #{owner},
+            </if>
+            <if test="is_open != null">
+                #{is_open},
+            </if>
+            CURRENT_TIMESTAMP,
+            CURRENT_TIMESTAMP,
+        </trim>
+    </insert>
+    
+    <update id="setDistributorStore">
+        UPDATE `d_distribution_store`
+        <set>
+            is_open = #{isOpen},
+            `update_time` = CURRENT_TIMESTAMP()
+        </set>
+        WHERE
+        owner = #{siteId}
+    </update>
+    
+    <update id="updateDistributor">
+        UPDATE
+          d_distributor
+        <set>
+            <if test="status!=null">
+              status = #{status},
+            </if>
+            <if test="note!=null and note!=''">
+              note = #{note}
+            </if>
+        </set>
+        WHERE
+          id = #{id}
+          AND
+          owner = #{siteId}
+    </update>
+    
+    <select id="selectByUid" resultType="com.jk51.model.distribute.Distributor">
+        select
+            id,
+            uid,
+            user_name AS userName,
+            real_name AS realName,
+            wechat_name AS wechatName,
+            alipay_name as alipayName,
+            apply_type AS applyType,
+            is_root AS isRoot,
+            level,
+            status,
+            note,
+            owner,
+            create_time AS createTime,
+            update_time AS updateTime,
+            is_open AS isOpen
+        from d_distributor WHERE uid=#{memberId} AND owner=#{siteId} limit 1;
+    </select>
+    
+    <select id="getDistributorInfoByMobile" resultType="java.util.Map">
+        SELECT a.*,b.merchant_name,c.avatar photo from d_distributor a left join yb_merchant b on a.owner = b.merchant_id left join `b_member_info` c on c.member_id = a.uid where a.owner=#{siteId} and c.site_id=#{siteId} AND a.user_name = #{mobile} limit 1
+    </select>
+
+    <select id="selectCommissionLevelDistributorIdList" resultType="java.lang.Integer" parameterType="java.util.List">
+        SELECT did FROM d_distributor_ext WHERE parent_id  IN
+        <foreach collection="distributorIdList" open="(" close=")" separator="," item="distributorId">
+            #{distributorId}
+        </foreach>
+    </select>
+
+    <select id="getMyTeam" resultType="java.util.Map">
+        SELECT a.id,a.uid,a.user_name userName,a.real_name realName,a.wechat_name wechatName,a.apply_type applyType,b.parent_id parentId,DATE_FORMAT(b.create_time,'%Y-%m-%d %H:%i:%s') createTime,DATE_FORMAT(b.update_time,'%Y-%m-%d %H:%i:%s') updateTime from d_distributor a LEFT JOIN  `d_distributor_ext` b on a.id = b.did WHERE a.owner = #{siteId} and b.parent_id in
+        <foreach collection="distributorIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <if test="start!=null and start != ''">
+            AND b.create_time &gt;= #{start}
+        </if>
+        <if test="end!=null and end != ''">
+            AND b.create_time &lt;= #{end}
+        </if>
+        <if test="distributorId != null and distributorId != ''">
+            AND a.id <![CDATA[ != ]]> #{distributorId}
+        </if>
+        ORDER BY b.create_time DESC
+
+    </select>
+
+    <select id="getDistributorId" resultType="java.lang.Integer">
+        SELECT a.id from d_distributor a LEFT JOIN  `d_distributor_ext` b on a.id = b.did WHERE a.owner = #{siteId} and b.parent_id = #{distributorId}
+        <!--<if test="start!=null and start != ''">-->
+            <!--AND b.create_time &gt;= #{start}-->
+        <!--</if>-->
+        <!--<if test="end!=null and end != ''">-->
+            <!--AND b.create_time &lt;= #{end}-->
+        <!--</if>-->
+        GROUP by a.id
+    </select>
+
+    <update id="updateDistributorLevel">
+        update d_distributor SET level=#{level} WHERE id=#{id} and owner =#{siteId};
+    </update>
+
+    <update id="updateDistributorRoot">
+        update d_distributor SET is_root=#{root} WHERE id=#{id} and owner =#{siteId};
+    </update>
+
+    <select id="selectDistributorByUid" resultType="java.util.Map">
+        SELECT
+        *
+        FROM  d_distributor AS a
+        where  a.uid=#{uid}
+
+
+    </select>
+
+    <select id="findDistributorByUidandStatus" resultType="java.util.Map">
+        SELECT
+        *
+        FROM  d_distributor AS a
+        where  a.uid=#{uid}
+        AND a.owner=#{siteId}
+        AND status=0
+
+
+    </select>
+</mapper>

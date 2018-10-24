@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.account.mapper.SettlementDetailLogMapper">
+    <insert id="addSettlementDetailLog" parameterType="com.jk51.model.account.models.SettlementDetailLog">
+        insert into yb_settlement_detail_log (flow,operator_id,operator_name,create_time,trades_id
+        )
+        values (#{settlementDetailLog.flow},#{settlementDetailLog.operator_id},#{settlementDetailLog.operator_name},
+        CURRENT_TIMESTAMP(),#{settlementDetailLog.trades_id});
+    </insert>
+</mapper>
+

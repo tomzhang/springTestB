@@ -1,0 +1,1750 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.persistence.mapper.BTradesMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.BTrades">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <id column="site_id" property="siteId" jdbcType="INTEGER"/>
+        <result column="trades_id" property="tradesId" jdbcType="BIGINT"/>
+        <result column="seller_id" property="sellerId" jdbcType="INTEGER"/>
+        <result column="buyer_id" property="buyerId" jdbcType="INTEGER"/>
+        <result column="seller_nick" property="sellerNick" jdbcType="VARCHAR"/>
+        <result column="buyer_nick" property="buyerNick" jdbcType="VARCHAR"/>
+        <result column="goods_id" property="goodsId" jdbcType="INTEGER"/>
+        <result column="pay_time" property="payTime" jdbcType="TIMESTAMP"/>
+        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"/>
+        <result column="consign_time" property="consignTime" jdbcType="TIMESTAMP"/>
+        <result column="receiver_phone" property="receiverPhone" jdbcType="VARCHAR"/>
+        <result column="recevier_mobile" property="recevierMobile" jdbcType="VARCHAR"/>
+        <result column="recevier_name" property="recevierName" jdbcType="VARCHAR"/>
+        <result column="receiver_city" property="receiverCity" jdbcType="VARCHAR"/>
+        <result column="receiver_address" property="receiverAddress" jdbcType="VARCHAR"/>
+        <result column="receiver_zip" property="receiverZip" jdbcType="VARCHAR"/>
+        <result column="seller_pay_no" property="sellerPayNo" jdbcType="VARCHAR"/>
+        <result column="seller_phone" property="sellerPhone" jdbcType="VARCHAR"/>
+        <result column="seller_mobile" property="sellerMobile" jdbcType="VARCHAR"/>
+        <result column="seller_name" property="sellerName" jdbcType="VARCHAR"/>
+        <result column="trades_status" property="tradesStatus" jdbcType="INTEGER"/>
+        <result column="is_refund" property="isRefund" jdbcType="SMALLINT"/>
+        <result column="closed_resion" property="closedResion" jdbcType="INTEGER"/>
+        <result column="total_fee" property="totalFee" jdbcType="INTEGER"/>
+        <result column="post_fee" property="postFee" jdbcType="INTEGER"/>
+        <result column="real_pay" property="realPay" jdbcType="INTEGER"/>
+        <result column="trades_split" property="tradesSplit" jdbcType="INTEGER"/>
+        <result column="plat_split" property="platSplit" jdbcType="INTEGER"/>
+        <result column="post_style" property="postStyle" jdbcType="INTEGER"/>
+        <result column="delivery_name" property="deliveryName" jdbcType="VARCHAR"/>
+        <result column="post_id" property="postId" jdbcType="INTEGER"/>
+        <result column="post_name" property="postName" jdbcType="VARCHAR"/>
+        <result column="post_number" property="postNumber" jdbcType="VARCHAR"/>
+        <result column="buyer_message" property="buyerMessage" jdbcType="VARCHAR"/>
+        <result column="seller_memo" property="sellerMemo" jdbcType="VARCHAR"/>
+        <result column="buyer_flag" property="buyerFlag" jdbcType="INTEGER"/>
+        <result column="seller_flag" property="sellerFlag" jdbcType="INTEGER"/>
+        <result column="delv_time" property="delvTime" jdbcType="TIMESTAMP"/>
+        <result column="delv_desc" property="delvDesc" jdbcType="VARCHAR"/>
+        <result column="confirm_goods_time" property="confirmGoodsTime" jdbcType="TIMESTAMP"/>
+        <result column="buyer_pay_no" property="buyerPayNo" jdbcType="VARCHAR"/>
+        <result column="pay_style" property="payStyle" jdbcType="VARCHAR"/>
+        <result column="pay_number" property="payNumber" jdbcType="VARCHAR"/>
+        <result column="trades_source" property="tradesSource" jdbcType="INTEGER"/>
+        <result column="trades_invoice" property="tradesInvoice" jdbcType="INTEGER"/>
+        <result column="invoice_title" property="invoiceTitle" jdbcType="VARCHAR"/>
+        <result column="trades_store" property="tradesStore" jdbcType="INTEGER"/>
+        <result column="self_taken_store" property="selfTakenStore" jdbcType="INTEGER"/>
+        <result column="self_taken_code" property="selfTakenCode" jdbcType="CHAR"/>
+        <result column="self_taken_code_start" property="selfTakenCodeStart" jdbcType="TIMESTAMP"/>
+        <result column="self_taken_code_expires" property="selfTakenCodeExpires" jdbcType="TIMESTAMP"/>
+        <result column="self_taken_code_checktime" property="selfTakenCodeChecktime" jdbcType="TIMESTAMP"/>
+        <result column="assigned_stores" property="assignedStores" jdbcType="INTEGER"/>
+        <result column="stockup_status" property="stockupStatus" jdbcType="INTEGER"/>
+        <result column="shipping_status" property="shippingStatus" jdbcType="INTEGER"/>
+        <result column="prescription_orders" property="prescriptionOrders" jdbcType="BIT"/>
+        <result column="lng" property="lng" jdbcType="DOUBLE"/>
+        <result column="lat" property="lat" jdbcType="DOUBLE"/>
+        <result column="store_user_id" property="storeUserId" jdbcType="INTEGER"/>
+        <result column="store_shipping_clerk_id" property="storeShippingClerkId" jdbcType="INTEGER"/>
+        <result column="recommend_user_id" property="recommendUserId" jdbcType="INTEGER"/>
+        <result column="cashier_id" property="cashierId" jdbcType="INTEGER"/>
+        <result column="stockup_user_id" property="stockupUserId" jdbcType="INTEGER"/>
+        <result column="user_paying" property="userPaying" jdbcType="TINYINT"/>
+        <result column="trades_del" property="tradesDel" jdbcType="INTEGER"/>
+        <result column="trades_rank" property="tradesRank" jdbcType="TINYINT"/>
+        <result column="trades_rank_time" property="tradesRankTime" jdbcType="TIMESTAMP"/>
+        <result column="settlement_status" property="settlementStatus" jdbcType="SMALLINT"/>
+        <result column="settlement_final_time" property="settlementFinalTime" jdbcType="TIMESTAMP"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="settlement_type" property="settlementType" jdbcType="TINYINT"/>
+        <result column="create_order_assigned_stores" property="createOrderAssignedStores" jdbcType="INTEGER"/>
+        <result column="budgetdate" property="budgetdate" jdbcType="VARCHAR"/>
+        <result column="is_payment" property="isPayment" jdbcType="BIT"/>
+        <result column="account_checking_status" property="accountCheckingStatus" jdbcType="BIT"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, site_id, trades_id, seller_id, buyer_id, seller_nick, buyer_nick, goods_id, pay_time,
+        end_time, consign_time, receiver_phone, recevier_mobile, recevier_name, receiver_city,
+        receiver_address, receiver_zip, seller_pay_no, seller_phone, seller_mobile, seller_name,
+        trades_status, is_refund, closed_resion, total_fee, post_fee, real_pay, trades_split,
+        plat_split, post_style, delivery_name, post_id, post_name, post_number, buyer_message,
+        seller_memo, buyer_flag, seller_flag, delv_time, delv_desc, confirm_goods_time, buyer_pay_no,
+        pay_style, pay_number, trades_source, trades_invoice, invoice_title, trades_store,
+        self_taken_store, self_taken_code, self_taken_code_start, self_taken_code_expires,
+        self_taken_code_checktime, assigned_stores, stockup_status, shipping_status, prescription_orders,
+        lng, lat, store_user_id, store_shipping_clerk_id, recommend_user_id, cashier_id,
+        stockup_user_id, user_paying, trades_del, trades_rank, trades_rank_time, settlement_status,
+        settlement_final_time, create_time, update_time, settlement_type, create_order_assigned_stores,
+        budgetdate, is_payment, account_checking_status
+    </sql>
+
+
+    <select id="getWeChatTradesAll" resultType="java.lang.Integer">
+        SELECT count(0) FROM b_trades WHERE site_id=#{siteId} and buyer_id=#{buyerId}
+    </select>
+
+    <select id="queryUserFirstOrder" resultType="java.lang.Integer">
+        SELECT count(0) FROM b_trades WHERE site_id=#{siteId} and buyer_id=#{buyerId} and is_payment=1
+    </select>
+
+    <select id="getStoreOrderAll" resultType="java.lang.Integer">
+        SELECT count(*) FROM b_trades WHERE site_id=#{siteId} and assigned_stores=#{storeId}
+        <if test="'beihuo'.equals(flag)">
+            and trades_status =120 and stockup_status=110
+        </if>
+        <if test="'fahuo'.equals(flag)">
+            and trades_status in(120,130) and stockup_status=120 and post_style=150
+        </if>
+        <if test="'ziti'.equals(flag)">
+            and trades_status = 200 and stockup_status=120 and post_style=160
+        </if>
+        <if test="'zhigou'.equals(flag)">
+            and trades_status = 110 and post_style=170
+        </if>
+    </select>
+
+    <select id="deployAble" resultType="java.lang.Integer">
+        SELECT
+        count(0)
+        FROM
+        b_trades
+        WHERE
+        site_id = #{siteId}
+        AND (trades_store = #{storeId} or assigned_stores=#{storeId})
+        AND (
+        store_user_id = #{adminId}
+        OR store_shipping_clerk_id = #{adminId}
+        )
+        AND( trades_status not in (160,170,180,210,240,900) and deal_finish_status!=1 and is_refund not in (110,120) )
+    </select>
+
+
+    <select id="getTradesInformationMap" resultType="java.util.Map">
+        SELECT bt.recevier_name AS recevierName, bt.store_user_id AS storeUserId, bt.trades_id AS tradesId,
+        bt.recevier_mobile AS recevierMobile, date_format(bt.create_time,'%Y-%m-%d %H:%i:%s') AS createTime,
+        bt.receiver_address AS receiverAddress,
+        bt.post_style AS postStyle, bt.trades_status AS tradesStatus, bt.real_pay AS realPay, bte.integral_price AS
+        integralPrice, bte.reduce_reduction_amount AS reduceReductionAmount,
+        bte.user_coupon_id AS userCouponId, bte.user_coupon_amount AS userCouponAmount, bt.post_fee AS postFee,
+        bt.is_refund AS isRefund, bt.self_taken_store AS selfTakenStoreName,
+        bt.assigned_stores AS assignedStoresName, bt.pay_style AS payStyle, bt.recommend_user_id AS storeSalerCode
+        FROM b_trades bt LEFT JOIN b_trades_ext bte ON bt.trades_id=bte.trades_id AND bt.site_id=bte.site_id WHERE
+        bt.trades_id = #{tradesId} AND
+        bt.site_id = #{siteId}
+        <if test="storeId != null and storeId != ''">
+            AND bt.trades_store = #{storeId}
+        </if>
+    </select>
+
+    <select id="getBuyerTradesInformationMap" resultType="java.util.Map">
+        SELECT bt.recevier_name AS recevierName, bt.store_user_id AS storeUserId, bt.trades_id AS tradesId,
+        bt.recevier_mobile AS recevierMobile, date_format(bt.create_time,'%Y-%m-%d %H:%i:%s') AS createTime,
+        bt.receiver_address AS receiverAddress,
+        bt.post_style AS postStyle, bt.trades_status AS tradesStatus, bt.real_pay AS realPay, bte.integral_price AS
+        integralPrice, bte.reduce_reduction_amount AS reduceReductionAmount,
+        bte.user_coupon_id AS userCouponId, bte.user_coupon_amount AS userCouponAmount, bt.post_fee AS postFee,
+        bt.is_refund AS isRefund, bt.self_taken_store AS selfTakenStoreName,
+        bt.assigned_stores AS assignedStoresName, bt.pay_style AS payStyle, bt.recommend_user_id AS storeSalerCode
+        FROM b_trades bt LEFT JOIN b_trades_ext bte ON bt.trades_id=bte.trades_id AND bt.site_id=bte.site_id WHERE
+        bt.buyer_id = #{memberId} AND
+        bt.site_id = #{siteId} AND bt.is_payment=1
+        <if test="storeId != null and storeId != ''">
+            AND bt.trades_store = #{storeId}
+        </if>
+        ORDER BY bt.create_time DESC
+    </select>
+
+
+    <select id="getOrderDetailByDeliveryCodeMap" resultType="java.util.Map">
+        SELECT bt.recevier_name AS recevierName, bt.store_user_id AS storeUserId, bt.trades_id AS tradesId,
+        bt.recevier_mobile AS recevierMobile, date_format(bt.create_time,'%Y-%m-%d %H:%i:%s') AS createTime,
+        bt.receiver_address AS receiverAddress,
+        bt.post_style AS postStyle, bt.trades_status AS tradesStatus, bt.real_pay AS realPay, bte.integral_price AS
+        integralPrice, bte.reduce_reduction_amount AS reduceReductionAmount,
+        bte.user_coupon_id AS userCouponId, bte.user_coupon_amount AS userCouponAmount, bt.post_fee AS postFee,
+        bt.is_refund AS isRefund, bt.self_taken_store AS selfTakenStoreName,
+        bt.assigned_stores AS assignedStoresName, bt.pay_style AS payStyle, bt.recommend_user_id AS storeSalerCode
+        FROM b_trades bt LEFT JOIN b_trades_ext bte ON bt.trades_id=bte.trades_id AND bt.site_id=bte.site_id WHERE
+        bt.self_taken_code = #{deliveryCode} AND bt.site_id = #{siteId}
+        <if test="storeId != null and storeId != ''">
+            AND bt.assigned_stores = #{storeId}
+        </if>
+    </select>
+
+
+    <select id="getOrderListMap" resultType="java.util.Map">
+        select
+        recevier_mobile AS recevierMobile, trades_id AS tradesId, case when real_pay is null then 0 else real_pay end  AS realPay, date_format(create_time,'%Y-%m-%d %H:%i:%s') AS createTime,
+        receiver_address AS receiverAddress, case when post_style is null then 130 else post_style end AS postStyle, case when trades_status is null then 110 else trades_status end AS tradesStatus
+        from b_trades
+        where site_id = #{siteId} AND assigned_stores = #{storeId} AND store_shipping_clerk_id = #{storeShippingClerkId}
+        AND post_style=150 AND trades_status=130
+    </select><!--AND post_style IN (150, 180) AND trades_status IN (110, 120, 130)-->
+
+    <select id="getOtherOrderListMap" resultType="java.util.Map">
+        select
+        recevier_mobile AS recevierMobile, trades_id AS tradesId, case when real_pay is null then 0
+        else real_pay end  AS realPay, date_format(create_time,'%Y-%m-%d %H:%i:%s') AS createTime,
+        receiver_address AS receiverAddress, case when post_style is null then 130 else post_style end AS postStyle, case when trades_status is null then 110 else trades_status end AS tradesStatus
+        from b_trades
+        where site_id = #{siteId} AND assigned_stores = #{storeId} AND post_style = '170' AND trades_status=110 ORDER BY create_time DESC
+    </select>
+
+    <select id="getCountPickNumber" resultType="java.lang.Integer">
+        SELECT count(*)
+        from b_trades
+        WHERE
+        assigned_stores = #{storeId}
+        <!--AND
+        create_time LIKE  CONCAT("%",#{time},"%")-->
+        AND
+        post_style = 160
+        AND
+        trades_status=200
+        and site_id = #{siteId}
+        <!--AND
+        trades_del = 0-->
+    </select>
+    <select id="getSaleNum" resultType="java.lang.Integer">
+        SELECT count(*)
+        from b_trades
+        WHERE
+        store_user_id = #{storeUserId}
+        <if test="time != null">
+            AND confirm_goods_time like CONCAT("%",#{time},"%")
+        </if>
+        AND
+        post_style = 170
+        and
+        confirm_goods_time != '0000-00-00 00:00:00'
+        and site_id = #{siteId}
+    </select>
+    <select id="getSaleAmount" resultType="java.lang.Integer">
+        SELECT sum(real_pay)
+        from b_trades
+        WHERE
+        store_user_id = #{storeUserId}
+        <if test="time != null">
+            AND confirm_goods_time like CONCAT("%",#{time},"%")
+        </if>
+        AND
+        post_style = 170
+        and
+        confirm_goods_time != '0000-00-00 00:00:00'
+        and site_id = #{siteId}
+    </select>
+    <select id="getBTradesDate" resultType="java.util.Date">
+        SELECT pay_time
+        from b_trades
+        WHERE
+        store_user_id = #{storeUserId}
+        AND pay_time like CONCAT("%",#{month},"%")
+        and
+        post_style = 170
+    </select>
+    <select id="findBTradesList" resultMap="BaseResultMap">
+        SELECT *
+        FROM b_trades
+        WHERE
+        store_user_id = #{storeUserId}
+        AND
+        pay_time like CONCAT("%",#{time},"%")
+        AND
+        post_style = 170
+        AND
+        site_id = #{siteId}
+    </select>
+    <select id="getCountOtherNumber" resultType="java.lang.Integer">
+        SELECT count(*)
+        from b_trades
+        WHERE
+        site_id = #{siteId}
+        AND assigned_stores = #{storeId}
+        <!--AND
+        create_time LIKE  CONCAT("%",#{time},"%")-->
+        AND
+        post_style=170
+        AND
+        trades_status=110
+        <!--AND
+        trades_del = 0-->
+    </select>
+    <select id="getCountOrderNum" resultType="java.lang.Integer">
+        SELECT count(*)
+        from b_trades
+        WHERE
+        assigned_stores = #{storeId}
+        AND
+        store_shipping_clerk_id = #{storeUserId}
+        <!--AND
+        create_time LIKE  CONCAT("%",#{time},"%")-->
+        AND
+        post_style=150
+        AND
+        trades_status=130
+        and site_id = #{siteId}
+        <!--AND
+        trades_del = 0-->
+    </select>
+    <select id="getSumRealPay" resultType="java.lang.Integer">
+        SELECT count(*)
+        from b_trades
+        WHERE
+        store_user_id = #{storeUserId}
+        AND
+        post_style = 170
+        AND
+        confirm_goods_time like CONCAT("%",#{time},"%")
+        AND site_id = #{siteId}
+    </select>
+
+    <select id="getOtherOrderList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from b_trades
+        where site_id = #{siteId} AND trades_store = #{storeId} AND post_style = '170' AND (trades_status = '110' OR
+        trades_status = '120' OR trades_status = '130')
+    </select>
+
+    <select id="getOrderList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from b_trades
+        where site_id = #{siteId} AND trades_store = #{storeId} AND store_shipping_clerk_id = #{storeShippingClerkId}
+        AND (post_style='150' OR post_style='180') AND (trades_status='110' OR trades_status='120' OR
+        trades_status='130')
+    </select>
+
+    <select id="getTradesInformation" resultType="java.util.Map">
+        SELECT bt.*, bte.*
+        FROM b_trades bt LEFT JOIN b_trades_ext bte ON bt.trades_id=bte.trades_id WHERE bt.trades_id = #{tradesId} AND
+        bt.site_id = #{siteId}
+        <if test="storeId != null and storeId != ''">
+            AND bt.trades_store = #{storeId}
+        </if>
+    </select>
+
+    <select id="getOrderDetailByDeliveryCode" resultType="java.util.Map">
+        SELECT bt.*, bte.*
+        FROM b_trades bt LEFT JOIN b_trades_ext bte ON bt.trades_id=bte.trades_id WHERE bt.self_taken_code =
+        #{deliveryCode} AND bt.site_id = #{siteId}
+        <if test="storeId != null and storeId != ''">
+            AND bt.trades_store = #{storeId}
+        </if>
+    </select>
+
+    <select id="getBuyerTradesInformation" resultType="java.util.Map">
+        SELECT bt.*, bte.*
+        FROM b_trades bt LEFT JOIN b_trades_ext bte ON bt.trades_id=bte.trades_id WHERE bt.buyer_id = #{memberId} AND
+        bt.site_id = #{siteId}
+        <if test="storeId != null and storeId != ''">
+            AND bt.trades_store = #{storeId}
+        </if>
+    </select>
+
+    <select id="getBTradesByTradesId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from b_trades
+        where trades_id = #{tradesId}
+        <if test="siteId != null and siteId !=''">
+            and site_id = #{siteId}
+        </if>
+    </select>
+
+    <select id="getBTradesByCode" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from b_trades
+        where assigned_stores = #{storeId} AND self_taken_code = #{selfTakenCode} AND is_refund IN (0,110)
+        <if test="siteId != null and siteId !=''">
+            and site_id = #{siteId}
+        </if>
+    </select>
+
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from b_trades
+        where id = #{id,jdbcType=INTEGER}
+        and site_id = #{siteId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey">
+        delete from b_trades
+        where id = #{id,jdbcType=INTEGER}
+        and site_id = #{siteId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.jk51.model.BTrades">
+        insert into b_trades (id, site_id, trades_id,
+        seller_id, buyer_id, seller_nick,
+        buyer_nick, goods_id, pay_time,
+        end_time, consign_time, receiver_phone,
+        recevier_mobile, recevier_name, receiver_city,
+        receiver_address, receiver_zip, seller_pay_no,
+        seller_phone, seller_mobile, seller_name,
+        trades_status, is_refund, closed_resion,
+        total_fee, post_fee, real_pay,
+        trades_split, plat_split, post_style,
+        delivery_name, post_id, post_name,
+        post_number, buyer_message, seller_memo,
+        buyer_flag, seller_flag, delv_time,
+        delv_desc, confirm_goods_time, buyer_pay_no,
+        pay_style, pay_number, trades_source,
+        trades_invoice, invoice_title, trades_store,
+        self_taken_store, self_taken_code, self_taken_code_start,
+        self_taken_code_expires, self_taken_code_checktime,
+        assigned_stores, stockup_status, shipping_status,
+        prescription_orders, lng, lat,
+        store_user_id, store_shipping_clerk_id, recommend_user_id,
+        cashier_id, stockup_user_id, user_paying,
+        trades_del, trades_rank, trades_rank_time,
+        settlement_status, settlement_final_time,
+        create_time, update_time, settlement_type,
+        create_order_assigned_stores, budgetdate,
+        is_payment, account_checking_status)
+        values (#{id,jdbcType=INTEGER}, #{siteId,jdbcType=INTEGER}, #{tradesId,jdbcType=BIGINT},
+        #{sellerId,jdbcType=INTEGER}, #{buyerId,jdbcType=INTEGER}, #{sellerNick,jdbcType=VARCHAR},
+        #{buyerNick,jdbcType=VARCHAR}, #{goodsId,jdbcType=INTEGER}, #{payTime,jdbcType=TIMESTAMP},
+        #{endTime,jdbcType=TIMESTAMP}, #{consignTime,jdbcType=TIMESTAMP}, #{receiverPhone,jdbcType=VARCHAR},
+        #{recevierMobile,jdbcType=VARCHAR}, #{recevierName,jdbcType=VARCHAR}, #{receiverCity,jdbcType=VARCHAR},
+        #{receiverAddress,jdbcType=VARCHAR}, #{receiverZip,jdbcType=VARCHAR}, #{sellerPayNo,jdbcType=VARCHAR},
+        #{sellerPhone,jdbcType=VARCHAR}, #{sellerMobile,jdbcType=VARCHAR}, #{sellerName,jdbcType=VARCHAR},
+        #{tradesStatus,jdbcType=INTEGER}, #{isRefund,jdbcType=SMALLINT}, #{closedResion,jdbcType=INTEGER},
+        #{totalFee,jdbcType=INTEGER}, #{postFee,jdbcType=INTEGER}, #{realPay,jdbcType=INTEGER},
+        #{tradesSplit,jdbcType=INTEGER}, #{platSplit,jdbcType=INTEGER}, #{postStyle,jdbcType=INTEGER},
+        #{deliveryName,jdbcType=VARCHAR}, #{postId,jdbcType=INTEGER}, #{postName,jdbcType=VARCHAR},
+        #{postNumber,jdbcType=VARCHAR}, #{buyerMessage,jdbcType=VARCHAR}, #{sellerMemo,jdbcType=VARCHAR},
+        #{buyerFlag,jdbcType=INTEGER}, #{sellerFlag,jdbcType=INTEGER}, #{delvTime,jdbcType=TIMESTAMP},
+        #{delvDesc,jdbcType=VARCHAR}, #{confirmGoodsTime,jdbcType=TIMESTAMP}, #{buyerPayNo,jdbcType=VARCHAR},
+        #{payStyle,jdbcType=VARCHAR}, #{payNumber,jdbcType=VARCHAR}, #{tradesSource,jdbcType=INTEGER},
+        #{tradesInvoice,jdbcType=INTEGER}, #{invoiceTitle,jdbcType=VARCHAR}, #{tradesStore,jdbcType=INTEGER},
+        #{selfTakenStore,jdbcType=INTEGER}, #{selfTakenCode,jdbcType=CHAR}, #{selfTakenCodeStart,jdbcType=TIMESTAMP},
+        #{selfTakenCodeExpires,jdbcType=TIMESTAMP}, #{selfTakenCodeChecktime,jdbcType=TIMESTAMP},
+        #{assignedStores,jdbcType=INTEGER}, #{stockupStatus,jdbcType=INTEGER}, #{shippingStatus,jdbcType=INTEGER},
+        #{prescriptionOrders,jdbcType=BIT}, #{lng,jdbcType=DOUBLE}, #{lat,jdbcType=DOUBLE},
+        #{storeUserId,jdbcType=INTEGER}, #{storeShippingClerkId,jdbcType=INTEGER}, #{recommendUserId,jdbcType=INTEGER},
+        #{cashierId,jdbcType=INTEGER}, #{stockupUserId,jdbcType=INTEGER}, #{userPaying,jdbcType=TINYINT},
+        #{tradesDel,jdbcType=INTEGER}, #{tradesRank,jdbcType=TINYINT}, #{tradesRankTime,jdbcType=TIMESTAMP},
+        #{settlementStatus,jdbcType=SMALLINT}, #{settlementFinalTime,jdbcType=TIMESTAMP},
+        #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{settlementType,jdbcType=TINYINT},
+        #{createOrderAssignedStores,jdbcType=INTEGER}, #{budgetdate,jdbcType=VARCHAR},
+        #{isPayment,jdbcType=BIT}, #{accountCheckingStatus,jdbcType=BIT})
+    </insert>
+    <insert id="insertSelective" parameterType="com.jk51.model.BTrades">
+        insert into b_trades
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="tradesId != null">
+                trades_id,
+            </if>
+            <if test="sellerId != null">
+                seller_id,
+            </if>
+            <if test="buyerId != null">
+                buyer_id,
+            </if>
+            <if test="sellerNick != null">
+                seller_nick,
+            </if>
+            <if test="buyerNick != null">
+                buyer_nick,
+            </if>
+            <if test="goodsId != null">
+                goods_id,
+            </if>
+            <if test="payTime != null">
+                pay_time,
+            </if>
+            <if test="endTime != null">
+                end_time,
+            </if>
+            <if test="consignTime != null">
+                consign_time,
+            </if>
+            <if test="receiverPhone != null">
+                receiver_phone,
+            </if>
+            <if test="recevierMobile != null">
+                recevier_mobile,
+            </if>
+            <if test="recevierName != null">
+                recevier_name,
+            </if>
+            <if test="receiverCity != null">
+                receiver_city,
+            </if>
+            <if test="receiverAddress != null">
+                receiver_address,
+            </if>
+            <if test="receiverZip != null">
+                receiver_zip,
+            </if>
+            <if test="sellerPayNo != null">
+                seller_pay_no,
+            </if>
+            <if test="sellerPhone != null">
+                seller_phone,
+            </if>
+            <if test="sellerMobile != null">
+                seller_mobile,
+            </if>
+            <if test="sellerName != null">
+                seller_name,
+            </if>
+            <if test="tradesStatus != null">
+                trades_status,
+            </if>
+            <if test="isRefund != null">
+                is_refund,
+            </if>
+            <if test="closedResion != null">
+                closed_resion,
+            </if>
+            <if test="totalFee != null">
+                total_fee,
+            </if>
+            <if test="postFee != null">
+                post_fee,
+            </if>
+            <if test="realPay != null">
+                real_pay,
+            </if>
+            <if test="tradesSplit != null">
+                trades_split,
+            </if>
+            <if test="platSplit != null">
+                plat_split,
+            </if>
+            <if test="postStyle != null">
+                post_style,
+            </if>
+            <if test="deliveryName != null">
+                delivery_name,
+            </if>
+            <if test="postId != null">
+                post_id,
+            </if>
+            <if test="postName != null">
+                post_name,
+            </if>
+            <if test="postNumber != null">
+                post_number,
+            </if>
+            <if test="buyerMessage != null">
+                buyer_message,
+            </if>
+            <if test="sellerMemo != null">
+                seller_memo,
+            </if>
+            <if test="buyerFlag != null">
+                buyer_flag,
+            </if>
+            <if test="sellerFlag != null">
+                seller_flag,
+            </if>
+            <if test="delvTime != null">
+                delv_time,
+            </if>
+            <if test="delvDesc != null">
+                delv_desc,
+            </if>
+            <if test="confirmGoodsTime != null">
+                confirm_goods_time,
+            </if>
+            <if test="buyerPayNo != null">
+                buyer_pay_no,
+            </if>
+            <if test="payStyle != null">
+                pay_style,
+            </if>
+            <if test="payNumber != null">
+                pay_number,
+            </if>
+            <if test="tradesSource != null">
+                trades_source,
+            </if>
+            <if test="tradesInvoice != null">
+                trades_invoice,
+            </if>
+            <if test="invoiceTitle != null">
+                invoice_title,
+            </if>
+            <if test="tradesStore != null">
+                trades_store,
+            </if>
+            <if test="selfTakenStore != null">
+                self_taken_store,
+            </if>
+            <if test="selfTakenCode != null">
+                self_taken_code,
+            </if>
+            <if test="selfTakenCodeStart != null">
+                self_taken_code_start,
+            </if>
+            <if test="selfTakenCodeExpires != null">
+                self_taken_code_expires,
+            </if>
+            <if test="selfTakenCodeChecktime != null">
+                self_taken_code_checktime,
+            </if>
+            <if test="assignedStores != null">
+                assigned_stores,
+            </if>
+            <if test="stockupStatus != null">
+                stockup_status,
+            </if>
+            <if test="shippingStatus != null">
+                shipping_status,
+            </if>
+            <if test="prescriptionOrders != null">
+                prescription_orders,
+            </if>
+            <if test="lng != null">
+                lng,
+            </if>
+            <if test="lat != null">
+                lat,
+            </if>
+            <if test="storeUserId != null">
+                store_user_id,
+            </if>
+            <if test="storeShippingClerkId != null">
+                store_shipping_clerk_id,
+            </if>
+            <if test="recommendUserId != null">
+                recommend_user_id,
+            </if>
+            <if test="cashierId != null">
+                cashier_id,
+            </if>
+            <if test="stockupUserId != null">
+                stockup_user_id,
+            </if>
+            <if test="userPaying != null">
+                user_paying,
+            </if>
+            <if test="tradesDel != null">
+                trades_del,
+            </if>
+            <if test="tradesRank != null">
+                trades_rank,
+            </if>
+            <if test="tradesRankTime != null">
+                trades_rank_time,
+            </if>
+            <if test="settlementStatus != null">
+                settlement_status,
+            </if>
+            <if test="settlementFinalTime != null">
+                settlement_final_time,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="settlementType != null">
+                settlement_type,
+            </if>
+            <if test="createOrderAssignedStores != null">
+                create_order_assigned_stores,
+            </if>
+            <if test="budgetdate != null">
+                budgetdate,
+            </if>
+            <if test="isPayment != null">
+                is_payment,
+            </if>
+            <if test="accountCheckingStatus != null">
+                account_checking_status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="tradesId != null">
+                #{tradesId,jdbcType=BIGINT},
+            </if>
+            <if test="sellerId != null">
+                #{sellerId,jdbcType=INTEGER},
+            </if>
+            <if test="buyerId != null">
+                #{buyerId,jdbcType=INTEGER},
+            </if>
+            <if test="sellerNick != null">
+                #{sellerNick,jdbcType=VARCHAR},
+            </if>
+            <if test="buyerNick != null">
+                #{buyerNick,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsId != null">
+                #{goodsId,jdbcType=INTEGER},
+            </if>
+            <if test="payTime != null">
+                #{payTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+                #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="consignTime != null">
+                #{consignTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="receiverPhone != null">
+                #{receiverPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="recevierMobile != null">
+                #{recevierMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="recevierName != null">
+                #{recevierName,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverCity != null">
+                #{receiverCity,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverAddress != null">
+                #{receiverAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverZip != null">
+                #{receiverZip,jdbcType=VARCHAR},
+            </if>
+            <if test="sellerPayNo != null">
+                #{sellerPayNo,jdbcType=VARCHAR},
+            </if>
+            <if test="sellerPhone != null">
+                #{sellerPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="sellerMobile != null">
+                #{sellerMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="sellerName != null">
+                #{sellerName,jdbcType=VARCHAR},
+            </if>
+            <if test="tradesStatus != null">
+                #{tradesStatus,jdbcType=INTEGER},
+            </if>
+            <if test="isRefund != null">
+                #{isRefund,jdbcType=SMALLINT},
+            </if>
+            <if test="closedResion != null">
+                #{closedResion,jdbcType=INTEGER},
+            </if>
+            <if test="totalFee != null">
+                #{totalFee,jdbcType=INTEGER},
+            </if>
+            <if test="postFee != null">
+                #{postFee,jdbcType=INTEGER},
+            </if>
+            <if test="realPay != null">
+                #{realPay,jdbcType=INTEGER},
+            </if>
+            <if test="tradesSplit != null">
+                #{tradesSplit,jdbcType=INTEGER},
+            </if>
+            <if test="platSplit != null">
+                #{platSplit,jdbcType=INTEGER},
+            </if>
+            <if test="postStyle != null">
+                #{postStyle,jdbcType=INTEGER},
+            </if>
+            <if test="deliveryName != null">
+                #{deliveryName,jdbcType=VARCHAR},
+            </if>
+            <if test="postId != null">
+                #{postId,jdbcType=INTEGER},
+            </if>
+            <if test="postName != null">
+                #{postName,jdbcType=VARCHAR},
+            </if>
+            <if test="postNumber != null">
+                #{postNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="buyerMessage != null">
+                #{buyerMessage,jdbcType=VARCHAR},
+            </if>
+            <if test="sellerMemo != null">
+                #{sellerMemo,jdbcType=VARCHAR},
+            </if>
+            <if test="buyerFlag != null">
+                #{buyerFlag,jdbcType=INTEGER},
+            </if>
+            <if test="sellerFlag != null">
+                #{sellerFlag,jdbcType=INTEGER},
+            </if>
+            <if test="delvTime != null">
+                #{delvTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="delvDesc != null">
+                #{delvDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="confirmGoodsTime != null">
+                #{confirmGoodsTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="buyerPayNo != null">
+                #{buyerPayNo,jdbcType=VARCHAR},
+            </if>
+            <if test="payStyle != null">
+                #{payStyle,jdbcType=VARCHAR},
+            </if>
+            <if test="payNumber != null">
+                #{payNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="tradesSource != null">
+                #{tradesSource,jdbcType=INTEGER},
+            </if>
+            <if test="tradesInvoice != null">
+                #{tradesInvoice,jdbcType=INTEGER},
+            </if>
+            <if test="invoiceTitle != null">
+                #{invoiceTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="tradesStore != null">
+                #{tradesStore,jdbcType=INTEGER},
+            </if>
+            <if test="selfTakenStore != null">
+                #{selfTakenStore,jdbcType=INTEGER},
+            </if>
+            <if test="selfTakenCode != null">
+                #{selfTakenCode,jdbcType=CHAR},
+            </if>
+            <if test="selfTakenCodeStart != null">
+                #{selfTakenCodeStart,jdbcType=TIMESTAMP},
+            </if>
+            <if test="selfTakenCodeExpires != null">
+                #{selfTakenCodeExpires,jdbcType=TIMESTAMP},
+            </if>
+            <if test="selfTakenCodeChecktime != null">
+                #{selfTakenCodeChecktime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="assignedStores != null">
+                #{assignedStores,jdbcType=INTEGER},
+            </if>
+            <if test="stockupStatus != null">
+                #{stockupStatus,jdbcType=INTEGER},
+            </if>
+            <if test="shippingStatus != null">
+                #{shippingStatus,jdbcType=INTEGER},
+            </if>
+            <if test="prescriptionOrders != null">
+                #{prescriptionOrders,jdbcType=BIT},
+            </if>
+            <if test="lng != null">
+                #{lng,jdbcType=DOUBLE},
+            </if>
+            <if test="lat != null">
+                #{lat,jdbcType=DOUBLE},
+            </if>
+            <if test="storeUserId != null">
+                #{storeUserId,jdbcType=INTEGER},
+            </if>
+            <if test="storeShippingClerkId != null">
+                #{storeShippingClerkId,jdbcType=INTEGER},
+            </if>
+            <if test="recommendUserId != null">
+                #{recommendUserId,jdbcType=INTEGER},
+            </if>
+            <if test="cashierId != null">
+                #{cashierId,jdbcType=INTEGER},
+            </if>
+            <if test="stockupUserId != null">
+                #{stockupUserId,jdbcType=INTEGER},
+            </if>
+            <if test="userPaying != null">
+                #{userPaying,jdbcType=TINYINT},
+            </if>
+            <if test="tradesDel != null">
+                #{tradesDel,jdbcType=INTEGER},
+            </if>
+            <if test="tradesRank != null">
+                #{tradesRank,jdbcType=TINYINT},
+            </if>
+            <if test="tradesRankTime != null">
+                #{tradesRankTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="settlementStatus != null">
+                #{settlementStatus,jdbcType=SMALLINT},
+            </if>
+            <if test="settlementFinalTime != null">
+                #{settlementFinalTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="settlementType != null">
+                #{settlementType,jdbcType=TINYINT},
+            </if>
+            <if test="createOrderAssignedStores != null">
+                #{createOrderAssignedStores,jdbcType=INTEGER},
+            </if>
+            <if test="budgetdate != null">
+                #{budgetdate,jdbcType=VARCHAR},
+            </if>
+            <if test="isPayment != null">
+                #{isPayment,jdbcType=BIT},
+            </if>
+            <if test="accountCheckingStatus != null">
+                #{accountCheckingStatus,jdbcType=BIT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.BTrades">
+        update b_trades
+        <set>
+            <if test="tradesId != null">
+                trades_id = #{tradesId,jdbcType=BIGINT},
+            </if>
+            <if test="sellerId != null">
+                seller_id = #{sellerId,jdbcType=INTEGER},
+            </if>
+            <if test="buyerId != null">
+                buyer_id = #{buyerId,jdbcType=INTEGER},
+            </if>
+            <if test="sellerNick != null">
+                seller_nick = #{sellerNick,jdbcType=VARCHAR},
+            </if>
+            <if test="buyerNick != null">
+                buyer_nick = #{buyerNick,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsId != null">
+                goods_id = #{goodsId,jdbcType=INTEGER},
+            </if>
+            <if test="payTime != null">
+                pay_time = #{payTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="consignTime != null">
+                consign_time = #{consignTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="receiverPhone != null">
+                receiver_phone = #{receiverPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="recevierMobile != null">
+                recevier_mobile = #{recevierMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="recevierName != null">
+                recevier_name = #{recevierName,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverCity != null">
+                receiver_city = #{receiverCity,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverAddress != null">
+                receiver_address = #{receiverAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverZip != null">
+                receiver_zip = #{receiverZip,jdbcType=VARCHAR},
+            </if>
+            <if test="sellerPayNo != null">
+                seller_pay_no = #{sellerPayNo,jdbcType=VARCHAR},
+            </if>
+            <if test="sellerPhone != null">
+                seller_phone = #{sellerPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="sellerMobile != null">
+                seller_mobile = #{sellerMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="sellerName != null">
+                seller_name = #{sellerName,jdbcType=VARCHAR},
+            </if>
+            <if test="tradesStatus != null">
+                trades_status = #{tradesStatus,jdbcType=INTEGER},
+            </if>
+            <if test="isRefund != null">
+                is_refund = #{isRefund,jdbcType=SMALLINT},
+            </if>
+            <if test="closedResion != null">
+                closed_resion = #{closedResion,jdbcType=INTEGER},
+            </if>
+            <if test="totalFee != null">
+                total_fee = #{totalFee,jdbcType=INTEGER},
+            </if>
+            <if test="postFee != null">
+                post_fee = #{postFee,jdbcType=INTEGER},
+            </if>
+            <if test="realPay != null">
+                real_pay = #{realPay,jdbcType=INTEGER},
+            </if>
+            <if test="tradesSplit != null">
+                trades_split = #{tradesSplit,jdbcType=INTEGER},
+            </if>
+            <if test="platSplit != null">
+                plat_split = #{platSplit,jdbcType=INTEGER},
+            </if>
+            <if test="postStyle != null">
+                post_style = #{postStyle,jdbcType=INTEGER},
+            </if>
+            <if test="deliveryName != null">
+                delivery_name = #{deliveryName,jdbcType=VARCHAR},
+            </if>
+            <if test="postId != null">
+                post_id = #{postId,jdbcType=INTEGER},
+            </if>
+            <if test="postName != null">
+                post_name = #{postName,jdbcType=VARCHAR},
+            </if>
+            <if test="postNumber != null">
+                post_number = #{postNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="buyerMessage != null">
+                buyer_message = #{buyerMessage,jdbcType=VARCHAR},
+            </if>
+            <if test="sellerMemo != null">
+                seller_memo = #{sellerMemo,jdbcType=VARCHAR},
+            </if>
+            <if test="buyerFlag != null">
+                buyer_flag = #{buyerFlag,jdbcType=INTEGER},
+            </if>
+            <if test="sellerFlag != null">
+                seller_flag = #{sellerFlag,jdbcType=INTEGER},
+            </if>
+            <if test="delvTime != null">
+                delv_time = #{delvTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="delvDesc != null">
+                delv_desc = #{delvDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="confirmGoodsTime != null">
+                confirm_goods_time = #{confirmGoodsTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="buyerPayNo != null">
+                buyer_pay_no = #{buyerPayNo,jdbcType=VARCHAR},
+            </if>
+            <if test="payStyle != null">
+                pay_style = #{payStyle,jdbcType=VARCHAR},
+            </if>
+            <if test="payNumber != null">
+                pay_number = #{payNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="tradesSource != null">
+                trades_source = #{tradesSource,jdbcType=INTEGER},
+            </if>
+            <if test="tradesInvoice != null">
+                trades_invoice = #{tradesInvoice,jdbcType=INTEGER},
+            </if>
+            <if test="invoiceTitle != null">
+                invoice_title = #{invoiceTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="tradesStore != null">
+                trades_store = #{tradesStore,jdbcType=INTEGER},
+            </if>
+            <if test="selfTakenStore != null">
+                self_taken_store = #{selfTakenStore,jdbcType=INTEGER},
+            </if>
+            <if test="selfTakenCode != null">
+                self_taken_code = #{selfTakenCode,jdbcType=CHAR},
+            </if>
+            <if test="selfTakenCodeStart != null">
+                self_taken_code_start = #{selfTakenCodeStart,jdbcType=TIMESTAMP},
+            </if>
+            <if test="selfTakenCodeExpires != null">
+                self_taken_code_expires = #{selfTakenCodeExpires,jdbcType=TIMESTAMP},
+            </if>
+            <if test="selfTakenCodeChecktime != null">
+                self_taken_code_checktime = #{selfTakenCodeChecktime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="assignedStores != null">
+                assigned_stores = #{assignedStores,jdbcType=INTEGER},
+            </if>
+            <if test="stockupStatus != null">
+                stockup_status = #{stockupStatus,jdbcType=INTEGER},
+            </if>
+            <if test="shippingStatus != null">
+                shipping_status = #{shippingStatus,jdbcType=INTEGER},
+            </if>
+            <if test="prescriptionOrders != null">
+                prescription_orders = #{prescriptionOrders,jdbcType=BIT},
+            </if>
+            <if test="lng != null">
+                lng = #{lng,jdbcType=DOUBLE},
+            </if>
+            <if test="lat != null">
+                lat = #{lat,jdbcType=DOUBLE},
+            </if>
+            <if test="storeUserId != null">
+                store_user_id = #{storeUserId,jdbcType=INTEGER},
+            </if>
+            <if test="storeShippingClerkId != null">
+                store_shipping_clerk_id = #{storeShippingClerkId,jdbcType=INTEGER},
+            </if>
+            <if test="recommendUserId != null">
+                recommend_user_id = #{recommendUserId,jdbcType=INTEGER},
+            </if>
+            <if test="cashierId != null">
+                cashier_id = #{cashierId,jdbcType=INTEGER},
+            </if>
+            <if test="stockupUserId != null">
+                stockup_user_id = #{stockupUserId,jdbcType=INTEGER},
+            </if>
+            <if test="userPaying != null">
+                user_paying = #{userPaying,jdbcType=TINYINT},
+            </if>
+            <if test="tradesDel != null">
+                trades_del = #{tradesDel,jdbcType=INTEGER},
+            </if>
+            <if test="tradesRank != null">
+                trades_rank = #{tradesRank,jdbcType=TINYINT},
+            </if>
+            <if test="tradesRankTime != null">
+                trades_rank_time = #{tradesRankTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="settlementStatus != null">
+                settlement_status = #{settlementStatus,jdbcType=SMALLINT},
+            </if>
+            <if test="settlementFinalTime != null">
+                settlement_final_time = #{settlementFinalTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="settlementType != null">
+                settlement_type = #{settlementType,jdbcType=TINYINT},
+            </if>
+            <if test="createOrderAssignedStores != null">
+                create_order_assigned_stores = #{createOrderAssignedStores,jdbcType=INTEGER},
+            </if>
+            <if test="budgetdate != null">
+                budgetdate = #{budgetdate,jdbcType=VARCHAR},
+            </if>
+            <if test="isPayment != null">
+                is_payment = #{isPayment,jdbcType=BIT},
+            </if>
+            <if test="accountCheckingStatus != null">
+                account_checking_status = #{accountCheckingStatus,jdbcType=BIT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+        and site_id = #{siteId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.jk51.model.BTrades">
+        update b_trades
+        set trades_id = #{tradesId,jdbcType=BIGINT},
+        seller_id = #{sellerId,jdbcType=INTEGER},
+        buyer_id = #{buyerId,jdbcType=INTEGER},
+        seller_nick = #{sellerNick,jdbcType=VARCHAR},
+        buyer_nick = #{buyerNick,jdbcType=VARCHAR},
+        goods_id = #{goodsId,jdbcType=INTEGER},
+        pay_time = #{payTime,jdbcType=TIMESTAMP},
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+        consign_time = #{consignTime,jdbcType=TIMESTAMP},
+        receiver_phone = #{receiverPhone,jdbcType=VARCHAR},
+        recevier_mobile = #{recevierMobile,jdbcType=VARCHAR},
+        recevier_name = #{recevierName,jdbcType=VARCHAR},
+        receiver_city = #{receiverCity,jdbcType=VARCHAR},
+        receiver_address = #{receiverAddress,jdbcType=VARCHAR},
+        receiver_zip = #{receiverZip,jdbcType=VARCHAR},
+        seller_pay_no = #{sellerPayNo,jdbcType=VARCHAR},
+        seller_phone = #{sellerPhone,jdbcType=VARCHAR},
+        seller_mobile = #{sellerMobile,jdbcType=VARCHAR},
+        seller_name = #{sellerName,jdbcType=VARCHAR},
+        trades_status = #{tradesStatus,jdbcType=INTEGER},
+        is_refund = #{isRefund,jdbcType=SMALLINT},
+        closed_resion = #{closedResion,jdbcType=INTEGER},
+        total_fee = #{totalFee,jdbcType=INTEGER},
+        post_fee = #{postFee,jdbcType=INTEGER},
+        real_pay = #{realPay,jdbcType=INTEGER},
+        trades_split = #{tradesSplit,jdbcType=INTEGER},
+        plat_split = #{platSplit,jdbcType=INTEGER},
+        post_style = #{postStyle,jdbcType=INTEGER},
+        delivery_name = #{deliveryName,jdbcType=VARCHAR},
+        post_id = #{postId,jdbcType=INTEGER},
+        post_name = #{postName,jdbcType=VARCHAR},
+        post_number = #{postNumber,jdbcType=VARCHAR},
+        buyer_message = #{buyerMessage,jdbcType=VARCHAR},
+        seller_memo = #{sellerMemo,jdbcType=VARCHAR},
+        buyer_flag = #{buyerFlag,jdbcType=INTEGER},
+        seller_flag = #{sellerFlag,jdbcType=INTEGER},
+        delv_time = #{delvTime,jdbcType=TIMESTAMP},
+        delv_desc = #{delvDesc,jdbcType=VARCHAR},
+        confirm_goods_time = #{confirmGoodsTime,jdbcType=TIMESTAMP},
+        buyer_pay_no = #{buyerPayNo,jdbcType=VARCHAR},
+        pay_style = #{payStyle,jdbcType=VARCHAR},
+        pay_number = #{payNumber,jdbcType=VARCHAR},
+        trades_source = #{tradesSource,jdbcType=INTEGER},
+        trades_invoice = #{tradesInvoice,jdbcType=INTEGER},
+        invoice_title = #{invoiceTitle,jdbcType=VARCHAR},
+        trades_store = #{tradesStore,jdbcType=INTEGER},
+        self_taken_store = #{selfTakenStore,jdbcType=INTEGER},
+        self_taken_code = #{selfTakenCode,jdbcType=CHAR},
+        self_taken_code_start = #{selfTakenCodeStart,jdbcType=TIMESTAMP},
+        self_taken_code_expires = #{selfTakenCodeExpires,jdbcType=TIMESTAMP},
+        self_taken_code_checktime = #{selfTakenCodeChecktime,jdbcType=TIMESTAMP},
+        assigned_stores = #{assignedStores,jdbcType=INTEGER},
+        stockup_status = #{stockupStatus,jdbcType=INTEGER},
+        shipping_status = #{shippingStatus,jdbcType=INTEGER},
+        prescription_orders = #{prescriptionOrders,jdbcType=BIT},
+        lng = #{lng,jdbcType=DOUBLE},
+        lat = #{lat,jdbcType=DOUBLE},
+        store_user_id = #{storeUserId,jdbcType=INTEGER},
+        store_shipping_clerk_id = #{storeShippingClerkId,jdbcType=INTEGER},
+        recommend_user_id = #{recommendUserId,jdbcType=INTEGER},
+        cashier_id = #{cashierId,jdbcType=INTEGER},
+        stockup_user_id = #{stockupUserId,jdbcType=INTEGER},
+        user_paying = #{userPaying,jdbcType=TINYINT},
+        trades_del = #{tradesDel,jdbcType=INTEGER},
+        trades_rank = #{tradesRank,jdbcType=TINYINT},
+        trades_rank_time = #{tradesRankTime,jdbcType=TIMESTAMP},
+        settlement_status = #{settlementStatus,jdbcType=SMALLINT},
+        settlement_final_time = #{settlementFinalTime,jdbcType=TIMESTAMP},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+        settlement_type = #{settlementType,jdbcType=TINYINT},
+        create_order_assigned_stores = #{createOrderAssignedStores,jdbcType=INTEGER},
+        budgetdate = #{budgetdate,jdbcType=VARCHAR},
+        is_payment = #{isPayment,jdbcType=BIT},
+        account_checking_status = #{accountCheckingStatus,jdbcType=BIT}
+        where id = #{id,jdbcType=INTEGER}
+        and site_id = #{siteId,jdbcType=INTEGER}
+    </update>
+    <select id="getTradesOrdersInfo" resultType="java.util.Map">
+        SELECT
+        o.order_id,o.goods_id,o.goods_title,o.goods_price,o.goods_num,o.goods_gifts,o.approval_number,o.specif_cation,o.goods_category,o.trades_id,o.goods_imgurl,o.goods_code,o.yb_goods_id,o.goods_batch_no,o.trades_snapshot,
+        g.goods_status,g.goods_code,g.drug_category,
+        b.barnd_name as goods_brand
+        from
+        b_orders as o LEFT JOIN b_goods as g on o.goods_id = g.goods_id and o.site_id = g.site_id
+        LEFT JOIN b_barnd as b on g.barnd_id = b.barnd_id and g.site_id = b.site_id
+        where
+        o.trades_id = #{tradesId}
+        AND
+        o.site_id = #{siteId}
+    </select>
+    <select id="queryTradesByBuyId" resultType="int">
+        SELECT count(0) FROM b_trades WHERE buyer_id=#{buyer_id} limit 1
+    </select>
+
+    <select id="queryCountByBuyId" resultType="int">
+        SELECT count(1) FROM b_trades
+        WHERE buyer_id=#{buyer_id} AND  distributor_id > 0  AND site_id = #{site_id}
+        AND trades_status IN (120,130,140,150,200,210,900,220,230,800)
+    </select>
+
+    <select id="todaySalesByStores" resultType="java.lang.Integer">
+        SELECT SUM(tradesSum.num) FROM
+        (
+            SELECT COUNT(*) AS num FROM b_trades WHERE post_style=150 AND trades_status=130 AND to_days(consign_time)=to_days(CURRENT_TIMESTAMP()) AND site_id=#{siteId} AND assigned_stores=#{storeId}
+            UNION ALL
+            SELECT COUNT(*) AS num FROM b_trades WHERE post_style=150 AND trades_status IN(220,230,800) AND to_days(confirm_goods_time)=to_days(CURRENT_TIMESTAMP()) AND site_id=#{siteId} AND assigned_stores=#{storeId}
+            UNION ALL
+            SELECT COUNT(*) AS num FROM b_trades WHERE post_style=160 AND trades_status=210 AND to_days(confirm_goods_time)=to_days(CURRENT_TIMESTAMP()) AND site_id=#{siteId} AND assigned_stores=#{storeId}
+            UNION ALL
+            SELECT COUNT(*) AS num FROM b_trades WHERE post_style=170 AND trades_status=210 AND to_days(confirm_goods_time)=to_days(CURRENT_TIMESTAMP()) AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        ) tradesSum
+    </select>
+
+    <select id="todaySalesRealPayByStores" resultType="java.lang.Integer">
+        SELECT SUM(tradesSum.num) FROM
+        (
+        SELECT SUM(real_pay) AS num FROM b_trades WHERE post_style=150 AND trades_status=130 AND to_days(consign_time)=to_days(CURRENT_TIMESTAMP()) AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        UNION ALL
+        SELECT SUM(real_pay) AS num FROM b_trades WHERE post_style=150 AND trades_status IN(220,230,800) AND to_days(confirm_goods_time)=to_days(CURRENT_TIMESTAMP()) AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        UNION ALL
+        SELECT SUM(real_pay) AS num FROM b_trades WHERE post_style=160 AND trades_status=210 AND to_days(confirm_goods_time)=to_days(CURRENT_TIMESTAMP()) AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        UNION ALL
+        SELECT SUM(real_pay) AS num FROM b_trades WHERE post_style=170 AND trades_status=210 AND to_days(confirm_goods_time)=to_days(CURRENT_TIMESTAMP()) AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        ) tradesSum
+    </select>
+
+    <select id="monthSalesByStores" resultType="java.lang.Integer">
+        SELECT SUM(tradesSum.num) FROM
+        (
+        SELECT COUNT(*) AS num FROM b_trades WHERE post_style=150 AND trades_status=130 AND left(consign_time,7)=left(CURDATE(),7) AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        UNION ALL
+        SELECT COUNT(*) AS num FROM b_trades WHERE post_style=150 AND trades_status IN(220,230,800) AND left(confirm_goods_time,7)=left(CURDATE(),7) AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        UNION ALL
+        SELECT COUNT(*) AS num FROM b_trades WHERE post_style=160 AND trades_status=210 AND left(confirm_goods_time,7)=left(CURDATE(),7) AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        UNION ALL
+        SELECT COUNT(*) AS num FROM b_trades WHERE post_style=170 AND trades_status=210 AND left(confirm_goods_time,7)=left(CURDATE(),7) AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        ) tradesSum
+    </select>
+
+    <select id="monthSalesRealPayByStores" resultType="java.lang.Integer">
+        SELECT SUM(tradesSum.num) FROM
+        (
+        SELECT SUM(real_pay) AS num FROM b_trades WHERE post_style=150 AND trades_status=130 AND left(consign_time,7)=left(CURDATE(),7) AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        UNION ALL
+        SELECT SUM(real_pay) AS num FROM b_trades WHERE post_style=150 AND trades_status IN(220,230,800) AND left(confirm_goods_time,7)=left(CURDATE(),7) AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        UNION ALL
+        SELECT SUM(real_pay) AS num FROM b_trades WHERE post_style=160 AND trades_status=210 AND left(confirm_goods_time,7)=left(CURDATE(),7) AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        UNION ALL
+        SELECT SUM(real_pay) AS num FROM b_trades WHERE post_style=170 AND trades_status=210 AND left(confirm_goods_time,7)=left(CURDATE(),7) AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        ) tradesSum
+    </select>
+
+    <select id="salesByStores" resultType="java.lang.Integer">
+        SELECT SUM(tradesSum.num) FROM
+        (
+        SELECT COUNT(*) AS num FROM b_trades WHERE post_style=150 AND trades_status=130 AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        UNION ALL
+        SELECT COUNT(*) AS num FROM b_trades WHERE post_style=150 AND trades_status IN(220,230,800) AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        UNION ALL
+        SELECT COUNT(*) AS num FROM b_trades WHERE post_style=160 AND trades_status=210 AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        UNION ALL
+        SELECT COUNT(*) AS num FROM b_trades WHERE post_style=170 AND trades_status=210 AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        ) tradesSum
+    </select>
+
+    <select id="salesRealPayByStores" resultType="java.lang.Integer">
+        SELECT SUM(tradesSum.num) FROM
+        (
+        SELECT SUM(real_pay) AS num FROM b_trades WHERE post_style=150 AND trades_status=130 AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        UNION ALL
+        SELECT SUM(real_pay) AS num FROM b_trades WHERE post_style=150 AND trades_status IN(220,230,800) AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        UNION ALL
+        SELECT SUM(real_pay) AS num FROM b_trades WHERE post_style=160 AND trades_status=210 AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        UNION ALL
+        SELECT SUM(real_pay) AS num FROM b_trades WHERE post_style=170 AND trades_status=210 AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        ) tradesSum
+    </select>
+
+    <select id="everydayMonthSalesByStores" resultType="java.util.Map">
+        SELECT trades.date AS `key`, COUNT(*) AS `value` FROM
+        (
+            SELECT trades_id, consign_time, confirm_goods_time, date(consign_time) AS date FROM b_trades WHERE post_style=150 AND trades_status=130 AND left(consign_time,7)=#{month} AND site_id=#{siteId} AND assigned_stores=#{storeId}
+            UNION ALL
+            SELECT trades_id, consign_time, confirm_goods_time, date(confirm_goods_time) AS date FROM b_trades WHERE post_style=150 AND trades_status IN(220,230,800) AND left(confirm_goods_time,7)=#{month} AND site_id=#{siteId} AND assigned_stores=#{storeId}
+            UNION ALL
+            SELECT trades_id, consign_time, confirm_goods_time, date(confirm_goods_time) AS date FROM b_trades WHERE post_style=160 AND trades_status=210 AND left(confirm_goods_time,7)=#{month} AND site_id=#{siteId} AND assigned_stores=#{storeId}
+            UNION ALL
+            SELECT trades_id, consign_time, confirm_goods_time, date(confirm_goods_time) AS date FROM b_trades WHERE post_style=170 AND trades_status=210 AND left(confirm_goods_time,7)=#{month} AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        ) trades GROUP BY trades.date ORDER BY trades.date
+    </select>
+
+    <select id="findBTradesListByDate" resultMap="BaseResultMap">
+        SELECT * FROM b_trades WHERE post_style=150 AND trades_status=130 AND date(consign_time)=#{date} AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        UNION ALL
+        SELECT * FROM b_trades WHERE post_style=150 AND trades_status IN(220,230,800) AND date(confirm_goods_time)=#{date} AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        UNION ALL
+        SELECT * FROM b_trades WHERE post_style=160 AND trades_status=210 AND date(confirm_goods_time)=#{date} AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        UNION ALL
+        SELECT * FROM b_trades WHERE post_style=170 AND trades_status=210 AND date(confirm_goods_time)=#{date} AND site_id=#{siteId} AND assigned_stores=#{storeId}
+    </select>
+
+
+    <select id="todaySalesByStoresClerk" resultType="java.lang.Integer">
+        SELECT SUM(tradesSum.num) FROM
+        (
+        SELECT COUNT(*) AS num FROM b_trades WHERE post_style=150 AND trades_status=130
+        <if test='flag=="date"'>
+            AND to_days(consign_time)=to_days(CURRENT_TIMESTAMP())
+        </if>
+        <if test='flag=="month"'>
+            AND left(consign_time,7)=left(CURDATE(),7)
+        </if>
+        AND site_id = #{siteId}
+        <if test="storeId != null">
+            AND assigned_stores = #{storeId}
+        </if>
+        <if test="storeUserId != null">
+            AND store_user_id = #{storeUserId}
+        </if>
+        <if test="storeShippingClerkId != null">
+            AND store_shipping_clerk_id = #{storeShippingClerkId}
+        </if>
+
+        UNION ALL
+
+        SELECT COUNT(*) AS num FROM b_trades WHERE post_style=150 AND trades_status IN(220,230,800)
+        <if test='flag=="date"'>
+            AND to_days(confirm_goods_time)=to_days(CURRENT_TIMESTAMP())
+        </if>
+        <if test='flag=="month"'>
+            AND left(confirm_goods_time,7)=left(CURDATE(),7)
+        </if>
+        AND site_id = #{siteId}
+        <if test="storeId != null">
+            AND assigned_stores = #{storeId}
+        </if>
+        <if test="storeUserId != null">
+            AND store_user_id = #{storeUserId}
+        </if>
+        <if test="storeShippingClerkId != null">
+            AND store_shipping_clerk_id = #{storeShippingClerkId}
+        </if>
+
+        UNION ALL
+
+        SELECT COUNT(*) AS num FROM b_trades WHERE post_style=160 AND trades_status=210
+        <if test='flag=="date"'>
+            AND to_days(confirm_goods_time)=to_days(CURRENT_TIMESTAMP())
+        </if>
+        <if test='flag=="month"'>
+            AND left(confirm_goods_time,7)=left(CURDATE(),7)
+        </if>
+        AND site_id = #{siteId}
+        <if test="storeId != null">
+            AND assigned_stores = #{storeId}
+        </if>
+        <if test="storeUserId != null">
+            AND store_user_id = #{storeUserId}
+        </if>
+
+        UNION ALL
+
+        SELECT COUNT(*) AS num FROM b_trades WHERE post_style=170 AND trades_status=210
+        <if test='flag=="date"'>
+            AND to_days(confirm_goods_time)=to_days(CURRENT_TIMESTAMP())
+        </if>
+        <if test='flag=="month"'>
+            AND left(confirm_goods_time,7)=left(CURDATE(),7)
+        </if>
+        AND site_id = #{siteId}
+        <if test="storeId != null">
+            AND assigned_stores = #{storeId}
+        </if>
+        <if test="storeUserId != null">
+            AND store_user_id = #{storeUserId}
+        </if>
+        ) tradesSum
+    </select>
+
+    <select id="todaySalesRealPayByStoresClerk" resultType="java.lang.Integer">
+        SELECT SUM(tradesSum.num) FROM
+        (
+        SELECT SUM(real_pay) AS num FROM b_trades WHERE post_style=150 AND trades_status=130
+        <if test='flag=="date"'>
+            AND to_days(consign_time)=to_days(CURRENT_TIMESTAMP())
+        </if>
+        <if test='flag=="month"'>
+            AND left(consign_time,7)=left(CURDATE(),7)
+        </if>
+        AND site_id = #{siteId}
+        <if test="storeId != null">
+            AND assigned_stores = #{storeId}
+        </if>
+        <if test="storeUserId != null">
+            AND store_user_id = #{storeUserId}
+        </if>
+        <if test="storeShippingClerkId != null">
+            AND store_shipping_clerk_id = #{storeShippingClerkId}
+        </if>
+
+        UNION ALL
+
+        SELECT SUM(real_pay) AS num FROM b_trades WHERE post_style=150 AND trades_status IN(220,230,800)
+        <if test='flag=="date"'>
+            AND to_days(confirm_goods_time)=to_days(CURRENT_TIMESTAMP())
+        </if>
+        <if test='flag=="month"'>
+            AND left(confirm_goods_time,7)=left(CURDATE(),7)
+        </if>
+        AND site_id = #{siteId}
+        <if test="storeId != null">
+            AND assigned_stores = #{storeId}
+        </if>
+        <if test="storeUserId != null">
+            AND store_user_id = #{storeUserId}
+        </if>
+        <if test="storeShippingClerkId != null">
+            AND store_shipping_clerk_id = #{storeShippingClerkId}
+        </if>
+
+        UNION ALL
+
+        SELECT SUM(real_pay) AS num FROM b_trades WHERE post_style=160 AND trades_status=210
+        <if test='flag=="date"'>
+            AND to_days(confirm_goods_time)=to_days(CURRENT_TIMESTAMP())
+        </if>
+        <if test='flag=="month"'>
+            AND left(confirm_goods_time,7)=left(CURDATE(),7)
+        </if>
+        AND site_id = #{siteId}
+        <if test="storeId != null">
+            AND assigned_stores = #{storeId}
+        </if>
+        <if test="storeUserId != null">
+            AND store_user_id = #{storeUserId}
+        </if>
+
+        UNION ALL
+
+        SELECT SUM(real_pay) AS num FROM b_trades WHERE post_style=170 AND trades_status=210
+        <if test='flag=="date"'>
+            AND to_days(confirm_goods_time)=to_days(CURRENT_TIMESTAMP())
+        </if>
+        <if test='flag=="month"'>
+            AND left(confirm_goods_time,7)=left(CURDATE(),7)
+        </if>
+        AND site_id = #{siteId}
+        <if test="storeId != null">
+            AND assigned_stores = #{storeId}
+        </if>
+        <if test="storeUserId != null">
+            AND store_user_id = #{storeUserId}
+        </if>
+        ) tradesSum
+    </select>
+
+    <select id="everydayMonthSalesByStoresClerk" resultType="java.util.Map">
+        SELECT trades.date AS `key`, COUNT(*) AS `value` FROM
+        (
+        SELECT trades_id, consign_time, confirm_goods_time, date(consign_time) AS date FROM b_trades WHERE
+        post_style=150 AND trades_status=130
+        AND left(consign_time,7) = #{month} AND site_id = #{siteId}
+        <if test="storeId != null">
+            AND assigned_stores = #{storeId}
+        </if>
+        <if test="storeUserId != null">
+            AND store_user_id = #{storeUserId}
+        </if>
+        <if test="storeShippingClerkId != null">
+            AND store_shipping_clerk_id = #{storeShippingClerkId}
+        </if>
+
+        UNION ALL
+
+        SELECT trades_id, consign_time, confirm_goods_time, date(confirm_goods_time) AS date FROM b_trades WHERE
+        post_style=150 AND trades_status IN(220,230,800)
+        AND left(confirm_goods_time,7) = #{month} AND site_id = #{siteId}
+        <if test="storeId != null">
+            AND assigned_stores = #{storeId}
+        </if>
+        <if test="storeUserId != null">
+            AND store_user_id = #{storeUserId}
+        </if>
+        <if test="storeShippingClerkId != null">
+            AND store_shipping_clerk_id = #{storeShippingClerkId}
+        </if>
+
+        UNION ALL
+
+        SELECT trades_id, consign_time, confirm_goods_time, date(confirm_goods_time) AS date FROM b_trades WHERE
+        post_style=160 AND trades_status=210
+        AND left(confirm_goods_time,7) = #{month} AND site_id = #{siteId}
+        <if test="storeId != null">
+            AND assigned_stores = #{storeId}
+        </if>
+        <if test="storeUserId != null">
+            AND store_user_id = #{storeUserId}
+        </if>
+
+        UNION ALL
+
+        SELECT trades_id, consign_time, confirm_goods_time, date(confirm_goods_time) AS date FROM b_trades WHERE
+        post_style=170 AND trades_status=210
+        AND left(confirm_goods_time,7) = #{month} AND site_id = #{siteId}
+        <if test="storeId != null">
+            AND assigned_stores = #{storeId}
+        </if>
+        <if test="storeUserId != null">
+            AND store_user_id = #{storeUserId}
+        </if>
+
+        ) trades GROUP BY trades.date ORDER BY trades.date
+    </select>
+
+    <select id="findBTradesListByDateClerk" resultMap="BaseResultMap">
+        SELECT * FROM b_trades WHERE post_style=150 AND trades_status=130
+        AND date(consign_time) = #{date} AND site_id = #{siteId}
+        <if test="storeId != null">
+            AND assigned_stores = #{storeId}
+        </if>
+        <if test="storeUserId != null">
+            AND store_user_id = #{storeUserId}
+        </if>
+        <if test="storeShippingClerkId != null">
+            AND store_shipping_clerk_id = #{storeShippingClerkId}
+        </if>
+
+        UNION ALL
+
+        SELECT * FROM b_trades WHERE post_style=150 AND trades_status IN(220,230,800)
+        AND date(confirm_goods_time) = #{date} AND site_id = #{siteId}
+        <if test="storeId != null">
+            AND assigned_stores = #{storeId}
+        </if>
+        <if test="storeUserId != null">
+            AND store_user_id = #{storeUserId}
+        </if>
+        <if test="storeShippingClerkId != null">
+            AND store_shipping_clerk_id = #{storeShippingClerkId}
+        </if>
+
+        UNION ALL
+
+        SELECT * FROM b_trades WHERE post_style=160 AND trades_status=210
+        AND date(confirm_goods_time) = #{date} AND site_id = #{siteId}
+        <if test="storeId != null">
+            AND assigned_stores = #{storeId}
+        </if>
+        <if test="storeUserId != null">
+            AND store_user_id = #{storeUserId}
+        </if>
+
+        UNION ALL
+
+        SELECT * FROM b_trades WHERE post_style=170 AND trades_status=210
+        AND date(confirm_goods_time) = #{date} AND site_id = #{siteId}
+        <if test="storeId != null">
+            AND assigned_stores = #{storeId}
+        </if>
+        <if test="storeUserId != null">
+            AND store_user_id = #{storeUserId}
+        </if>
+    </select>
+
+    <resultMap id="satMemberTrades" type="com.jk51.modules.im.service.iMRecode.response.StatMemberTrades">
+        <result column="totalNum" property="totalNum" javaType="java.lang.Integer"/>
+        <result column="totalFee" property="totalFee" javaType="java.lang.String"/>
+        <result column="avgFee" property="avgFee" javaType="java.lang.String"/>
+        <result column="maxTime" property="maxTime" javaType="java.lang.String"/>
+    </resultMap>
+    <select id="statMemberTrades" resultMap="satMemberTrades">
+        SELECT IFNULL(date_format(max(create_time),'%Y/%m/%d'),"无") maxTime,count(1) totalNum ,IF(count(1)!=0,sum(total_fee)/100,0) totalFee, IF(count(1)!=0,avg(total_fee)/100,0) avgFee
+        FROM b_trades
+        WHERE site_id = #{siteId} AND buyer_id = #{buyerId} AND deal_finish_status = 1 and (is_refund = 0 or is_refund = 110) and is_payment = 1
+    </select>
+
+    <select id="todayTradesNumByIsPay" resultType="java.lang.Integer">
+        SELECT COUNT(*) AS num FROM b_trades WHERE is_payment=1 AND to_days(create_time)=to_days(CURRENT_TIMESTAMP())
+        AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        <if test="storeUserId != null">
+            AND store_user_id = #{storeUserId}
+        </if>
+    </select>
+
+    <select id="todayTradesRealPayByIsPay" resultType="java.lang.Integer">
+        SELECT SUM(real_pay) AS num FROM b_trades WHERE is_payment=1 AND
+        to_days(create_time)=to_days(CURRENT_TIMESTAMP())
+        AND site_id=#{siteId} AND assigned_stores=#{storeId}
+        <if test="storeUserId != null">
+            AND store_user_id = #{storeUserId}
+        </if>
+    </select>
+
+    <select id="getTradesNumByStoreIsPaying" resultType="java.lang.Integer">
+        SELECT COUNT(*) AS num FROM b_trades WHERE trades_status=110 AND site_id=#{siteId} AND
+        (
+                (b_trades.store_user_id =#{storeUserId}and b_trades.trades_source = 130)
+                OR  (b_trades.assigned_stores = #{storeId}) and b_trades.post_style= 170)
+    </select>
+
+    <select id="getTradesNumByStoreWaitProcess" resultType="java.lang.Integer">
+        SELECT COUNT(*) AS num FROM b_trades WHERE trades_status=120 AND site_id=#{siteId} AND assigned_stores=#{storeId}
+    </select>
+
+    <select id="myDeliveryOrderNum" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM b_trades WHERE post_style=150 AND trades_status=130 AND site_id=#{siteId} AND store_shipping_clerk_id=#{storeShippingClerkId} AND assigned_stores=#{storeId}
+    </select>
+    <select id="appselectTradespay" resultType="java.util.Map">
+        select date(create_time) as query_time,CONVERT(sum(real_pay),DECIMAL(10,2)) as value
+        from b_trades where site_id=#{siteId}
+        <if test="storeUserId!=null">
+            and store_user_id=#{storeUserId}
+        </if>
+        <if test="storeUserId==null">
+            and assigned_stores=#{storeId}
+        </if>
+        <if test="isPayment!=null">
+            and is_payment=#{isPayment}
+        </if>
+        and create_time between #{start} and #{end}
+        group by query_time
+        order by query_time asc
+    </select>
+    <select id="appselectTradenum" resultType="java.util.Map">
+        select date(create_time) as query_time,count(*) as value
+        from b_trades where site_id=#{siteId}
+        <if test="storeUserId!=null">
+            and store_user_id=#{storeUserId}
+        </if>
+        <if test="storeUserId==null">
+            and assigned_stores=#{storeId}
+        </if>
+        <if test="isPayment!=null">
+            and is_payment=#{isPayment}
+        </if>
+        and create_time between #{start} and #{end}
+        group by query_time
+        order by query_time asc
+    </select>
+
+    <!--查询顾客消费记录列表-->
+    <select id="selectConsumerList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT bt.site_id,CONCAT(bt.trades_id,'') trades_id,date_format(bt.create_time,'%Y-%m-%d %H:%i:%S') AS create_time,bt.post_style,bt.self_taken_store,bt.assigned_stores,bt.real_pay
+        ,IFNULL(bs.name,'总部') AS storename,date_format(bt.end_time, '%Y-%m-%d') AS end_time
+        FROM b_trades AS bt
+        LEFT JOIN b_stores bs ON bs.site_id=bt.site_id AND bt.assigned_stores=bs.id AND bt.post_style in(150,160,170)
+        WHERE bt.buyer_id=#{buyerId}
+        AND bt.site_id=#{siteId}
+        AND bt.is_payment=1
+        ORDER  BY bt.create_time DESC
+    </select>
+
+    <!--<select id="getStoreAdminTradeNum"  resultType="java.lang.Integer">-->
+        <!--SELECT COUNT(1)  from b_trades b-->
+        <!--where-->
+        <!--cashier_id=#{storeAdminId}-->
+        <!--and b.pay_time <![CDATA[ >= ]]>  ba.start_time-->
+        <!--and b.pay_time <![CDATA[ <= ]]> ba.end_time-->
+        <!--and b.site_id=#{siteId}-->
+        <!--and b.is_payment=1-->
+        <!--and b.trades_source=140-->
+    <!--</select>-->
+
+    <select id="getStoreAdminTradeNum"  resultType="java.lang.Integer">
+        SELECT COUNT(1)  from b_trades b
+        LEFT JOIN  b_clerk_visit c  on b.site_id=c.site_id and b.buyer_id =c.buyer_id
+        LEFT JOIN  b_promotions_activity ba on ba.site_id=b.site_id and ba.id in (c.activity_ids)
+        where
+        find_in_set(#{activityId},c.activity_ids)
+        and b.pay_time <![CDATA[ >= ]]>  ba.start_time
+        and b.pay_time <![CDATA[ <= ]]> ba.end_time
+        and b.site_id=#{siteId}
+        and b.is_payment=1
+        and b.trades_source=140
+    </select>
+
+    <select id="getStoreAdminTrade"  resultType="java.util.Map">
+        SELECT b.*  from b_trades b
+        LEFT JOIN  b_clerk_visit c  on b.site_id=c.site_id and b.buyer_id =c.buyer_id
+        LEFT JOIN  b_promotions_activity ba on ba.site_id=b.site_id and ba.id in (c.activity_ids)
+        where
+        find_in_set(#{activityId},c.activity_ids)
+        and b.pay_time <![CDATA[ >= ]]>  ba.start_time
+        and b.pay_time <![CDATA[ <= ]]> ba.end_time
+        and b.site_id=#{siteId}
+        and b.is_payment=1
+        and b.trades_source=140
+    </select>
+
+    <select id="getOfflineQRCodeParam" resultType="com.jk51.modules.appInterface.util.OfflineQRCodeParam" >
+        SELECT t.trades_id tradesId, t.assigned_stores storeId, t.store_user_id storeAdminId, m.shopwx_url wxShopDomain
+        FROM b_trades t LEFT JOIN yb_merchant m ON t.site_id=m.merchant_id WHERE t.trades_id = #{tradesId}
+    </select>
+
+</mapper>

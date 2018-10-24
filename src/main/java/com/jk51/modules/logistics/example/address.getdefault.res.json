@@ -1,0 +1,21 @@
+{
+  "result": {
+    "address_id": 1580,
+    "site_id": 100043,
+    "buyer_id": 225197,
+    "province_code": 370303,
+    "province": "370000",
+    "city": "370300",
+    "country": "NULL",
+    "addr": "山东省 淄博市 张店区 九级小区16一3一401",
+    "zip_code": "NULL",
+    "phone": "NULL",
+    "mobile": "13054856999",
+    "name": "袁群",
+    "del_tag": 0,
+    "is_default": 1,
+    "create_time": 1486551893000,
+    "update_time": 1486555712000
+  },
+  "status": true
+}

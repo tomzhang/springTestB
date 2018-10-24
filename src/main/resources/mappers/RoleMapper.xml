@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.authority.mapper.RoleMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.role.Role">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="platform" jdbcType="SMALLINT" property="platform"/>
+        <result column="store_id" jdbcType="INTEGER" property="storeId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="role_desc" jdbcType="VARCHAR" property="roleDesc"/>
+        <result column="is_active" jdbcType="TINYINT" property="isActive"/>
+        <result column="deleted_at" jdbcType="TIMESTAMP" property="deletedAt"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createtime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updatetime"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.jk51.model.role.Role">
+        <result column="permissions" jdbcType="LONGVARCHAR" property="permissions"/>
+    </resultMap>
+    <sql id="BaseColumnList">
+    id, site_id, platform, store_id, name, role_desc, is_active, deleted_at, create_time, 
+    update_time
+  </sql>
+    <sql id="BlobColumnList">
+    permissions
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="com.jk51.model.role.RoleKey" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="BaseColumnList"/>
+        ,
+        <include refid="BlobColumnList"/>
+        from b_role
+        where id = #{id,jdbcType=INTEGER}
+        and site_id = #{siteId,jdbcType=INTEGER}
+        and is_active=1
+    </select>
+    <update id="deleteByPrimaryKey" parameterType="com.jk51.model.role.RoleKey">
+    update b_role SET is_active=0
+    where id = #{id,jdbcType=INTEGER}
+      and site_id = #{siteId,jdbcType=INTEGER}
+  </update>
+    <insert id="insertSelective" parameterType="com.jk51.model.role.Role">
+        insert into b_role
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="platform != null">
+                platform,
+            </if>
+            <if test="storeId != null">
+                store_id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="roleDesc != null">
+                role_desc,
+            </if>
+            <if test="isActive != null">
+                is_active,
+            </if>
+            <if test="deletedAt != null">
+                deleted_at,
+            </if>
+            <if test="createtime != null">
+                create_time,
+            </if>
+            <if test="updatetime != null">
+                update_time,
+            </if>
+            <if test="permissions != null">
+                permissions,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="platform != null">
+                #{platform,jdbcType=INTEGER},
+            </if>
+            <if test="storeId != null">
+                #{storeId,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="roleDesc != null">
+                #{roleDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="isActive != null">
+                1,
+            </if>
+            <if test="deletedAt != null">
+                #{deletedAt,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createtime != null">
+                #{createtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatetime != null">
+                #{updatetime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="permissions != null">
+                #{permissions,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.role.Role">
+        update b_role
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            role_desc = #{roleDesc,jdbcType=VARCHAR},
+            <if test="isActive != null">
+                is_active = #{isActive,jdbcType=TINYINT},
+            </if>
+            <if test="deletedAt != null">
+                deleted_at = #{deletedAt,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createtime != null">
+                create_time = #{createtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatetime != null">
+                update_time = #{updatetime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="permissions != null">
+                permissions = #{permissions,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+        <if test="platform!=null">
+            and platform=#{platform}
+        </if>
+        <if test="siteId!=null">
+            and site_id=#{siteId}
+        </if>
+        <if test="storeId!=null">
+            and store_id=#{storeId}
+        </if>
+    </update>
+    <select id="getRoleBymanagerHasRole" resultMap="BaseResultMap">
+        select role.* from b_manager_has_role managerhasrole RIGHT JOIN b_role role on
+        managerhasrole.site_id=role.site_id and managerhasrole.role_id=role.id
+        where role.is_active=1 and managerhasrole.is_del=0
+        <if test="site_id!=null">
+            and role.site_id=#{site_id}
+        </if>
+        <if test=" manager_id!=null">
+            and managerhasrole.manager_id=#{manager_id}
+        </if>
+        <if test="store_id!=null">
+            and role.store_id=#{store_id}
+        </if>
+        <if test="platform!=null">
+            and role.platform=#{platform}
+        </if>
+        GROUP BY role.id
+    </select>
+    <select id="getRole" resultMap="BaseResultMap">
+        select * from b_role where is_active=1
+        <if test="id!=null">
+            AND id=#{id,jdbcType=INTEGER}
+        </if>
+        <if test="site_id!=null">
+            AND site_id=#{site_id,jdbcType=INTEGER}
+        </if>
+        <if test="platform!=null">
+            AND platform=#{platform,jdbcType=INTEGER}
+        </if>
+        <if test="store_id!=null">
+            AND store_id=#{store_id,jdbcType=INTEGER}
+        </if>
+        <if test="name!=null and name!=''">
+            AND name=#{name,jdbcType=VARCHAR}
+        </if>
+        order by create_time desc
+    </select>
+    <select id="selectPermissions" parameterType="java.lang.Integer" resultType="com.jk51.model.role.Permission">
+        select * from yb_permission
+        where id in (
+        select permission_id from yb_role_has_permission where site_id=#{site_id,jdbcType=INTEGER} and role_id in(
+        select role_id from b_manager_has_role where site_id=#{site_id,jdbcType=INTEGER} and manager_id=#{manager_id,jdbcType=INTEGER} and platform=#{platform,jdbcType=INTEGER}
+        and is_del=0
+        )and is_del=0
+        )
+    </select>
+    <resultMap id="permissionTypeMap" type="com.jk51.model.role.PermissionType">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="platform" jdbcType="SMALLINT" property="platform"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="permission_desc" jdbcType="VARCHAR" property="permissionDesc"/>
+        <result column="deleted_at" jdbcType="TIMESTAMP" property="deletedAt"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createtime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updatetime"/>
+        <result column="is_del" jdbcType="TINYINT" property="isDel"></result>
+
+        <collection property="permissions" ofType="com.jk51.model.role.Permission">
+            <id column="per_id" jdbcType="INTEGER" property="id"/>
+            <result column="type_id" jdbcType="INTEGER" property="typeId"/>
+            <result column="p_platform" jdbcType="SMALLINT" property="platform"/>
+            <result column="p_name" jdbcType="VARCHAR" property="name"/>
+            <result column="action" jdbcType="VARCHAR" property="action"/>
+            <result column="p_permission_desc" jdbcType="VARCHAR" property="permissionDesc"/>
+            <result column="p_deleted_at" jdbcType="TIMESTAMP" property="deletedAt"/>
+            <result column="p_create_time" jdbcType="TIMESTAMP" property="createtime"/>
+            <result column="p_update_time" jdbcType="TIMESTAMP" property="updatetime"/>
+            <result column="p_is_del" jdbcType="INTEGER" property="isDel"></result>
+        </collection>
+    </resultMap>
+    <select id="selectPermissionTypeList" resultMap="permissionTypeMap">
+        SELECT
+	      t.*, p.id per_id,
+	      p.type_id,
+          p.platform p_platform,
+	      p.`name` p_name,
+	      p.action,
+	      p.permission_desc p_permission_desc,
+	      p.deleted_at p_deleted_at,
+	      p.create_time p_create_time,
+	      p.update_time p_update_time,
+	      p.is_del p_is_del
+      FROM
+	    yb_permission_type t
+      LEFT JOIN yb_permission p ON t.id = p.type_id
+      AND p.platform = t.platform
+      WHERE
+	    1 = 1
+	  AND p.id in (
+	    select permission_id from yb_role_has_permission where site_id=#{siteId} and role_id in(
+        select role_id from b_manager_has_role where site_id=#{siteId} and manager_id=#{managerId} and platform=#{platform}
+        and is_del!=1
+        )and is_del!=1
+      )
+    </select>
+    <insert id="addDefaultRole" parameterType="com.jk51.model.role.Role">
+        insert into b_role (site_id,platform,store_id,`name`)
+       VALUES (#{siteId},#{platform}, #{storeId},"店长"),(#{siteId},#{platform}, #{storeId},"店员")
+    </insert>
+</mapper>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.es.mapper.BSearchLogMapper" >
+  <resultMap id="BaseResultMap" type="com.jk51.model.BSearchLog" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="site_id" property="siteId" jdbcType="INTEGER" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="key_word" property="keyWord" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="is_clean" property="isClean" jdbcType="TINYINT" />
+  </resultMap>
+
+ <select id="queryList" resultMap="BaseResultMap">
+    SELECT DISTINCT site_id, mobile, key_word, is_clean from b_search_log where site_id=#{siteId} and mobile=#{mobile}
+    ORDER BY id DESC
+    limit 10
+  </select>
+
+  <insert id="insertSelective" parameterType="com.jk51.model.BSearchLog" >
+    insert into b_search_log
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+
+      <if test="siteId != null" >
+        site_id,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="keyWord != null" >
+        key_word,
+      </if>
+
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+
+      <if test="siteId != null" >
+        #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="keyWord != null" >
+        #{keyWord,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="batchUpdate">
+    UPDATE b_search_log set is_clean=1  where site_id=#{siteId} and mobile=#{mobile}
+  </update>
+
+    <select id="queryLastRecord" resultType="java.util.Map">
+      SELECT key_word,is_clean FROM b_search_log WHERE site_id = #{siteId} and mobile=#{mobile} ORDER BY id DESC limit 1
+    </select>
+
+</mapper>

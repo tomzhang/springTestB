@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.integral.mapper.IntegrallogMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.integral.IntegralLog">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="member_id" jdbcType="INTEGER" property="memberId"/>
+        <result column="buyer_nick" jdbcType="VARCHAR" property="buyerNick"/>
+        <result column="integral_desc" jdbcType="VARCHAR" property="integralDesc"/>
+        <result column="integral_add" jdbcType="BIGINT" property="integralAdd"/>
+        <result column="integral_diff" jdbcType="BIGINT" property="integralDiff"/>
+        <result column="integral_overplus" jdbcType="BIGINT" property="integralOverplus"/>
+        <result column="mark" jdbcType="VARCHAR" property="mark"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <select id="getIntegralLogByTradesId" resultType="java.util.Map">
+        select * from b_integrallog
+        <where>
+            site_id = #{siteId} and mark like concat('%',#{tradesId},'%' ) AND type= #{type} limit 1
+        </where>
+    </select>
+
+    <select id="getIntegralLog" resultType="com.jk51.model.integral.IntegralLog" resultMap="BaseResultMap">
+        select * from b_integrallog where site_id = #{siteId}
+        <if test="buyerId != null and buyerId != ''">
+            and member_id = #{buyerId}
+        </if>
+
+        <if test="type != null and type != ''">
+            and type = #{type}
+        </if>
+
+    </select>
+
+    <select id="getIntegralByShopping" resultType="java.util.Map">
+        SELECT SUM(integral_add) shoppingIntegralSum from b_integrallog where site_id = #{siteId}
+
+        <if test="buyerId != null and buyerId != ''">
+            and member_id = #{buyerId}
+        </if>
+
+        <if test="type != null and type != ''">
+            and type = #{type}
+        </if>
+
+        <if test="startTime!=null">
+            AND update_time &gt;= #{startTime}
+        </if>
+        <if test="endTime!=null">
+            AND update_time &lt;= #{endTime}
+        </if>
+    </select>
+
+    <select id="getIntegralSumRefree" resultType="java.util.Map">
+        SELECT SUM(integral_diff) integralDiff from b_integrallog where site_id = #{siteId}
+
+        <if test="buyerId != null and buyerId != ''">
+            and member_id = #{buyerId}
+        </if>
+
+        <if test="type != null and type != ''">
+            and `type` = #{type}
+        </if>
+
+        <if test="startTime!=null">
+            AND update_time &gt;= #{startTime}
+        </if>
+        <if test="endTime!=null">
+            AND update_time &lt;= #{endTime}
+        </if>
+    </select>
+    <select id="getIntegralLogg" resultType="java.util.Map">
+    select * from b_integrallog where site_id=#{siteId} and type=#{type} and mark =#{mark} limit 1
+  </select>
+
+    <select id="getIntegralLogByMark" resultType="java.util.Map">
+        select * from b_integrallog
+        <where>
+            site_id = #{siteId} and mark=#{mark} AND type= #{type}
+            <if test="startTime!=null">
+                AND create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime!=null">
+                AND create_time &lt;= #{endTime}
+            </if>
+        </where>
+        limit 1
+    </select>
+</mapper>

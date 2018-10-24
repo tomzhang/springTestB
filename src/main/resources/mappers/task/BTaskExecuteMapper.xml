@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.task.mapper.BTaskExecuteMapper">
+  <resultMap id="BaseResultMap" type="com.jk51.model.task.BTaskExecute">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="task_id" jdbcType="INTEGER" property="taskId" />
+    <result column="plan_id" jdbcType="INTEGER" property="planId" />
+    <result column="count_value" jdbcType="INTEGER" property="countValue" />
+    <result column="complete" jdbcType="BIT" property="complete" />
+    <result column="start_day" jdbcType="DATE" property="startDay" />
+    <result column="end_day" jdbcType="DATE" property="endDay" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    `id`, task_id, plan_id, count_value, complete, start_day, end_day, create_time, update_time
+  </sql>
+  <select id="selectByExample" parameterType="com.jk51.model.task.BTaskExecuteExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from b_task_execute
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limit != null">
+      <if test="offset != null">
+        limit ${offset}, ${limit}
+      </if>
+      <if test="offset == null">
+        limit ${limit}
+      </if>
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from b_task_execute
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from b_task_execute
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jk51.model.task.BTaskExecuteExample">
+    delete from b_task_execute
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jk51.model.task.BTaskExecute">
+    insert into b_task_execute (id, task_id, plan_id, 
+      count_value, complete, start_day, 
+      end_day, create_time, update_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{taskId,jdbcType=INTEGER}, #{planId,jdbcType=INTEGER}, 
+      #{countValue,jdbcType=INTEGER}, #{complete,jdbcType=BIT}, #{startDay,jdbcType=DATE}, 
+      #{endDay,jdbcType=DATE}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.jk51.model.task.BTaskExecute">
+    insert into b_task_execute
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="taskId != null">
+        task_id,
+      </if>
+      <if test="planId != null">
+        plan_id,
+      </if>
+      <if test="countValue != null">
+        count_value,
+      </if>
+      <if test="complete != null">
+        complete,
+      </if>
+      <if test="startDay != null">
+        start_day,
+      </if>
+      <if test="endDay != null">
+        end_day,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="taskId != null">
+        #{taskId,jdbcType=INTEGER},
+      </if>
+      <if test="planId != null">
+        #{planId,jdbcType=INTEGER},
+      </if>
+      <if test="countValue != null">
+        #{countValue,jdbcType=INTEGER},
+      </if>
+      <if test="complete != null">
+        #{complete,jdbcType=BIT},
+      </if>
+      <if test="startDay != null">
+        #{startDay,jdbcType=DATE},
+      </if>
+      <if test="endDay != null">
+        #{endDay,jdbcType=DATE},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jk51.model.task.BTaskExecuteExample" resultType="java.lang.Long">
+    select count(*) from b_task_execute
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update b_task_execute
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.taskId != null">
+        task_id = #{record.taskId,jdbcType=INTEGER},
+      </if>
+      <if test="record.planId != null">
+        plan_id = #{record.planId,jdbcType=INTEGER},
+      </if>
+      <if test="record.countValue != null">
+        count_value = #{record.countValue,jdbcType=INTEGER},
+      </if>
+      <if test="record.complete != null">
+        complete = #{record.complete,jdbcType=BIT},
+      </if>
+      <if test="record.startDay != null">
+        start_day = #{record.startDay,jdbcType=DATE},
+      </if>
+      <if test="record.endDay != null">
+        end_day = #{record.endDay,jdbcType=DATE},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update b_task_execute
+    set id = #{record.id,jdbcType=INTEGER},
+      task_id = #{record.taskId,jdbcType=INTEGER},
+      plan_id = #{record.planId,jdbcType=INTEGER},
+      count_value = #{record.countValue,jdbcType=INTEGER},
+      complete = #{record.complete,jdbcType=BIT},
+      start_day = #{record.startDay,jdbcType=DATE},
+      end_day = #{record.endDay,jdbcType=DATE},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.task.BTaskExecute">
+    update b_task_execute
+    <set>
+      <if test="taskId != null">
+        task_id = #{taskId,jdbcType=INTEGER},
+      </if>
+      <if test="planId != null">
+        plan_id = #{planId,jdbcType=INTEGER},
+      </if>
+      <if test="countValue != null">
+        count_value = #{countValue,jdbcType=INTEGER},
+      </if>
+      <if test="complete != null">
+        complete = #{complete,jdbcType=BIT},
+      </if>
+      <if test="startDay != null">
+        start_day = #{startDay,jdbcType=DATE},
+      </if>
+      <if test="endDay != null">
+        end_day = #{endDay,jdbcType=DATE},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jk51.model.task.BTaskExecute">
+    update b_task_execute
+    set task_id = #{taskId,jdbcType=INTEGER},
+      plan_id = #{planId,jdbcType=INTEGER},
+      count_value = #{countValue,jdbcType=INTEGER},
+      complete = #{complete,jdbcType=BIT},
+      start_day = #{startDay,jdbcType=DATE},
+      end_day = #{endDay,jdbcType=DATE},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <insert id="insertList">
+      insert into b_task_execute (task_id, plan_id, start_day, end_day)
+      VALUES
+      <foreach collection="record" item="item" separator=",">
+          (#{item.taskId,jdbcType=INTEGER}, #{item.planId,jdbcType=INTEGER},
+          #{item.startDay,jdbcType=DATE}, #{item.endDay,jdbcType=DATE})
+      </foreach>
+      ON DUPLICATE KEY UPDATE update_time = CURRENT_TIMESTAMP
+  </insert>
+
+    <!--当天需要执行的任务消息-->
+    <select id="selectNotifyMsg" resultType="com.jk51.model.JKHashMap">
+        SELECT
+            a.id id,
+            a.start_day startDay,
+            a.end_day endDay,
+            b.site_id siteId,
+            b.name planName,
+            b.join_type joinType,
+            b.join_ids joinIds,
+            c.name taskName,
+            d.name quotaName,
+            c.target_id,
+            d.group_id as quota_group
+        FROM b_task_execute a
+            INNER JOIN b_taskplan b ON a.plan_id = b.id AND b.status = 20
+            INNER JOIN b_task c ON a.task_id = c.id
+            INNER JOIN t_quota d ON c.target_id = d.id
+        WHERE
+            a.start_day = CURRENT_DATE
+            AND
+            a.complete = 0
+    </select>
+
+    <select id="queryNotifyMsgByPlanIds" resultType="com.jk51.model.JKHashMap">
+        SELECT
+            a.id id,
+            a.start_day startDay,
+            a.end_day endDay,
+            b.site_id siteId,
+            b.name planName,
+            b.join_type joinType,
+            b.join_ids joinIds,
+            c.name taskName,
+            d.name quotaName,
+            c.target_id,
+            d.group_id as quota_group
+        FROM b_task_execute a
+            INNER JOIN b_taskplan b ON a.plan_id = b.id AND b.status = 20
+            INNER JOIN b_task c ON a.task_id = c.id
+            INNER JOIN t_quota d ON c.target_id = d.id
+        WHERE
+        a.start_day = CURRENT_DATE
+        AND
+        a.complete = 0
+        AND
+        a.plan_id IN
+        <foreach collection="array" index="index" item="item"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="queryCompleteInfo" resultType="java.util.Map">
+        SELECT a.plan_id planId, b.site_id siteId, b.join_type joinType, b.join_ids joinIds,c.name taskName from b_task_execute a
+        LEFT JOIN b_taskplan b ON a.plan_id = b.id
+        LEFT JOIN b_task c ON a.task_id = c.id
+        WHERE a.id = #{executeId}
+    </select>
+
+    <select id="queryExecutePrimaryKey" resultType="java.lang.Integer">
+      SELECT id FROM b_task_execute WHERE task_id=#{taskId} AND plan_id=#{planId} AND start_day=#{startDay}
+    </select>
+
+  <select id="selectTaskListByJoinId" resultType="map">
+    SELECT
+        t1.id execut_id,
+        t1.plan_id,
+        t1.start_day,
+        t1.end_day,
+        t2.id,
+        t2.name,
+        t2.type_ids,
+        t2.time_type,
+        t2.reward_type,
+        t2.reward_detail,
+        t2.`explain`,
+        t2.admin_type,
+        t2.reward_limit,
+        t2.reward_total,
+        t2.low_target,
+        t2.punish,
+        t2.object object,
+        t2.target_id,
+        t2.task_source,
+        date_format( t2.create_time, '%Y-%m-%d %H:%m:%s' ) create_time,
+        t3.`name` target_name,
+        t4.NAME plan_name,
+        t4.active_type,
+        t4.day_num,
+        t4.explan plane_explan,
+        CASE t5.is_all
+        WHEN 0 THEN
+            1
+        WHEN 1 THEN
+            0
+        WHEN 2 THEN
+            -1
+        ELSE
+            -1
+        END
+        AS goodsStatus
+    FROM
+        b_task_execute t1
+        LEFT JOIN b_task t2 ON t1.task_id = t2.id
+        LEFT JOIN t_quota t3 ON t3.id = t2.target_id
+        LEFT JOIN b_taskplan t4 ON t4.id = t1.plan_id
+        LEFT JOIN b_task_blob t5 ON t2.id = t5.task_id
+    <where>
+        <if test="planIds !=null">
+            and t1.plan_id in
+            <foreach close=")" collection="planIds" item="planId" open="(" separator=",">
+                #{planId}
+            </foreach>
+        </if>
+        <if test="planName != null and planName != ''">
+            AND t4.nam e= #{planName}
+        </if>
+        <if test="taskName != null and taskName != ''">
+            AND t2.name = #{taskName}
+        </if>
+        <if test="start != null and start != ''">
+            AND  t1.end_day > #{start}
+        </if>
+        <if test="end != null and end != ''">
+            AND <![CDATA[ t1.start_day <= #{end} ]]>
+        </if>
+        <if test="week != null and week != '' and month != null and month != ''">
+            and(
+                (t4.active_type =30 AND FIND_IN_SET(#{month}, t4.day_num))
+                or
+                (t4.active_type =20 and FIND_IN_SET(#{week},t4.day_num))
+                OR
+                (t4.active_type = 10)
+            )
+        </if>
+        <if test="adminType != null and adminType != ''">
+            and t2.admin_type = #{adminType}
+        </if>
+
+        <if test="taskType != null and taskType != ''">
+            and t3.group_id=#{taskType}
+        </if>
+        <if test="joinType != null and joinType != ''">
+            and t2.object=#{joinType}
+        </if>
+
+        <if test="executeIds != null ">
+            and t1.id not in
+            <foreach close=")" collection="executeIds" item="executeId" open="(" separator=",">
+                #{executeId}
+            </foreach>
+        </if>
+    </where>
+    order by t1.start_day desc, t2.create_time desc
+  </select>
+
+  <select id="queryTaskCountByJoinId" resultType="Integer">
+    SELECT count(t1.plan_id) FROM b_task_execute t1
+
+    left join b_task t2 on t1.task_id=t2.id
+
+    LEFT JOIN t_quota t3 on t3.id=t2.target_id
+
+    WHERE t2.site_id = #{siteId}
+
+    <if test="planIds !=null">
+      and t1.plan_id in
+      <foreach close=")" collection="planIds" item="planId" open="(" separator=",">
+        #{planId}
+      </foreach>
+    </if>
+
+    <if test="complete != null and complete != ''">
+      and t1.complete=#{complete}
+    </if>
+    <if test="start != null and start != ''">
+      and t1.start_day=#{start}
+    </if>
+    <if test="end != null and end != ''">
+      and t1.end_day=#{end}
+    </if>
+  </select>
+
+  <select id="isComplete" resultType="java.lang.Integer">
+    SELECT COUNT(1) FROM b_task_execute WHERE plan_id=#{planId} AND complete=0
+  </select>
+
+  <update id="updateCountValue">
+      UPDATE
+          b_task_execute AS t1
+      SET t1.count_value = (SELECT IFNULL(sum(count_value), 0) FROM b_taskreward WHERE execute_id = t1.id)
+      WHERE
+          t1.id = #{id}
+  </update>
+
+
+</mapper>

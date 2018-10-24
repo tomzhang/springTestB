@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.pandian.mapper.BPandianPlanExecutorMapper" >
+  <resultMap id="BaseResultMap" type="com.jk51.model.BPandianPlanExecutor" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="site_id" property="siteId" jdbcType="INTEGER" />
+    <result column="plan_id" property="planId" jdbcType="INTEGER" />
+    <result column="store_id" property="storeId" jdbcType="INTEGER" />
+    <result column="clerks" property="clerks" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, site_id, plan_id, store_id, clerks, create_time, update_time
+  </sql>
+
+  <select id="getExecStoreIdList" resultType="java.lang.Integer">
+    SELECT store_id FROM b_pandian_plan_executor WHERE site_id = #{siteId} AND plan_id = #{planId}
+  </select>
+
+  <select id="getStoreNumList" resultType="java.util.Map">
+    SELECT store.id, store.stores_number storeNum
+    FROM b_pandian_plan_executor executor LEFT JOIN b_stores store ON executor.site_id=store.site_id AND executor.store_id=store.id
+    WHERE executor.site_id = #{siteId} AND executor.plan_id = #{planId}
+    <if test="storeId != null" >
+     AND executor.store_id = #{storeId}
+    </if>
+  </select>
+
+  <select id="getGoodsString" resultType="java.lang.String">
+    SELECT CONCAT(store_num,goods_code,batch_number) FROM b_inventories WHERE site_id = #{siteId} AND store_num IN
+    <foreach item="id" index="index" collection="storeNumSet" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </select>
+
+  <insert id="insertByList" >
+    insert into b_pandian_plan_executor (site_id, plan_id, store_id, clerks)
+    values
+    <foreach collection="planExecutors" item="item" index="index" separator="," >
+      (#{item.siteId}, #{planId}, #{item.storeId}, #{item.clerks})
+    </foreach>
+  </insert>
+
+  <select id="getPandianExecutorList" resultType="java.util.Map">
+    SELECT executor.store_id storeId, executor.clerks, ifnull(store.`name`, '全部门店') `name`
+    FROM b_pandian_plan_executor executor LEFT JOIN b_stores store ON executor.site_id=store.site_id AND executor.store_id=store.id
+    WHERE executor.site_id = #{siteId} AND executor.plan_id = #{planId}
+      <if test="storeId != null" >
+        AND (executor.store_id = #{storeId} OR executor.store_id = 0)
+      </if>
+  </select>
+
+  <select id="getClerkNameList" resultType="java.lang.String">
+    SELECT e.`name`
+    FROM b_pandian_plan a
+      LEFT JOIN b_pandian_plan_executor b ON a.site_id=b.site_id AND a.id=b.plan_id
+      LEFT JOIN b_store_adminext e ON b.site_id=e.site_id AND b.store_id=e.store_id AND e.is_del=0 AND (b.clerks='0' OR FIND_IN_SET(e.storeadmin_id,REPLACE(REPLACE(b.clerks,'[',''),']','')))
+    WHERE a.site_id = #{siteId} AND a.id = #{id} AND b.store_id = #{storeId}
+  </select>
+
+  <select id="getClerkName" resultType="java.lang.String">
+    SELECT ifnull(`name`, '---') `name` FROM b_store_adminext WHERE site_id = #{siteId} AND store_id = #{storeId} AND storeadmin_id = #{id}
+  </select>
+
+  <select id="getMerchantName" resultType="java.lang.String">
+    <choose>
+      <when test="id !=null and id == 0">
+          SELECT ifnull(seller_nick, '---') `name` FROM yb_merchant WHERE merchant_id = #{siteId} LIMIT 1
+      </when>
+      <otherwise>
+          SELECT ifnull(username, '---') `name` FROM b_manager WHERE site_id = #{siteId} AND id = #{id}
+      </otherwise>
+    </choose>
+  </select>
+
+  <select id="getStoreName" resultType="java.lang.String">
+    SELECT `name` FROM b_stores WHERE site_id = #{siteId} AND id = #{storeId}
+  </select>
+
+  <insert id="insertSelective" parameterType="com.jk51.model.BPandianPlanExecutor" >
+    insert into b_pandian_plan_executor
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="siteId != null" >
+        site_id,
+      </if>
+      <if test="planId != null" >
+        plan_id,
+      </if>
+      <if test="storeId != null" >
+        store_id,
+      </if>
+      <if test="clerks != null" >
+        clerks,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="siteId != null" >
+        #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="planId != null" >
+        #{planId,jdbcType=INTEGER},
+      </if>
+      <if test="storeId != null" >
+        #{storeId,jdbcType=INTEGER},
+      </if>
+      <if test="clerks != null" >
+        #{clerks,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.BPandianPlanExecutor" >
+    update b_pandian_plan_executor
+    <set >
+      <if test="siteId != null" >
+        site_id = #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="planId != null" >
+        plan_id = #{planId,jdbcType=INTEGER},
+      </if>
+      <if test="storeId != null" >
+        store_id = #{storeId,jdbcType=INTEGER},
+      </if>
+      <if test="clerks != null" >
+        clerks = #{clerks,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="getStores" parameterType="com.jk51.modules.pandian.param.StoresParam" resultType="com.jk51.modules.pandian.Response.StoresResponse">
+
+    SELECT DISTINCT store_id storeId,s.name storeName
+    from b_pandian_order_status e LEFT JOIN b_stores s on e.site_id = s.site_id and e.store_id = s.id
+    where e.site_id = #{siteId}
+  </select>
+  <select id="getPlanCheckNum" resultType="java.lang.Long">
+    select
+    if(clerks='0',
+    (select count(id) from b_store_admin where site_id = #{siteId} and store_id = #{storeId} and is_del = 0 and status = 1),
+    (SELECT LENGTH(clerks) - LENGTH(REPLACE(clerks,',','')) + 1))
+    from b_pandian_plan_executor
+    where
+      site_id = #{siteId}
+      and store_id = #{storeId}
+      and plan_id = #{planId}
+  </select>
+
+  <select id="findBPandianPlanExecutor" resultType="com.jk51.model.BPandianPlanExecutor">
+
+    select  <include refid="Base_Column_List"/> from b_pandian_plan_executor
+    where
+    site_id = #{siteId}
+    and store_id = #{storeId}
+    and plan_id = #{planId}
+  </select>
+
+</mapper>

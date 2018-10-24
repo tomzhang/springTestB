@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.appInterface.mapper.BMobileWechatMapper" >
+    <select id="findMobile" resultType="java.lang.String">
+        SELECT mobile
+        from b_mobile_wechat
+        WHERE
+          open_id = #{userId}
+          and
+          site_id = #{site_id}
+    </select>
+    <insert id="insert">
+        insert INTO b_mobile_wechat (site_id,mobile,open_id,user_headimgurl)VALUES (#{site_id},#{mobile},#{open_id},#{user_headimgurl} )
+    </insert>
+
+    <select id="findBMobileWechat" resultType="java.util.Map">
+        SELECT
+        *
+        from b_mobile_wechat
+        WHERE
+        mobile = #{mobile}
+        and
+        site_id = #{site_id} limit 1
+    </select>
+    <update id="updateByPrimaryKey">
+        update b_mobile_wechat
+        set user_headimgurl=#{user_headimgurl},user_is_sync=#{user_is_sync}
+        where mobile = #{mobile}
+          and
+          site_id = #{site_id}
+    </update>
+</mapper>

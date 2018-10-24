@@ -1,0 +1,681 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.promotions.mapper.PromotionsActivityMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.promotions.PromotionsActivity">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="promotions_id" jdbcType="INTEGER" property="promotionsId"/>
+        <result column="start_time" jdbcType="TIMESTAMP" property="startTime"/>
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+        <result column="template_pic" jdbcType="VARCHAR" property="templatePic"/>
+        <result column="intro" jdbcType="VARCHAR" property="intro"/>
+        <result column="poster_pic" jdbcType="VARCHAR" property="posterPic"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="show_rule" jdbcType="LONGVARCHAR" property="showRule"/>
+        <result column="use_object" jdbcType="LONGVARCHAR" property="useObject"/>
+        <result column="is_independent" jdbcType="INTEGER" property="isIndependent"/>
+        <result column="can_use_coupon" jdbcType="INTEGER" property="canUseCoupon"/>
+        <result column="show_ad" jdbcType="INTEGER" property="showAd"/>
+    </resultMap>
+
+    <resultMap id="PromotionsActivityMapWithRuleIn" type="com.jk51.model.promotions.PromotionsActivity">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="promotions_id" jdbcType="INTEGER" property="promotionsId"/>
+        <result column="start_time" jdbcType="TIMESTAMP" property="startTime"/>
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+        <result column="template_pic" jdbcType="VARCHAR" property="templatePic"/>
+        <result column="intro" jdbcType="VARCHAR" property="intro"/>
+        <result column="poster_pic" jdbcType="VARCHAR" property="posterPic"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="show_rule" jdbcType="LONGVARCHAR" property="showRule"/>
+        <result column="use_object" jdbcType="LONGVARCHAR" property="useObject"/>
+        <result column="is_independent" jdbcType="INTEGER" property="isIndependent"/>
+        <result column="can_use_coupon" jdbcType="INTEGER" property="canUseCoupon"/>
+        <result column="show_ad" jdbcType="INTEGER" property="showAd"/>
+        <association property="promotionsRule"
+                     select="com.jk51.modules.promotions.mapper.PromotionsRuleMapper.getPromotionsRuleByIdAndSiteId"
+                     column="{siteId=site_id, id=promotions_id}"/>
+    </resultMap>
+
+
+    <resultMap id="ProActivityAndPromotionsRuleMap" type="com.jk51.model.promotions.PromotionsActivity">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="promotions_id" jdbcType="INTEGER" property="promotionsId"/>
+        <result column="start_time" jdbcType="TIMESTAMP" property="startTime"/>
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+        <result column="template_pic" jdbcType="VARCHAR" property="templatePic"/>
+        <result column="intro" jdbcType="VARCHAR" property="intro"/>
+        <result column="poster_pic" jdbcType="VARCHAR" property="posterPic"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="show_rule" jdbcType="LONGVARCHAR" property="showRule"/>
+        <result column="use_object" jdbcType="LONGVARCHAR" property="useObject"/>
+        <result column="active_link" jdbcType="VARCHAR" property="active_link"/>
+        <result column="is_independent" jdbcType="INTEGER" property="isIndependent"/>
+        <result column="can_use_coupon" jdbcType="INTEGER" property="canUseCoupon"/>
+        <result column="show_ad" jdbcType="INTEGER" property="showAd"/>
+        <association property="promotionsRule"
+                     resultMap="com.jk51.modules.promotions.mapper.PromotionsRuleMapper.BaseResultMap"
+                     javaType="com.jk51.model.promotions.PromotionsRule"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, site_id, title, promotions_id, start_time, end_time, template_pic, intro, poster_pic,
+        status, create_time, update_time, show_rule, use_object,active_link,is_independent,can_use_coupon,show_ad
+    </sql>
+
+    <!-- insert start -->
+    <insert id="create" parameterType="com.jk51.model.promotions.PromotionsActivity">
+        INSERT INTO b_promotions_activity (
+            site_id,
+            id,
+            title,
+            promotions_id,
+            start_time,
+            end_time,
+            show_rule,
+            template_pic,
+            intro,
+            poster_pic,
+            status,
+            use_object,
+            create_time,
+            update_time,
+            active_link,
+            is_independent,
+            can_use_coupon,
+            show_ad
+        )
+        VALUES
+            (
+                #{promotionsActivity.siteId},
+                NULL,
+                #{promotionsActivity.title},
+                #{promotionsActivity.promotionsId},
+                #{promotionsActivity.startTime},
+                #{promotionsActivity.endTime},
+                #{promotionsActivity.showRule},
+                #{promotionsActivity.templatePic},
+                #{promotionsActivity.intro},
+                #{promotionsActivity.posterPic},
+                10,
+                #{promotionsActivity.useObject},
+                #{promotionsActivity.createTime},
+                #{promotionsActivity.updateTime},
+                #{promotionsActivity.active_link},
+                #{promotionsActivity.isIndependent},
+                #{promotionsActivity.canUseCoupon},
+                #{promotionsActivity.showAd}
+            );
+    </insert>
+    <!-- insert end -->
+
+    <update id="update" parameterType="com.jk51.model.promotions.PromotionsActivity">
+         UPDATE b_promotions_activity
+            SET site_id = #{promotionsActivity.siteId},
+                title = #{promotionsActivity.title},
+                promotions_id = #{promotionsActivity.promotionsId},
+                start_time = #{promotionsActivity.startTime},
+                end_time = #{promotionsActivity.endTime},
+                show_rule = #{promotionsActivity.showRule},
+                template_pic = #{promotionsActivity.templatePic},
+                intro = #{promotionsActivity.intro},
+                poster_pic = #{promotionsActivity.posterPic},
+                status = #{promotionsActivity.status},
+                use_object = #{promotionsActivity.useObject},
+                create_time = #{promotionsActivity.createTime},
+                update_time = #{promotionsActivity.updateTime},
+                active_link = #{promotionsActivity.active_link},
+                is_independent = #{promotionsActivity.isIndependent},
+                can_use_coupon = #{promotionsActivity.canUseCoupon},
+                show_ad = #{promotionsActivity.showAd}
+            WHERE
+                id = #{promotionsActivity.id};
+    </update>
+
+    <!-- update start -->
+    <update id="updateStatusByIdAndSiteId">
+        UPDATE b_promotions_activity
+        SET status = #{status}
+        WHERE
+            site_id = #{siteId}
+            AND
+            id = #{id};
+    </update>
+    <!-- update end -->
+
+    <!-- select start -->
+    <select id="findByParamWithRuleIn" resultMap="PromotionsActivityMapWithRuleIn">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM b_promotions_activity
+        <where>
+            <if test="siteId != null">
+                AND site_id = #{siteId}
+            </if>
+
+            <if test="statusList != null and statusList.size() != 0">
+                AND status IN
+                <foreach collection="statusList" item="item_status" separator="," open="(" close=")">
+                    #{item_status}
+                </foreach>
+            </if>
+
+            <if test="promotionsActivityId != null">
+                AND id = #{promotionsActivityId}
+            </if>
+        </where>
+    </select>
+
+    <select id="centerOfProActivityList" parameterType="com.jk51.modules.promotions.request.ProActivityDto"
+            resultType="java.util.Map">
+        select activity.* ,rule.time_rule
+        from b_promotions_activity activity
+        LEFT  JOIN  b_promotions_rule rule
+        on (activity.site_id=rule.site_id and activity.promotions_id=rule.id)
+        where activity.site_id=#{siteId}
+        and  activity.status in (0,11)
+        order by create_time desc
+    </select>
+
+    <select id="getPromotionsActivity" parameterType="com.jk51.modules.promotions.request.ProActivityDto"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from b_promotions_activity
+        where site_id=#{siteId}
+        and id=#{id}
+    </select>
+
+    <select id="getPromotionsActivityMap" parameterType="com.jk51.modules.promotions.request.ProActivityDto"
+            resultType="java.util.Map">
+        select
+        activity.*,rule.promotions_type,rule.time_rule,rule.promotions_rule,rule.label
+        from b_promotions_activity activity
+        LEFT JOIN  b_promotions_rule rule
+        on (activity.promotions_id=rule.id and activity.site_id=rule.site_id  )
+        where activity.site_id=#{siteId}
+        and activity.id=#{id}
+    </select>
+
+    <select id="getGroupPurchaseProActivity"
+            parameterType="com.jk51.modules.grouppurchase.request.GroupPurchaseForProActivityParam"
+            resultType="java.util.Map">
+        select activity.id as proActivityId,rule.*
+        from b_promotions_activity activity
+        INNER JOIN
+        b_promotions_rule rule
+        ON (activity.site_id=rule.site_id and rule.id=activity.promotions_id)
+        where 1=1
+        <if test="siteId != null">
+            AND activity.site_id = #{siteId}
+        </if>
+        <if test="proActivityId != null">
+            AND activity.id = #{proActivityId}
+        </if>
+        and activity.status=0
+        and rule.status=0
+        and rule.promotions_type=60
+
+        order by activity.create_time desc
+    </select>
+
+    <select id="getGroupPurchaseOneProActivity"
+            parameterType="com.jk51.modules.grouppurchase.request.GroupPurchaseForProActivityParam"
+            resultType="java.util.Map">
+        select activity.id as proActivityId,activity.status proActivityStatus,rule.*
+        from b_promotions_activity activity
+        INNER JOIN
+        b_promotions_rule rule
+        ON (activity.site_id=rule.site_id and rule.id=activity.promotions_id)
+        where 1=1
+        <if test="siteId != null">
+            AND activity.site_id = #{siteId}
+        </if>
+        <if test="proActivityId != null">
+            AND activity.id = #{proActivityId}
+        </if>
+        and rule.promotions_type=60
+
+        order by activity.create_time desc
+    </select>
+
+
+    <select id="getPromotionsActivityDetail"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from b_promotions_activity
+        where site_id = #{siteId}
+        and id=#{id}
+    </select>
+
+    <select id="getPromotionsAndPromotionsRule" resultMap="ProActivityAndPromotionsRuleMap">
+        select pro.* ,rule.*
+        from b_promotions_activity pro
+        INNER JOIN  b_promotions_rule rule
+        on (pro.promotions_id=rule.id AND pro.site_id=rule.site_id)
+        where pro.site_id = #{siteId}
+        and pro.id=#{id}
+    </select>
+
+    <select id="proActivityList" parameterType="com.jk51.modules.promotions.request.ProActivityDtoForPage"
+            resultType="com.jk51.model.goods.PageData">
+        SELECT * from
+        (select site_id,id,title,content,send_way,status,create_time,"1" as proActivityType
+        from b_coupon_activity
+        UNION
+        select site_id,id,title,title as content,"" as send_way,status,create_time,"2" as proActivityType
+        from b_promotions_activity
+        ) a
+        <where>
+            <if test="siteId != null">
+                AND site_id = #{siteId}
+            </if>
+            <if test="proActivityName != null">
+                AND title like concat('%',#{proActivityName},'%')
+            </if>
+            <if test="proActivitySendWay != null and proActivitySendWay &lt; 6">
+                AND send_way = #{proActivitySendWay}
+            </if>
+            <if test="proActivitySendWay == 6 ">
+                AND a.proActivityType=1 AND send_way = 0
+            </if>
+            <if test="proActivitySendWay == 7 ">
+                AND a.proActivityType=2
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="startTime!=null">
+                AND create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime!=null">
+                AND create_time &lt;= #{endTime}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="proActivityListNew" parameterType="com.jk51.modules.promotions.request.ProActivityDtoForPage"
+            resultType="com.jk51.model.goods.PageData">
+        SELECT bpa.*,bpr.promotions_type from b_promotions_activity bpa
+        LEFT JOIN b_promotions_rule bpr ON (bpa.site_id = bpr.site_id and bpa.promotion_id = bpr.id)
+        <where>
+            <if test="siteId != null">
+                AND bpa.site_id = #{siteId}
+            </if>
+            <if test="proActivityName != null">
+                AND bpa.title like concat('%',#{proActivityName},'%')
+            </if>
+            <if test="proActivitySendWay != null and proActivitySendWay &lt; 6">
+                AND bpa.send_way = #{proActivitySendWay}
+            </if>
+            <if test="proActivitySendWay == 6 ">
+                AND bpa.proActivityType=1 AND bpa.send_way = 0
+            </if>
+            <if test="proActivitySendWay == 7 ">
+                AND bpa.proActivityType=2
+            </if>
+
+            <if test="promotionsRuleType != null">
+                AND bpr.promotions_type = #{promotionsRuleType}
+            </if>
+            <if test="status != null">
+                AND bpa.status = #{status}
+            </if>
+            <if test="startTime!=null">
+                AND bpa.create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime!=null">
+                AND bpa.create_time &lt;= #{endTime}
+            </if>
+        </where>
+        order by bpa.create_time desc
+    </select>
+
+    <select id="couponActivityList" parameterType="com.jk51.modules.promotions.request.ProActivityDtoForPage"
+            resultType="com.jk51.model.goods.PageData">
+        SELECT * from
+        (select site_id,id,title,content,send_way,status,create_time,"1" as proActivityType
+        from b_coupon_activity
+        ) a
+        <where>
+            <if test="siteId != null">
+                AND site_id = #{siteId}
+            </if>
+            <if test="proActivityName != null">
+                AND title like concat('%',#{proActivityName},'%')
+            </if>
+            <if test="proActivitySendWay != null and proActivitySendWay &lt; 6">
+                AND send_way = #{proActivitySendWay}
+            </if>
+            <if test="proActivitySendWay == 6 ">
+                AND a.proActivityType=1 AND send_way = 0
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="startTime!=null">
+                AND create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime!=null">
+                AND create_time &lt;= #{endTime}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="promotionsActivityList" parameterType="com.jk51.modules.promotions.request.ProActivityDtoForPage"
+            resultType="com.jk51.model.goods.PageData">
+        select bpr.id as ruleId,bpr.promotions_type,bpa.active_link,bpa.show_rule,bpa.site_id,bpa.id,bpa.title,bpa.title
+        as content,"" as
+        send_way,bpa.status,bpa.create_time,"2" as
+        proActivityType,
+        CASE
+        when show_rule like '%"isShow":"1"%' THEN '1'
+        ELSE '0'
+        END pc_is_show
+        from b_promotions_activity bpa
+        LEFT JOIN b_promotions_rule bpr ON (bpa.site_id=bpr.site_id and bpa.promotions_id = bpr.id)
+        <where>
+            <if test="siteId != null">
+                AND bpa.site_id = #{siteId}
+            </if>
+            <if test="proActivityName != null">
+                AND bpa.title like concat('%',#{proActivityName},'%')
+            </if>
+            <if test="proActivitySendWay != null and proActivitySendWay &lt; 6">
+                AND bpa.send_way = #{proActivitySendWay}
+            </if>
+            <if test="proActivitySendWay == 6 ">
+                AND a.proActivityType=1 AND send_way = 0
+            </if>
+            <if test="promotionsRuleType != null">
+                AND bpr.promotions_type = #{promotionsRuleType}
+            </if>
+
+            <if test="status != null">
+                AND bpa.status = #{status}
+            </if>
+            <if test="startTime!=null">
+                AND bpa.create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime!=null">
+                AND bpa.create_time &lt;= #{endTime}
+            </if>
+        </where>
+        order by bpa.create_time desc
+    </select>
+
+
+    <select id="promotionsActivityList2" parameterType="com.jk51.modules.promotions.request.ProActivityDtoForPage"
+            resultType="com.jk51.model.goods.PageData">
+        select bpr.id as ruleId,bpa.active_link,bpa.show_rule,bpa.site_id,bpa.id,bpa.title,
+        bpa.title as content,"" as send_way,bpa.status,bpa.create_time,"2" as proActivityType,
+        CASE
+        when bpa.show_rule like '%"isShow":"1"%' THEN '1'
+        ELSE '0'
+        END pc_is_show
+        from b_promotions_activity bpa
+        LEFT JOIN b_promotions_rule bpr on (bpr.site_id=bpa.site_id and bpa.promotions_id =bpr.id )
+        <where>
+            <if test="siteId != null">
+                AND bpa.site_id = #{siteId}
+            </if>
+            <if test="proActivityName != null">
+                AND bpa.title like concat('%',#{proActivityName},'%')
+            </if>
+            <if test="proActivitySendWay != null and proActivitySendWay &lt; 6">
+                AND bpa.send_way = #{proActivitySendWay}
+            </if>
+            <if test="proActivitySendWay == 6 ">
+                AND a.proActivityType=1 AND send_way = 0
+            </if>
+
+            <if test="status != null">
+                AND bpa.status = #{status}
+            </if>
+            <if test="startTime!=null">
+                AND bpa.create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime!=null">
+                AND bpa.create_time &lt;= #{endTime}
+            </if>
+        </where>
+        and active_link is not null
+        order by bpa.create_time desc
+    </select>
+
+
+    <select id="getPromotionsActivitiesByRuleIdAndSiteId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        b_promotions_activity
+        WHERE
+        promotions_id = #{ruleId}
+        AND
+        site_id = #{siteId}
+    </select>
+
+    <select id="getPromotionsActivitiesByStatusAndSiteId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        b_promotions_activity
+        WHERE site_id = #{siteId}
+        AND status = 0
+        order by create_time desc
+    </select>
+
+    <select id="getPromotionsActivitiesBySiteIdAndIds" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        b_promotions_activity
+        WHERE site_id = #{siteId}
+        <if test="isReleased">
+            AND status = 0
+        </if>
+        AND id IN
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        order by create_time desc
+    </select>
+
+    <select id="getPromotionsActivitiesByStatusTwoAndSiteId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        b_promotions_activity
+        WHERE
+        site_id = #{siteId}
+        AND
+        status in (0,11)
+        order by create_time desc
+    </select>
+
+    <select id="getForcePopupCounts" resultType="java.lang.Integer">
+        select count(*) from b_promotions_activity where site_id = #{siteId} and show_rule like '%"forcePopup":"1"%'
+    </select>
+
+    <select id="getproActivityBomb" resultType="java.util.Map">
+        select activity.* ,rule.time_rule,
+        IFNULL(activity.active_link,'') active_link
+        from b_promotions_activity activity
+        LEFT JOIN b_promotions_rule rule
+        on (activity.site_id=rule.site_id and activity.promotions_id=rule.id)
+        where activity.site_id=#{proActivityBomb.siteId}
+        <if test="proActivityBomb.type != null and proActivityBomb.type==1">
+            AND (activity.show_rule like '%"forcePopup":"1","popupAtHomePage":"1"%' or activity.show_rule like
+            '%"forcePopup":"1","popupAtHomePage":"2"%')
+            AND (activity.show_rule like '%"isTransformFromThemaActivity":0%')
+        </if>
+        <if test="proActivityBomb.type != null and proActivityBomb.type==2">
+            AND (activity.show_rule like '%"forcePopup":"1","popupAtHomePage":"0","popupWhenLogin":"1"%' or
+            activity.show_rule like '%"forcePopup":"1","popupAtHomePage":"0","popupWhenLogin":"2"%'
+            or activity.show_rule like '%"forcePopup":"1","popupAtHomePage":"1","popupWhenLogin":"1"%' or
+            activity.show_rule like '%"forcePopup":"1","popupAtHomePage":"1","popupWhenLogin":"2"%'
+            or activity.show_rule like '%"forcePopup":"1","popupAtHomePage":"2","popupWhenLogin":"1"%' or
+            activity.show_rule like '%"forcePopup":"1","popupAtHomePage":"2","popupWhenLogin":"2"%')
+            AND (activity.show_rule like '%"isTransformFromThemaActivity":0%')
+        </if>
+        AND activity.status=0 and (rule.status=0 or rule.status is null)
+        order by activity.create_time desc limit 1;
+    </select>
+
+    <select id="findAllReleasePromotions" resultType="map">
+        SELECT
+        <choose>
+            <when test="@org.apache.commons.lang.ArrayUtils@isNotEmpty(fields)">
+                <foreach collection="fields" separator="," item="v">
+                    `${v}`
+                </foreach>
+            </when>
+            <otherwise>
+                *
+            </otherwise>
+        </choose>
+        FROM
+        b_promotions_activity a
+        LEFT JOIN b_promotions_rule r ON a.site_id = #{siteId}
+        AND r.site_id = a.site_id
+        AND r.id = a.promotions_id
+        WHERE
+        a.site_id = #{siteId}
+        AND a.status IN (0, 11)
+    </select>
+
+    <select id="findAllReleasePromotionsActivity" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        b_promotions_activity
+        WHERE
+        site_id = #{siteId}
+        <if test="activityId!=null">
+            AND id=#{activityId}
+        </if>
+        AND
+        status in(0,11)
+    </select>
+
+    <select id="findAllReleasePromotionsActivity2" resultMap="BaseResultMap">
+        SELECT
+        *
+        FROM
+        b_promotions_activity
+        WHERE
+        site_id = #{siteId}
+         and promotions_id!=-1
+        AND
+        status =0 or status = 11
+
+    </select>
+
+
+    <select id="findAllReleasePromotionsActivityForBuyer" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        b_promotions_activity
+        WHERE
+        site_id = #{siteId}
+        <if test="activityId!=null">
+            AND id=#{activityId}
+        </if>
+    </select>
+
+    <select id="findAllReleasePromotionsActiviting" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        b_promotions_activity
+        WHERE
+        site_id = #{siteId}
+        <if test="activityId!=null">
+            AND id=#{activityId}
+        </if>
+        AND
+        status =0
+    </select>
+
+    <select id="getSomeInfoForTask" resultType="map">
+        SELECT
+        a.id, a.site_id,r.promotions_rule, r.promotions_type
+        FROM
+        b_promotions_activity a
+        LEFT JOIN b_promotions_rule r ON a.promotions_id = r.id
+        AND a.site_id = r.site_id
+        WHERE
+        a.id IN
+        <foreach collection="promotionsActivityIds" item="promotions_activity_id" open="(" close=")" separator=",">
+            #{promotions_activity_id}
+        </foreach>
+    </select>
+
+    <select id="getThemaActivityList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        b_promotions_activity
+        WHERE
+        site_id = #{siteId}
+        and show_rule like '%"forcePopup":"1"%'
+    </select>
+
+    <select id="countRuleReleaseNum" resultType="int">
+        SELECT COUNT(1)
+        FROM b_promotions_activity
+        WHERE promotions_id = #{ruleId}
+        AND site_id = #{siteId}
+        AND status != 10
+    </select>
+    <select id="findShowAd2App" resultMap="PromotionsActivityMapWithRuleIn">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        b_promotions_activity pa
+        WHERE
+        pa.site_id = #{siteId}
+        AND pa.status = 0
+        AND pa.show_ad = 1
+        ORDER BY pa.end_time asc
+    </select>
+
+    <select id="getPromotionsActivityByPromotionNo" resultMap="BaseResultMap">
+        SELECT * FROM b_promotions_activity pa
+        inner join b_promotions_detail pd ON pa.site_id = pd.site_id AND pa.id = pd.activity_id
+        WHERE pd.site_id = #{siteId} and pd.promotions_no = #{promotionsNo}
+    </select>
+
+    <select id="getPromotionsActivitiesWithRuleIn" resultMap="PromotionsActivityMapWithRuleIn">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        b_promotions_activity
+        WHERE site_id = #{siteId}
+        AND status in(0,11)
+        order by end_time desc
+    </select>
+
+    <!--查询独立活动信息-->
+    <select id="getIndependentPromotionsActivityBySiteId" resultMap="PromotionsActivityMapWithRuleIn">
+        SELECT <include refid="Base_Column_List"/>
+        FROM b_promotions_activity WHERE site_id = #{siteId} and is_independent = 1 and status = 0
+    </select>
+
+
+</mapper>

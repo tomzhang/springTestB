@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.pandian.mapper.BInventoriesMapper" >
+  <resultMap id="BaseResultMap" type="com.jk51.model.BInventories" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="plan_id" property="planId" jdbcType="INTEGER" />
+    <result column="pandian_num" property="pandianNum" jdbcType="VARCHAR" />
+    <result column="store_id" property="storeId" jdbcType="INTEGER" />
+    <result column="goods_code" property="goodsCode" jdbcType="VARCHAR" />
+    <result column="drug_name" property="drugName" jdbcType="VARCHAR" />
+    <result column="specif_cation" property="specifCation" jdbcType="VARCHAR" />
+    <result column="goods_company" property="goodsCompany" jdbcType="VARCHAR" />
+    <result column="inventory_accounting" property="inventoryAccounting" jdbcType="DECIMAL" />
+    <result column="actual_store" property="actualStore" jdbcType="DECIMAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="site_id" property="siteId" jdbcType="INTEGER" />
+    <result column="inventory_checker" property="inventoryChecker" jdbcType="INTEGER" />
+    <result column="batch_number" property="batchNumber" jdbcType="VARCHAR" />
+    <result column="quality" property="quality" jdbcType="VARCHAR" />
+    <result column="store_num" property="storeNum" jdbcType="VARCHAR" />
+    <result column="inventory_confirm" property="inventoryConfirm" jdbcType="INTEGER" />
+    <result column="is_del" property="isDel" jdbcType="INTEGER" />
+    <result column="order_id" property="orderId" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, plan_id, pandian_num, store_id, goods_code, drug_name, specif_cation, goods_company, 
+    inventory_accounting, actual_store, create_time, update_time, site_id, inventory_checker, 
+    batch_number, quality, store_num, inventory_confirm, is_del, order_id
+  </sql>
+
+
+  <update id="updateByAdd" parameterType="com.jk51.model.BInventories" >
+    update b_inventories set store_id = #{storeId}, drug_name = #{drugName}, specif_cation = #{specifCation}, goods_company = #{goodsCompany}
+    <if test="inventoryAccounting != null" >
+      , inventory_accounting = #{inventoryAccounting}
+    </if>
+    where is_del=0 AND site_id = #{siteId} AND order_id = #{orderId} AND store_num = #{storeNum} AND goods_code = #{goodsCode} AND batch_number = #{batchNumber}
+  </update>
+
+  <update id="deleteByAdd" >
+    UPDATE b_inventories SET is_del=1 WHERE is_del=0 AND site_id = #{siteId} AND order_id = #{orderId}
+    <if test="storeId != null" >
+      AND store_id = #{storeId}
+    </if>
+  </update>
+
+  <select id="getInventoriesList" resultType="java.util.Map">
+    SELECT i.pandian_num, i.store_num, s.`name` store_name, i.goods_code, i.drug_name, i.batch_number, i.specif_cation, i.goods_company,
+    i.inventory_accounting, i.actual_store, (i.actual_store-i.inventory_accounting) difference,
+    i.quality, e.`name` check_person, operator.supervisor, operator.approver, i.update_time, i.score
+    FROM b_inventories i
+    LEFT JOIN b_stores s ON i.site_id=s.site_id AND i.store_id=s.id
+    LEFT JOIN b_store_adminext e ON i.site_id=e.site_id AND i.inventory_checker=e.storeadmin_id
+    LEFT JOIN (
+    SELECT o.site_id, o.order_id, o.store_id,
+    if(o.confirm_operate_type=1,
+    o.confirm_checker,
+    if(o.confirm_operate_type=2,
+    (SELECT realname from b_manager m where m.site_id = o.site_id and m.username = o.confirm_checker),
+    (SELECT `name` from b_store_adminext e where o.site_id = e.site_id and o.confirm_checker = e.storeadmin_id)
+    )
+    ) supervisor,
+    if(o.audit_operate_type=1,
+    o.audit_checker,
+    if(o.audit_operate_type=2,
+    (SELECT realname from b_manager m where m.site_id = o.site_id and m.username = o.audit_checker),
+    (SELECT `name` from b_store_adminext e where o.site_id = e.site_id and o.audit_checker = e.storeadmin_id)
+    )
+    ) approver
+    FROM b_pandian_order_status o
+    WHERE o.site_id = #{siteId} AND o.order_id = #{orderId}
+    ) operator ON i.site_id=operator.site_id AND i.order_id=operator.order_id AND i.store_id=operator.store_id
+    WHERE i.is_del=0 AND i.site_id = #{siteId} AND i.order_id = #{orderId}
+    <if test="storeIdList != null" >
+      AND i.store_id IN <foreach item="id" index="index" collection="storeIdList" open="(" separator="," close=")"> #{id} </foreach>
+    </if>
+    <if test="cond != null" >
+
+    </if>
+    ORDER BY i.score
+  </select>
+
+
+  <insert id="insertSelective" parameterType="com.jk51.model.BInventories" >
+    insert into b_inventories
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="planId != null" >
+        plan_id,
+      </if>
+      <if test="pandianNum != null" >
+        pandian_num,
+      </if>
+      <if test="storeId != null" >
+        store_id,
+      </if>
+      <if test="goodsCode != null" >
+        goods_code,
+      </if>
+      <if test="drugName != null" >
+        drug_name,
+      </if>
+      <if test="specifCation != null" >
+        specif_cation,
+      </if>
+      <if test="goodsCompany != null" >
+        goods_company,
+      </if>
+      <if test="inventoryAccounting != null" >
+        inventory_accounting,
+      </if>
+      <if test="actualStore != null" >
+        actual_store,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="siteId != null" >
+        site_id,
+      </if>
+      <if test="inventoryChecker != null" >
+        inventory_checker,
+      </if>
+      <if test="batchNumber != null" >
+        batch_number,
+      </if>
+      <if test="quality != null" >
+        quality,
+      </if>
+      <if test="storeNum != null" >
+        store_num,
+      </if>
+      <if test="inventoryConfirm != null" >
+        inventory_confirm,
+      </if>
+      <if test="isDel != null" >
+        is_del,
+      </if>
+      <if test="orderId != null" >
+        order_id,
+      </if>
+      <if test="esId != null" >
+        es_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="planId != null" >
+        #{planId,jdbcType=INTEGER},
+      </if>
+      <if test="pandianNum != null" >
+        #{pandianNum,jdbcType=VARCHAR},
+      </if>
+      <if test="storeId != null" >
+        #{storeId,jdbcType=INTEGER},
+      </if>
+      <if test="goodsCode != null" >
+        #{goodsCode,jdbcType=VARCHAR},
+      </if>
+      <if test="drugName != null" >
+        #{drugName,jdbcType=VARCHAR},
+      </if>
+      <if test="specifCation != null" >
+        #{specifCation,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsCompany != null" >
+        #{goodsCompany,jdbcType=VARCHAR},
+      </if>
+      <if test="inventoryAccounting != null" >
+        #{inventoryAccounting,jdbcType=DECIMAL},
+      </if>
+      <if test="actualStore != null" >
+        #{actualStore,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="siteId != null" >
+        #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="inventoryChecker != null" >
+        #{inventoryChecker,jdbcType=INTEGER},
+      </if>
+      <if test="batchNumber != null" >
+        #{batchNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="quality != null" >
+        #{quality,jdbcType=VARCHAR},
+      </if>
+      <if test="storeNum != null" >
+        #{storeNum,jdbcType=VARCHAR},
+      </if>
+      <if test="inventoryConfirm != null" >
+        #{inventoryConfirm,jdbcType=INTEGER},
+      </if>
+      <if test="isDel != null" >
+        #{isDel,jdbcType=INTEGER},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=INTEGER},
+      </if>
+      <if test="esId != null" >
+        #{esId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+    <select id="selectInventoriesListToErp" resultType="java.util.Map">
+        SELECT IFNULL(i.actual_store,0) actual_store, i.goods_code,i.erp_data_seq
+        FROM b_inventories i
+        LEFT JOIN b_stores s ON i.site_id=s.site_id AND i.store_id=s.id
+        WHERE i.is_del=0 AND i.site_id = #{siteId} AND i.pandian_num=#{pandianNum} and s.stores_number=#{uid} and
+        erp_data_seq is not NULL and erp_data_seq!=''
+        <if test="itemIds != null">
+            AND erp_data_seq in
+            <foreach collection="itemIds" open="(" close=")" separator="," item="itemId">
+                #{itemId}
+            </foreach>
+        </if>
+        order by erp_data_seq asc;
+    </select>
+
+  <insert id="insertByList" >
+    INSERT INTO b_inventories
+    (site_id, order_id, pandian_num, plan_id, store_id, store_num, goods_code, batch_number, drug_name, specif_cation, goods_company, inventory_accounting, erp_data_seq,es_id)
+    VALUES
+    <foreach collection="list" item="item" index="index" separator="," >
+      (#{item.site_id}, #{item.order_id}, #{item.pandian_num}, #{item.plan_id}, #{item.store_id}, #{item.store_num}, #{item.goods_code}, #{item.batch_number}, #{item.drug_name}, #{item.specif_cation}, #{item.goods_company}, #{item.inventory_accounting}, #{item.erpDataSeq},#{item.esId})
+    </foreach>
+  </insert>
+
+  <update id="deleteByStoreIdList" >
+    UPDATE b_inventories SET is_del=1 WHERE is_del=0 AND site_id = #{siteId} AND order_id = #{orderId}
+    <if test="storeIds != null" >
+      AND store_id IN
+      <foreach item="storeId" index="index" collection="storeIds" open="(" separator="," close=")" >
+        #{storeId}
+      </foreach>
+    </if>
+  </update>
+</mapper>

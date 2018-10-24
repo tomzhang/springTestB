@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.persistence.mapper.UserStoresDistanceMapper">
+
+    <insert id="insertUserStoresDistanceLog">
+        insert into b_user_stores_distance_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="storesId != null">
+                stores_id,
+            </if>
+            <if test="storesGaodeLng != null">
+                stores_gaode_lng,
+            </if>
+            <if test="storesGaodeLat != null">
+                stores_gaode_lat,
+            </if>
+            <if test="storesAddress != null">
+                stores_address,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="userGaodeLng != null">
+                user_gaode_lng,
+            </if>
+            <if test="userGaodeLat != null">
+                user_gaode_lat,
+            </if>
+            <if test="userAddress != null">
+                user_address,
+            </if>
+            <if test="distributionDistance != null">
+                distribution_distance,
+            </if>
+            <if test="storeName != null">
+                stores_name,
+            </if>
+            <if test="openId != null">
+                open_id,
+            </if>
+            <if test="pvType != null">
+                uv_type,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="storesId != null">
+                #{storesId,jdbcType=INTEGER},
+            </if>
+            <if test="storesGaodeLng != null">
+                #{storesGaodeLng,jdbcType=VARCHAR},
+            </if>
+            <if test="storesGaodeLat != null">
+                #{storesGaodeLat,jdbcType=VARCHAR},
+            </if>
+            <if test="storesAddress != null">
+                #{storesAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="userGaodeLng != null">
+                #{userGaodeLng,jdbcType=VARCHAR},
+            </if>
+            <if test="userGaodeLat != null">
+                #{userGaodeLat,jdbcType=VARCHAR},
+            </if>
+            <if test="userAddress != null">
+                #{userAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="distributionDistance != null">
+                #{distributionDistance,jdbcType=INTEGER},
+            </if>
+            <if test="storeName != null">
+                #{storeName,jdbcType=VARCHAR},
+            </if>
+            <if test="openId != null">
+                #{openId,jdbcType=VARCHAR},
+            </if>
+            <if test="pvType != null">
+                #{pvType,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="insertUserStoresDistance">
+        insert into b_user_stores_distance
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="storesId != null">
+                stores_id,
+            </if>
+            <if test="storesGaodeLng != null">
+                stores_gaode_lng,
+            </if>
+            <if test="storesGaodeLat != null">
+                stores_gaode_lat,
+            </if>
+            <if test="storesAddress != null">
+                stores_address,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="userGaodeLng != null">
+                user_gaode_lng,
+            </if>
+            <if test="userGaodeLat != null">
+                user_gaode_lat,
+            </if>
+            <if test="userAddress != null">
+                user_address,
+            </if>
+            <if test="distributionDistance != null">
+                distribution_distance,
+            </if>
+            <if test="storeName != null">
+                stores_name,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="storesId != null">
+                #{storesId,jdbcType=INTEGER},
+            </if>
+            <if test="storesGaodeLng != null">
+                #{storesGaodeLng,jdbcType=VARCHAR},
+            </if>
+            <if test="storesGaodeLat != null">
+                #{storesGaodeLat,jdbcType=VARCHAR},
+            </if>
+            <if test="storesAddress != null">
+                #{storesAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="userGaodeLng != null">
+                #{userGaodeLng,jdbcType=VARCHAR},
+            </if>
+            <if test="userGaodeLat != null">
+                #{userGaodeLat,jdbcType=VARCHAR},
+            </if>
+            <if test="userAddress != null">
+                #{userAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="distributionDistance != null">
+                #{distributionDistance,jdbcType=INTEGER},
+            </if>
+            <if test="storeName != null">
+                #{storeName,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="booleanUser" resultType="map" parameterType="map">
+        SELECT distribution_distance,user_id
+        FROM b_user_stores_distance
+        WHERE site_id=#{siteId} AND user_id=#{userId}
+    </select>
+
+    <update id="updateUserStoresDistance">
+        update b_user_stores_distance
+        <set>
+            <if test="storesId != null">
+                stores_id = #{storesId,jdbcType=INTEGER},
+            </if>
+            <if test="storesGaodeLng != null">
+                stores_gaode_lng = #{storesGaodeLng,jdbcType=VARCHAR},
+            </if>
+            <if test="storesGaodeLat != null">
+                stores_gaode_lat = #{storesGaodeLat,jdbcType=VARCHAR},
+            </if>
+            <if test="storesAddress != null">
+                stores_address = #{storesAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="userGaodeLng != null">
+                user_gaode_lng = #{userGaodeLng,jdbcType=VARCHAR},
+            </if>
+            <if test="userGaodeLat != null">
+                user_gaode_lat = #{userGaodeLat,jdbcType=VARCHAR},
+            </if>
+            <if test="userAddress != null">
+                user_address = #{userAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="distributionDistance != null">
+                distribution_distance = #{distributionDistance,jdbcType=VARCHAR},
+            </if>
+            <if test="storeName != null">
+                stores_name = #{storeName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where site_id = #{siteId} AND user_id=#{userId}
+    </update>
+
+    <select id="getAllStore" resultType="map" parameterType="map">
+        SELECT GROUP_CONCAT(id) name,region_id
+        FROM b_stores
+        WHERE site_id=#{siteId} AND stores_status=1
+        GROUP BY region_id
+    </select>
+
+    <select id="getArea" resultType="map" >
+        SELECT name,parent_id
+        FROM yb_area
+        WHERE areaid=#{regoinId} AND type=4
+    </select>
+    <select id="getParentName" resultType="String" >
+        SELECT name
+        FROM yb_area
+        WHERE areaid=#{parentId} AND type=3
+    </select>
+    <select id="getStoreNameByStoreId" resultType="String" parameterType="map">
+        SELECT name
+        FROM b_stores
+        WHERE site_id=#{siteId} AND id=#{storesId} AND is_del=1
+    </select>
+
+    <select id="getBooleanMember" resultType="Integer" parameterType="map">
+        SELECT count(*)
+        FROM b_user_stores_distance
+        WHERE site_id=#{siteId} AND user_id=#{memberId}
+    </select>
+
+    <select id="getDistanceByMember" resultType="String" parameterType="map">
+        SELECT distribution_distance
+        FROM b_user_stores_distance
+        WHERE site_id=#{siteId} AND user_id=#{memberId}
+    </select>
+
+    <select id="getDistanceByMemberMap" resultType="map" parameterType="map">
+        SELECT *
+        FROM b_user_stores_distance_log
+        WHERE
+        site_id=#{siteId} AND CURRENT_TIMESTAMP()<![CDATA[ < ]]>
+        date_add(create_time, interval 1 HOUR)
+        <if test="memberId != null">
+            AND user_id = #{memberId}
+        </if>
+        <if test="openId != null">
+            AND open_id = #{openId}
+        </if>
+        ORDER BY `create_time` DESC LIMIT 1
+    </select>
+
+</mapper>

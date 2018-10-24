@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.im.mapper.ImRecodeMapper">
+    <insert id="insertSelective" keyProperty="id" useGeneratedKeys="true" parameterType="com.jk51.model.IMRecode">
+        INSERT into b_im_recode
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="appid != null and appid!=''">
+                appid,
+            </if>
+            <if test="receiver != null and receiver!=''">
+                receiver,
+            </if>
+            <if test="sender != null and sender!=''">
+                sender,
+            </if>
+            <if test="msg != null and msg!=''">
+                msg,
+            </if>
+            <if test="msg_type != null">
+                msg_type,
+            </if>
+            <if test="isRace != null">
+                is_race,
+            </if>
+            <if test="isSystemMessage != null">
+                is_system_message,
+            </if>
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="storeId != null">
+                store_id,
+            </if>
+            <if test="storeAdminId != null">
+                store_admin_id,
+            </if>
+            <if test="buyerId != null">
+                buyer_id,
+            </if>
+            <if test="create_time != null">
+                create_time
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="appid != null and appid!=''">
+                #{appid},
+            </if>
+            <if test="receiver != null and receiver!=''">
+                #{receiver},
+            </if>
+            <if test="sender != null and sender!=''">
+                #{sender},
+            </if>
+            <if test="msg != null and msg!=''">
+                #{msg},
+            </if>
+            <if test="msg_type != null">
+                #{msg_type},
+            </if>
+            <if test="isRace != null">
+                #{isRace},
+            </if>
+            <if test="isSystemMessage != null">
+                #{isSystemMessage},
+            </if>
+            <if test="siteId != null">
+                #{siteId},
+            </if>
+            <if test="storeId != null">
+                #{storeId},
+            </if>
+            <if test="storeAdminId != null">
+                #{storeAdminId},
+            </if>
+            <if test="buyerId != null">
+                #{buyerId},
+            </if>
+            <if test="create_time != null">
+                #{create_time},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="findIMRecodeByTiemScope" resultType="java.lang.Integer">
+        SELECT count(distinct sender)
+        from  b_im_recode
+        where
+         sender = #{user_name}
+         and
+          create_time BETWEEN #{beforeDate}  and  #{now}
+    </select>
+    <select id="findIMRecodeByTiemScope2" resultMap="iMRecodeByTiemScope">
+         SELECT sender,count(*) as times
+        from  b_im_recode
+        WHERE
+            create_time BETWEEN #{before}  and  #{now}
+		GROUP  BY sender
+    </select>
+    <resultMap id="iMRecodeByTiemScope" type="java.util.Map">
+        <result property="sender"   column="sender" javaType="String"/>
+        <result property="times" column="times" javaType="String"/>
+    </resultMap>
+    <select id="findImRecodeByReceiverAndSender" parameterType="java.lang.String" resultType="com.jk51.model.IMRecode">
+        SELECT *
+        from b_im_recode
+        WHERE
+        create_time in(select min(create_time) from b_im_recode GROUP BY receiver,sender )
+        and
+        receiver = #{receiver}
+        and
+        sender = #{sender}
+
+    </select>
+
+    <select id="findStoreAdminCloseIndex" resultType="com.jk51.model.packageEntity.StoreAdminCloseIndex">
+        SELECT i.receiver as storeadmin_user_name,i.sender as customer_user_name,e.site_id as site_id,e.storeadmin_id as storeadmin_id
+        from b_im_recode as i
+        left join b_store_adminext as e on e.site_id = substring(i.sender,8,Locate("_",i.sender,8)-8) and e.storeadmin_id = substring(i.sender,Locate("_",i.sender,8)+1,CHAR_LENGTH(i.sender)-Locate("_",i.sender,8)+1)
+      WHERE
+        i.create_time BETWEEN #{before} and #{now}
+        AND
+        e.site_id is not null
+        and
+        i.sender in
+        <foreach item="item" index="index" collection="userNameList" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+    </select>
+    <update id="updateStoreAdminIdByPrimaryKey">
+      UPDATE
+        b_im_recode
+      set
+        store_admin_id = #{storeAdminId}
+      WHERE
+        id = #{msg_id}
+    </update>
+
+    <select id="findByStoreAdminIdAndBuyerId" resultType="com.jk51.modules.im.service.iMRecode.response.IMRecode">
+        SELECT
+            msg,
+            time,
+            sender,
+            msg_type,
+        IF (
+            sender = "app",
+            (
+                SELECT
+                    `name`
+                FROM
+                    b_store_adminext ext
+                WHERE
+                    ext.site_id = #{site_id}
+                AND ext.storeadmin_id = #{store_admin_id}
+            ),
+            (
+                SELECT
+                    mobile
+                FROM
+                    b_member m
+                WHERE
+                    m.site_id = #{site_id}
+                AND m.buyer_id = #{buyer_id}
+            )
+        ) `name`
+        FROM
+            (
+                SELECT
+                    msg,
+                    DATE_FORMAT(create_time, "%Y-%m-%d %T") AS time,
+                    msg_type,
+                IF (
+                    INSTR(sender, "helper") > 0,
+                    "app",
+                    "wechat"
+                ) sender
+                FROM
+                    b_im_recode
+                WHERE
+                    site_id = #{site_id}
+                AND store_admin_id = #{store_admin_id}
+                AND buyer_id = #{buyer_id}
+                AND msg_type = 1
+                ORDER BY
+                    create_time ASC
+            ) r
+    </select>
+    <select id="findClerkList" resultType="com.jk51.modules.im.service.iMRecode.response.Clerk" parameterType="com.jk51.modules.im.controller.request.IMRelationRequest">
+        SELECT DISTINCT
+            b.store_admin_id storeAdminId,
+            CONCAT(s.`name`, s.mobile) `name`
+        FROM
+            b_im_recode b
+        LEFT JOIN b_store_adminext s ON b.store_admin_id = s.storeadmin_id
+        AND b.site_id = s.site_id
+        WHERE
+            b.site_id = #{site_id}
+        AND b.store_admin_id != 0
+        AND b.buyer_id != 0
+        <if test="store_admin_id!=null and store_admin_id!=''">
+          AND b.store_admin_id = #{store_admin_id}
+        </if>
+        <if test="mobile!=null and mobile!=''">
+            AND b.buyer_id  in ( SELECT buyer_id from b_member where site_id = #{site_id} and mobile like concat(#{mobile},"%"))
+        </if>
+        <if test="start_time!=null and start_time!='' and end_time!=null and end_time!=''">
+            and b.create_time BETWEEN #{start_time} and #{end_time}
+        </if>
+    </select>
+    <select id="findMemberList" resultType="com.jk51.modules.im.service.iMRecode.response.Member" parameterType="com.jk51.modules.im.controller.request.IMRelationRequest">
+        SELECT DISTINCT
+            b.buyer_id buyerId,
+            s.mobile
+        FROM
+            b_im_recode b
+        LEFT JOIN b_member s ON b.buyer_id = s.buyer_id
+        AND b.site_id = s.site_id
+        WHERE
+            b.site_id = #{site_id}
+        AND b.store_admin_id != 0
+        AND b.buyer_id != 0
+        <if test="store_admin_id!=null and store_admin_id!=''">
+            AND b.store_admin_id = #{store_admin_id}
+        </if>
+        <if test="mobile!=null and mobile!=''">
+            AND b.buyer_id in ( SELECT buyer_id from b_member where site_id = #{site_id} and mobile like concat(#{mobile},"%"))
+        </if>
+        <if test="start_time!=null and start_time!='' and end_time!=null and end_time!=''">
+            and b.create_time BETWEEN #{start_time} and #{end_time}
+        </if>
+    </select>
+    <select id="queryIMRecodeTop10" resultType="com.jk51.modules.im.service.iMRecode.response.IMRecode">
+        SELECT
+            msg,
+            DATE_FORMAT(create_time, "%Y-%m-%d %T") AS time,
+
+            IF (
+            INSTR(sender, "wechat") > 0,
+            "wechat",
+            "app"
+            ) sender,
+            msg_type,
+            site_id siteId
+        FROM
+            b_im_recode
+            WHERE
+            site_id = #{site_id}
+            AND buyer_id = #{buyer_id}
+            <if test="store_admin_id!=null">
+              AND store_admin_id = #{store_admin_id}
+            </if>
+            <if test="create_time!=null and create_time!=''">
+            AND create_time &lt; #{create_time}
+            </if>
+           /* AND (msg_type = 1 or msg_type = 4)*/
+        ORDER BY
+            create_time DESC
+            limit 10
+    </select>
+    <select id="getClerkIdsByCurdate" resultType="Integer">
+        select store_admin_id from b_im_recode where site_id=#{siteId}
+        and is_race=1
+        and create_time between #{start} and #{end}
+        group by store_admin_id
+    </select>
+    <select id="getServiceSatisfactionMap" resultType="Map">
+    select date(create_time) AS query_time,avg(evaluate) value from b_im_service where site_id=#{siteId} and create_time
+    between #{start} and #{end} group by query_time
+    </select>
+</mapper>

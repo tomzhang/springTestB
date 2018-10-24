@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.trades.mapper.StockupMapper">
+    <resultMap id="StockupMap" type="com.jk51.model.order.Stockup">
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="stockup_id" property="stockupId"/>
+        <result column="trades_id" property="tradesId"/>
+        <result column="store_id" property="storeId"/>
+        <result column="clerk_id" property="clerkId"/>
+        <result column="stockup_status" property="stockupStatus"/>
+        <result column="stockup_time" property="stockupTime"/>
+        <result column="shipping_status" property="shippingStatus"/>
+        <result column="shipping_time" property="shippingTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, site_id, stockup_id, trades_id, store_id, clerk_id, stockup_status, stockup_time,
+        shipping_status, shipping_time, create_time, update_time
+    </sql>
+    <select id="getTradesStockup" resultMap="StockupMap" >
+        select
+        <include refid="Base_Column_List" />
+        from b_stockup
+        where site_id = #{siteId} AND trades_id = #{tradesId}
+        <if test="storeId != null and storeId != ''" >
+            AND store_id = #{storeId}
+        </if>
+    </select>
+
+    <select id="getTradesStockupInfoList" resultType="java.util.Map">
+        select site_id, trades_id, stockup_id
+        from b_stockup
+        where site_id=#{siteId} AND trades_id IN
+        <foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="findByTradesId2" resultMap="StockupMap">
+        select * from b_stockup where site_id=#{siteId} AND trades_id=#{tradesId} LIMIT 1
+    </select>
+
+    <select id="getStockupId" resultType="String">
+        select max(stockup_id) from b_stockup where site_id=#{siteId} and store_id=#{storeId} and create_time <![CDATA[ >= ]]> #{createTime}
+    </select>
+    <select id="findByTradesId" resultMap="StockupMap">
+      select * from b_stockup where trades_id=#{tradesId}
+    </select>
+    <update id="update" parameterType="com.jk51.model.order.Stockup">
+        UPDATE b_stockup
+        <trim prefix="set" suffixOverrides=",">
+            <if test="stockupId != null">
+                stockup_id = #{stockupId},
+            </if>
+            <if test="storeId != null">
+                store_id = #{storeId},
+            </if>
+            <if test="clerkId != null">
+                clerk_id = #{clerkId},
+            </if>
+            <if test="stockupStatus != null">
+                stockup_status = #{stockupStatus},
+            </if>
+            <if test="stockupTime != null">
+                stockup_time = #{stockupTime},
+            </if>
+            <if test="shippingStatus != null">
+                shipping_status = #{shippingStatus},
+            </if>
+            <if test="shippingTime != null">
+                shipping_time = #{shippingTime},
+            </if>
+            update_time = CURRENT_TIMESTAMP(),
+        </trim>
+        <where>
+            trades_id = #{tradesId}
+        </where>
+    </update>
+    <insert id="insert" parameterType="com.jk51.model.order.Stockup" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO b_stockup
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            site_id,
+            <if test="stockupId != null">
+                stockup_id,
+            </if>
+            <if test="tradesId != null">
+                trades_id,
+            </if>
+            <if test="storeId != null">
+                store_id,
+            </if>
+            <if test="clerkId != null">
+                clerk_id,
+            </if>
+            <if test="stockupStatus != null">
+                stockup_status,
+            </if>
+            <if test="stockupTime != null">
+                stockup_time,
+            </if>
+            <if test="shippingStatus != null">
+                shipping_status,
+            </if>
+            <if test="shippingTime != null">
+                shipping_time,
+            </if>
+            create_time,update_time,
+        </trim>
+        <trim prefix="value (" suffix=")" suffixOverrides=",">
+            #{siteId},
+            <if test="stockupId != null">
+                #{stockupId},
+            </if>
+            <if test="tradesId != null">
+                #{tradesId},
+            </if>
+            <if test="storeId != null">
+                #{storeId},
+            </if>
+            <if test="clerkId != null">
+                #{clerkId},
+            </if>
+            <if test="stockupStatus != null">
+                #{stockupStatus},
+            </if>
+            <if test="stockupTime != null">
+                #{stockupTime},
+            </if>
+            <if test="shippingStatus != null">
+                #{shippingStatus},
+            </if>
+            <if test="shippingTime != null">
+                #{shippingTime},
+            </if>
+            CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP(),
+        </trim>
+    </insert>
+
+    <update id="cancelStockup">
+        UPDATE b_stockup SET trades_id=CONCAT('-', trades_id) WHERE trades_id=#{tradesId}
+    </update>
+</mapper>

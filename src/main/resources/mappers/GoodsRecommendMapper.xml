@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.goods.mapper.GoodsRecommendMapper">
+    <insert id="addGoodsRecommend" parameterType="map">
+        INSERT INTO b_goods_recommend (site_id,goods_id, status, reason, scene, goods_hash, weight) VALUES
+        (#{paramMap.siteId}, #{paramMap.goodsRecommendId}, #{paramMap.status}, #{paramMap.reason}, #{paramMap.scene}, #{paramMap.goodsRecommendHash}, #{paramMap.weight});
+    </insert>
+    <insert id="insertGoodsRecommendRecords">
+        INSERT INTO b_goods_recommend_records
+        (`site_id`, `salesclerk_id`, `salesclerk_mobile`, `member_id`, `member_mobile`, `store_id`, `goods_id`,`recommend_id`)
+        <!--(
+        <if test="paramMap.siteId != null and paramMap.siteId != ''">
+            `site_id`,
+        </if>
+        <if test="paramMap.recommendId != null and paramMap.recommendId != ''">
+            `recommend_id`,
+        </if>
+        <if test="paramMap.storeAdminId != null and paramMap.storeAdminId != ''">
+            `salesclerk_id`,
+        </if>
+        <if test="paramMap.storeAdminphone != null and paramMap.storeAdminphone != ''">
+            `salesclerk_mobile`,
+        </if>
+        <if test="paramMap.userId != null and paramMap.userId != ''">
+            `member_id`,
+        </if>
+        <if test="paramMap.mobile != null and paramMap.mobile != ''">
+            `member_mobile`,
+        </if>
+        <if test="paramMap.storeId != null and paramMap.storeId != ''">
+            `store_id`,
+        </if>
+        <if test="paramMap.goodsRecommendId != null and paramMap.goodsRecommendId != ''">
+            `goods_id`
+        </if>
+
+        )-->
+         VALUES
+         (#{paramMap.siteId}, #{paramMap.storeAdminId}, #{paramMap.storeAdminphone}, #{paramMap.userId}, #{paramMap.mobile}, #{paramMap.storeId}, #{paramMap.goodsRecommendId}, #{paramMap.recommendId})
+        <!--(
+        <if test="paramMap.siteId != null and paramMap.siteId != ''">
+            #{paramMap.siteId},
+        </if>
+        <if test="paramMap.recommendId != null and paramMap.recommendId != ''">
+            #{paramMap.recommendId},
+        </if>
+        <if test="paramMap.storeAdminId != null and paramMap.storeAdminId != ''">
+            #{paramMap.storeAdminId},
+        </if>
+        <if test="paramMap.storeAdminphone != null and paramMap.storeAdminphone != ''">
+            #{paramMap.storeAdminphone},
+        </if>
+        <if test="paramMap.userId != null and paramMap.userId != ''">
+            #{paramMap.userId},
+        </if>
+        <if test="paramMap.mobile != null and paramMap.mobile != ''">
+            #{paramMap.mobile},
+        </if>
+        <if test="paramMap.storeId != null and paramMap.storeId != ''">
+            #{paramMap.storeId},
+        </if>
+        <if test="paramMap.goodsRecommendId != null and paramMap.goodsRecommendId != ''">
+            #{paramMap.goodsRecommendId}
+        </if>
+
+        );-->
+    </insert>
+    <select id="getGoodsRecommendList" parameterType="map" resultType="map">
+        SELECT bgr.id recommendId ,bgr.site_id siteId, bgr.goods_id goodsId, bgr.`status`, bgr.weight, CONCAT(bgr.create_time, '') createTime, IFNULL(bg.drug_name, '') goodsName,
+        IFNULL(bg.goods_code, '') goodsCode, IFNULL(countT.payNum, 0) payNum, IFNULL(order_goods_id, '') orderGoodsIds
+        FROM b_goods_recommend bgr
+        LEFT JOIN b_goods bg ON bgr.site_id = bg.site_id AND bgr.goods_id = bg.goods_id
+        LEFT JOIN
+        (SELECT bgr.site_id, bgr.goods_id, COUNT(bt.goods_id) payNum
+        FROM b_goods_recommend bgr
+        LEFT JOIN b_orders bo ON bgr.site_id = bo.site_id AND bgr.goods_id = bo.goods_id
+        LEFT JOIN b_trades bt ON bo.trades_id = bt.trades_id AND bo.site_id = bt.site_id
+        WHERE bo.site_id =#{paramMap.siteId} and bo.correlation_id = 1
+        and bt.is_payment =1
+        GROUP BY bo.goods_id
+        HAVING bo.goods_id in (SELECT DISTINCT goods_id FROM b_goods_recommend WHERE site_id = #{paramMap.siteId})
+        ) countT ON bgr.site_id = countT.site_id AND bgr.goods_id = countT.goods_id
+        WHERE bgr.site_id = #{paramMap.siteId}
+        <if test="paramMap.goodsName != null and paramMap.goodsName != ''">
+            and bg.drug_name LIKE #{paramMap.goodsName}
+        </if>
+        <if test="paramMap.code != null and paramMap.code != ''">
+            and bg.goods_code LIKE #{paramMap.code}
+        </if>
+        <if test="paramMap.status != null and paramMap.status != ''">
+            and bgr.`status` = #{paramMap.status}
+        </if>
+        <if test="paramMap.timeStart != null and paramMap.timeStart != ''">
+            and bgr.create_time &gt;= #{paramMap.timeStart}
+        </if>
+        <if test="paramMap.timeEnd != null and paramMap.timeEnd != ''">
+            and bgr.create_time &lt;= #{paramMap.timeEnd}
+        </if>
+        ORDER BY bgr.update_time DESC
+    </select>
+    <select id="getGoodsRecommendDetail" parameterType="map" resultType="map">
+        SELECT bgr.id recommendId ,bgr.site_id siteId, bgr.goods_id goodsId, bgr.`status`, bgr.create_time createTime,
+        bgr.reason, bgr.scene, IFNULL(bgr.goods_hash, '') goodsHash, bgr.weight, IFNULL(bg.drug_name, '') goodsName
+        FROM b_goods_recommend bgr
+        LEFT JOIN b_goods bg ON bgr.site_id = bg.site_id AND bgr.goods_id = bg.goods_id
+        WHERE bgr.site_id = #{paramMap.siteId} AND bgr.id = #{paramMap.recommendId} AND bgr.goods_id = #{paramMap.goodsId}
+    </select>
+    <update id="updateGoodsRecommend" parameterType="map">
+        UPDATE b_goods_recommend SET status = 0 WHERE site_id = #{paramMap.siteId} and id = #{paramMap.recommendId} AND goods_id = #{paramMap.goodsId}
+    </update>
+    <update id="updateAgainGoodsRecommend" parameterType="map">
+        UPDATE b_goods_recommend SET  goods_id =#{paramMap.goodsRecommendId},weight = #{paramMap.weight}, `status` = #{paramMap.status}, reason = #{paramMap.reason}, scene = #{paramMap.scene}, goods_hash = #{paramMap.goodsRecommendHash}
+        WHERE id = #{paramMap.recommendId}
+    </update>
+    <select id="getGoodsRecommendByGoodsId" parameterType="map" resultType="map">
+        SELECT IFNULL(COUNT(1), 0) countNum, `status`
+        FROM b_goods_recommend
+        WHERE site_id = #{paramMap.siteId} AND goods_id = #{paramMap.goodsRecommendId} and status = 1
+    </select>
+    <update id="deleteGoodsRecommendImg" parameterType="map">
+        UPDATE b_images_attr SET flag = 1
+        WHERE site_id = #{paramMap.siteId} AND goods_id = #{paramMap.goodsId} AND hash = #{paramMap.imgHash}
+    </update>
+    <select id="getStartOfGoodsRecommendList" resultType="java.util.Map">
+        SELECT bgr.id recommendId, IFNULL(bgr.order_goods_id, '') orderGoodsIds, bgr.goods_id goodsId, bgr.weight, bgr.reason, bgr.goods_hash goodsHash
+        FROM b_goods_recommend bgr
+        LEFT JOIN yb_stores ybs ON bgr.site_id = ybs.merchant_id
+        WHERE bgr.site_id = #{siteId} AND bgr.`status` = 1 AND ybs.b_store_id = #{storeId}
+    </select>
+    <select id="getStartOfGoodsRecommendList2" resultType="java.util.Map">
+        SELECT id recommendId, IFNULL(order_goods_id, '') orderGoodsIds, goods_id goodsId, weight, reason, goods_hash goodsHash
+        FROM b_goods_recommend
+        WHERE site_id = #{siteId} AND `status` = 1
+    </select>
+    <select id="getGoodsRecommendRecords" resultType="java.util.Map">
+        SELECT goods_id goodsId
+        FROM b_goods_recommend_records
+        WHERE site_id = #{paramMap.siteId}
+        <if test="paramMap.userId != null and paramMap.userId != ''">
+            AND member_id = #{paramMap.userId}
+        </if>
+        <if test="paramMap.mobile != null and paramMap.mobile != ''">
+            AND member_mobile = #{paramMap.mobile}
+        </if>
+        AND DATE_FORMAT(update_time,'%Y-%m-%d') = #{paramMap.localDate}
+    </select>
+    <select id="getGoodsNameBySiteIdAndGoodsIdAndStoreId" resultType="java.util.Map">
+        SELECT DISTINCT bg.goods_id goodsId, IFNULL(bg.com_name,'') goodsName2, IFNULL(bg.drug_name, '') goodsName, bg.shop_price companyPrice, sgp.discount_price storePrice
+        FROM b_goods bg
+        LEFT JOIN yb_stores_goods_price sgp ON bg.site_id = sgp.site_id AND bg.goods_id = sgp.goods_id
+        WHERE bg.site_id = #{siteId} AND bg.goods_id = #{goodsId} AND sgp.store_id = #{storeId}
+    </select>
+    <select id="getGoodsNameBySiteIdAndGoodsId" resultType="java.util.Map">
+        SELECT goods_id goodsId, IFNULL(com_name,'') goodsName2, IFNULL(drug_name, '') goodsName, shop_price companyPrice
+        FROM b_goods
+        WHERE site_id = #{siteId} AND goods_id = #{goodsId}
+    </select>
+    <select id="getGoodsRecommendBySiteIdOrStoreId" resultType="java.util.Map">
+        SELECT bgr.id recommendId, IFNULL(bgr.order_goods_id, '') orderGoodsIds, bgr.goods_id goodsId, bgr.weight, bgr.reason, bgr.goods_hash goodsHash
+        FROM b_goods_recommend bgr
+        LEFT JOIN yb_stores ybs ON bgr.site_id = ybs.merchant_id
+        WHERE bgr.site_id = #{paramMap.siteId} AND bgr.`status` = 1
+         <if test="paramMap.storeId != null and paramMap.storeId != ''">
+             AND ybs.b_store_id = #{paramMap.storeId}
+         </if>
+    </select>
+    <update id="updateDailyBrowseOfAppGoodsRecommend">
+        UPDATE b_goods_recommend
+        SET browse_num = browse_num +1, daily_browsing = (
+        CASE
+            WHEN date_format(update_time ,'%Y-%m-%d' ) = #{paramMap.localDate} THEN daily_browsing + 1
+        ELSE 1 END
+        )
+        WHERE site_id = #{paramMap.siteId} AND id = #{paramMap.recommendId}
+    </update>
+    <update id="updateBTradesBySiteIdAndTradesId">
+        UPDATE b_orders SET correlation_id = 1 WHERE site_id = #{paramMap.siteId} AND trades_id = #{paramMap.tradesId} and goods_id = #{paramMap.goodsId}
+    </update>
+    <update id="updateRecommend">
+        UPDATE b_goods_recommend SET order_goods_id = #{paramMap.orderGoodsIds} WHERE site_id = #{paramMap.siteId} AND id = #{paramMap.recommendId}
+    </update>
+
+</mapper>

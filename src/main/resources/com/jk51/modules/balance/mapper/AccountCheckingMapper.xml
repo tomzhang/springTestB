@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.balance.mapper.AccountCheckingMapper">
+    <select id="getMerchantTradesChecking"  resultType="map" parameterType="map">
+        SELECT b.trades_id b_trades_id
+        ,b.total_fee b_total_fee
+        ,bte.user_coupon_amount bte_coupon
+        ,CASE
+        WHEN (b.total_fee + b.post_fee)/(b.real_pay + bte.user_coupon_amount) >= 1 THEN (b.total_fee + b.post_fee) - (b.real_pay + bte.user_coupon_amount)
+        WHEN (b.real_pay + bte.user_coupon_amount)/(b.total_fee + b.post_fee) > 1 THEN (b.real_pay + bte.user_coupon_amount)  - (b.total_fee + b.post_fee)
+        ELSE 0 END b_youhui
+        ,bol.total_fee bol_total_fee
+        ,b.real_pay b_real_pay
+        ,b.create_time b_create_time
+        ,b.pay_time b_pay_time
+        ,CASE b.pay_style WHEN 'ali' THEN '支付宝' WHEN 'wx' THEN '微信' WHEN 'health_insurance' THEN '医保' WHEN 'cash' THEN '现金' ELSE '' END b_pay_style
+        ,b.trades_status b_trades_status
+        ,bc.trades_id bc_trades_id
+        ,bc.real_pay bc_real_pay
+        ,CASE bc.pay_style WHEN 'ali' THEN '支付宝' WHEN 'wx' THEN '微信' WHEN 'health_insurance' THEN '医保' WHEN 'cash' THEN '现金' ELSE '' END bc_pay_style
+        ,bc.trade_status bc_trade_status
+        ,bc.create_time bc_create_time
+        FROM b_trades b
+        LEFT JOIN b_checking_import bc ON b.site_id=bc.site_id AND b.trades_id=bc.trades_id AND bc.`status`=1
+        LEFT JOIN b_logistics_order bol ON bol.site_id=b.site_id AND bol.order_number=b.trades_id AND bol.`status`=5
+        LEFT JOIN b_trades_ext bte ON bte.trades_id=b.trades_id AND bte.site_id=b.site_id
+        WHERE b.site_id=#{siteId}
+        ORDER BY b.pay_time DESC
+    </select>
+    <select id="boolStoreData"  resultType="Integer" parameterType="map">
+        SELECT COUNT(*)
+        FROM b_checking_fund
+        WHERE site_id=#{siteId}
+        <if test="erp_store_num != null">
+            AND store_num=#{erp_store_num}
+            AND status=1
+        </if>
+        <if test="erp_store_num == null">
+            AND store_num=''
+            AND status=0
+        </if>
+        AND import_time=#{erp_import_time}
+    </select>
+    <insert id="addStoreData">
+        insert into b_checking_fund
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="store_num != null">
+                store_num,
+            </if>
+            <if test="store_name != null">
+                store_name,
+            </if>
+            <if test="wx_pay != null">
+                wx_pay,
+            </if>
+            <if test="ali_pay != null">
+                ali_pay,
+            </if>
+            <if test="health_insurance_pay != null">
+                health_insurance_pay,
+            </if>
+            <if test="cash_pay != null">
+                cash_pay,
+            </if>
+            <if test="total_pay != null">
+                total_pay,
+            </if>
+            <if test="import_time != null">
+                import_time,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId},
+            </if>
+            <if test="store_num != null">
+                #{store_num},
+            </if>
+            <if test="store_name != null">
+                #{store_name},
+            </if>
+            <if test="wx_pay != null">
+                #{wx_pay},
+            </if>
+            <if test="ali_pay != null">
+                #{ali_pay},
+            </if>
+            <if test="health_insurance_pay != null">
+                #{health_insurance_pay},
+            </if>
+            <if test="cash_pay != null">
+                #{cash_pay},
+            </if>
+            <if test="total_pay != null">
+                #{total_pay},
+            </if>
+            <if test="import_time != null">
+                #{import_time},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateFundsData" parameterType="map">
+        update b_checking_fund
+        <set>
+            checking_status = 1,
+            <if test="erp_wx_pay != null">
+                erp_wx_pay = #{erp_wx_pay},
+            </if>
+            <if test="erp_ali_pay != null">
+                erp_ali_pay = #{erp_ali_pay},
+            </if>
+            <if test="erp_cash_pay != null">
+                erp_cash_pay = #{erp_cash_pay},
+            </if>
+            <if test="erp_health_insurance_pay != null">
+                erp_health_insurance_pay = #{erp_health_insurance_pay},
+            </if>
+            <if test="erp_total_pay != null">
+                erp_total_pay = #{erp_total_pay},
+            </if>
+        </set>
+        WHERE site_id=#{siteId}
+        <if test="erp_store_num != null">
+            AND store_num=#{erp_store_num}
+        </if>
+        AND status=#{status}
+        AND import_time=#{erp_import_time}
+    </update>
+    <select id="getMerchantFunds"  resultType="map" parameterType="map">
+        SELECT
+        import_time
+        ,IFNULL(store_num,'') store_num
+        ,IFNULL(store_name,'') store_name
+        ,ROUND(wx_pay/100,2) wx_pay
+        ,ROUND(ali_pay/100,2) ali_pay
+        ,ROUND(cash_pay/100,2) cash_pay
+        ,ROUND(health_insurance_pay/100,2) health_insurance_pay
+        ,ROUND(total_pay/100,2)  total_pay
+        ,ROUND(erp_wx_pay/100,2) erp_wx_pay
+        ,ROUND(erp_ali_pay/100,2) erp_ali_pay
+        ,ROUND(erp_cash_pay/100,2) erp_cash_pay
+        ,ROUND(erp_health_insurance_pay/100,2) erp_health_insurance_pay
+        ,ROUND(erp_total_pay/100,2) erp_total_pay
+        ,checking_status
+        FROM b_checking_fund
+        WHERE site_id=#{siteId}
+        AND status=#{status}
+        <if test="start_time != null and end_time != null">
+            AND import_time BETWEEN #{start_time} AND #{end_time}
+        </if>
+        <if test="checking_status == 0">
+            AND checking_status=0
+        </if>
+        <if test="checking_status == 1">
+            AND checking_status=1
+            AND wx_pay = erp_wx_pay AND ali_pay=erp_ali_pay AND cash_pay=erp_cash_pay
+            AND health_insurance_pay=erp_health_insurance_pay AND total_pay=erp_total_pay
+        </if>
+        <if test="checking_status == 2">
+            AND checking_status=1
+            AND (wx_pay != erp_wx_pay OR ali_pay != erp_ali_pay OR cash_pay != erp_cash_pay
+            OR health_insurance_pay != erp_health_insurance_pay OR total_pay != erp_total_pay)
+        </if>
+        <if test="store_num != null">
+            AND store_num=#{store_num}
+        </if>
+        <if test="store_name != null">
+            AND store_name=#{store_name}
+        </if>
+        ORDER BY import_time DESC
+    </select>
+    <select id="getMerchantFundsBySiteIdAndTime"  resultType="map" parameterType="map">
+        SELECT
+        ROUND(SUM(CASE t.pay_style WHEN 'ali' THEN t.real_pay ELSE 0 END),2) 'ali_pay',
+        ROUND(SUM(CASE t.pay_style WHEN 'wx' THEN t.real_pay ELSE 0 END),2) 'wx_pay',
+        ROUND(SUM(CASE t.pay_style WHEN 'health_insurance' THEN tx.medical_insurance_card_pay ELSE 0 END),2) 'health_insurance_pay',
+        ROUND(SUM(CASE t.pay_style WHEN 'cash' THEN tx.cash_payment_pay ELSE 0 END) ,2)+ SUM(CASE t.pay_style WHEN 'health_insurance' THEN tx.cash_payment_pay ELSE 0 END) 'cash_pay',
+        ROUND(SUM(t.real_pay) ,2) 'total_pay'
+        FROM b_trades t
+        LEFT JOIN b_trades_ext tx ON t.trades_id=tx.trades_id AND t.site_id=tx.site_id
+        WHERE t.site_id=#{siteId}
+        AND t.pay_time BETWEEN #{start_time} AND #{end_time}
+        <if test="storeId != null">
+            AND t.trades_store=#{storeId}
+        </if>
+    </select>
+    <insert id="insertFundsBySiteId">
+        insert into b_checking_fund
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="import_time != null">
+                import_time,
+            </if>
+            <if test="store_num != null">
+                store_num,
+            </if>
+            <if test="store_name != null">
+                store_name,
+            </if>
+            <if test="wx_pay != null">
+                wx_pay,
+            </if>
+            <if test="ali_pay != null">
+                ali_pay,
+            </if>
+            <if test="cash_pay != null">
+                cash_pay,
+            </if>
+            <if test="health_insurance_pay != null">
+                health_insurance_pay,
+            </if>
+            <if test="total_pay != null">
+                total_pay,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="standard_time != null">
+                standard_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId},
+            </if>
+            <if test="import_time != null">
+                #{import_time},
+            </if>
+            <if test="store_num != null">
+                #{store_num},
+            </if>
+            <if test="store_name != null">
+                #{store_name},
+            </if>
+            <if test="wx_pay != null">
+                #{wx_pay},
+            </if>
+            <if test="ali_pay != null">
+                #{ali_pay},
+            </if>
+            <if test="cash_pay != null">
+                #{cash_pay},
+            </if>
+            <if test="health_insurance_pay != null">
+                #{health_insurance_pay},
+            </if>
+            <if test="total_pay != null">
+                #{total_pay},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <if test="standard_time != null">
+                #{standard_time},
+            </if>
+        </trim>
+    </insert>
+    <select id="getStoreMaoList"  resultType="map">
+        SELECT id,stores_number,name
+        FROM b_stores
+        WHERE site_id=#{siteId}
+    </select>
+    <select id="getSiteIdAll" resultType="Integer">
+        SELECT merchant_id
+        FROM yb_merchant
+        WHERE 999 > site_status
+    </select>
+</mapper>

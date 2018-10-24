@@ -1,0 +1,28 @@
+{
+  "title": "商品",
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "boolean",
+      "description": "操作结果"
+    },
+    "result": {
+      "type": "object",
+      "properties": {
+        "msg": {
+          "type": "string",
+          "description": "失败的描述 如果status为false 可以根据code进行判断"
+        },
+        "code": {
+          "type": "integer",
+          "description": "错误码"
+        },
+        "goods_id": {
+          "type": "integer",
+          "description": "新增的商品编号"
+        }
+      }
+    }
+  },
+  "required": ["status"]
+}

@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.task.mapper.TaskPlanCountMapper">
+    <resultMap id="BMemberResultMap" type="com.jk51.model.order.BMember">
+        <id column="member_id" jdbcType="INTEGER" property="memberId" />
+        <id column="site_id" jdbcType="INTEGER" property="siteId" />
+        <result column="buyer_id" jdbcType="INTEGER" property="buyerId" />
+        <result column="buyer_nick" jdbcType="VARCHAR" property="buyerNick" />
+        <!--<result column="open_id" jdbcType="VARCHAR" property="openId" />-->
+        <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+        <result column="passwd" jdbcType="VARCHAR" property="passwd" />
+        <result column="sex" jdbcType="INTEGER" property="sex" />
+        <result column="email" jdbcType="VARCHAR" property="email" />
+        <result column="idcard_number" jdbcType="VARCHAR" property="idcardNumber" />
+        <result column="order_num" jdbcType="INTEGER" property="orderNum" />
+        <result column="order_fee" jdbcType="INTEGER" property="orderFee" />
+        <result column="register_stores" jdbcType="INTEGER" property="registerStores" />
+        <result column="register_clerks" jdbcType="BIGINT" property="registerClerks" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="last_ipaddr" jdbcType="VARCHAR" property="lastIpaddr" />
+        <result column="integrate" jdbcType="BIGINT" property="integrate" />
+        <result column="total_get_integrate" jdbcType="BIGINT" property="totalGetIntegrate" />
+        <result column="total_consume_integrate" jdbcType="BIGINT" property="totalConsumeIntegrate" />
+        <result column="mem_source" jdbcType="INTEGER" property="memSource" />
+        <result column="is_activated" jdbcType="BIT" property="isActivated" />
+        <result column="ban_status" jdbcType="BIT" property="banStatus" />
+        <result column="last_time" jdbcType="TIMESTAMP" property="lastTime" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <!--<result column="offline_integral" jdbcType="BIGINT" property="offlineIntegral" />-->
+        <!--<result column="first_erp" jdbcType="BIT" property="firstErp" />-->
+        <!--<result column="label_ids" jdbcType="VARCHAR" property="labelIds" />-->
+    </resultMap>
+
+    <resultMap id="BTradesResultMap" type="com.jk51.model.BTrades">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <id column="site_id" property="siteId" jdbcType="INTEGER"/>
+        <result column="trades_id" property="tradesId" jdbcType="BIGINT"/>
+        <result column="seller_id" property="sellerId" jdbcType="INTEGER"/>
+        <result column="buyer_id" property="buyerId" jdbcType="INTEGER"/>
+        <result column="seller_nick" property="sellerNick" jdbcType="VARCHAR"/>
+        <result column="buyer_nick" property="buyerNick" jdbcType="VARCHAR"/>
+        <result column="goods_id" property="goodsId" jdbcType="INTEGER"/>
+        <result column="pay_time" property="payTime" jdbcType="TIMESTAMP"/>
+        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"/>
+        <result column="consign_time" property="consignTime" jdbcType="TIMESTAMP"/>
+        <result column="receiver_phone" property="receiverPhone" jdbcType="VARCHAR"/>
+        <result column="recevier_mobile" property="recevierMobile" jdbcType="VARCHAR"/>
+        <result column="recevier_name" property="recevierName" jdbcType="VARCHAR"/>
+        <result column="receiver_city" property="receiverCity" jdbcType="VARCHAR"/>
+        <result column="receiver_address" property="receiverAddress" jdbcType="VARCHAR"/>
+        <result column="receiver_zip" property="receiverZip" jdbcType="VARCHAR"/>
+        <result column="seller_pay_no" property="sellerPayNo" jdbcType="VARCHAR"/>
+        <result column="seller_phone" property="sellerPhone" jdbcType="VARCHAR"/>
+        <result column="seller_mobile" property="sellerMobile" jdbcType="VARCHAR"/>
+        <result column="seller_name" property="sellerName" jdbcType="VARCHAR"/>
+        <result column="trades_status" property="tradesStatus" jdbcType="INTEGER"/>
+        <result column="is_refund" property="isRefund" jdbcType="SMALLINT"/>
+        <result column="closed_resion" property="closedResion" jdbcType="INTEGER"/>
+        <result column="total_fee" property="totalFee" jdbcType="INTEGER"/>
+        <result column="post_fee" property="postFee" jdbcType="INTEGER"/>
+        <result column="real_pay" property="realPay" jdbcType="INTEGER"/>
+        <result column="trades_split" property="tradesSplit" jdbcType="INTEGER"/>
+        <result column="plat_split" property="platSplit" jdbcType="INTEGER"/>
+        <result column="post_style" property="postStyle" jdbcType="INTEGER"/>
+        <result column="delivery_name" property="deliveryName" jdbcType="VARCHAR"/>
+        <result column="post_id" property="postId" jdbcType="INTEGER"/>
+        <result column="post_name" property="postName" jdbcType="VARCHAR"/>
+        <result column="post_number" property="postNumber" jdbcType="VARCHAR"/>
+        <result column="buyer_message" property="buyerMessage" jdbcType="VARCHAR"/>
+        <result column="seller_memo" property="sellerMemo" jdbcType="VARCHAR"/>
+        <result column="buyer_flag" property="buyerFlag" jdbcType="INTEGER"/>
+        <result column="seller_flag" property="sellerFlag" jdbcType="INTEGER"/>
+        <result column="delv_time" property="delvTime" jdbcType="TIMESTAMP"/>
+        <result column="delv_desc" property="delvDesc" jdbcType="VARCHAR"/>
+        <result column="confirm_goods_time" property="confirmGoodsTime" jdbcType="TIMESTAMP"/>
+        <result column="buyer_pay_no" property="buyerPayNo" jdbcType="VARCHAR"/>
+        <result column="pay_style" property="payStyle" jdbcType="VARCHAR"/>
+        <result column="pay_number" property="payNumber" jdbcType="VARCHAR"/>
+        <result column="trades_source" property="tradesSource" jdbcType="INTEGER"/>
+        <result column="trades_invoice" property="tradesInvoice" jdbcType="INTEGER"/>
+        <result column="invoice_title" property="invoiceTitle" jdbcType="VARCHAR"/>
+        <result column="trades_store" property="tradesStore" jdbcType="INTEGER"/>
+        <result column="self_taken_store" property="selfTakenStore" jdbcType="INTEGER"/>
+        <result column="self_taken_code" property="selfTakenCode" jdbcType="CHAR"/>
+        <result column="self_taken_code_start" property="selfTakenCodeStart" jdbcType="TIMESTAMP"/>
+        <result column="self_taken_code_expires" property="selfTakenCodeExpires" jdbcType="TIMESTAMP"/>
+        <result column="self_taken_code_checktime" property="selfTakenCodeChecktime" jdbcType="TIMESTAMP"/>
+        <result column="assigned_stores" property="assignedStores" jdbcType="INTEGER"/>
+        <result column="stockup_status" property="stockupStatus" jdbcType="INTEGER"/>
+        <result column="shipping_status" property="shippingStatus" jdbcType="INTEGER"/>
+        <result column="prescription_orders" property="prescriptionOrders" jdbcType="BIT"/>
+        <result column="lng" property="lng" jdbcType="DOUBLE"/>
+        <result column="lat" property="lat" jdbcType="DOUBLE"/>
+        <result column="store_user_id" property="storeUserId" jdbcType="INTEGER"/>
+        <result column="store_shipping_clerk_id" property="storeShippingClerkId" jdbcType="INTEGER"/>
+        <result column="recommend_user_id" property="recommendUserId" jdbcType="INTEGER"/>
+        <result column="cashier_id" property="cashierId" jdbcType="INTEGER"/>
+        <result column="stockup_user_id" property="stockupUserId" jdbcType="INTEGER"/>
+        <result column="user_paying" property="userPaying" jdbcType="TINYINT"/>
+        <result column="trades_del" property="tradesDel" jdbcType="INTEGER"/>
+        <result column="trades_rank" property="tradesRank" jdbcType="TINYINT"/>
+        <result column="trades_rank_time" property="tradesRankTime" jdbcType="TIMESTAMP"/>
+        <result column="settlement_status" property="settlementStatus" jdbcType="SMALLINT"/>
+        <result column="settlement_final_time" property="settlementFinalTime" jdbcType="TIMESTAMP"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="settlement_type" property="settlementType" jdbcType="TINYINT"/>
+        <result column="create_order_assigned_stores" property="createOrderAssignedStores" jdbcType="INTEGER"/>
+        <result column="budgetdate" property="budgetdate" jdbcType="VARCHAR"/>
+        <result column="is_payment" property="isPayment" jdbcType="BIT"/>
+        <result column="account_checking_status" property="accountCheckingStatus" jdbcType="BIT"/>
+    </resultMap>
+
+    <resultMap id="TradesSaleResultMap" type="com.jk51.modules.task.domain.TradesSale">
+        <result column="site_id" property="siteId" jdbcType="INTEGER"/>
+        <result column="trades_id" property="tradesId" jdbcType="BIGINT" javaType="Long"/>
+        <result column="goods_id" property="goodsId" jdbcType="INTEGER"/>
+        <result column="goods_num" property="goodsNum" jdbcType="INTEGER"/>
+        <result column="recommend_user_id" property="recommendUserId" jdbcType="INTEGER"/>
+        <result column="goods_price" property="goodsPrice" jdbcType="INTEGER"/>
+        <result column="total_fee" property="totalFee" jdbcType="INTEGER"/>
+        <result column="post_fee" property="postFee" jdbcType="INTEGER"/>
+        <result column="real_pay" property="realPay" jdbcType="INTEGER"/>
+        <result column="store_user_id" property="storeUserId" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Count_Trades_Where_Clause">
+        FROM `b_trades` as t1
+        INNER JOIN b_orders as t2 ON (t1.site_id = t2.site_id AND t1.trades_id = t2.trades_id)
+        <where>
+            t1.site_id = #{siteId} AND t1.${filterCondition} AND t1.pay_time BETWEEN #{startTime} AND #{endTime}
+            <choose>
+                <when test="rewardObject == 10">
+                    AND recommend_user_id IN (
+                    SELECT id FROM b_store_admin WHERE site_id = #{siteId} AND store_id = #{joinId})
+                </when>
+                <when test="rewardObject == 20">
+                    AND recommend_user_id = #{joinId}
+                </when>
+            </choose>
+            <foreach collection="goodsIds" open="AND t2.goods_id in (" close=")" separator="," item="item">
+                #{item}
+            </foreach>
+        </where>
+    </sql>
+
+    <select id="countTradesNum" resultType="java.lang.Integer">
+        SELECT COUNT(*) <include refid="Count_Trades_Where_Clause"/>
+    </select>
+
+    <select id="countGoodsSaleNum" resultType="java.lang.Integer">
+        SELECT IFNULL(SUM(t2.goods_num), 0) <include refid="Count_Trades_Where_Clause"/>
+    </select>
+
+    <select id="countRegisterMemberNum" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM b_member
+        <where>
+            site_id = #{siteId} AND ${filterCondition} AND create_time BETWEEN #{startTime} AND #{endTime}
+            <choose>
+                <when test="rewardObject == 10">
+                    AND register_stores = #{joinId}
+                </when>
+                <when test="rewardObject == 20">
+                    AND register_clerks = #{joinId}
+                </when>
+            </choose>
+        </where>
+    </select>
+
+    <select id="countTradesMeta" resultType="java.lang.Integer">
+        SELECT
+        <choose>
+            <when test="countType == 10">
+                COUNT(1)
+            </when>
+            <when test="countType == 20">
+                IFNULL(SUM(t2.goods_num), 0)
+            </when>
+            <when test="countType == 30">
+                IFNULL(SUM(t1.total_fee + t1.post_fee), 0)
+            </when>
+            <when test="countType == 40">
+                IFNULL(SUM(t1.total_fee), 0)
+            </when>
+            <when test="countType == 50">
+                IFNULL(SUM(t1.real_pay), 0)
+            </when>
+            <when test="countType == 60">
+                IFNULL(SUM(t1.real_pay), 0)
+            </when>
+        </choose>
+        <include refid="Count_Trades_Where_Clause"/>
+    </select>
+
+    <select id="selectAdminIdByStoreList" resultType="Integer">
+        SELECT id FROM b_store_admin
+        WHERE site_id = #{siteId} AND store_id IN
+        <foreach collection="storeIds" separator="," item="storeId" open="(" close=")">
+            #{storeId}
+        </foreach>
+    </select>
+    <select id="selectStoreIdByAdminList" resultType="java.lang.Integer">
+        SELECT store_id FROM b_store_admin WHERE site_id = #{siteId} and id in
+        <foreach collection="adminIds" separator="," item="adminId" open="(" close=")">
+            #{adminId}
+        </foreach>
+        GROUP BY store_id
+    </select>
+
+    <select id="selectAdminId" resultType="com.jk51.modules.task.domain.StoreAndAdminCombId">
+        SELECT id as adminId, store_id as storeId FROM b_store_admin WHERE site_id = #{siteId}
+    </select>
+
+    <select id="selectBmemberBySiteIdAndCreateTime" resultMap="BMemberResultMap">
+        SELECT
+            t1.site_id,
+            t1.member_id,
+            IFNULL(t2.storeadmin_id, 0) AS register_clerks,
+            IFNULL(t1.register_stores, 0) as register_stores,
+            t1.mobile,
+            t1.create_time,
+            t1.mem_source
+        FROM b_member as t1
+        LEFT JOIN b_store_adminext as t2 ON (
+            t1.site_id = t2.site_id AND t1.register_clerks = t2.id
+        )
+        <where>
+            t1.site_id = #{siteId} AND t1.${filterCondition} AND t1.create_time BETWEEN #{startTime} AND #{endTime}
+        </where>
+    </select>
+
+    <sql id="selectTradesSale">
+        SELECT
+            t1.site_id,
+            t1.trades_id,
+            t2.goods_id,
+            t2.goods_num,
+            t1.recommend_user_id,
+            t2.goods_price,
+            t1.total_fee,
+            t1.post_fee,
+            t1.real_pay,
+            t1.store_user_id
+        FROM b_trades AS t1
+        INNER JOIN b_orders AS t2 ON (
+            t1.site_id = t2.site_id AND t1.trades_id = t2.trades_id
+            <foreach collection="goodsIds" separator="," item="item" open="AND t2.goods_id in (" close=")">
+                #{item}
+            </foreach>
+        )
+        <where>
+            t1.site_id = #{siteId} AND t1.${filterCondition} AND t1.pay_time BETWEEN #{startTime} AND #{endTime}
+        </where>
+    </sql>
+
+    <select id="selectBTradesBySiteIdAndCreateTime" resultMap="TradesSaleResultMap">
+        <include refid="selectTradesSale"/>
+    </select>
+
+    <select id="selectBOrdersBySiteIdAndCreateTime" resultMap="TradesSaleResultMap">
+        <include refid="selectTradesSale"/>
+    </select>
+
+    <select id="selectStoreIdByAdminId" resultType="java.lang.Integer">
+        SELECT store_id FROM b_store_admin WHERE site_id = #{siteId} AND id = #{adminId}
+    </select>
+
+</mapper>

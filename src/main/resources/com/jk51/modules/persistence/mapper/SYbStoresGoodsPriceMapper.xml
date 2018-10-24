@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.persistence.mapper.SYbStoresGoodsPriceMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.goods.YbStoresGoodsPrice">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="site_id" property="siteId" jdbcType="INTEGER"/>
+        <result column="store_id" property="storeId" jdbcType="INTEGER"/>
+        <result column="goods_id" property="goodsId" jdbcType="INTEGER"/>
+        <result column="goods_price" property="goodsPrice" jdbcType="INTEGER"/>
+        <result column="discount_price" property="discountPrice" jdbcType="INTEGER"/>
+        <result column="in_stock" property="inStock" jdbcType="INTEGER"/>
+        <result column="del_tag" property="delTag" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <select id="findByGoodsId" resultType="com.jk51.model.goods.YbStoresGoodsPrice">
+    SELECT *
+    from yb_stores_goods_price
+    WHERE
+    store_id = #{storeId}
+    AND
+    site_id = #{siteId}
+    AND
+    goods_id = #{goodsId}
+    AND
+    del_tag = '0' limit 1;
+</select>
+    <select id="findByGoodsId2" resultType="com.jk51.model.goods.YbStoresGoodsPrice">
+        SELECT *
+        from yb_stores_goods_price
+        WHERE
+        store_id = #{storeId}
+        AND
+        site_id = #{siteId}
+        AND
+        goods_id = #{goodsId}
+        <if test="delTag!=null">
+            AND del_tag =#{delTag}
+        </if>
+        limit 1;
+    </select>
+    <select id="findList" resultType="java.util.Map">
+        SELECT *
+        from yb_stores_goods_price
+        WHERE 1=1
+        <if test="storeId!=null">
+            AND store_id = #{storeId}
+        </if>
+        <if test="siteId!=null">
+            AND site_id = #{siteId}
+        </if>
+        <if test="goodsId!=null">
+            AND goods_id = #{goodsId}
+        </if>
+        <if test="delTag!=null">
+            AND del_tag =#{delTag}
+        </if>
+    </select>
+    <sql id="Goods_Column_List">
+        bg.goods_id as goodsId,bg.approval_number as approvalNumber,bg.drug_name as drugName,bg.com_name as comName,
+        bg.specif_cation as specifCation,bg.goods_company as goodsCompany,
+        bg.barnd_id as barndId,bg.drug_category as drugCategory,bg.goods_property as goodsProperty,bg.goods_use as goodsUse,
+        bg.goods_forts as goodsForts,bg.goods_validity as goodsValidity,
+        bg.goods_forpeople as goodsForpeople,bg.user_cateid as userCateid,bg.goods_title as goodsTitle,
+        bg.goods_tagsid as goodsTagsid,bg.market_price as marketPrice,
+        bg.shop_price as shopPrice,bg.cost_price as costPrice,p.discount_price as discountPrice,bg.in_stock as inStock,
+        bg.goods_weight as goodsWeight,bg.control_num as controlNum,bg.goods_status as goodsStatus,bg.app_goods_status as appGoodsStatus,
+        bg.freight_payer as freightPayer,bg.list_time as listTime,bg.delist_time as delistTime,
+        bg.postage_id as postageId,bg.detail_tpl as detailTpl,bg.is_medicare as isMedicare,bg.medicare_code as medicareCode,
+        bg.medicare_top_price as medicareTopPrice,bg.bar_code as barCode,bg.mnemonic_code as mnemonicCode,
+        bg.purchase_way as purchaseWay, bg.wx_purchase_way as wxPurchaseWay,bg.goods_code as goodsCode,
+        p.goods_price as goodsPrice ,p.update_time as storeUpdateTime ,bg.update_time as updateTime,
+        ifnull(p.del_tag,'0') delTag
+    </sql>
+    <select id="findByGoodsListPrice" resultType="java.util.Map">
+        SELECT
+        <include refid="Goods_Column_List"/>
+        from b_goods bg
+        LEFT JOIN (select * from yb_stores_goods_price zp where zp.store_id = #{storeId}
+        and zp.site_id=#{siteId}) p on p.goods_id=bg.goods_id
+        WHERE bg.site_id = #{siteId}and (bg.goods_status =1 or bg.app_goods_status=1)
+        <if test="drugName != null">
+            AND(
+            bg.drug_name like concat('%',#{drugName},'%' )
+            or bg.com_name like concat('%',#{drugName},'%' ) )
+        </if>
+        <if test="approvalNnumber != null">
+            AND bg.approval_number = #{approvalNnumber}
+        </if>
+        <if test="userCateid != null">
+            AND bg.user_cateid like concat('%',#{userCateid},'%')
+        </if>
+        order by p.update_time desc
+    </select>
+
+    <update id="delYBPriceAll" parameterType="java.lang.Integer">
+        update yb_stores_goods_price set del_tag=1,discount_price=NULL
+        where site_id = #{siteId}
+        and store_id = #{storeId}
+        <if test="goodsId != null">
+            AND goods_id = #{goodsId}
+        </if>
+    </update>
+
+    <update id="refreshYBTime" parameterType="java.util.Map">
+        update yb_stores_goods_price set update_time=CURRENT_TIMESTAMP() where goods_id = #{goodsId} and site_id = #{siteId}
+        and store_id = #{storeId}
+    </update>
+
+    <update id="updateYBPrice" parameterType="java.lang.Integer">
+        update yb_stores_goods_price set discount_price=#{goodsPrice} where goods_id = #{goodsId} and site_id = #{siteId}
+    and store_id = #{storeId}
+    </update>
+    <insert id="insertYBPrice" parameterType="com.jk51.model.goods.YbStoresGoodsPrice">
+        insert into yb_stores_goods_price (site_id,store_id,goods_id,goods_price,discount_price,create_time,update_time)
+       VALUES (#{siteId},#{storeId},#{goodsId},#{goodsPrice},#{discountPrice},#{createTime},#{updateTime})
+    </insert>
+    <insert id="batchInsertYBPrice" parameterType="java.util.List">
+        insert into
+        yb_stores_goods_price (site_id,store_id,goods_id,goods_price,discount_price) VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.siteId},#{item.storeId},#{item.goodsId},#{item.goodsPrice},#{item.discountPrice})
+        </foreach>
+    </insert>
+    <update id="updateYBPrice2">
+        UPDATE yb_stores_goods_price set discount_price=#{goodsPrice}
+        where site_id=#{siteId} and goods_id=#{goodsId}
+        and store_id=#{storeId} and  self_flag=0
+    </update>
+    <update id="batchupdateYBPrice">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            update yb_stores_goods_price SET
+            discount_price=#{item.goodsPrice} where id=#{item.id} and self_flag=0
+        </foreach>
+    </update>
+    <update id="updateFlag">
+        UPDATE yb_stores_goods_price SET del_tag=#{delTag}
+        <if test="price==null">
+            , discount_price=#{price}
+        </if>
+        WHERE site_id=#{siteId}
+        <if test="selfFlag!=null">
+            AND self_flag=#{selfFlag}
+        </if>
+        <if test="goodIds!=null">
+            and goods_id IN
+            <foreach collection="goodIds" separator="," open="(" close=")" item="goodId">
+                #{goodId}
+            </foreach>
+        </if>
+        <if test="storeIds!=null">
+            and store_id IN
+            <foreach collection="storeIds" separator="," open="(" close=")" item="storeId">
+                #{storeId}
+            </foreach>
+        </if>
+    </update>
+    <!--重置多价格设置-->
+    <update id="updateFlag2">
+        UPDATE yb_stores_goods_price SET
+        discount_price=#{price}
+        WHERE site_id=#{siteId}
+        <if test="selfFlag!=null">
+            AND self_flag=#{selfFlag}
+        </if>
+        <if test="goodIds!=null">
+            and goods_id IN
+            <foreach collection="goodIds" separator="," open="(" close=")" item="goodId">
+                #{goodId}
+            </foreach>
+        </if>
+        <if test="storeIds!=null">
+            and store_id IN
+            <foreach collection="storeIds" separator="," open="(" close=")" item="storeId">
+                #{storeId}
+            </foreach>
+        </if>
+    </update>
+    <update id="updateSelfFlag">
+        UPDATE yb_stores_goods_price
+        <set>
+            <if test="selfFlag!=null">
+                self_flag=#{selfFlag}
+            </if>
+            <if test="delTag!=null">
+                , del_tag=#{delTag}
+            </if>
+        </set>
+        where 1=1
+        AND site_id=#{siteId}
+        <if test="goodIds!=null">
+            and goods_id IN
+            <foreach collection="goodIds" separator="," open="(" close=")" item="goodId">
+                #{goodId}
+            </foreach>
+        </if>
+        <if test="storeIds!=null">
+            and store_id IN
+            <foreach collection="storeIds" separator="," open="(" close=")" item="storeId">
+                #{storeId}
+            </foreach>
+        </if>
+    </update>
+</mapper>

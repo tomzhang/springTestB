@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.distribution.mapper.RewardTemplateMapper" >
+  <resultMap id="BaseResultMap" type="com.jk51.model.distribute.RewardTemplate" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="TINYINT" />
+    <result column="according_type" property="accordingType" jdbcType="TINYINT" />
+    <result column="is_used" property="isUsed" jdbcType="TINYINT" />
+    <result column="use_type" property="useType" jdbcType="TINYINT" />
+    <result column="owner" property="owner" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="reward" property="reward" jdbcType="LONGVARCHAR" />
+    <result column="discount" property="discount" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, type, according_type, is_used, use_type, owner, create_time, update_time, reward, discount
+  </sql>
+  <select id="selectByTemplateId" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from d_reward_template WHERE id=#{distributionTemplate} AND is_used=1;
+  </select>
+  <select id="queryTempleteList" parameterType="com.jk51.model.distribute.QueryTemplate" resultType="com.jk51.model.goods.PageData">
+    select
+    d.id,
+    (SELECT COUNT(distribution_template) FROM b_goods_distribute as b WHERE b.distribution_template=d.id) as goodDistributeNum,
+    d.name,
+    d.type,
+    d.according_type,
+    d.is_used,
+    d.use_type,
+    d.owner,
+    d.create_time,
+    d.update_time,
+    d.reward,
+    d.discount
+    from d_reward_template as d
+
+    <where>
+      d.owner=#{siteId}
+      <if test="name!=null and name!=''">
+        AND d.name LIKE concat('%',#{name},'%')
+      </if>
+
+    </where>
+    ORDER BY d.create_time DESC
+  </select>
+
+  <update id="updateByPrimaryKey" parameterType="com.jk51.model.distribute.RewardTemplate">
+    update d_reward_template
+    <set>
+      update_time=CURRENT_TIMESTAMP(),
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="reward != null">
+        reward = #{reward,jdbcType=VARCHAR},
+      </if>
+      <if test="discount != null">
+        discount = #{discount,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <insert id="insertTemplate" parameterType="com.jk51.model.distribute.RewardTemplate">
+    insert into d_reward_template
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="owner != null">
+        owner,
+      </if>
+      <if test="reward != null">
+        reward,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="discount != null">
+        discount,
+      </if>
+
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="owner != null">
+        #{owner,jdbcType=VARCHAR},
+      </if>
+      <if test="reward != null">
+        #{reward,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="discount != null">
+        #{discount,jdbcType=VARCHAR},
+      </if>
+
+    </trim>
+  </insert>
+
+  <update id="editByPrimaryKeySelective" parameterType="com.jk51.model.distribute.RewardTemplate">
+    UPDATE d_reward_template
+    <set>
+    <if test="isUsed != null">
+      is_used = #{isUsed,jdbcType=TIMESTAMP},
+    </if>
+
+  </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="queryTempleteUser" parameterType="com.jk51.model.distribute.QueryTemplate" resultType="com.jk51.model.goods.PageData">
+    select
+    d.id,
+    d.name,
+    d.type,
+    d.according_type,
+    d.is_used,
+    d.use_type,
+    d.owner,
+    d.create_time,
+    d.update_time,
+    d.reward,
+    d.discount
+
+    from d_reward_template as d
+
+    <where>
+      d.owner=#{siteId} AND
+      is_used=1
+    </where>
+    ORDER BY d.create_time DESC
+  </select>
+
+  <select id="findById" resultType="java.util.Map">
+    select
+    d.id,
+    d.name,
+    d.type,
+    d.according_type,
+    d.is_used,
+    d.use_type,
+    d.owner,
+    d.create_time,
+    d.update_time,
+    d.reward,
+    d.discount,
+    r.rule
+    from d_reward_template as d
+    LEFT JOIN d_recruit as r ON d.owner = r.owner
+    <where>
+      d.id = #{0} AND d.owner = #{1}
+
+    </where>
+  </select>
+
+
+  <select id="getTemplateByIdandShopPrice" parameterType="com.jk51.model.distribute.QueryGoodsDistribute" resultType="com.jk51.model.goods.PageData">
+    select
+    d.id,
+    d.name,
+    d.type,
+    d.according_type,
+    d.is_used,
+    d.use_type,
+    d.owner,
+    d.create_time,
+    d.update_time,
+    d.reward,
+    d.discount,
+    b.shop_price,
+    b.goods_id
+    from d_reward_template as d
+    LEFT JOIN  b_goods_distribute  as b on d.id=b.distribution_template
+    <where>
+      d.id = #{templateid,jdbcType=INTEGER}
+      AND
+      b.goods_id=#{goods_id,jdbcType=INTEGER}
+    </where>
+    ORDER BY d.create_time DESC
+  </select>
+
+  <select id="queryDiscountMax" parameterType="com.jk51.model.distribute.QueryTemplate" resultType="map">
+    select
+    d.id,
+
+    d.name,
+    d.type,
+    d.according_type,
+    d.is_used,
+    d.use_type,
+    d.owner,
+    d.create_time,
+    d.update_time,
+    d.reward,
+    d.discount
+    from d_reward_template as d
+
+    <where>
+      d.owner=#{owner}
+
+
+    </where>
+    ORDER BY d.create_time DESC
+  </select>
+
+
+
+</mapper>

@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.coupon.mapper.BCouponDetailExtraLogMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.coupon.BCouponDetailExtraLog">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="coupon_no" jdbcType="VARCHAR" property="couponNo"/>
+        <result column="before_status" jdbcType="INTEGER" property="beforeStatus"/>
+        <result column="after_status" jdbcType="INTEGER" property="afterStatus"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="user_mobile" jdbcType="VARCHAR" property="userMobile"/>
+        <result column="operation_id" jdbcType="INTEGER" property="operationId"/>
+        <result column="store_id" jdbcType="INTEGER" property="storeId"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    </resultMap>
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Update_By_Example_Where_Clause">
+        <where>
+            <foreach collection="example.oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Base_Column_List">
+    id, site_id, coupon_no, before_status, after_status, user_id, user_mobile, operation_id, 
+    store_id, remark, create_time
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from b_coupon_detail_extra_log
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from b_coupon_detail_extra_log
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.jk51.model.coupon.BCouponDetailExtraLog">
+    insert into b_coupon_detail_extra_log (id, site_id, coupon_no, 
+      before_status, after_status, user_id, 
+      user_mobile, operation_id, store_id, 
+      remark, create_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{siteId,jdbcType=INTEGER}, #{couponNo,jdbcType=VARCHAR}, 
+      #{beforeStatus,jdbcType=INTEGER}, #{afterStatus,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, 
+      #{userMobile,jdbcType=VARCHAR}, #{operationId,jdbcType=INTEGER}, #{storeId,jdbcType=INTEGER}, 
+      #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.jk51.model.coupon.BCouponDetailExtraLog">
+        insert into b_coupon_detail_extra_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="couponNo != null">
+                coupon_no,
+            </if>
+            <if test="beforeStatus != null">
+                before_status,
+            </if>
+            <if test="afterStatus != null">
+                after_status,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="userMobile != null">
+                user_mobile,
+            </if>
+            <if test="operationId != null">
+                operation_id,
+            </if>
+            <if test="storeId != null">
+                store_id,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="couponNo != null">
+                #{couponNo,jdbcType=VARCHAR},
+            </if>
+            <if test="beforeStatus != null">
+                #{beforeStatus,jdbcType=INTEGER},
+            </if>
+            <if test="afterStatus != null">
+                #{afterStatus,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="userMobile != null">
+                #{userMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="operationId != null">
+                #{operationId,jdbcType=INTEGER},
+            </if>
+            <if test="storeId != null">
+                #{storeId,jdbcType=INTEGER},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.coupon.BCouponDetailExtraLog">
+        update b_coupon_detail_extra_log
+        <set>
+            <if test="siteId != null">
+                site_id = #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="couponNo != null">
+                coupon_no = #{couponNo,jdbcType=VARCHAR},
+            </if>
+            <if test="beforeStatus != null">
+                before_status = #{beforeStatus,jdbcType=INTEGER},
+            </if>
+            <if test="afterStatus != null">
+                after_status = #{afterStatus,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="userMobile != null">
+                user_mobile = #{userMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="operationId != null">
+                operation_id = #{operationId,jdbcType=INTEGER},
+            </if>
+            <if test="storeId != null">
+                store_id = #{storeId,jdbcType=INTEGER},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.jk51.model.coupon.BCouponDetailExtraLog">
+    update b_coupon_detail_extra_log
+    set site_id = #{siteId,jdbcType=INTEGER},
+      coupon_no = #{couponNo,jdbcType=VARCHAR},
+      before_status = #{beforeStatus,jdbcType=INTEGER},
+      after_status = #{afterStatus,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER},
+      user_mobile = #{userMobile,jdbcType=VARCHAR},
+      operation_id = #{operationId,jdbcType=INTEGER},
+      store_id = #{storeId,jdbcType=INTEGER},
+      remark = #{remark,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    <select id="findLogsList" resultType="map">
+        SELECT
+        cdel.id,
+        cdel.coupon_no,
+        cr.coupon_type,
+        cr.goods_rule,
+        m.buyer_nick,
+        cdel.user_mobile,
+        sa.mobile as operation_mobile,
+        sa.clerk_invitation_code as operation_code,
+        sa.NAME AS operation_name,
+        s.stores_number as store_number,
+        s.name as store_name,
+        cdel.create_time
+        FROM b_coupon_detail_extra_log cdel
+        LEFT JOIN b_coupon_detail cd ON cdel.site_id = cd.site_id AND cdel.coupon_no = cd.coupon_no
+        LEFT JOIN b_coupon_rule cr ON cdel.site_id = cr.site_id AND cr.rule_id = cd.rule_id
+        LEFT JOIN b_member m ON cdel.site_id = m.site_id AND cdel.user_id = m.member_id
+        LEFT JOIN b_stores s ON cdel.site_id = s.site_id AND cdel.store_id = s.id
+        LEFT JOIN b_store_adminext sa ON cdel.site_id = sa.site_id AND cdel.operation_id = sa.storeadmin_id
+        WHERE cdel.before_status = 1 AND cdel.after_status = 0 AND cdel.site_id = #{siteId}
+          <if test="userMobile != null">
+              AND cdel.user_mobile LIKE CONCAT(#{userMobile},"%")
+          </if>
+          <if test="adminMobile != null">
+              AND sa.mobile LIKE CONCAT(#{adminMobile},"%")
+          </if>
+          <if test="storeNumber != null">
+              AND s.stores_number = #{storeNumber}
+          </if>
+        <if test="storeId != null">
+            AND cdel.store_id = #{storeId}
+        </if>
+          <if test="storeName != null">
+              AND s.name LIKE CONCAT("%",#{storeName},"%")
+          </if>
+          <if test="start !=null and end != null">
+              AND cdel.create_time BETWEEN #{start} AND #{end}
+          </if>
+        ORDER BY cdel.create_time DESC
+  </select>
+</mapper>

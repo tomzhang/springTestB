@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.official.mapper.YbStationMapper">
+  <resultMap id="BaseResultMap" type="com.jk51.model.official.YbStation">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="station_name" jdbcType="VARCHAR" property="stationName" />
+    <result column="department" jdbcType="INTEGER" property="department" />
+    <result column="station_jd" jdbcType="VARCHAR" property="stationJd" />
+    <result column="is_del" jdbcType="BIT" property="isDel" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, station_name, department, station_jd, is_del, create_time, update_time
+  </sql>
+
+  <select id="queryStationById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yb_station
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+
+  <insert id="add" parameterType="com.jk51.model.official.YbStation">
+    insert into yb_station
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="stationName != null">
+        station_name,
+      </if>
+      <if test="department != null">
+        department,
+      </if>
+      <if test="stationJd != null">
+        station_jd,
+      </if>
+      <if test="isDel != null">
+        is_del,
+      </if>
+      create_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="stationName != null">
+        #{stationName,jdbcType=VARCHAR},
+      </if>
+      <if test="department != null">
+        #{department,jdbcType=VARCHAR},
+      </if>
+      <if test="stationJd != null">
+        #{stationJd,jdbcType=VARCHAR},
+      </if>
+      <if test="isDel != null">
+        #{isDel,jdbcType=BIT},
+      </if>
+      CURRENT_TIMESTAMP()
+    </trim>
+  </insert>
+
+
+  <update id="update" parameterType="com.jk51.model.official.YbStation">
+    update yb_station
+    <set>
+      <if test="stationName != null">
+        station_name = #{stationName,jdbcType=VARCHAR},
+      </if>
+      <if test="department != null">
+        department = #{department,jdbcType=VARCHAR},
+      </if>
+      <if test="stationJd != null">
+        station_jd = #{stationJd,jdbcType=VARCHAR},
+      </if>
+      <if test="isDel != null">
+        is_del = #{isDel,jdbcType=BIT},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="queryStationList" resultMap="BaseResultMap" parameterType="com.jk51.model.official.YbStation">
+    SELECT * FROM yb_station
+    <where>
+      1=1
+      <if test="stationName != null and stationName != ''">
+        AND  station_name LIKE CONCAT(CONCAT('%',#{stationName},'%'))
+      </if>
+      <if test="department != null and department != ''">
+        AND department=#{department}
+      </if>
+      <choose>
+        <when test="createTime!=null and endTime!=null">
+          AND create_time &gt;= #{createTime} AND create_time &lt;= #{endTime}
+        </when>
+        <when test="createTime!=null">
+          AND create_time &gt;= #{createTime}
+        </when>
+        <when test="endTime!=null">
+          AND create_time &lt;= #{endTime}
+        </when>
+      </choose>
+      AND is_del=0
+    </where>
+    ORDER BY update_time DESC
+  </select>
+
+</mapper>

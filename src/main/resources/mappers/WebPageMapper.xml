@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.merchant.mapper.WebPageMapper">
+    <sql id="baseQuery">
+        site_id,id,ip,url,store_id,web_pages,goods_id,member_id,open_id,create_time,left_time
+    </sql>
+
+    <insert id="insertSelect">
+        insert into b_WebPage
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="ip != null">
+                ip,
+            </if>
+            <if test="url != null">
+                url,
+            </if>
+            <if test="storeId != null">
+                store_id,
+            </if>
+            <if test="webPages != null">
+                web_pages,
+            </if>
+            <if test="goodsId != null">
+                goods_id,
+            </if>
+            <if test="memberId != null">
+                member_id,
+            </if>
+            <if test="openId != null">
+                open_id,
+            </if>
+            <if test="leftTime != null">
+                left_time,
+            </if>
+            <if test="uvType != null">
+                uv_type,
+            </if>
+            <if test="storeAdminId != null">
+                storeadmin_id,
+            </if>
+            <if test="stayTime != null">
+                stay_time,
+            </if>
+            <if test="ipName != null">
+                ip_name,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="ip != null">
+                #{ip,jdbcType=VARCHAR},
+            </if>
+            <if test="url != null">
+                #{url,jdbcType=VARCHAR},
+            </if>
+            <if test="storeId != null">
+                #{storeId,jdbcType=INTEGER},
+            </if>
+            <if test="webPages != null">
+                #{webPages,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsId != null">
+                #{goodsId,jdbcType=INTEGER},
+            </if>
+            <if test="memberId != null">
+                #{memberId,jdbcType=INTEGER},
+            </if>
+            <if test="openId != null">
+                #{openId,jdbcType=VARCHAR},
+            </if>
+            <if test="leftTime != null">
+                #{leftTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="uvType != null">
+                #{uvType},
+            </if>
+            <if test="storeAdminId != null">
+                #{storeAdminId},
+            </if>
+            <if test="stayTime != null">
+                #{stayTime},
+            </if>
+            <if test="ipName != null">
+                #{ipName},
+            </if>
+        </trim>
+    </insert>
+    <!--查询总访问量-->
+    <select id="queryWebVisitors2" resultType="map">
+        select virtual_table.query_time,count(virtual_table.query_time) `value` from (
+        select date(wp.create_time) query_time  from b_WebPage wp where wp.site_id=#{siteId} and wp.create_time BETWEEN #{dates.start} AND #{dates.end} AND wp.web_pages in ('首页','商品分类','商品详情')
+        ) virtual_table GROUP BY query_time
+    </select>
+    <select id="queryWebVisitors" resultType="map">
+        SELECT query_time,sum(virtual_table.value) `value` from (
+        <foreach collection="dates" item="item" separator="UNION ALL">
+            select DATE_FORMAT(wp.create_time,'%Y-%m-%d') query_time,count(wp.id) `value` from b_WebPage wp where
+            wp.site_id=#{siteId} and wp.create_time BETWEEN #{item.start} AND #{item.end} AND wp.web_pages='首页'
+            UNION ALL
+            select DATE_FORMAT(wp.create_time,'%Y-%m-%d') query_time,count(wp.id) `value` from b_WebPage wp where
+            wp.site_id=#{siteId} and wp.create_time BETWEEN #{item.start} AND #{item.end} AND wp.web_pages='商品分类'
+            UNION ALL
+            select DATE_FORMAT(wp.create_time,'%Y-%m-%d') query_time,count(wp.id) `value` from b_WebPage wp where
+            wp.site_id=#{siteId} and wp.create_time BETWEEN #{item.start} AND #{item.end} AND wp.web_pages='商品详情'
+        </foreach>
+        ) virtual_table where query_time is not null GROUP BY query_time order by query_time DESC
+    </select>
+
+    <select id="queryGoodsWebVisitors" resultType="map">
+        SELECT query_time,count(virtual_table.value) `value` from (
+        <foreach collection="dates" item="item" separator="UNION ALL">
+            select date(wp.create_time) query_time,count(wp.id) `value` from b_WebPage wp where wp.site_id=#{siteId} AND
+            wp.create_time BETWEEN #{item.start} AND #{item.end} AND wp.web_pages='商品详情' group by wp.goods_id
+        </foreach>
+        ) virtual_table group by virtual_table.query_time order by query_time DESC
+    </select>
+    <select id="queryGoodsWebVisitors2" resultType="map">
+        SELECT query_time,count(virtual_table.value) `value` from (
+            select date(wp.create_time) query_time,count(wp.id) `value`  from b_WebPage wp where wp.site_id=#{siteId} AND wp.create_time BETWEEN #{dates.start} AND #{dates.end} AND wp.web_pages='商品详情' group by wp.goods_id,query_time
+        ) virtual_table group by virtual_table.query_time order by query_time DESC
+    </select>
+    <!-- 查询商品总访问量同期值-->
+    <select id="queryWebYesterDayAndLastWeek" resultType="int">
+        select sum(virtual_table.count_num) from (
+            select count(wp.id) count_num  from b_WebPage wp where wp.site_id=#{siteId} and wp.create_time BETWEEN #{dates.start} AND #{dates.end} AND wp.web_pages in ('首页','商品详情','商品分类')
+        ) virtual_table
+    </select>
+    <select id="queryGoodsWebYesterDayAndLastWeek" resultType="int">
+        SELECT count(virtural_table.goods_count) from (
+         select DATE_FORMAT(wp.create_time,'%Y-%m-%d') create_time,count(wp.id) goods_count  from b_WebPage wp where wp.site_id=#{siteId} and wp.create_time BETWEEN #{dates.start} AND #{dates.end} AND wp.web_pages='商品详情' group by wp.goods_id
+        ) virtural_table
+    </select>
+    <!--查询浏览人数-->
+    <!-- <select id="onlineVisitorsFunnel" resultType="java.util.Map">
+         select sum(num) value, query_time from (
+         select count(DISTINCT open_id) num,date(create_time) query_time from b_WebPage where site_id=#{siteId} and create_time between #{start} and  #{end}  and member_id is null group by query_time
+         union all
+         select count(distinct member_id) num,date(create_time) query_time from b_WebPage where site_id=#{siteId} and create_time between  #{start}  and  #{end}  and member_id is not null group by query_time
+          union all
+         select count(distinct ip) num,date(create_time) query_time from b_WebPage where site_id=#{siteId} and create_time between  #{start}  and  #{end}  and member_id is null and open_id is null group by query_time
+         ) visitors group by query_time order by query_time
+     </select>-->
+    <select id="onlineVisitorsFunnel" resultType="java.util.Map">
+        SELECT COUNT(DISTINCT open_id) AS value, date(create_time) AS query_time
+        FROM b_WebPage
+        WHERE site_id = #{siteId}
+                AND create_time BETWEEN #{start} and  #{end}
+                AND open_id IS NOT NULL
+        GROUP BY query_time
+        ORDER BY query_time
+    </select>
+    <select id="selectMemberCount" resultType="java.util.Map">
+        select date(create_time) query_time,count(DISTINCT member_id) value from b_WebPage where site_id=#{siteId} and create_time BETWEEN #{dates.start} and #{dates.end} GROUP BY query_time
+    </select>
+    <select id="queryNewVisitor" resultType="map">
+        <foreach collection="dates" item="item" separator="UNION ALL">
+            SELECT date(#{item.start}) query_time,count(DISTINCT open_id) value from b_WebPage wp WHERE wp.site_id=#{siteId} AND wp.create_time BETWEEN #{item.start} AND #{item.end} AND wp.open_id NOT in(SELECT DISTINCT open_id FROM b_WebPage pw WHERE wp.site_id=#{siteId} AND pw.create_time &lt; #{item.start}  AND open_id is not null)
+        </foreach>
+    </select>
+    <!--    旧老访客
+       <select id="queryOldVisitor" resultType="map">
+            <foreach collection="dates" item="item" separator="UNION ALL">
+                SELECT date(#{item.start}) query_time,count(DISTINCT open_id) value from b_WebPage wp WHERE wp.site_id=#{siteId} AND wp.create_time BETWEEN #{item.start} AND #{item.end} AND wp.open_id in(SELECT DISTINCT open_id FROM b_WebPage pw WHERE wp.site_id=#{siteId} AND pw.create_time &lt; #{item.start}  AND open_id is not null)
+            </foreach>
+        </select>-->
+
+    <select id="queryAverageVisitor" resultType="map">
+        SELECT date(wp.create_time) query_time,count(wp.id) value FROM b_WebPage wp WHERE wp.create_time BETWEEN #{dates.start} AND #{dates.end} AND wp.site_id=#{siteId}  GROUP BY query_time
+    </select>
+
+    <select id="selectWebMemberCountByHour" resultType="map">
+        select sum(num) value, query_time from (
+        select count(DISTINCT open_id) num,DATE_FORMAT(create_time,'%H') query_time from b_WebPage where site_id=#{siteId} and create_time between #{dates.start} and  #{dates.end}  AND open_id is not null group by query_time
+        ) visitors group by query_time order by query_time
+    </select>
+    <select id="sexDistribution" resultType="map">
+        SELECT IFNULL(m.sex,-1) as sex,count(DISTINCT wp.open_id) as value
+        FROM b_WebPage wp
+        LEFT JOIN b_mobile_wechat mw ON wp.open_id=mw.open_id
+        LEFT JOIN b_member m ON mw.mobile=m.mobile AND mw.site_id=m.site_id
+        WHERE wp.create_time BETWEEN #{dates.start} AND #{dates.end} AND wp.site_id=#{siteId} AND wp.open_id IS NOT NULL GROUP BY m.sex
+    </select>
+    <!--  -->
+    <select id="ageDistribution" resultType="map">
+        SELECT count(ids) value,IFNULL(age,-1) age from (
+        SELECT wp.open_id ids,bi.birthday,(year(now())-year(birthday)-1) + ( DATE_FORMAT(birthday, '%m%d') &lt;= DATE_FORMAT(NOW(), '%m%d') ) as age
+        from b_WebPage wp
+        LEFT JOIN b_mobile_wechat bm ON bm.open_id=wp.open_id
+        LEFT JOIN b_member_info bi ON bm.buyer_id = bi.member_id
+        where wp.create_time BETWEEN #{dates.start} AND #{dates.end} AND wp.site_id=#{siteId} AND wp.open_id is not null GROUP BY ids
+        )virtual_table GROUP BY virtual_table.age
+    </select>
+
+    <select id="bounceRate" resultType="map">
+        <foreach collection="dates" item="item" separator="union all">
+            SELECT date(create_time) query_time,count(open_id) value FROM b_WebPage  WHERE create_time BETWEEN #{item.start} AND #{item.end} AND site_id=#{siteId} GROUP BY open_id HAVING count(open_id)=1
+        </foreach>
+    </select>
+    <select id="areaDistribution" resultType="map">
+        select count(open_id) value, ip_name ip from (
+          select IFNULL(ip_name,'未知区域') ip_name,open_id from b_WebPage where site_id=#{siteId} and create_time BETWEEN #{dates.start} AND #{dates.end} AND open_id is not null group by open_id
+        ) visitors group by ip_name order by ip_name
+    </select>
+    <select id="getAvgReadTime" resultType="String">
+        SELECT statics_value FROM b_flow_analysis_records WHERE site_id=#{siteId} AND statics_name="avg_read_time" AND to_days(create_time) = to_days(#{date})
+    </select>
+    <select id="getAvgReadTimeToday" resultType="Map">
+        SELECT IFNULL(convert(AVG(stay_time)/1000,decimal(10,2)),0) value,now() query_time
+        FROM b_WebPage
+        WHERE
+        site_id=#{siteId}
+        AND stay_time <![CDATA[ > ]]> 0 AND stay_time <![CDATA[ < ]]> 300000
+        AND create_time >= #{date}
+    </select>
+
+    <select id="getAvgReadTimeTodayInit" resultType="java.lang.Double">
+        SELECT IFNULL(convert(AVG(stay_time)/1000,decimal(10,2)),0) value,now() query_time
+        FROM b_WebPage
+        WHERE
+        site_id=#{siteId}
+        AND stay_time <![CDATA[ > ]]> 0 AND stay_time <![CDATA[ < ]]> 300000
+        AND TO_DAYS(create_time)=TO_DAYS(now())
+    </select>
+    <select id="getAvgReadTime2Init" resultType="Map">
+        SELECT IFNULL(convert(AVG(stay_time)/1000,decimal(10,2)),0) value,#{date} query_time
+        FROM b_WebPage
+        WHERE
+        site_id=#{siteId}
+        AND stay_time <![CDATA[ > ]]> 0 AND stay_time <![CDATA[ < ]]> 300000
+        AND TO_DAYS(create_time)=TO_DAYS(#{date})
+    </select>
+    <select id="getAvgReadTimeAll" resultType="Map">
+        <foreach collection="dates" item="item" separator="UNION ALL">
+            SELECT IFNULL(convert(AVG(stay_time)/1000,decimal(10,2)),0) value,#{item} query_time
+            FROM b_WebPage
+            WHERE
+            site_id=#{siteId}
+            AND stay_time <![CDATA[ > ]]> 0 AND stay_time <![CDATA[ < ]]> 300000
+            AND TO_DAYS(create_time)=TO_DAYS(#{item})
+        </foreach>
+    </select>
+
+    <select id="queryMemberIdsByOneDays" resultType="string">
+        select distinct member_id num,date(create_time) query_time from b_WebPage where site_id=#{siteId} and create_time between #{dates.start} and  #{dates.end}  and member_id is not null AND member_id not in(SELECT DISTINCT member_id from b_WebPage WHERE create_time &lt; #{dates.start} AND site_id=#{siteId} AND member_id is not null)
+    </select>
+    <select id="queryOpenIdsByOneDays" resultType="string">
+        select distinct open_id num,date(create_time) query_time from b_WebPage where site_id=#{siteId} and create_time between #{dates.start} and  #{dates.end}  and open_id is not null AND open_id not in(SELECT DISTINCT open_id from b_WebPage WHERE create_time &lt; #{dates.start} AND site_id=#{siteId} AND member_id is not null) <if test="ids != null and ids.size!=0">AND member_id not in<foreach collection="ids" open="(" close=")" item="id" separator=",">
+        #{id}
+    </foreach></if>
+    </select>
+    <select id="queryIpsByOneDays" resultType="string">
+        SELECT ip FROM b_WebPage wp WHERE wp.create_time BETWEEN #{dates.start} AND #{dates.end} AND member_id is null AND open_id is null AND site_id =#{siteId} GROUP BY ip
+    </select>
+    <select id="selectMemeberIds" resultType="java.util.Map">
+        select member_id as memberId,open_id as openId,ip as IP, date(create_time) query_time from b_WebPage where
+        site_id=#{siteId} and create_time between #{start} and #{end}
+        and member_id is not null
+        group by query_time,memberId
+    </select>
+    <!--通过会员统计访客数量-->
+    <select id="selectMemberIdCount" resultType="java.lang.Integer">
+        <!--select count(distinct member_id) from b_WebPage where site_id=#{siteId} and create_time &lt;#{start} and
+        member_id IN
+        <foreach collection="memberIds" item="memberId" separator="," open="(" close=")">
+            #{memberId}
+        </foreach>-->
+        SELECT count(distinct member_id)
+        FROM b_member
+        WHERE site_id=#{siteId} AND create_time <![CDATA[ < ]]> #{start}
+        AND member_id IN
+        <foreach collection="memberIds" item="memberId" separator="," open="(" close=")">
+            #{memberId}
+        </foreach>
+    </select>
+    <select id="selectOpenIds" resultType="java.util.Map">
+        select open_id as openId, date(create_time) query_time from b_WebPage where
+        site_id=#{siteId} and create_time between #{start} and #{end}
+        and open_id is not null
+        group by query_time,open_id
+    </select>
+    <!--通过openId统计访客数量-->
+    <select id="selectopenIdCountTwo" resultType="java.lang.Integer">
+        select count(DISTINCT open_id)
+        from b_WebPage b
+        where
+        b.create_time <![CDATA[ >= ]]> #{start}
+        and b.site_id=#{siteId} AND  b.open_id is not null AND open_id !=''
+        AND EXISTS (SELECT a.open_id FROM b_WebPage a WHERE a.open_id=b.open_id AND a.data_status = 1  AND a.site_id=#{siteId})
+    </select>
+    <select id="selectopenIdCountThree" resultType="java.lang.Integer">
+        select count(DISTINCT open_id)
+        from b_WebPage b
+        where
+        b.create_time BETWEEN #{sTime} AND #{eTime}
+        and b.site_id=#{siteId} AND  b.open_id is not null AND open_id !=''
+        AND EXISTS (SELECT a.open_id FROM b_WebPage a WHERE  a.open_id=b.open_id AND a.data_status = 1 AND a.site_id=#{siteId})
+    </select>
+    <select id="selectopenIdCount" resultType="java.lang.Integer">
+        select count(distinct open_id) from b_WebPage where site_id=#{siteId} and create_time &lt;#{start} and open_id
+        IN
+        <foreach collection="openIds" item="openId" separator="," open="(" close=")">
+            #{openId}
+        </foreach>
+    </select>
+    <select id="selectIPs" resultType="java.util.Map">
+        select member_id as memberId,open_id as openId,ip as IP, date(create_time) query_time from b_WebPage where
+        site_id=#{siteId} and create_time between #{start} and #{end}
+        and member_id is null and open_id is null
+        group by query_time,ip
+    </select>
+    <!--通过ip统计访客数量-->
+    <select id="selectIPCount" resultType="java.lang.Integer">
+        select count(distinct ip) from b_WebPage where site_id=#{siteId} and create_time &lt;#{start} and ip IN
+        <foreach collection="ips" item="ip" separator="," open="(" close=")">
+            #{ip}
+        </foreach>
+    </select>
+    <select id="getFlowChartsMap" resultType="String">
+        SELECT statics_value FROM b_flow_analysis_records WHERE site_id=#{siteId} AND statics_name="flow_charts" AND to_days(create_time) = to_days(#{date})
+    </select>
+
+    <!--交易分析优化:记录表查询-->
+    <select id="getTransChartsMap" resultType="String">
+        SELECT statics_value FROM b_trans_analysis_records WHERE site_id=#{siteId} AND statics_name="pay_ranking_lis" AND to_days(create_time) = to_days(#{date})
+    </select>
+    <select id="getTransMap" resultType="String">
+        SELECT statics_value FROM b_trans_analysis_records WHERE site_id=#{siteId} AND statics_name="trade_analysis" AND to_days(create_time) = to_days(#{date})
+    </select>
+    <select id="getTransPicMap" resultType="String">
+        SELECT statics_value FROM b_trans_analysis_records WHERE site_id=#{siteId} AND statics_name="trade_graph" AND to_days(create_time) = to_days(#{date})
+    </select>
+    <select id="getTransGraphMap" resultType="String">
+        SELECT statics_value FROM b_trans_analysis_records WHERE site_id=#{siteId} AND statics_name="direct_funnel_data" AND to_days(create_time) = to_days(#{date})
+    </select>
+    <select id="findStayTime" resultType="Date">
+        SELECT create_time FROM b_WebPage
+        WHERE
+        <if test="memberId != null" >
+            member_id=#{memberId}
+        </if>
+        <if test="openId != null" >
+            open_id=#{openId}
+        </if>
+        <if test="ip != null" >
+            ip=#{ip}
+        </if>
+        <if test="id != null" >
+            AND id <![CDATA[ < ]]> #{id}
+        </if>
+        ORDER BY create_time DESC limit 1
+    </select>
+    <!--修改区域名称-->
+    <select id="selectIPForID" resultType="String">
+        SELECT ip FROM b_WebPage WHERE id=#{id}
+    </select>
+    <update id="updateIPForID">
+        UPDATE b_WebPage SET ip_name = #{name} WHERE id=#{id}
+    </update>
+    <!--修改停留时间-->
+    <select id="selectIdsForID" resultType="map">
+        SELECT ip ip,IFNULL (member_id,'') AS memberId,IFNULL (open_id,'') AS openId,create_time createTime FROM b_WebPage WHERE id=#{id}
+    </select>
+    <update id="updateTime4DB">
+        UPDATE b_WebPage SET stay_time = #{time} WHERE id=#{id}
+    </update>
+    <!-- 交易分析查询 -->
+    <select id="getFirstFunnelStatistics" resultType="String">
+        SELECT statics_value FROM b_trans_analysis_records WHERE site_id=#{siteId} AND create_time=#{time} AND statics_name='direct_funnel_data'
+    </select>
+
+    <select id="getYestodayData" resultType="String">
+        SELECT statics_value FROM b_flow_analysis_records WHERE site_id=#{siteId} AND create_time=#{time} AND statics_name='old_visitor'
+    </select>
+
+    <update id="updateStruts">
+        UPDATE b_WebPage SET data_status=1 WHERE create_time BETWEEN #{start} AND #{end}
+    </update>
+
+    <select id="queryPageNumByStoreadminId" resultType="java.lang.Integer">
+        select count(1) from b_WebPage
+        where site_id=#{siteId}
+        AND create_time <![CDATA[ >= ]]> #{startTime}
+        AND create_time <![CDATA[ <= ]]> #{endTime}
+        and storeadmin_id is not null
+    </select>
+</mapper>

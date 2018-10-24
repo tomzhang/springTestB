@@ -1,0 +1,54 @@
+{
+  "title": "商品",
+  "type": "object",
+  "properties": {
+    "detail_tpl": {
+      "description": "商品模板",
+      "type": "integer",
+      "enum": [10, 20, 30, 40, 50, 60, 70]
+    },
+    "drug_name": {
+      "type": "string",
+      "description": ""
+    },
+    "com_name": {
+      "type": "string",
+      "description": ""
+    },
+    "in_stock": {
+      "type": "integer",
+      "description": "商品库存",
+      "minimum": 0,
+      "maximum": 99999
+    },
+    "shop_price": {
+      "type": "integer",
+      "description": "商品价格"
+    },
+    "market_price": {
+      "type": "integer",
+      "description": "商品原价"
+    },
+    "goods_tagsid": {
+      "type": "integer",
+      "description": ""
+    },
+    "goods_title": {
+      "type": "string",
+      "description": "商品标题"
+    },
+    "user_cateid": {
+      "type": "integer",
+      "description": ""
+    },
+    "goods_forpeople": {
+      "type": "string",
+      "description": ""
+    },
+    "goods_validity": {
+      "type": "string",
+      "description": ""
+    }
+  },
+  "required": ["detail_tpl"]
+}

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.persistence.mapper.SGroupMemberMapper">
+  <resultMap id="BaseResultMap" type="com.jk51.model.order.SGroupMember">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="unique_id" jdbcType="VARCHAR" property="unique_id" />
+    <result column="group_id" jdbcType="INTEGER" property="group_id" />
+    <result column="store_admin_id" jdbcType="VARCHAR" property="store_admin_id" />
+    <result column="site_id" jdbcType="INTEGER" property="site_id" />
+    <result column="create_at" jdbcType="TIMESTAMP" property="create_at" />
+    <result column="update_at" jdbcType="TIMESTAMP" property="update_at" />
+    <result column="is_close" jdbcType="BIT" property="is_close" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, unique_id, group_id, store_admin_id, site_id, create_at, update_at, is_close
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ch_group_member
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectGroupIds" resultType="java.lang.Integer">
+    select group_id from ch_group_member where site_id=#{siteId} and store_admin_id=#{adminId} and is_close!=1
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from ch_group_member
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.jk51.model.order.SGroupMember">
+    insert into ch_group_member (id, unique_id, group_id, 
+      store_admin_id, site_id, create_at, 
+      update_at, is_close)
+    values (#{id,jdbcType=INTEGER}, #{unique_id,jdbcType=VARCHAR}, #{group_id,jdbcType=INTEGER}, 
+      #{store_admin_id,jdbcType=VARCHAR}, #{site_id,jdbcType=INTEGER}, #{create_at,jdbcType=TIMESTAMP}, 
+      #{update_at,jdbcType=TIMESTAMP}, #{is_close,jdbcType=BIT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jk51.model.order.SGroupMember">
+    insert into ch_group_member
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="unique_id != null">
+        unique_id,
+      </if>
+      <if test="group_id != null">
+        group_id,
+      </if>
+      <if test="store_admin_id != null">
+        store_admin_id,
+      </if>
+      <if test="site_id != null">
+        site_id,
+      </if>
+      <if test="create_at != null">
+        create_at,
+      </if>
+      <if test="update_at != null">
+        update_at,
+      </if>
+      <if test="is_close != null">
+        is_close,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="unique_id != null">
+        #{unique_id,jdbcType=VARCHAR},
+      </if>
+      <if test="group_id != null">
+        #{group_id,jdbcType=INTEGER},
+      </if>
+      <if test="store_admin_id != null">
+        #{store_admin_id,jdbcType=VARCHAR},
+      </if>
+      <if test="site_id != null">
+        #{site_id,jdbcType=INTEGER},
+      </if>
+      <if test="create_at != null">
+        #{create_at,jdbcType=TIMESTAMP},
+      </if>
+      <if test="update_at != null">
+        #{update_at,jdbcType=TIMESTAMP},
+      </if>
+      <if test="is_close != null">
+        #{is_close,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <insert id="insertList" parameterType="java.util.List">
+    insert into ch_group_member (id, unique_id, group_id,
+    store_admin_id, site_id, create_at,
+    update_at, is_close)
+    VALUES
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.id,jdbcType=INTEGER}, #{item.unique_id,jdbcType=VARCHAR}, #{item.group_id,jdbcType=INTEGER},
+      #{item.store_admin_id,jdbcType=VARCHAR}, #{item.site_id,jdbcType=INTEGER}, #{item.create_at,jdbcType=TIMESTAMP},
+      #{item.update_at,jdbcType=TIMESTAMP}, #{item.is_close,jdbcType=BIT})
+    </foreach>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.order.SGroupMember">
+    update ch_group_member
+    <set>
+      <if test="unique_id != null">
+        unique_id = #{unique_id,jdbcType=VARCHAR},
+      </if>
+      <if test="group_id != null">
+        group_id = #{group_id,jdbcType=INTEGER},
+      </if>
+      <if test="store_admin_id != null">
+        store_admin_id = #{store_admin_id,jdbcType=VARCHAR},
+      </if>
+      <if test="site_id != null">
+        site_id = #{site_id,jdbcType=INTEGER},
+      </if>
+      <if test="create_at != null">
+        create_at = #{create_at,jdbcType=TIMESTAMP},
+      </if>
+      <if test="update_at != null">
+        update_at = #{update_at,jdbcType=TIMESTAMP},
+      </if>
+      <if test="is_close != null">
+        is_close = #{is_close,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateList" parameterType="java.lang.Integer">
+    update ch_group_member
+    <set>
+        is_close = 1
+    </set>
+    where site_id=#{site_id,jdbcType=INTEGER}
+    AND  store_admin_id=#{store_admin_id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jk51.model.order.SGroupMember">
+    update ch_group_member
+    set unique_id = #{unique_id,jdbcType=VARCHAR},
+      group_id = #{group_id,jdbcType=INTEGER},
+      store_admin_id = #{store_admin_id,jdbcType=VARCHAR},
+      site_id = #{site_id,jdbcType=INTEGER},
+      create_at = #{create_at,jdbcType=TIMESTAMP},
+      update_at = #{update_at,jdbcType=TIMESTAMP},
+      is_close = #{is_close,jdbcType=BIT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

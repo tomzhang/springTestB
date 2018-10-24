@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.pandian.mapper.BPandianOrderMapper" >
+  <resultMap id="BaseResultMap" type="com.jk51.model.BPandianOrder" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <id column="site_id" property="siteId" jdbcType="INTEGER" />
+    <result column="store_id" property="storeId" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="pandian_num" property="pandianNum" jdbcType="VARCHAR" />
+    <result column="plan_id" property="planId" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="is_up_site" property="isUpSite" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, site_id, store_id, type, pandian_num, plan_id, create_time, update_time, is_up_site
+  </sql>
+
+  <select id="getLatestPandianOrder" resultMap="BaseResultMap" >
+    SELECT <include refid="Base_Column_List" />
+    FROM b_pandian_order WHERE site_id = #{siteId} AND type = #{type}
+    <if test="type == 1" >
+      AND store_id = #{storeId}
+    </if>
+    ORDER BY id DESC LIMIT 1
+  </select>
+
+  <select id="getNowMonthOrder" resultMap="BaseResultMap" >
+    SELECT <include refid="Base_Column_List" />
+    FROM b_pandian_order WHERE site_id = #{siteId} AND plan_id = #{planId} AND MONTH(create_time) = MONTH(CURDATE())
+  </select>
+
+  <select id="getPlanOrder" resultType="java.util.Map" >
+    SELECT * FROM b_pandian_order WHERE site_id = #{siteId} AND id = #{id}
+  </select>
+
+
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from b_pandian_order
+    where id = #{id}
+    and site_id = #{siteId}
+  </select>
+
+  <update id="updateIsUpSite" >
+    UPDATE b_pandian_order SET is_up_site = #{isUpSite} WHERE site_id = #{siteId} AND id = #{id}
+  </update>
+
+  <select id="getUploadByStatus" resultType="java.lang.Integer" >
+    SELECT min(1)
+    FROM b_pandian_order o
+    LEFT JOIN b_pandian_order_status s ON o.site_id=s.site_id AND o.id=s.order_id
+    WHERE s.`status`=1 AND o.site_id = #{siteId} AND o.id = #{orderId}
+    <if test="storeId != null" >
+      AND s.store_id = #{storeId}
+    </if>
+    <if test="isUpSite != null" >
+      AND o.is_up_site = #{isUpSite}
+    </if>
+  </select>
+
+
+  <insert id="insertSelective" parameterType="com.jk51.model.BPandianOrder" useGeneratedKeys="true" keyProperty="id">
+    insert into b_pandian_order
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="siteId != null" >
+        site_id,
+      </if>
+      <if test="storeId != null" >
+        store_id,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="pandianNum != null" >
+        pandian_num,
+      </if>
+      <if test="planId != null" >
+        plan_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="isUpSite != null" >
+        is_up_site,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="siteId != null" >
+        #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="storeId != null" >
+        #{storeId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="pandianNum != null" >
+        #{pandianNum,jdbcType=VARCHAR},
+      </if>
+      <if test="planId != null" >
+        #{planId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isUpSite != null" >
+        #{isUpSite,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.BPandianOrder" >
+    update b_pandian_order
+    <set >
+      <if test="storeId != null" >
+        store_id = #{storeId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="pandianNum != null" >
+        pandian_num = #{pandianNum,jdbcType=VARCHAR},
+      </if>
+      <if test="planId != null" >
+        plan_id = #{planId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+    and site_id = #{siteId,jdbcType=INTEGER}
+  </update>
+
+  <resultMap id="pandianOrderExtListMap" type="com.jk51.modules.pandian.Response.BPandianOrderList">
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <id column="siteId" property="siteId" jdbcType="INTEGER" />
+    <result column="storeId" property="storeId" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="pandianNum" property="pandianNum" jdbcType="VARCHAR" />
+    <result column="planId" property="planId" jdbcType="INTEGER" />
+    <result column="isUpSite" property="isUpSite" jdbcType="INTEGER" />
+    <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="storeName" property="storeName" jdbcType="VARCHAR" />
+    <result column="storesNumber" property="storesNumber" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="planCheckType" property="planCheckType" jdbcType="INTEGER" />
+      <result column="billid" property="billid" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <select id="getPandianOrderCount" parameterType="java.util.Map" resultType="com.jk51.modules.pandian.Response.BPandianOrderListCount">
+    SELECT
+    sum(i.inventory_accounting) as inventoryTotal,
+    sum(i.actual_store) as actualStoreTotal,
+    sum(i.actual_store) -sum(i.inventory_accounting) as profitAndLossNum,
+    (CASE
+    WHEN sum(IFNULL(i.inventory_accounting ,0))- sum(i.actual_store) &gt;0 THEN '盘亏'
+    WHEN sum(IFNULL(i.inventory_accounting ,0))- sum(i.actual_store)  &lt;0 THEN '盘盈'
+    WHEN sum(IFNULL(i.inventory_accounting ,0))- sum(i.actual_store)  =0 THEN '盘平'
+    ELSE '未开始盘点' END
+    ) as profitAndLossStatus
+    FROM   b_inventories i
+    where
+     i.pandian_num = #{pandianNum}
+    and i.store_id = #{storeId}
+    and i.is_del = 0
+    GROUP by i.plan_id,i.site_id,i.store_id
+  </select>
+  <select id="getBPandianOrderExtList" resultMap="pandianOrderExtListMap" parameterType="com.jk51.modules.pandian.param.PandianOrderStatusParam">
+
+    SELECT bo.id,bo.site_id siteId,e.store_id storeId,bo.type,bo.pandian_num pandianNum,bo.plan_id planId,bo.id pandianOrderId,
+    e.status,bo.create_time createTime,bo.update_time updateTime,plans.upload_type isUpSite,s.stores_number storesNumber,
+    s.name storeName,
+    plans.plan_check_type planCheckType,e.billid
+    from b_pandian_order_status e
+    LEFT JOIN b_pandian_order bo on e.pandian_num = bo.pandian_num and e.site_id = bo.site_id
+    LEFT JOIN b_stores s on e.site_id = s.site_id and s.id = e.store_id
+    LEFT JOIN b_pandian_plan plans on e.plan_id = plans.id
+    where
+    e.site_id = #{siteId}
+    and bo.pandian_num is not null
+    <if test="storeId!=null">
+      and e.store_id = #{storeId}
+    </if>
+    <if test="pandian_num!=null and pandian_num!=''">
+      and bo.pandian_num = #{pandian_num}
+    </if>
+    <if test="createTime !=null and createTime!='' and endTime!=null and endTime!=''">
+      and bo.create_time >=#{createTime} and bo.create_time &lt; #{endTime}
+    </if>
+    <if test="createTime !='' and createTime!=null  and (endTime==null or endTime=='')">
+      and bo.create_time >=#{createTime}
+    </if>
+    <if test="(createTime ==null or createTime=='')  and endTime!=null and endTime!='' ">
+      and bo.create_time  &lt; #{endTime}
+    </if>
+    <if test="status!=null">
+      and e.status = #{status}
+    </if>
+    <if test="storeNum!=null and storeNum!=''">
+      and s.stores_number = #{storeNum}
+    </if>
+    <if test="planId !=null">
+      and plans.id = #{planId}
+    </if>
+    ORDER BY bo.id DESC
+  </select>
+
+  <resultMap id="getBPandianOrder" type="com.jk51.model.BPandianOrder">
+    <id column="o_id" property="id" jdbcType="INTEGER" />
+    <id column="o_site_id" property="siteId" jdbcType="INTEGER" />
+    <result column="o_store_id" property="storeId" jdbcType="INTEGER" />
+    <result column="o_type" property="type" jdbcType="INTEGER" />
+    <result column="pandian_num" property="pandianNum" jdbcType="VARCHAR" />
+    <result column="plan_id" property="planId" jdbcType="INTEGER" />
+    <result column="is_up_site" property="isUpSite" jdbcType="INTEGER" />
+    <result column="o_create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="o_update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <collection property="pandianPlan" javaType="com.jk51.model.BPandianPlan">
+      <id column="id" property="id" jdbcType="INTEGER" />
+      <id column="site_id" property="siteId" jdbcType="INTEGER" />
+      <result column="store_id" property="storeId" jdbcType="INTEGER" />
+      <result column="type" property="type" jdbcType="INTEGER" />
+      <result column="plan_type" property="planType" jdbcType="INTEGER" />
+      <result column="plan_day" property="planDay" jdbcType="INTEGER" />
+      <result column="plan_hour" property="planHour" jdbcType="INTEGER" />
+      <result column="plan_executor" property="planExecutor" jdbcType="VARCHAR" />
+      <result column="plan_stock_show" property="planStockShow" jdbcType="INTEGER" />
+      <result column="plan_check" property="planCheck" jdbcType="INTEGER" />
+      <result column="plan_check_type" property="planCheckType" jdbcType="INTEGER" />
+      <result column="plan_signature" property="planSignature" jdbcType="INTEGER" />
+      <result column="plan_operator" property="planOperator" jdbcType="INTEGER" />
+      <result column="plan_stop" property="planStop" jdbcType="INTEGER" />
+      <result column="plan_delete" property="planDelete" jdbcType="INTEGER" />
+      <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+      <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+      <result column="plan_stop_time" property="planStopTime" jdbcType="TIMESTAMP" />
+      <result column="plan_delete_time" property="planDeleteTime" jdbcType="TIMESTAMP" />
+      <result column="upload_type" property="uploadType" jdbcType="INTEGER" />
+      <result column="again_type" property="againType" jdbcType="INTEGER" />
+    </collection>
+  </resultMap>
+  <select id="getBPandianOrder" resultMap="getBPandianOrder">
+
+    SELECT
+    p.*,
+    o.id o_id, o.site_id o_site_id, o.store_id o_store_id, o.type o_type, o.pandian_num , o.plan_id ,
+    o.create_time o_create_time, o.update_time o_update_time,o.is_up_site
+    from
+    b_pandian_order o
+    LEFT JOIN b_pandian_plan p
+    on o.plan_id = p.id
+    WHERE
+    o.pandian_num = #{pandian_num}
+    and  o.site_id = #{siteId}
+  </select>
+  <select id="getBPandianOrderByPandianNumAndStoreId" resultType="com.jk51.modules.pandian.Response.OrderInfo">
+
+    SELECT e.plan_id planId,e.site_id siteId,e.store_id storeId,o.id orderId
+    from b_pandian_plan_executor e LEFT JOIN b_pandian_order o on e.plan_id = o.plan_id and e.site_id = o.site_id
+    WHERE
+      e.plan_id = (SELECT plan_id from b_pandian_order where pandian_num = #{pandian_num})
+      and e.store_id = #{storeId}
+      and o.pandian_num = #{pandian_num}
+  </select>
+  <select id="getBPandianOrders" resultType="com.jk51.modules.pandian.Response.PandainPlanMap" parameterType="com.jk51.modules.pandian.param.ClerkParam">
+
+    SELECT s.pandian_num,s.plan_id,p.type,p.plan_check_type,p.plan_type,p.plan_hour, s.`status`,e.clerks,o.create_time createTime
+    from b_pandian_order_status s
+    LEFT JOIN b_pandian_order o on s.pandian_num = o.pandian_num and   s.plan_id = o.plan_id and s.site_id = o.site_id
+    LEFT JOIN b_pandian_plan p on p.id = s.plan_id and p.site_id = s.site_id
+    LEFT JOIN b_pandian_plan_executor e on s.plan_id = e.plan_id and s.site_id = e.site_id and s.store_id = e.store_id
+    where
+      s.site_id =  #{siteId}
+      and s.store_id = #{storeId}
+      and (s.status = 200 or s.status = 500)
+      and ((e.store_id =  #{storeId} AND e.clerks = "0") or (e.store_id = #{storeId} AND locate(#{storeAdminId}, e.clerks)))
+      and p.plan_delete = 0
+      ORDER by  o.create_time DESC
+      limit 4
+
+  </select>
+</mapper>

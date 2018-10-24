@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.appInterface.mapper.BOrdersMapper" >
+  <resultMap id="BaseResultMap" type="com.jk51.model.BOrders" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <id column="site_id" property="siteId" jdbcType="INTEGER" />
+    <result column="order_id" property="orderId" jdbcType="BIGINT" />
+    <result column="goods_id" property="goodsId" jdbcType="INTEGER" />
+    <result column="goods_title" property="goodsTitle" jdbcType="VARCHAR" />
+    <result column="goods_price" property="goodsPrice" jdbcType="INTEGER" />
+    <result column="goods_num" property="goodsNum" jdbcType="INTEGER" />
+    <result column="goods_gifts" property="goodsGifts" jdbcType="BIT" />
+    <result column="approval_number" property="approvalNumber" jdbcType="VARCHAR" />
+    <result column="specif_cation" property="specifCation" jdbcType="VARCHAR" />
+    <result column="goods_category" property="goodsCategory" jdbcType="INTEGER" />
+    <result column="trades_id" property="tradesId" jdbcType="BIGINT" />
+    <result column="goods_imgurl" property="goodsImgurl" jdbcType="VARCHAR" />
+    <result column="orders_status" property="ordersStatus" jdbcType="INTEGER" />
+    <result column="goods_code" property="goodsCode" jdbcType="VARCHAR" />
+    <result column="yb_goods_id" property="ybGoodsId" jdbcType="INTEGER" />
+    <result column="goods_batch_no" property="goodsBatchNo" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="trades_snapshot" property="tradesSnapshot" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, site_id, order_id, goods_id, goods_title, goods_price, goods_num, goods_gifts, 
+    approval_number, specif_cation, goods_category, trades_id, goods_imgurl, orders_status, 
+    goods_code, yb_goods_id, goods_batch_no, create_time, update_time, trades_snapshot
+  </sql>
+
+
+  <select id="getTradesOrdersListMap" resultType="java.util.Map" >
+    select
+    bo.order_id AS orderId, bo.goods_title AS goodsTitle, bo.goods_price AS goodsPrice, bo.goods_num AS goodsNum, bo.specif_cation AS specifCation,
+    bia.host_id AS hostId, bia.hash AS imageId
+    from b_orders bo LEFT JOIN b_images_attr bia ON bo.goods_id = bia.goods_id AND bo.site_id = bia.site_id AND bia.is_default=1 AND bia.flag=0
+    where bo.site_id = #{siteId} AND bo.trades_id = #{tradesId}
+  </select>
+
+
+  <select id="getTradesOrdersList" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from b_orders
+    where site_id = #{siteId} AND trades_id = #{tradesId}
+  </select>
+
+  <select id="getOrderInfo" resultType="java.util.Map">
+    SELECT o.goods_num as goodsNum,o.goods_price as goodsPrice,o.goods_title as goodsTitle,o.id as orderId,o.specif_cation as specifCation,
+      i.hash as goods_imgurl
+    from b_orders as o
+      LEFT JOIN b_images_attr as i on o.goods_id = i.goods_id and o.site_id = i.site_id
+    where
+      o.trades_id = #{tradesId}
+      and i.is_default = 1
+      AND o.site_id = #{siteId}
+      limit 1
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from b_orders
+    where id = #{id,jdbcType=INTEGER}
+      and site_id = #{siteId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" >
+    delete from b_orders
+    where id = #{id,jdbcType=INTEGER}
+      and site_id = #{siteId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.jk51.model.BOrders" >
+    insert into b_orders (id, site_id, order_id, 
+      goods_id, goods_title, goods_price, 
+      goods_num, goods_gifts, approval_number, 
+      specif_cation, goods_category, trades_id, 
+      goods_imgurl, orders_status, goods_code, 
+      yb_goods_id, goods_batch_no, create_time, 
+      update_time, trades_snapshot)
+    values (#{id,jdbcType=INTEGER}, #{siteId,jdbcType=INTEGER}, #{orderId,jdbcType=BIGINT}, 
+      #{goodsId,jdbcType=INTEGER}, #{goodsTitle,jdbcType=VARCHAR}, #{goodsPrice,jdbcType=INTEGER}, 
+      #{goodsNum,jdbcType=INTEGER}, #{goodsGifts,jdbcType=BIT}, #{approvalNumber,jdbcType=VARCHAR}, 
+      #{specifCation,jdbcType=VARCHAR}, #{goodsCategory,jdbcType=INTEGER}, #{tradesId,jdbcType=BIGINT}, 
+      #{goodsImgurl,jdbcType=VARCHAR}, #{ordersStatus,jdbcType=INTEGER}, #{goodsCode,jdbcType=VARCHAR}, 
+      #{ybGoodsId,jdbcType=INTEGER}, #{goodsBatchNo,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{tradesSnapshot,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jk51.model.BOrders" >
+    insert into b_orders
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="siteId != null" >
+        site_id,
+      </if>
+      <if test="orderId != null" >
+        order_id,
+      </if>
+      <if test="goodsId != null" >
+        goods_id,
+      </if>
+      <if test="goodsTitle != null" >
+        goods_title,
+      </if>
+      <if test="goodsPrice != null" >
+        goods_price,
+      </if>
+      <if test="goodsNum != null" >
+        goods_num,
+      </if>
+      <if test="goodsGifts != null" >
+        goods_gifts,
+      </if>
+      <if test="approvalNumber != null" >
+        approval_number,
+      </if>
+      <if test="specifCation != null" >
+        specif_cation,
+      </if>
+      <if test="goodsCategory != null" >
+        goods_category,
+      </if>
+      <if test="tradesId != null" >
+        trades_id,
+      </if>
+      <if test="goodsImgurl != null" >
+        goods_imgurl,
+      </if>
+      <if test="ordersStatus != null" >
+        orders_status,
+      </if>
+      <if test="goodsCode != null" >
+        goods_code,
+      </if>
+      <if test="ybGoodsId != null" >
+        yb_goods_id,
+      </if>
+      <if test="goodsBatchNo != null" >
+        goods_batch_no,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="tradesSnapshot != null" >
+        trades_snapshot,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="siteId != null" >
+        #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="goodsId != null" >
+        #{goodsId,jdbcType=INTEGER},
+      </if>
+      <if test="goodsTitle != null" >
+        #{goodsTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsPrice != null" >
+        #{goodsPrice,jdbcType=INTEGER},
+      </if>
+      <if test="goodsNum != null" >
+        #{goodsNum,jdbcType=INTEGER},
+      </if>
+      <if test="goodsGifts != null" >
+        #{goodsGifts,jdbcType=BIT},
+      </if>
+      <if test="approvalNumber != null" >
+        #{approvalNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="specifCation != null" >
+        #{specifCation,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsCategory != null" >
+        #{goodsCategory,jdbcType=INTEGER},
+      </if>
+      <if test="tradesId != null" >
+        #{tradesId,jdbcType=BIGINT},
+      </if>
+      <if test="goodsImgurl != null" >
+        #{goodsImgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="ordersStatus != null" >
+        #{ordersStatus,jdbcType=INTEGER},
+      </if>
+      <if test="goodsCode != null" >
+        #{goodsCode,jdbcType=VARCHAR},
+      </if>
+      <if test="ybGoodsId != null" >
+        #{ybGoodsId,jdbcType=INTEGER},
+      </if>
+      <if test="goodsBatchNo != null" >
+        #{goodsBatchNo,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="tradesSnapshot != null" >
+        #{tradesSnapshot,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.BOrders" >
+    update b_orders
+    <set >
+      <if test="orderId != null" >
+        order_id = #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="goodsId != null" >
+        goods_id = #{goodsId,jdbcType=INTEGER},
+      </if>
+      <if test="goodsTitle != null" >
+        goods_title = #{goodsTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsPrice != null" >
+        goods_price = #{goodsPrice,jdbcType=INTEGER},
+      </if>
+      <if test="goodsNum != null" >
+        goods_num = #{goodsNum,jdbcType=INTEGER},
+      </if>
+      <if test="goodsGifts != null" >
+        goods_gifts = #{goodsGifts,jdbcType=BIT},
+      </if>
+      <if test="approvalNumber != null" >
+        approval_number = #{approvalNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="specifCation != null" >
+        specif_cation = #{specifCation,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsCategory != null" >
+        goods_category = #{goodsCategory,jdbcType=INTEGER},
+      </if>
+      <if test="tradesId != null" >
+        trades_id = #{tradesId,jdbcType=BIGINT},
+      </if>
+      <if test="goodsImgurl != null" >
+        goods_imgurl = #{goodsImgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="ordersStatus != null" >
+        orders_status = #{ordersStatus,jdbcType=INTEGER},
+      </if>
+      <if test="goodsCode != null" >
+        goods_code = #{goodsCode,jdbcType=VARCHAR},
+      </if>
+      <if test="ybGoodsId != null" >
+        yb_goods_id = #{ybGoodsId,jdbcType=INTEGER},
+      </if>
+      <if test="goodsBatchNo != null" >
+        goods_batch_no = #{goodsBatchNo,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="tradesSnapshot != null" >
+        trades_snapshot = #{tradesSnapshot,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+      and site_id = #{siteId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jk51.model.BOrders" >
+    update b_orders
+    set order_id = #{orderId,jdbcType=BIGINT},
+      goods_id = #{goodsId,jdbcType=INTEGER},
+      goods_title = #{goodsTitle,jdbcType=VARCHAR},
+      goods_price = #{goodsPrice,jdbcType=INTEGER},
+      goods_num = #{goodsNum,jdbcType=INTEGER},
+      goods_gifts = #{goodsGifts,jdbcType=BIT},
+      approval_number = #{approvalNumber,jdbcType=VARCHAR},
+      specif_cation = #{specifCation,jdbcType=VARCHAR},
+      goods_category = #{goodsCategory,jdbcType=INTEGER},
+      trades_id = #{tradesId,jdbcType=BIGINT},
+      goods_imgurl = #{goodsImgurl,jdbcType=VARCHAR},
+      orders_status = #{ordersStatus,jdbcType=INTEGER},
+      goods_code = #{goodsCode,jdbcType=VARCHAR},
+      yb_goods_id = #{ybGoodsId,jdbcType=INTEGER},
+      goods_batch_no = #{goodsBatchNo,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      trades_snapshot = #{tradesSnapshot,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+      and site_id = #{siteId,jdbcType=INTEGER}
+  </update>
+</mapper>

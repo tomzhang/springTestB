@@ -1,0 +1,2278 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.goods.mapper.GoodsMapper">
+
+    <resultMap id="BaseResultMap" type="com.jk51.model.Goods">
+        <id column="goods_id" jdbcType="INTEGER" property="goodsId"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="approval_number" jdbcType="VARCHAR" property="approvalNumber"/>
+        <result column="drug_name" jdbcType="VARCHAR" property="drugName"/>
+        <result column="com_name" jdbcType="VARCHAR" property="comName"/>
+        <result column="specif_cation" jdbcType="VARCHAR" property="specifCation"/>
+        <result column="goods_company" jdbcType="VARCHAR" property="goodsCompany"/>
+        <result column="barnd_id" jdbcType="VARCHAR" property="barndId"/>
+        <result column="drug_category" jdbcType="INTEGER" property="drugCategory"/>
+        <result column="goods_property" jdbcType="INTEGER" property="goodsProperty"/>
+        <result column="goods_use" jdbcType="VARCHAR" property="goodsUse"/>
+        <result column="goods_forts" jdbcType="INTEGER" property="goodsForts"/>
+        <result column="goods_validity" jdbcType="INTEGER" property="goodsValidity"/>
+        <result column="goods_forpeople" jdbcType="VARCHAR" property="goodsForpeople"/>
+        <result column="user_cateid" jdbcType="VARCHAR" property="userCateid"/>
+        <result column="goods_title" jdbcType="VARCHAR" property="goodsTitle"/>
+        <result column="goods_tagsid" jdbcType="VARCHAR" property="goodsTagsid"/>
+        <result column="market_price" jdbcType="INTEGER" property="marketPrice"/>
+        <result column="shop_price" jdbcType="INTEGER" property="shopPrice"/>
+        <result column="cost_price" jdbcType="INTEGER" property="costPrice"/>
+        <result column="discount_price" jdbcType="INTEGER" property="discountPrice"/>
+        <result column="in_stock" jdbcType="INTEGER" property="inStock"/>
+        <result column="goods_weight" jdbcType="INTEGER" property="goodsWeight"/>
+        <result column="control_num" jdbcType="INTEGER" property="controlNum"/>
+        <result column="goods_status" jdbcType="INTEGER" property="goodsStatus"/>
+        <result column="app_goods_status" jdbcType="INTEGER" property="appGoodsStatus"/>
+        <result column="freight_payer" jdbcType="INTEGER" property="freightPayer"/>
+        <result column="list_time" jdbcType="TIMESTAMP" property="listTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="delist_time" jdbcType="TIMESTAMP" property="delistTime"/>
+        <result column="postage_id" jdbcType="INTEGER" property="postageId"/>
+        <result column="detail_tpl" jdbcType="INTEGER" property="detailTpl"/>
+        <result column="is_medicare" jdbcType="BIT" property="isMedicare"/>
+        <result column="medicare_code" jdbcType="CHAR" property="medicareCode"/>
+        <result column="medicare_top_price" jdbcType="INTEGER" property="medicareTopPrice"/>
+        <result column="bar_code" jdbcType="CHAR" property="barCode"/>
+        <result column="mnemonic_code" jdbcType="VARCHAR" property="mnemonicCode"/>
+        <result column="purchase_way" jdbcType="INTEGER" property="purchaseWay"/>
+        <result column="wx_purchase_way" jdbcType="INTEGER" property="wxPurchaseWay"/>
+        <result column="goods_code" jdbcType="VARCHAR" property="goodsCode"/>
+        <result column="yb_goods_id" jdbcType="INTEGER" property="ybGoodsId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="goods_num" jdbcType="INTEGER" property="goodsNum"/>
+        <result column="schedule_time" jdbcType="INTEGER" property="scheduleTime"/>
+        <result column="servce_num" jdbcType="INTEGER" property="servceNum"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="erp_price" jdbcType="VARCHAR" property="erpPrice"/>
+        <result column="stores_id" jdbcType="VARCHAR" property="stores_id"/>
+    </resultMap>
+    <select id="queryByBarCodeSYS" resultType="java.util.Map" useCache="false">
+        select * from b_goods where bar_code = #{bar_code} AND site_id = #{site_id} and goods_status= 1 limit 1
+    </select>
+    <select id="queryByBarCode" resultMap="BaseResultMap" useCache="false">
+        select * from b_goods
+        where
+        bar_code = #{bar_code} AND site_id = #{site_id}
+        <if test="goods_id!=null and goods_id!=''">
+            and goods_id != #{goods_id}
+        </if>
+        limit 1
+    </select>
+    <select id="queryByGoodsCode" resultMap="BaseResultMap" useCache="false">
+        select * from b_goods where goods_code = #{goods_code} AND site_id = #{site_id} limit 1
+    </select>
+    <select id="queryByGoodsCodeSYS" resultMap="BaseResultMap" useCache="false">
+        select * from b_goods where goods_code = #{goods_code} AND site_id = #{site_id} and goods_status= 1 limit 1
+    </select>
+    <select id="get" resultType="com.jk51.model.Goods" useCache="false" timeout="1800" flushCache="false">
+        select * from b_goods where goods_id = #{goods_id}
+    </select>
+
+    <select id="getList" resultType="com.jk51.model.Goods" useCache="false">
+        select * from b_goods
+    </select>
+
+    <select id="getListByUserCateId" resultType="com.jk51.model.Goods">
+        select * from b_goods
+        WHERE
+        user_cateid = #{cate_id}
+    </select>
+    <update id="update" flushCache="true">
+        update b_goods set drug_name = #{drug_name} where #{goods_id}
+    </update>
+
+    <update id="updateImg" flushCache="true">
+        update b_images_attr set flag = 1 where site_id =  #{siteId} and goods_id = #{goodsId}
+    </update>
+
+    <!--批量修改购买方式-->
+    <update id="updateBuyWay" flushCache="true" parameterType="java.util.Map">
+        update b_goods
+        <trim prefix="set" suffixOverrides=",">
+            <if test="appWay != null and appWay!=''">
+                app_purchase_way = #{appWay},
+            </if>
+            <if test="onLineWay != null and onLineWay!=''">
+                wx_purchase_way = #{onLineWay}
+            </if>
+        </trim>
+        where site_id = #{site_id}
+        <if test="changeBuyWay != null and changeBuyWay!=''">
+            and goods_id in
+            <foreach collection="changeBuyWay" separator="," open="(" close=")" item="goodsId">
+                #{goodsId}
+            </foreach>
+        </if>
+    </update>
+    <!--&lt;!&ndash;批量修改购买方式分销&ndash;&gt;
+    <update id="updateByWayDis" flushCache="true" parameterType="java.util.Map">
+        update b_goods_distribute
+        <trim prefix="set" suffixOverrides=",">
+            <if test="cpuByWay != null and cpuByWay!=''">
+                purchase_way = #{cpuByWay},
+            </if>
+            <if test="phoByWay != null and phoByWay!=''">
+                wx_purchase_way = #{phoByWay}
+            </if>
+        </trim>
+        where site_id = #{site_id}
+        <if test="changeBuyWay != null and changeBuyWay!=''">
+            and goods_id in
+            <foreach collection="changeBuyWay" separator="," open="(" close=")" item="goodsId">
+                #{goodsId}
+            </foreach>
+        </if>
+    </update>-->
+
+    <!-- 添加数据 -->
+    <insert id="add" keyProperty="goodsId" useGeneratedKeys="true" parameterType="com.jk51.model.Goods"
+            flushCache="true">
+        INSERT INTO `b_goods`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            `site_id`,
+            <if test="approvalNumber != null">
+                `approval_number`,
+            </if>
+            <if test="drugName != null">
+                `drug_name`,
+            </if>
+            <if test="comName != null">
+                `com_name`,
+            </if>
+            <if test="specifCation != null">
+                `specif_cation`,
+            </if>
+            <if test="goodsCompany != null">
+                `goods_company`,
+            </if>
+            <if test="barndId != null">
+                `barnd_id`,
+            </if>
+            <if test="drugCategory != null">
+                `drug_category`,
+            </if>
+            <if test="goodsProperty != null">
+                `goods_property`,
+            </if>
+            <if test="goodsUse != null">
+                `goods_use`,
+            </if>
+            <if test="goodsForts != null">
+                `goods_forts`,
+            </if>
+            <if test="goodsValidity != null">
+                `goods_validity`,
+            </if>
+            <if test="goodsForpeople != null">
+                `goods_forpeople`,
+            </if>
+            <if test="userCateid != null">
+                `user_cateid`,
+            </if>
+            <if test="goodsTitle != null">
+                `goods_title`,
+            </if>
+            <if test="goodsTagsid != null">
+                `goods_tagsid`,
+            </if>
+            <if test="marketPrice != null">
+                `market_price`,
+            </if>
+            <if test="shopPrice != null">
+                `shop_price`,
+            </if>
+            <if test="costPrice != null">
+                `cost_price`,
+            </if>
+            <if test="discountPrice != null">
+                `discount_price`,
+            </if>
+            <if test="inStock != null">
+                `in_stock`,
+            </if>
+            <if test="goodsWeight != null">
+                `goods_weight`,
+            </if>
+            <if test="controlNum != null">
+                `control_num`,
+            </if>
+            <if test="goodsStatus != null">
+                `goods_status`,
+            </if>
+            <if test="freightPayer != null">
+                `freight_payer`,
+            </if>
+            <if test="listTime != null">
+                `list_time`,
+            </if>
+            <if test="delistTime != null">
+                `delist_time`,
+            </if>
+            <if test="postageId != null">
+                `postage_id`,
+            </if>
+            <if test="detailTpl != null">
+                `detail_tpl`,
+            </if>
+            <if test="isMedicare != null">
+                `is_medicare`,
+            </if>
+            <if test="medicareCode != null">
+                `medicare_code`,
+            </if>
+            <if test="medicareTopPrice != null">
+                `medicare_top_price`,
+            </if>
+            <if test="barCode != null">
+                `bar_code`,
+            </if>
+            <if test="mnemonicCode != null">
+                `mnemonic_code`,
+            </if>
+            <if test="appPurchaseWay != null">
+                `app_purchase_way`,
+            </if>
+            <if test="wxPurchaseWay != null">
+                `wx_purchase_way`,
+            </if>
+            <if test="goodsCode != null">
+                `goods_code`,
+            </if>
+            <if test="ybGoodsId != null">
+                `yb_goods_id`,
+            </if>
+            <if test="grossProfit != null">
+                `gross_profit`,
+            </if>
+            <if test="isMainPush != null">
+                `is_main_push`,
+            </if>
+        </trim>
+        <trim prefix="VALUE (" suffix=")" suffixOverrides=",">
+            #{siteId},
+            <if test="approvalNumber != null">
+                #{approvalNumber},
+            </if>
+            <if test="drugName != null">
+                #{drugName},
+            </if>
+            <if test="comName != null">
+                #{comName},
+            </if>
+            <if test="specifCation != null">
+                #{specifCation},
+            </if>
+            <if test="goodsCompany != null">
+                #{goodsCompany},
+            </if>
+            <if test="barndId != null">
+                #{barndId},
+            </if>
+            <if test="drugCategory != null">
+                #{drugCategory},
+            </if>
+            <if test="goodsProperty != null">
+                #{goodsProperty},
+            </if>
+            <if test="goodsUse != null">
+                #{goodsUse},
+            </if>
+            <if test="goodsForts != null">
+                #{goodsForts},
+            </if>
+            <if test="goodsValidity != null">
+                #{goodsValidity},
+            </if>
+            <if test="goodsForpeople != null">
+                #{goodsForpeople},
+            </if>
+            <if test="userCateid != null">
+                #{userCateid},
+            </if>
+            <if test="goodsTitle != null">
+                #{goodsTitle},
+            </if>
+            <if test="goodsTagsid != null">
+                #{goodsTagsid},
+            </if>
+            <if test="marketPrice != null">
+                #{marketPrice},
+            </if>
+            <if test="shopPrice != null">
+                #{shopPrice},
+            </if>
+            <if test="costPrice != null">
+                #{costPrice},
+            </if>
+            <if test="discountPrice != null">
+                #{discountPrice},
+            </if>
+            <if test="inStock != null">
+                #{inStock},
+            </if>
+            <if test="goodsWeight != null">
+                #{goodsWeight},
+            </if>
+            <if test="controlNum != null">
+                #{controlNum},
+            </if>
+            <if test="goodsStatus != null">
+                #{goodsStatus},
+            </if>
+            <if test="freightPayer != null">
+                #{freightPayer},
+            </if>
+            <if test="listTime != null">
+                #{listTime},
+            </if>
+            <if test="delistTime != null">
+                #{delistTime},
+            </if>
+            <if test="postageId != null">
+                #{postageId},
+            </if>
+            <if test="detailTpl != null">
+                #{detailTpl},
+            </if>
+            <if test="isMedicare != null">
+                #{isMedicare},
+            </if>
+            <if test="medicareCode != null">
+                #{medicareCode},
+            </if>
+            <if test="medicareTopPrice != null">
+                #{medicareTopPrice},
+            </if>
+            <if test="barCode != null">
+                #{barCode},
+            </if>
+            <if test="mnemonicCode != null">
+                #{mnemonicCode},
+            </if>
+            <if test="appPurchaseWay != null">
+                #{appPurchaseWay},
+            </if>
+            <if test="wxPurchaseWay != null">
+                #{wxPurchaseWay},
+            </if>
+            <if test="goodsCode != null">
+                #{goodsCode},
+            </if>
+            <if test="ybGoodsId != null">
+                #{ybGoodsId},
+            </if>
+            <if test="grossProfit != null">
+                #{grossProfit},
+            </if>
+            <if test="isMainPush != null">
+                #{isMainPush}
+            </if>
+        </trim>
+    </insert>
+
+    <!--更新数据-->
+    <update id="updateByGoodsId" flushCache="true" parameterType="com.jk51.model.Goods">
+        update b_goods
+        <trim prefix="set" suffixOverrides=",">
+            `goods_id` = #{goodsId},
+            <if test="approvalNumber != null">
+                `approval_number` = #{approvalNumber},
+            </if>
+            <if test="drugName != null">
+                `drug_name` = #{drugName},
+            </if>
+            <if test="comName != null">
+                `com_name` = #{comName},
+            </if>
+            <if test="specifCation != null">
+                `specif_cation` = #{specifCation},
+            </if>
+            <if test="goodsCompany != null">
+                `goods_company` = #{goodsCompany},
+            </if>
+            <if test="barndId != null">
+                `barnd_id` = #{barndId},
+            </if>
+            <if test="drugCategory != null">
+                `drug_category` = #{drugCategory},
+            </if>
+            <if test="goodsProperty != null">
+                `goods_property` = #{goodsProperty},
+            </if>
+            <if test="goodsUse != null">
+                `goods_use` = #{goodsUse},
+            </if>
+            <if test="goodsForts != null">
+                `goods_forts` = #{goodsForts},
+            </if>
+            <if test="goodsValidity != null">
+                `goods_validity` = #{goodsValidity},
+            </if>
+            <if test="goodsForpeople != null">
+                `goods_forpeople` = #{goodsForpeople},
+            </if>
+            <if test="userCateid != null">
+                `user_cateid` = #{userCateid},
+            </if>
+            <if test="goodsTitle != null">
+                `goods_title` = #{goodsTitle},
+            </if>
+            <if test="goodsTagsid != null">
+                `goods_tagsid` = #{goodsTagsid},
+            </if>
+            <if test="marketPrice != null">
+                `market_price` = #{marketPrice},
+            </if>
+            <if test="shopPrice != null">
+                `shop_price` = #{shopPrice},
+            </if>
+            <if test="costPrice != null">
+                `cost_price` = #{costPrice},
+            </if>
+            <if test="discountPrice != null">
+                `discount_price` = #{discountPrice},
+            </if>
+            <if test="inStock != null">
+                `in_stock` = #{inStock},
+            </if>
+            <if test="goodsWeight != null">
+                `goods_weight` = #{goodsWeight},
+            </if>
+            <if test="controlNum != null">
+                `control_num` = #{controlNum},
+            </if>
+            <if test="goodsStatus != null">
+                `goods_status` = #{goodsStatus},
+            </if>
+            <if test="freightPayer != null">
+                `freight_payer` = #{freightPayer},
+            </if>
+            <if test="listTime != null">
+                `list_time` = #{listTime},
+            </if>
+            <if test="delistTime != null">
+                `delist_time` = #{delistTime},
+            </if>
+            <if test="postageId != null">
+                `postage_id` = #{postageId},
+            </if>
+            <if test="detailTpl != null">
+                `detail_tpl` = #{detailTpl},
+            </if>
+            <if test="isMedicare != null">
+                `is_medicare` = #{isMedicare},
+            </if>
+            <if test="medicareCode != null">
+                `medicare_code` = #{medicareCode},
+            </if>
+            <if test="medicareTopPrice != null">
+                `medicare_top_price` = #{medicareTopPrice},
+            </if>
+            <if test="barCode != null or drugName != null">
+                `bar_code` = #{barCode},
+            </if>
+            <if test="mnemonicCode != null">
+                `mnemonic_code` = #{mnemonicCode},
+            </if>
+            <!--<if test="purchaseWay != null">
+                `purchase_way` = #{purchaseWay},
+            </if>-->
+            <if test="appPurchaseWay != null">
+                `app_purchase_way` = #{appPurchaseWay},
+            </if>
+            <if test="wxPurchaseWay != null">
+                `wx_purchase_way` = #{wxPurchaseWay},
+            </if>
+            <if test="goodsCode != null">
+                `goods_code` = #{goodsCode},
+            </if>
+            <if test="ybGoodsId != null">
+                `yb_goods_id` = #{ybGoodsId},
+            </if>
+            <if test="goodsStatus != null">
+                `goods_status` = #{goodsStatus},
+            </if>
+            <if test="updateTime != null">
+                update_time=CURRENT_TIMESTAMP(),
+            </if>
+            <if test="erpPrice != null">
+                `erp_price` = #{erpPrice},
+            </if>
+            <if test="grossProfit != null">
+                `gross_profit` = #{grossProfit},
+            </if>
+            <if test="isMainPush != null">
+                `is_main_push` = #{isMainPush},
+            </if>
+        </trim>
+        <where>
+            goods_id = #{goodsId} AND site_id = #{siteId}
+        </where>
+    </update>
+
+    <!--修改商品状态-->
+    <update id="changeStatus" flushCache="true">
+        update b_goods
+        <trim prefix="set" suffixOverrides=",">
+            <if test="param.appC != null">
+                app_goods_status = #{param.appC},
+            </if>
+            <if test="param.appCV != null">
+                app_purchase_way = #{param.appCV},
+            </if>
+            <if test="param.onLineSC != null">
+                goods_status = #{param.onLineSC},
+            </if>
+            <if test="param.onLineSCV != null">
+                wx_purchase_way = #{param.onLineSCV},
+            </if>
+            <if test="param.status != null">
+                <if test="param.status == 0">
+                    goods_status = #{param.goodsStatus}, app_goods_status = #{param.goodsStatus},
+                </if>
+                <if test="param.status == 1">
+                    goods_status = #{param.goodsStatus},
+                </if>
+                <if test="param.status == 2">
+                    app_goods_status = #{param.goodsStatus},
+                </if>
+            </if>
+            <!--<if test="param.goodsStatus != null">
+                goods_status = #{param.goodsStatus}, app_goods_status = #{param.goodsStatus}
+            </if>-->
+        </trim>
+        <where>
+            goods_id = #{param.goodsId} AND site_id = #{param.siteId}
+        </where>
+    </update>
+    <!-- <update id="changeStatus" flushCache="true">
+         update b_goods
+         <trim prefix="set" suffixOverrides=",">
+             goods_status = #{goods_status}
+         </trim>
+         <where>
+             goods_id = #{goods_id} AND site_id = #{site_id}
+         </where>
+     </update>-->
+
+    <!-- 根据条件查询 -->
+    <select id="find" resultType="com.jk51.model.Goods" useCache="false" timeout="1800" flushCache="false">
+        select * from b_goods
+        <where>
+            <if test="goods_id != null">
+                and goods_id = #{goods_id}
+            </if>
+            <if test="site_id != null">
+                and site_id = #{site_id}
+            </if>
+            <if test="goods_title != null">
+                and goods_title like concat('%',#{goods_title},'%' )
+            </if>
+        </where>
+    </select>
+
+    <sql id="Goods_extd_Column_List">
+        bg.site_id as siteId,
+        bg.goods_id as goodsId,bg.approval_number as approvalNumber,bg.drug_name as drugName,bg.com_name as comName,
+        bg.specif_cation as specifCation,bg.goods_company as goodsCompany,bg.app_goods_status as appGoodsStatus,bg.app_purchase_way as appPurchaseWay,
+        bg.barnd_id as barndId,bg.drug_category as drugCategory,bg.goods_property as goodsProperty,bg.goods_use as goodsUse,
+        bg.goods_forts as goodsForts,bg.goods_validity as goodsValidity,
+        bg.goods_forpeople as goodsForpeople,bg.user_cateid as userCateid,bg.goods_title as goodsTitle,
+        bg.goods_tagsid as goodsTagsid,bg.market_price as marketPrice,
+        bg.shop_price as shopPrice,bg.cost_price as costPrice,bg.discount_price as discountPrice,bg.in_stock as inStock,
+        bg.goods_weight as goodsWeight,bg.control_num as controlNum,bg.goods_status as goodsStatus,
+        bg.freight_payer as freightPayer,bg.list_time as listTime,bg.delist_time as delistTime,
+        bg.postage_id as postageId,bg.detail_tpl as detailTpl,bg.is_medicare as isMedicare,bg.medicare_code as medicareCode,
+        bg.medicare_top_price as medicareTopPrice,bg.bar_code as barCode,bg.mnemonic_code as mnemonicCode,
+        bg.purchase_way as purchaseWay, bg.wx_purchase_way as wxPurchaseWay,bg.goods_code as goodsCode,
+        bge.goodsextd_id as goodsextdId,  bge.browse_number as browseNumber, bge.trans_mumber as transMumber,
+        bge.shopping_number as shoppingNumber, bge.product_date as productDate,
+        bge.goods_batch_no as goodsBatchNo, bge.create_time createTime, bge.update_time as updateTime,
+        bge.main_ingredient as mainIngredient, bge.goods_indications as goodsIndications, bge.goods_action as goodsAction,
+        bge.adverse_reactioins as adverseReactioins, bge.goods_note as goodsNote,
+        bge.goods_use_method as goodsUseMethod, bge.goods_contd as goodsContd, bge.goods_desc as goodsDesc,
+        bge.goods_mobile_desc as goodsMobileDesc, bge.goods_description as goodsDescription,
+        bge.goods_usage as goodsUsage, bge.goods_deposit as goodsDeposit, bge.forpeople_desc as forpeopleDesc, bge.qualification as qualification,bge.net_wt as netWt,
+        big.id as integralGoodsId, big.intrgral_exchanges as integralExchanges, big.store_ids as integralGoodsStoreIds, big.status as integralGoodsStatus,
+        big.num as integralGoodsNum, big.is_del as integralGoodsIsDel,big.limit_each as integralGoodsLimitEach,
+        big.start_time as integralGoodsStartTime, big.end_time as integralGoodsEndTime, big.create_time as integralGoodsCreateTime, big.update_time as integralGoodsUpdateTime,
+        bg.erp_price as erpPrice
+--         TIMESTAMPDIFF(HOUR, big.update_time, big.start_time) as integralGoodsStartedByHours,TIMESTAMPDIFF(HOUR, big.update_time, big.end_time) as integralGoodsEndedByHours
+    </sql>
+    <select id="getGoodsD" resultType="java.util.Map" useCache="false" flushCache="false">
+        select
+        <include refid="Goods_extd_Column_List"/>, bg.gross_profit as grossProfit, bg.is_main_push as isMainPush
+        <if test="hasImage!=null and hasImage!=''and hasImage!=0">
+            ,bi.`hash` as imgHash,bi.flag, bi.is_default as isDefault
+        </if>
+        from b_goods bg
+        <if test="hasImage!=null and hasImage!='' and hasImage!=0">
+            LEFT JOIN (
+            SELECT
+            *
+            FROM
+            b_images_attr
+            WHERE
+            site_id = #{siteId}
+            AND is_default = 1
+            AND flag=0
+            GROUP BY goods_id, is_default
+            ) AS bi ON bg.goods_id = bi.goods_id and bi.site_id = #{siteId}
+        </if>
+        left JOIN b_goodsextd bge ON bg.goods_id = bge.goods_id and bg.site_id = bge.site_id
+        left JOIN b_integral_goods big ON bg.goods_id = big.goods_id and bg.site_id = big.site_id
+        <where>
+            <if test="goodsId != null">
+                and bg.goods_id = #{goodsId}
+            </if>
+            <if test="siteId != null">
+                and bg.site_id = #{siteId} and bge.site_id = #{siteId}
+            </if>
+            <if test="approvalNumber!=null and approvalNumber!=''">
+                and approval_number = #{approvalNumber}
+            </if>
+            <if test="specifCation!=null and specifCation!=''">
+                and specif_cation = #{specifCation}
+            </if>
+            <if test="goodsStatus!=null and goodsStatus!=''">
+                and goods_status in (${goodsStatus})
+            </if>
+        </where>
+        limit 1
+    </select>
+    <select id="getGoodsDStatus" resultType="java.util.Map" useCache="false" flushCache="false">
+        select
+        bg.site_id as siteId,
+        bg.goods_id as goodsId,bg.goods_title as goodsTitle,
+        bg.shop_price as shopPrice,
+        bg.goods_status as goodsStatus,
+        bg.specif_cation as specifCation,
+        bg.control_num as controlNum,
+        bg.erp_price as erpPrice
+        from b_goods bg
+        <where>
+            <if test="goodsId != null">
+                and bg.goods_id = #{goodsId}
+            </if>
+            <if test="siteId != null">
+                and bg.site_id = #{siteId}
+            </if>
+            <if test="approvalNumber!=null and approvalNumber!=''">
+                and approval_number = #{approvalNumber}
+            </if>
+            <if test="specifCation!=null and specifCation!=''">
+                and specif_cation = #{specifCation}
+            </if>
+            <if test="goodsStatus!=null and goodsStatus!=''">
+                and goods_status in (${goodsStatus})
+            </if>
+        </where>
+        limit 1
+    </select>
+
+    <select id="getGoodsDList" resultType="java.util.Map" useCache="false" flushCache="false">
+        select
+        <include refid="Goods_extd_Column_List"/>
+        from b_goods bg
+        left JOIN b_goodsextd bge ON bg.goods_id = bge.goods_id and bg.site_id = bge.site_id
+        left JOIN b_integral_goods big ON bg.goods_id = big.goods_id and bg.site_id = big.site_id
+        <where>
+            <if test="goodsId != null">
+                and bg.goods_id = #{goodsId}
+            </if>
+            <if test="siteId != null">
+                and bg.site_id = #{siteId} and bge.site_id = #{siteId}
+            </if>
+            <if test="goods_code != null and goods_code != ''">
+                and goods_code = #{goods_code}
+            </if>
+            <if test="approvalNumber!=null and approvalNumber!=''">
+                and approval_number = #{approvalNumber}
+            </if>
+            <if test="specifCation!=null and specifCation!=''">
+                and specif_cation = #{specifCation}
+            </if>
+            <if test="goodsStatus!=null and goodsStatus!=''">
+                and goods_status in (${goodsStatus})
+            </if>
+        </where>
+    </select>
+
+    <!--根据批准文号获取商品-->
+    <select id="getGoodsByApprovalNumber" resultType="java.util.Map" useCache="false" flushCache="false">
+        select
+        <include refid="Goods_extd_Column_List"/>
+        from b_goods bg
+        left JOIN b_goodsextd bge ON bge.goods_id=bg.goods_id
+        left JOIN b_integral_goods big ON bg.goods_id = big.goods_id and bg.site_id = big.site_id
+        <where>
+            <if test="goodsId != null">
+                and bg.approval_number = #{approvalNumber}
+            </if>
+            <if test="siteId != null">
+                and bg.site_id = #{siteId} and bge.site_id = #{siteId}
+            </if>
+        </where>
+    </select>
+
+    <sql id="Goods_Img_Column_List">
+        /*bga.id,bga.hash,bga.width,bga.height,bga.size,bga.type,bga.host_id,bga.flag,goods_id,bga.is_default*/
+        bga.hash
+    </sql>
+    <select id="getGoodsImg" resultType="java.util.Map" useCache="false" flushCache="false">
+        select
+        <include refid="Goods_Img_Column_List"/>
+        from b_images_attr bga
+        <where>
+            <if test="goodsId != null">
+                and bga.goods_id = #{goodsId}
+            </if>
+            <if test="siteId != null">
+                and bga.site_id = #{siteId}
+            </if>
+            and flag=0
+        </where>
+        order BY is_default DESC
+        limit 10
+    </select>
+
+    <sql id="Goods_Column_List">
+        bg.goods_id as goodsId,bg.approval_number as approvalNumber,bg.drug_name as drugName,bg.com_name as comName,
+        bg.specif_cation as specifCation,bg.goods_company as goodsCompany,
+        bg.barnd_id as barndId,bg.drug_category as drugCategory,bg.goods_property as goodsProperty,bg.goods_use as goodsUse,
+        bg.goods_forts as goodsForts,bg.goods_validity as goodsValidity,
+        bg.goods_forpeople as goodsForpeople,bg.user_cateid as userCateid,bg.goods_title as goodsTitle,
+        bg.goods_tagsid as goodsTagsid,bg.market_price as marketPrice,bg.update_time as updateTime,
+        bg.shop_price as shopPrice,bg.cost_price as costPrice,bg.discount_price as discountPrice,bg.in_stock as inStock,
+        bg.goods_weight as goodsWeight,bg.control_num as controlNum,bg.goods_status as goodsStatus,
+        bg.freight_payer as freightPayer,bg.list_time as listTime,bg.delist_time as delistTime,
+        bg.postage_id as postageId,bg.detail_tpl as detailTpl,bg.is_medicare as isMedicare,bg.medicare_code as medicareCode,
+        bg.medicare_top_price as medicareTopPrice,bg.bar_code as barCode,bg.mnemonic_code as mnemonicCode,
+        bg.purchase_way as purchaseWay, bg.wx_purchase_way as wxPurchaseWay,bg.goods_code as goodsCode,bg.erp_price as erpPrice
+    </sql>
+
+    <select id="getGoodsList" resultType="java.util.Map" useCache="false" timeout="1800" flushCache="false">
+        select
+        <include refid="Goods_Column_List"/>
+        <if test="hasImage!=null and hasImage!=''and hasImage!=0">
+            ,bi.`hash` as imgHash,bi.goods_id
+        </if>
+        from b_goods bg
+        <if test="hasImage!=null and hasImage!='' and hasImage!=0">
+            LEFT JOIN (
+            SELECT * FROM (
+            SELECT
+            *
+            FROM
+            b_images_attr
+            WHERE
+            site_id = #{siteId}
+            AND flag = 0 AND is_default in(0,1) GROUP BY goods_id
+            ) AS A GROUP BY goods_id
+            ) AS bi ON bg.goods_id = bi.goods_id and bi.site_id = #{siteId}
+        </if>
+        <if test="brandName!=null and brandName!=''">
+            LEFT JOIN b_barnd b ON bg.barnd_id = b.barnd_id
+        </if>
+        <where>
+            <!-- 需求：查出商品goods_status和app_goods_status有一个状态是1即可 -start -->
+            bg.site_id = #{siteId}
+            <if test="gStatus!=null and gStatus!=''">
+                <if test="gStatus == -1">and (bg.goods_status = 1 or bg.app_goods_status = 1)</if>
+            </if>
+            <!-- 需求：查出商品goods_status和app_goods_status有一个状态是1即可 -end -->
+            <if test="brandName!=null and brandName!=''">
+                and bg.site_id = b.site_id
+            </if>
+            <if test="goodsId != null and goodsId!=''">
+                and bg.goods_id = #{goodsId}
+            </if>
+            <if test="goodsIds != null and goodsIds!=''">
+                and bg.goods_id in
+                <foreach collection="goodsIds" separator="," open="(" close=")" item="goodsId">
+                    #{goodsId}
+                </foreach>
+            </if>
+            <if test="siteId != null and siteId!=''">
+                and bg.site_id = #{siteId}
+            </if>
+            <if test="drugName != null and drugName!=''">
+                and (bg.drug_name like concat('%',#{drugName},'%' ) or bg.com_name like concat('%',#{drugName},'%' ))
+            </if>
+            <if test="comName != null and comName!=''">
+                and bg.com_name like concat('%',#{comName},'%' )
+            </if>
+            <if test="userCateid != null and userCateid!='' ">
+                and bg.user_cateid like concat('',#{userCateid},'%')
+            </if>
+            <if test="goodsTitle != null and goodsTitle!=''">
+                and bg.goods_title like concat('%',#{goodsTitle},'%' )
+            </if>
+            <if test="approvalNumber != null and approvalNumber!=''">
+                and bg.approval_number = #{approvalNumber}
+            </if>
+            <if test="goodsCode != null and goodsCode!=''">
+                and bg.goods_code = #{goodsCode}
+            </if>
+            <if test="goodsStatus!=null and goodsStatus!=''">
+                <if test="goodsStatus ==0">and bg.goods_status in(1,2)</if>
+                <if test="goodsStatus !=0">and bg.goods_status = #{goodsStatus}</if>
+            </if>
+            <if test="drugCategory!=null and drugCategory!=''">
+                and bg.drug_category = #{drugCategory}
+            </if>
+            <if test="drugCategory!=null and drugCategory!=''">
+                and bg.drug_category = #{drugCategory}
+            </if>
+            <if test="hasImage!=null and hasImage!=''and hasImage!=0">
+                <if test="hasImage ==1">and bi.hash IS not NULL</if>
+                <if test="hasImage ==2">and bi.hash IS NULL</if>
+            </if>
+            <if test="detailTpl!=null and detailTpl!=''">
+                and bg.detail_tpl = #{detailTpl}
+            </if>
+            <if test="goodsProperty!=null and goodsProperty!=''">
+                and bg.goods_property = #{goodsProperty}
+            </if>
+            <if test="goodsProperty!=null and goodsProperty!=''">
+                and bg.goods_property = #{goodsProperty}
+            </if>
+            <if test="brandName!=null and brandName!=''">
+                AND b.barnd_name like concat('%',#{brandName},'%' )
+            </if>
+            <if test="purchaseWay!=null and purchaseWay!=''">
+                AND bg.purchase_way = #{purchaseWay}
+            </if>
+            <if test="wxPurchaseWay!=null and wxPurchaseWay!=''">
+                AND bg.wx_purchase_way = #{wxPurchaseWay}
+            </if>
+            <!--修改market_price包含0 by产品黄其祥-->
+            <if test="startPrice!=null and startPrice!=''">
+                AND bg.shop_price &gt;= #{startPrice}
+            </if>
+            <if test="endPrice!=null and endPrice!=''">
+                AND bg.shop_price &lt;= #{endPrice}
+            </if>
+            <if test="barCode!=null and barCode!=''">
+                <if test="barCode ==1">AND bg.bar_code IS NOT NULL AND bar_code != ''</if>
+                <if test="barCode ==2">AND (bg.bar_code IS NULL OR bar_code = '')</if>
+                <if test="barCode !=1 and barCode != 2 and barCode !=-1">AND bg.bar_code = #{barCode}</if>
+            </if>
+            <if test="barCodeValue != null and barCodeValue != ''">
+                AND bg.bar_code=#{barCodeValue}
+            </if>
+
+            <if test="goodsCodeStatus!=null and goodsCodeStatus!=''and goodsCodeStatus!=0">
+                <if test="goodsCodeStatus ==1">and bg.goods_code IS not NULL and bg.goods_code != ''</if>
+                <!--and的优先级比or高,要用括号-->
+                <if test="goodsCodeStatus ==2">and (bg.goods_code IS NULL OR bg.goods_code = '')</if>
+            </if>
+
+            <if test="goodsClassify!=null and goodsClassify !='' and goodsClassify != 0">
+                <if test="goodsClassify ==1">and bg.user_cateid IS not NULL and bg.user_cateid != 0</if>
+                <!--and的优先级比or高,要用括号-->
+                <if test="goodsClassify ==2">and (bg.user_cateid IS NULL OR bg.user_cateid = 0)</if>
+            </if>
+
+            <if test="goodsTemplate!=null and goodsTemplate !='' and goodsTemplate != 0">
+                and bg.detail_tpl = #{goodsTemplate}
+            </if>
+
+        </where>
+
+        <choose>
+            <when test="order != null and order != ''">
+                order by bg.${order}
+            </when>
+            <otherwise>
+                order by bg.update_time desc
+            </otherwise>
+        </choose>
+
+    </select>
+
+
+    <select id="getCorrelationGoodsList" resultType="java.util.Map" useCache="false" timeout="1800" flushCache="false">
+        SELECT
+        bg.site_id ,bg.approval_number,bg.bar_code,bg.com_name ,
+        bi.`hash` ,bg.drug_category ,bg.drug_name ,bg.goods_code ,
+        bg.goods_company ,bg.goods_id  ,bg.goods_status ,bg.goods_title ,
+        bg.in_stock ,bg.market_price ,bg.purchase_way ,bg.shop_price ,
+        bg.specif_cation ,bg.update_time ,bg.user_cateid ,bg.wx_purchase_way ,
+        bg.erp_price
+        FROM
+        (
+        SELECT
+        COUNT(o.goods_id) AS OrderSum,
+        o.goods_id,
+        o.site_id
+        FROM
+        (
+        SELECT
+        bt.trades_id
+        FROM
+        b_trades bt
+        LEFT JOIN b_orders bo ON bo.trades_id = bt.trades_id
+        AND bo.site_id = bt.site_id
+        WHERE
+        bo.goods_id = #{goodsId}
+        AND bo.site_id = #{siteId}
+        ) AS t
+        LEFT JOIN b_orders AS o ON o.trades_id = t.trades_id
+        WHERE
+        site_id = #{siteId}
+        AND o.goods_id <![CDATA[ <> ]]> #{goodsId}
+        GROUP BY
+        o.goods_id,
+        o.site_id
+        ORDER BY
+        OrderSum DESC
+        LIMIT 4
+        ) AS ids
+        LEFT JOIN b_goods AS bg ON bg.goods_id = ids.goods_id
+        AND bg.site_id = ids.site_id
+        LEFT JOIN b_goodsextd bge ON bg.goods_id = bge.goods_id
+        AND bg.site_id = bge.site_id
+        LEFT JOIN b_integral_goods big ON bg.goods_id = big.goods_id
+        AND bg.site_id = big.site_id
+        LEFT JOIN (
+        SELECT
+        *
+        FROM
+        b_images_attr
+        WHERE
+        site_id = #{siteId}
+        AND is_default = 1
+        AND flag = 0
+        GROUP BY
+        goods_id,
+        is_default
+        ) AS bi ON bg.goods_id = bi.goods_id
+        AND bi.site_id = bg.site_id
+        WHERE
+        ids.site_id = #{siteId}
+        and bg.goods_status=1
+    </select>
+
+    <select id="getGoodsReportList" resultType="java.util.Map" useCache="false" timeout="1800" flushCache="false">
+        select
+        bg.goods_code as 商品编码,
+        bg.approval_number as 批准文号,
+        bg.bar_code as 商品条形码,
+        bg.drug_name as 商品名,
+        bg.com_name as 通用名,
+        CASE bg.drug_category
+        WHEN 110 THEN '甲类非处方药'
+        WHEN 120 THEN '乙类非处方药'
+        WHEN 130 THEN '处方药'
+        WHEN 140 THEN '双轨药'
+        WHEN 150 THEN '非方剂'
+        WHEN 160 THEN '方剂'
+        WHEN 170 THEN '一类'
+        WHEN 180 THEN '二类'
+        WHEN 190 THEN '三类'
+        ELSE '其他'
+        END
+        as 药品类别,
+        bg.specif_cation 规格,
+        bg.goods_company as 生产企业,
+        bg.goods_title as 商品标题,
+        round(bg.shop_price/100,2) as 现价,
+        bg.in_stock as 库存,
+        bg.control_num as 限购数量,
+        CONCAT((CASE bg.purchase_way
+        WHEN 110 THEN '电脑端:显示立即购买，购物车'
+        WHEN 120 THEN '电脑端:显示手机扫码购买'
+        WHEN 130 THEN '电脑端:显示立即购买，购物车，手机扫码购买'
+        WHEN 140 THEN '电脑端:显示该商品仅供展示'
+        ELSE '电脑端:显示立即购买，购物车'
+        END ) ,
+        (CASE bg.wx_purchase_way
+        WHEN 110 THEN ' 移动端:显示立即购买，购物车'
+        WHEN 120 THEN ' 移动端:显示该商品仅供展示'
+        WHEN 130 THEN ' 移动端:显示预约购买'
+        ELSE ' 移动端:显示立即购买，购物车'
+        END )) as 购买方式
+        from b_goods bg
+        <if test="hasImage!=null and hasImage!='' and hasImage!=0">
+            LEFT JOIN (
+            SELECT * FROM (
+            SELECT
+            *
+            FROM
+            b_images_attr
+            WHERE
+            site_id = #{siteId}
+            AND flag = 0 AND is_default=1 GROUP BY goods_id
+            UNION
+            SELECT
+            *
+            FROM
+            b_images_attr
+            WHERE
+            site_id = #{siteId}
+            AND flag = 0 AND is_default=0 GROUP BY goods_id
+            ) AS A GROUP BY goods_id
+            ) AS bi ON bg.goods_id = bi.goods_id and bi.site_id = #{siteId}
+        </if>
+        <if test="brandName!=null and brandName!=''">
+            LEFT JOIN b_barnd b ON bg.barnd_id = b.barnd_id
+        </if>
+        <where>
+            <if test="brandName!=null and brandName!=''">
+                and bg.site_id = b.site_id
+            </if>
+            <if test="goodsId != null and goodsId!=''">
+                and bg.goods_id = #{goodsId}
+            </if>
+            <if test="goodsIds != null and goodsIds!=''">
+                and bg.goods_id in
+                <foreach collection="goodsIds" separator="," open="(" close=")" item="goodsId">
+                    #{goodsId}
+                </foreach>
+            </if>
+            <if test="siteId != null and siteId!=''">
+                and bg.site_id = #{siteId}
+            </if>
+            <if test="drugName != null and drugName!=''">
+                and (bg.drug_name like concat('%',#{drugName},'%' ) or bg.com_name like concat('%',#{drugName},'%' ))
+            </if>
+            <if test="userCateid != null and userCateid!='' ">
+                and bg.user_cateid like concat('',#{userCateid},'%')
+            </if>
+            <if test="goodsTitle != null and goodsTitle!=''">
+                and bg.goods_title like concat('%',#{goodsTitle},'%' )
+            </if>
+            <if test="approvalNumber != null and approvalNumber!=''">
+                and bg.approval_number = #{approvalNumber}
+            </if>
+            <if test="goodsCode != null and goodsCode!=''">
+                and bg.goods_code = #{goodsCode}
+            </if>
+            <if test="goodsStatus!=null and goodsStatus!=''">
+                <if test="goodsStatus ==0">and bg.goods_status in(1,2)</if>
+                <if test="goodsStatus !=0">and bg.goods_status = #{goodsStatus}</if>
+            </if>
+            <if test="drugCategory!=null and drugCategory!=''">
+                and bg.drug_category = #{drugCategory}
+            </if>
+            <if test="drugCategory!=null and drugCategory!=''">
+                and bg.drug_category = #{drugCategory}
+            </if>
+            <if test="hasImage!=null and hasImage!=''and hasImage!=0">
+                <if test="hasImage ==1">and bi.hash IS not NULL</if>
+                <if test="hasImage ==2">and bi.hash IS NULL</if>
+            </if>
+            <if test="detailTpl!=null and detailTpl!=''">
+                and bg.detail_tpl = #{detailTpl}
+            </if>
+            <if test="goodsProperty!=null and goodsProperty!=''">
+                and bg.goods_property = #{goodsProperty}
+            </if>
+            <if test="goodsProperty!=null and goodsProperty!=''">
+                and bg.goods_property = #{goodsProperty}
+            </if>
+            <if test="brandName!=null and brandName!=''">
+                AND b.barnd_name like concat('%',#{brandName},'%' )
+            </if>
+            <if test="purchaseWay!=null and purchaseWay!=''">
+                AND bg.purchase_way = #{purchaseWay}
+            </if>
+            <if test="wxPurchaseWay!=null and wxPurchaseWay!=''">
+                AND bg.wx_purchase_way = #{wxPurchaseWay}
+            </if>
+            <!--修改market_price包含0 by产品黄其祥-->
+            <if test="startPrice!=null and startPrice!=''">
+                AND bg.shop_price &gt;= #{startPrice}
+            </if>
+            <if test="endPrice!=null and endPrice!=''">
+                AND bg.shop_price &lt;= #{endPrice}
+            </if>
+            <if test="barCode!=null and barCode!=''">
+                <if test="barCode ==1">AND bg.bar_code IS NOT NULL AND bg.bar_code != ''</if>
+                <if test="barCode ==2">AND (bg.bar_code IS NULL OR bg.bar_code = '')</if>
+                <if test="barCode !=1 and barCode != 2 and barCode !=-1">AND bg.bar_code = #{barCode}</if>
+            </if>
+            <if test="barCodeValue != null and barCodeValue != ''">
+                AND bg.bar_code=#{barCodeValue}
+            </if>
+
+            <if test="goodsCodeStatus!=null and goodsCodeStatus!=''and goodsCodeStatus!=0">
+                <if test="goodsCodeStatus ==1">and bg.goods_code IS not NULL and bg.goods_code != ''</if>
+                <!--and的优先级比or高,要用括号-->
+                <if test="goodsCodeStatus ==2">and (bg.goods_code IS NULL OR bg.goods_code = '')</if>
+            </if>
+
+            <if test="goodsClassify!=null and goodsClassify !='' and goodsClassify != 0">
+                <if test="goodsClassify ==1">and bg.user_cateid IS not NULL and bg.user_cateid != 0</if>
+                <!--and的优先级比or高,要用括号-->
+                <if test="goodsClassify ==2">and (bg.user_cateid IS NULL OR bg.user_cateid = 0)</if>
+            </if>
+
+            <if test="goodsTemplate!=null and goodsTemplate !='' and goodsTemplate != 0">
+                and bg.detail_tpl = #{goodsTemplate}
+            </if>
+
+
+        </where>
+
+        <choose>
+            <when test="order != null and order != ''">
+                order by bg.${order}
+            </when>
+            <otherwise>
+                order by bg.update_time desc
+            </otherwise>
+        </choose>
+
+    </select>
+
+    <select id="queryGoods" resultMap="BaseResultMap" useCache="false">
+        select * from yb_goods o where g.goods_id =#{goodsId}
+    </select>
+
+    <select id="getListBytradesId" resultMap="BaseResultMap" useCache="false">
+        select * from b_goods g,b_orders o where g.goods_id=o.goods_id and g.site_id = o.site_id and g.site_id=#{0} and o.trades_id=#{1}
+    </select>
+    <select id="getBySiteIdAndGoodsId" resultMap="BaseResultMap" useCache="false">
+        select * from b_goods where site_id=#{siteId} and goods_id=#{goodsId}
+    </select>
+    <select id="getImageHash" resultType="string" useCache="false">
+        select `hash` from b_images_attr where site_id=#{0} and goods_id=#{1} and is_default=1 AND flag=0
+    </select>
+
+    <select id="getGoodsCode" resultType="string">
+        select goods_code from b_goods t where t.site_id = #{siteId} and t.goods_id in
+        <foreach collection="goodsIds" separator="," open="(" close=")" item="goodsId">
+            #{goodsId}
+        </foreach>
+
+    </select>
+
+    <select id="getByApprovalNumber" resultMap="BaseResultMap" useCache="false">
+        select * from b_goods where site_id=#{site_id} and approval_number = #{approval_number} ORDER by update_time
+    </select>
+    <select id="queryGoodsWithGoodsCode" resultType="map">
+        SELECT * FROM b_goods AS g LEFT JOIN b_goodsextd AS ext ON (g.goods_id = ext.goods_id AND g.site_id = ext.site_id)
+        WHERE g.site_id = #{siteId} and g.goods_code=#{goodsCode} and goods_status in (1,2) limit 1
+    </select>
+    <select id="queryGoodsIdByCond" resultType="java.lang.Integer">
+        select
+        case
+        when count(goods_id) > 0 then goods_id
+        else 0
+        end
+        from (
+        select goods_id from b_goods
+        <where>
+            <if test="approval_number!=null and approval_number!=''">
+                approval_number = #{approval_number}
+            </if>
+            <if test="specif_cation!=null and specif_cation!=''">
+                and specif_cation = #{specif_cation}
+            </if>
+            <if test="goods_stats!=null and goods_stats!=''">
+                and goods_status in (${goods_stats})
+            </if>
+        </where>
+        order by create_time desc
+        limit 1
+        ) as b
+    </select>
+    <select id="queryGoodsCodeAndBarCodeCount" resultType="java.util.Map">
+        SELECT
+        <choose>
+            <when test="goodsCode != null and goodsCode != ''">
+                (
+                SELECT
+                count(goods_code)
+                FROM
+                b_goods
+                WHERE
+                site_id = #{siteId}
+                AND goods_code = #{goodsCode}
+                )
+            </when>
+            <otherwise>
+                0
+            </otherwise>
+        </choose>
+        AS goodsCodeTotal,
+        <choose>
+            <when test="barCode != null and barCode != ''">
+                (
+                SELECT
+                count(goods_code)
+                FROM
+                b_goods
+                WHERE
+                site_id = #{siteId}
+                AND bar_code = #{barCode}
+                )
+            </when>
+            <otherwise>
+                0
+            </otherwise>
+        </choose>
+        AS barCodeTotal
+    </select>
+    <select id="countBarCodeNotGoodsCode" resultType="java.lang.Integer">
+        SELECT count(goods_id) FROM  b_goods WHERE site_id = #{siteId} AND bar_code = #{barCode} AND goods_code != #{goodsCode}
+    </select>
+
+    <update id="updateByApprovalNumber" flushCache="true" parameterType="com.jk51.model.Goods">
+        update b_goods
+        <trim prefix="set" suffixOverrides=",">
+            approval_number = #{approvalNumber},
+            <if test="drugName != null">
+                `drug_name` = #{drugName},
+            </if>
+            <if test="comName != null">
+                `com_name` = #{comName},
+            </if>
+            <if test="specifCation != null">
+                `specif_cation` = #{specifCation},
+            </if>
+            <if test="goodsCompany != null">
+                `goods_company` = #{goodsCompany},
+            </if>
+            <if test="barndId != null">
+                `barnd_id` = #{barndId},
+            </if>
+            <if test="drugCategory != null">
+                `drug_category` = #{drugCategory},
+            </if>
+            <if test="goodsProperty != null">
+                `goods_property` = #{goodsProperty},
+            </if>
+            <if test="goodsUse != null">
+                `goods_use` = #{goodsUse},
+            </if>
+            <if test="goodsForts != null">
+                `goods_forts` = #{goodsForts},
+            </if>
+            <if test="goodsValidity != null">
+                `goods_validity` = #{goodsValidity},
+            </if>
+            <if test="goodsForpeople != null">
+                `goods_forpeople` = #{goodsForpeople},
+            </if>
+            <if test="userCateid != null">
+                `user_cateid` = #{userCateid},
+            </if>
+            <if test="goodsTitle != null">
+                `goods_title` = #{goodsTitle},
+            </if>
+            <if test="goodsTagsid != null">
+                `goods_tagsid` = #{goodsTagsid},
+            </if>
+            <if test="marketPrice != null">
+                `market_price` = #{marketPrice},
+            </if>
+            <if test="shopPrice != null">
+                `shop_price` = #{shopPrice},
+            </if>
+            <if test="costPrice != null">
+                `cost_price` = #{costPrice},
+            </if>
+            <if test="discountPrice != null">
+                `discount_price` = #{discountPrice},
+            </if>
+            <if test="inStock != null">
+                `in_stock` = #{inStock},
+            </if>
+            <if test="goodsWeight != null">
+                `goods_weight` = #{goodsWeight},
+            </if>
+            <if test="controlNum != null">
+                `control_num` = #{controlNum},
+            </if>
+            <if test="goodsStatus != null">
+                `goods_status` = #{goodsStatus},
+            </if>
+            <if test="freightPayer != null">
+                `freight_payer` = #{freightPayer},
+            </if>
+            <if test="listTime != null">
+                `list_time` = #{listTime},
+            </if>
+            <if test="delistTime != null">
+                `delist_time` = #{delistTime},
+            </if>
+            <if test="postageId != null">
+                `postage_id` = #{postageId},
+            </if>
+            <if test="detailTpl != null">
+                `detail_tpl` = #{detailTpl},
+            </if>
+            <if test="isMedicare != null">
+                `is_medicare` = #{isMedicare},
+            </if>
+            <if test="medicareCode != null">
+                `medicare_code` = #{medicareCode},
+            </if>
+            <if test="medicareTopPrice != null">
+                `medicare_top_price` = #{medicareTopPrice},
+            </if>
+            <if test="barCode != null">
+                `bar_code` = #{barCode},
+            </if>
+            <if test="mnemonicCode != null">
+                `mnemonic_code` = #{mnemonicCode},
+            </if>
+            <if test="purchaseWay != null">
+                `purchase_way` = #{purchaseWay},
+            </if>
+            <if test="wxPurchaseWay != null">
+                `wx_purchase_way` = #{wxPurchaseWay},
+            </if>
+            <if test="goodsCode != null">
+                `goods_code` = #{goodsCode},
+            </if>
+            <if test="ybGoodsId != null">
+                `yb_goods_id` = #{ybGoodsId},
+            </if>
+            <if test="updateTime != null">
+                update_time=CURRENT_TIMESTAMP(),
+            </if>
+        </trim>
+        <where>
+            approval_number = #{approvalNumber} AND site_id = #{siteId}
+        </where>
+    </update>
+
+
+    <select id="getGoodsCodeID" resultType="string">
+        select goods_code from b_goods t where t.site_id = #{siteId} and t.goods_id = #{goodsId}
+
+    </select>
+
+    <sql id="bgoods">
+        G.site_id AS siteId,G.goods_id AS goodsId,G.goods_id,G.approval_number AS approvalNumber,G.drug_name AS drugName,G.com_name AS comName,G.specif_cation AS specifCation,G.goods_company AS goodsCompany,
+        G.barnd_id AS barndId,G.drug_category AS drugCategory,G.goods_property AS goodsProperty,G.goods_use AS goodsUse,G.goods_forts AS goodsForts,G.goods_validity AS goodsValidity,
+        G.goods_forpeople AS goodsForpeople,G.user_cateid AS userCateid,G.goods_title AS goodsTitle,G.goods_tagsid AS goodsTagsid,G.market_price AS marketPrice,G.shop_price AS shopPrice,G.cost_price AS costPrice,G.discount_price AS discountPrice,G.in_stock AS inStock,
+        G.goods_weight AS goodsWeight,G.control_num AS controlNum,G.goods_status AS goodsStatus,G.freight_payer AS freightPayer,date_format(G.list_time,'%Y-%m-%d %H:%i:%s') AS listTime,date_format(G.delist_time,'%Y-%m-%d %H:%i:%s') AS delistTime,G.postage_id AS postageId,G.detail_tpl AS detailTpl,G.is_medicare AS isMedicare,
+        G.medicare_code AS medicareCode,G.medicare_top_price AS medicareTopPrice,G.bar_code AS barCode,G.mnemonic_code AS mnemonicCode,G.purchase_way AS purchaseWay,G.wx_purchase_way AS wxPurchaseWay,G.goods_code AS goodsCode,G.yb_goods_id AS ybGoodsId,
+        date_format(G.create_time,'%Y-%m-%d %H:%i:%s') AS createTime,date_format(G.update_time,'%Y-%m-%d %H:%i:%s') AS updateTime
+    </sql>
+    <sql id="bgoodsextd">
+        E.goodsextd_id AS goodsextdId,E.main_ingredient AS mainIngredient,E.goods_indications AS goodsIndications,E.goods_action AS goodsAction,E.adverse_reactioins AS adverseReactioins,E.goods_note AS goodsNote,E.goods_use_method AS goodsUseMethod,E.goods_contd AS goodsContd,E.goods_desc AS goodsDesc,
+        E.goods_mobile_desc AS goodsMobileDesc,E.goods_description AS goodsDescription,E.browse_number AS browseNumber,E.trans_mumber AS transMumber,E.shopping_number AS shoppingNumber,date_format(E.product_date,'%Y-%m-%d %H:%i:%s') AS productDate,E.goods_usage AS goodsUsage,E.goods_deposit AS goodsDeposit,E.forpeople_desc AS forpeopleDesc,
+        E.qualification AS qualification,E.goods_batch_no AS goodsBatchNo
+    </sql>
+
+    <resultMap id="barcodeResult" type="HashMap">
+        <association property="defUrl" javaType="HashMap" select="selectDefaultImg"
+                     column="{goods_id=goodsId,site_id=siteId}"/>
+        <collection property="goodsUrl" ofType="HashMap" select="selectUnDefaultImg"
+                    column="{goods_id=goodsId,site_id=siteId}"/>
+    </resultMap>
+
+    <select id="selectUnDefaultImg" resultType="HashMap">
+        SELECT I.host_id AS hostId,I.hash AS imageId FROM b_images_attr I WHERE I.flag = 0 AND I.is_default=0 AND
+        I.goods_id=#{goods_id} AND I.site_id=#{site_id} limit 5
+    </select>
+    <!--根据商品id查询药品详情-->
+    <select id="queryGoodsDetailByGoodId" resultMap="barcodeResult">
+        select
+        <include refid="bgoods"/>,<include refid="bgoodsextd"/>,B.barnd_name AS barndName, R.relevance_classify AS
+        relevanceClassify, G.gross_profit AS grossProfit, G.is_main_push AS isMainPush,
+        R.relevance_reson AS relevanceReson
+        from b_goods G
+        LEFT JOIN b_goodsextd E ON G.goods_id=E.goods_id AND G.site_id=E.site_id
+        LEFT JOIN b_barnd B ON B.site_id=G.site_id AND B.barnd_id=G.barnd_id
+        LEFT JOIN b_relevance_sale R ON G.site_id = R.site_id
+        AND G.user_cateid = R.cate_code AND R.is_delete = 0
+        AND R.is_pause = 1
+        AND R.is_relevance = 1
+        WHERE 1=1
+        AND G.goods_id=#{goods_id} AND G.site_id=#{site_id}
+    </select>
+
+    <resultMap id="StorePriceMap" type="com.jk51.model.goods.YbStoresGoodsPrice">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="site_id" property="siteId" jdbcType="INTEGER"/>
+        <result column="store_id" property="storeId" jdbcType="INTEGER"/>
+        <result column="goods_id" property="goodsId" jdbcType="INTEGER"/>
+        <result column="goods_price" property="goodsPrice" jdbcType="INTEGER"/>
+        <result column="discount_price" property="discountPrice" jdbcType="INTEGER"/>
+        <result column="in_stock" property="inStock" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <select id="queryGoodStorePrice" resultMap="StorePriceMap" useCache="false">
+        select * from yb_stores_goods_price WHERE site_id=#{site_id} and goods_id=#{goods_id} and store_id=#{store_id} and del_tag=0;
+    </select>
+
+    <select id="selectDefaultImg" resultType="HashMap">
+        SELECT I.host_id AS hostId,I.hash AS imageId FROM b_images_attr I WHERE I.flag = 0 AND I.is_default=1 AND
+        I.goods_id=#{goods_id} AND I.site_id=#{site_id} limit 1
+    </select>
+    <resultMap id="goodList" type="HashMap" autoMapping="true">
+        <result column="goodsId" property="goodsId"/>
+        <association property="defUrl" javaType="HashMap" select="selectDefaultImg"
+                     column="{goods_id=goodsId,site_id=siteId}"/>
+    </resultMap>
+    <!--条件查询商品列表-->
+    <select id="queryGoodsListByConditions" resultMap="goodList">
+        select
+        G.approval_number AS approvalNumber,G.bar_code AS barCode,G.drug_name AS drugName,E.goods_contd AS
+        goodsContd,G.goods_id AS goodsId,G.site_id AS siteId,G.goods_validity AS goodsValidity,G.shop_price AS
+        shopPrice,G.specif_cation AS specifCation, G.control_num AS controlNum,G.goods_code AS goodsCode,
+        G.market_price AS marketPrice, G.shop_price AS merchantShopPrice, G.cost_price AS costPrice, G.erp_price AS
+        erpPrice, G.discount_price AS discountPrice, G.is_medicare AS isMedicare, G.drug_category AS drugCategory,
+        G.gross_profit AS grossProfit, G.is_main_push AS isMainPush,
+        R.relevance_classify AS relevanceClassify, R.relevance_reson AS relevanceReson
+        from b_goods G
+        LEFT JOIN b_goodsextd E ON G.goods_id=E.goods_id AND G.site_id=E.site_id
+        LEFT JOIN b_relevance_sale R ON G.site_id = R.site_id AND G.user_cateid = R.cate_code AND R.is_delete = 0 AND
+        R.is_pause = 1 AND R.is_relevance = 1
+        WHERE 1=1
+        <if test="drug_type!=null">
+            <choose>
+                <when test="drug_type==1">
+                    AND (G.bar_code=#{drug_name}
+                    <if test="drug_namenew!=null">
+                        or G.bar_code=#{drug_namenew}
+                    </if>
+                    )
+                </when>
+                <when test="drug_type==3">
+                    AND G.drug_name LIKE #{drug_name}
+                </when>
+                <when test="drug_type==0">
+                    AND G.drug_name LIKE #{drug_name}
+                </when>
+                <when test="drug_type==4">
+                    AND G.approval_number=#{drug_name}
+                </when>
+                <when test="drug_type==5">
+                    AND G.goods_code=#{drug_name}
+                </when>
+                <when test="drug_type==6">
+                    AND (G.drug_name LIKE CONCAT('%',#{drug_name},'%') OR G.goods_code=#{drug_name})
+                </when>
+                <when test="drug_type==7">
+                    AND (G.bar_code=#{drug_name} OR G.goods_code=#{drug_name})
+                </when>
+            </choose>
+        </if>
+        <!--<if test="goods_status!=-1 and goods_status != null">
+            AND G.goods_status=#{goods_status}
+        </if>
+        <if test="goods_status == -1">
+            AND G.goods_status IN (1,2)
+        </if>-->
+        <if test="goods_status!=-1 and goods_status != null">
+            AND G.app_goods_status=#{goods_status}
+        </if>
+        <if test="goods_status == -1">
+            AND G.app_goods_status IN (1,2)
+        </if>
+        <if test="hav_barcode!=null">
+            <choose>
+                <when test="hav_barcode==1">
+                    AND G.bar_code is NOT NULL
+                </when>
+                <when test="hav_barcode==2">
+                    AND G.bar_code is NULL
+                </when>
+            </choose>
+        </if>
+        AND G.site_id=#{site_id}
+        <if test="pageNum == null or pageNum == '' or pageSize == null or pageSize == ''">
+            limit 50;
+        </if>
+    </select>
+
+    <!--只查询没有条形码的-->
+    <select id="queryNullBarCode" resultMap="goodList">
+        select
+        G.approval_number AS approvalNumber,G.bar_code AS barCode,G.drug_name AS drugName,E.goods_contd AS
+        goodsContd,G.goods_id AS goodsId,G.site_id AS siteId,G.goods_validity AS goodsValidity,G.shop_price AS
+        shopPrice,G.specif_cation AS specifCation,
+        G.control_num AS controlNum,G.goods_code AS goodsCode , G.goods_status AS goodsStatus
+        from b_goods G
+        LEFT JOIN b_goodsextd E ON G.goods_id=E.goods_id AND G.site_id=E.site_id
+        WHERE G.site_id=#{site_id}
+        <if test="goods_status == 1">
+            AND G.goods_status=#{goods_status}
+        </if>
+        <if test="goods_status == -1">
+            AND G.goods_status IN (1,2)
+        </if>
+        AND (bar_code = '' OR bar_code is NULL)
+    </select>
+    <!--根据buyerId查询历史购买商品-->
+    <select id="selectGoodsByBuyerId" resultMap="goodList">
+        SELECT
+            G.approval_number AS approvalNumber,G.bar_code AS barCode,G.drug_name AS drugName,E.goods_contd AS goodsContd,
+            G.goods_id AS goodsId,G.site_id AS siteId,G.goods_validity AS goodsValidity,G.shop_price AS shopPrice, G.drug_category AS drugCategory, G.is_medicare AS isMedicare,
+            G.specif_cation AS specifCation,G.control_num AS controlNum, ids.num,
+            G.market_price AS marketPrice, G.shop_price AS merchantShopPrice, G.cost_price AS costPrice, G.erp_price AS erpPrice, G.discount_price AS discountPrice, G.gross_profit AS grossProfit, G.is_main_push AS isMainPush, G.user_cateid AS userCateid, G.goods_code AS goodsCode
+        FROM
+            (
+                SELECT b.site_id, b.goods_id, COUNT(*) num
+                FROM
+                (SELECT site_id, trades_id FROM b_trades WHERE site_id=#{siteId} AND buyer_id=#{buyerId} AND create_time <![CDATA[  >=  ]]> DATE_SUB(CURDATE(), INTERVAL 1 YEAR)) a
+                JOIN b_orders b ON a.site_id=b.site_id AND a.trades_id=b.trades_id
+                GROUP BY b.site_id, b.goods_id
+            ) ids
+        JOIN b_goods G ON ids.site_id=G.site_id AND ids.goods_id=G.goods_id
+        LEFT JOIN b_goodsextd E ON G.goods_id=E.goods_id AND G.site_id=E.site_id
+        WHERE G.app_goods_status = 1
+        ORDER BY ids.num DESC
+        LIMIT 15
+    </select>
+
+    <select id="getGoodsInfoByGoodsCode" resultType="hashmap">
+        SELECT
+        bg.goods_id AS goods_id,
+        bg.goods_code AS goods_code,
+        bg.goods_title AS goods_title,
+        bg.specif_cation AS specif_cation,
+        bg.shop_price AS shop_price,
+        bg.goods_status AS goods_status,
+        count(*) AS import_status_num,
+        CASE WHEN count(*) != 1 THEN 2
+        ELSE 0 END status
+        FROM
+        b_goods bg
+        WHERE
+        bg.site_id =#{siteId}
+        AND bg.goods_status = 1
+        AND
+        bg.goods_code IN
+        <foreach collection="goodsCodes" separator="," open="(" close=")" item="goodId">
+            #{goodId}
+        </foreach>
+        GROUP BY bg.goods_code
+        order by status DESC,FIELD
+        <foreach collection="goodsCodes2" separator="," open="(" close=")" item="goodId">
+            <if test="goodId=='goods_code'">goods_code</if>
+            <if test="goodId!='goods_code' and goodId!=''">#{goodId}</if>
+        </foreach>
+    </select>
+
+
+    <select id="findByGoodsIdAndBarcode" resultType="com.jk51.model.Goods">
+        SELECT * from b_goods where site_id=#{siteId} and bar_code = #{barcode} and goods_id != #{goods_id} limit 1
+    </select>
+
+    <!--修改二维码-->
+    <update id="updateBarCode">
+        UPDATE b_goods SET bar_code=#{bar_code} WHERE site_id=#{site_id} AND goods_id=#{goods_id}
+    </update>
+
+    <select id="queryGoodsInfoByIds" resultType="java.util.Map">
+        SELECT
+        t.goods_id, t.goods_title, t.shop_price, t.discount_price disc_price
+        FROM
+        b_goods t
+        where
+        t.site_id = #{siteId}
+        AND t.goods_id in
+        <foreach collection="goodsIds" separator="," open="(" close=")" item="goodsId">
+            #{goodsId}
+        </foreach>
+    </select>
+
+    <select id="queryGoodsInfoByIds2" resultType="java.util.Map">
+        SELECT
+        t.goods_id, t.goods_title, t.shop_price, t.discount_price disc_price
+        FROM
+        b_goods t
+        where
+        t.site_id = #{siteId}
+        AND t.goods_id in
+        <foreach collection="goodsIds" separator="," open="(" close=")" item="goodsId">
+            #{goodsId}
+        </foreach>
+    </select>
+
+    <update id="updatedisPrice" parameterType="Map">
+        <foreach collection="goodsList" item="item" index="index" open="" close="" separator=";">
+            update b_goods
+            <set>
+                erp_price=#{item.shop_price}
+            </set>
+            where site_id=#{siteId} and goods_code=#{item.goods_code}
+        </foreach>
+    </update>
+    <update id="updateErpPrice" parameterType="Map">
+        update b_goods
+        <set>
+            erp_price=#{erp_price}
+        </set>
+        where site_id=#{siteId} and goods_code=#{goods_code}
+    </update>
+    <select id="getGoodCodeBySiteId" resultType="java.lang.String">
+        select goods_code from b_goods where site_id=#{siteId}
+        <if test="status!=null">
+            AND goods_status=#{status}
+        </if>
+    </select>
+    <!--批量删除商品-->
+    <update id="batchDeleteGoods">
+        <!--需求，增加app_goods_status字段，删除或批量删除时，该字段要置为：4 -->
+        UPDATE b_goods SET goods_status=4, app_goods_status = 4 WHERE site_id=#{param.siteId} AND goods_id IN
+        <foreach item="goodId" index="index" collection="param.goodsId"
+                 open="(" separator="," close=")">
+            #{goodId}
+        </foreach>
+
+    </update>
+
+    <select id="getDefaultImg" parameterType="java.util.Map" resultType="java.lang.String" useCache="false"
+            flushCache="false">
+        select hash as imgHash from b_images_attr where site_id = #{siteId} and goods_id = #{goodsId} and flag=0 order by is_default desc limit 1
+    </select>
+
+    <select id="findByIds" resultType="map">
+        SELECT
+        <choose>
+            <when test="@org.apache.commons.lang.ArrayUtils@isNotEmpty(fields)">
+                <foreach collection="fields" separator="," item="v">
+                    `${v}`
+                </foreach>
+            </when>
+            <otherwise>
+                *
+            </otherwise>
+        </choose>
+        FROM b_goods
+        <where>
+            site_id = #{siteId}
+            AND
+            goods_id in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                #{id}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="countGoodsOnSale" resultType="int">
+        SELECT count(1) FROM b_goods
+        WHERE goods_status = 1
+        AND site_id = #{siteId}
+    </select>
+
+    <!--根据价格快速修改商品-->
+    <update id="updateGoodByPrice">
+        UPDATE b_goods SET
+        shop_price=#{price},
+        market_price=#{price}
+        where site_id=#{siteId} AND goods_id=#{goodId}
+    </update>
+
+    <!--根据价格快速修改商品-->
+    <update id="updateGoodByPriceOther">
+        UPDATE b_goods SET
+        shop_price=#{price}
+        where site_id=#{siteId} AND goods_id=#{goodId}
+    </update>
+
+    <insert id="insertGoodsSynchro" parameterType="com.jk51.model.goods.BGoodsSynchroLog">
+
+        INSERT INTO b_goods_synchro_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            site_id,
+            goods_id,
+            <if test="yb_goods_id != null">
+                yb_goods_id,
+            </if>
+            <if test="operate_type != null">
+                operate_type,
+            </if>
+            <if test="operate_status != null">
+                operate_status,
+            </if>
+            <if test="synchro_type != null">
+                synchro_type,
+            </if>
+            <if test="synchro_status != null">
+                synchro_status
+            </if>
+        </trim>
+        <trim prefix="value(" suffix=")" suffixOverrides=",">
+            #{site_id},
+            #{goods_id},
+            <if test="yb_goods_id != null">
+                #{yb_goods_id},
+            </if>
+            <if test="operate_type != null">
+                #{operate_type},
+            </if>
+            <if test="operate_status != null">
+                #{operate_status},
+            </if>
+            <if test="synchro_type != null">
+                #{synchro_type},
+            </if>
+            <if test="synchro_status != null">
+                #{synchro_status}
+            </if>
+        </trim>
+
+
+    </insert>
+
+    <select id="queryBGoodsBeforeUpdate" resultType="com.jk51.model.goods.GoodsUpdateInfo">
+        SELECT
+        a.goods_id  goodsId,approval_number approvalNumber,drug_name drugName,com_name comName,specif_cation specifCation,
+        goods_company goodsCompany,a.barnd_id barndId,drug_category drugCategory,goods_property goodsProperty,goods_use goodsUse,goods_forts goodsForts,goods_validity goodsValidity,
+        goods_forpeople goodsForpeople,user_cateid userCateid,goods_title goodsTitle,goods_tagsid  goodsTagsid,market_price marketPrice,shop_price shopPrice,
+        discount_price discountPrice,in_stock  inStock,goods_weight  goodsWeight,control_num controlNum,goods_status goodsStatus,freight_payer freightPayer,
+        list_time  listTime,delist_time delistTime,postage_id postageId,detail_tpl detailTpl,is_medicare isMedicare,medicare_code medicareCode,
+        medicare_top_price  medicareTopPrice,bar_code barCode,mnemonic_code mnemonicCode,goods_code goodsCode,main_ingredient mainIngredient,goods_indications goodsIndication,goods_action goodsAction,
+        adverse_reactioins adverseReactions,goods_note goodsNote,goods_use_method goodsUseMethod,goods_contd goodsContd,goods_desc goodsDesc,goods_description goodsDescription,browse_number browseNumber,
+        trans_mumber transMumber,shopping_number shoppingNumber,product_date productDate,goods_usage goodsUsage,goods_deposit goodsDeposit,forpeople_desc forpeopleDesc,
+        qualification qualification,yb_goods_id ybGoodsId ,c.barnd_name barndName
+        FROM b_goods AS a LEFT JOIN b_goodsextd AS b ON a.goods_id=b.goods_id AND a.`site_id`=b.`site_id`
+        LEFT JOIN yb_barnd AS c ON c.barnd_id = a.barnd_id
+        WHERE  a.goods_id=#{goodsId} AND a.site_id=#{siteId}
+    </select>
+    <select id="queryYbGoods" resultType="com.jk51.model.goods.GoodsUpdateInfo">
+
+        SELECT
+        a.goods_id goodsId,approval_number approvalNumber,drug_name drugName,com_name comName,specif_cation
+        specifCation,
+        goods_company goodsCompany,a.barnd_id barndId,drug_category drugCategory,goods_property goodsProperty,goods_use
+        goodsUse,goods_forts goodsForts,goods_validity goodsValidity,
+        goods_forpeople goodsForpeople,user_cateid userCateid,goods_title goodsTitle,goods_tagsid
+        goodsTagsid,market_price marketPrice,shop_price shopPrice,
+        discount_price discountPrice,in_stock inStock,goods_weight goodsWeight,control_num controlNum,goods_status
+        goodsStatus,freight_payer freightPayer,
+        list_time listTime,delist_time delistTime,postage_id postageId,detail_tpl detailTpl,a.is_medicare
+        isMedicare,medicare_code medicareCode,
+        medicare_top_price medicareTopPrice,bar_code barCode,mnemonic_code mnemonicCode,goods_code
+        goodsCode,update_status updateStatus, main_ingredient mainIngredient,goods_indications
+        goodsIndication,goods_action goodsAction,
+        adverse_reactioins adverseReactions,goods_note goodsNote,goods_use_method goodsUseMethod,goods_contd
+        goodsContd,goods_desc goodsDesc,goods_description goodsDescription,browse_number browseNumber,
+        trans_mumber transMumber,shopping_number shoppingNumber,product_date productDate,goods_usage
+        goodsUsage,goods_deposit goodsDeposit,forpeople_desc forpeopleDesc,
+        qualification qualification , c.barnd_name barndName
+        FROM yb_goods AS a LEFT JOIN yb_goodsextd AS b ON a.goods_id=b.goods_id
+        LEFT JOIN yb_barnd AS c ON c.barnd_id = a.barnd_id
+        WHERE goods_status<![CDATA[ <> ]]>3
+        <if test="ybGoodsId!=null and ybGoodsId != 0">
+            and a.goods_id=#{ybGoodsId}
+        </if>
+
+        <if test="barCode!=null and barCode!=''">
+            AND bar_code=#{barCode}
+        </if>
+        <if test="approvalNumber!=null and barCode==null or barCode==''">
+            AND approval_number=#{approvalNumber}
+        </if>
+    </select>
+
+    <!--需求添加t.goods_status = 1，线上商城dm单活动商品，只查询商品状态为上架的-->
+    <select id="getRecommendGoodsByIds" resultMap="goodList">
+        select t.drug_name AS drugName,t.specif_cation AS specifCation,t.shop_price AS shopPrice,t.goods_id AS
+        goodsId,t.site_id AS siteId, wx_purchase_way AS wxPurchaseWay
+        from b_goods t where t.site_id = #{siteId} AND t.goods_status = 1 and t.goods_id in
+        <foreach collection="goodsIdLst" separator="," open="(" close=")" item="goodsId">
+            #{goodsId}
+        </foreach>
+    </select>
+
+    <select id="getTaskGoods" resultType="java.util.Map" useCache="false" flushCache="false">
+        select
+        bg.site_id,
+        bg.goods_title,
+        bg.drug_name,
+        bg.specif_cation,
+        bg.goods_code,
+        bg.shop_price,
+        bg.cost_price,
+        bg.goods_id,
+        bg.goods_company,
+        bi.HASH as imgHash
+        from b_goods bg
+        LEFT JOIN (
+        SELECT
+        *
+        FROM
+        b_images_attr
+        WHERE
+        site_id = #{siteId}
+        AND is_default = 1
+        AND flag=0
+        GROUP BY goods_id, is_default
+        ) AS bi ON bg.goods_id = bi.goods_id and bi.site_id = #{siteId}
+        <where>
+            bg.goods_id in
+            <foreach item="goodid" index="index" collection="goodIds" open="(" separator="," close=")">
+                #{goodid}
+            </foreach>
+            <if test="siteId != null">
+                and bg.site_id = #{siteId}
+            </if>
+        </where>
+    </select>
+
+    <select id="getGiftList" parameterType="com.jk51.model.GoodsParam"
+            resultType="com.jk51.model.goods.PageData">
+        SELECT * from b_goods where 1=1
+        <if test="goodsTitle!=null and goodsTitle!=''">
+            and goods_title like CONCAT('%',#{goodsTitle},'%')
+        </if>
+        <if test="userCateId!=null and userCateId!=''">
+            and user_cateid like concat('',#{userCateId},'%')
+        </if>
+        <if test="comName != null and comName!=''">
+            and com_name like concat('%',#{comName},'%' )
+        </if>
+        <if test="goodsTemplate!=null and goodsTemplate !='' and goodsTemplate != 0">
+            and detail_tpl = #{goodsTemplate}
+        </if>
+        <if test="goodsCode != null and goodsCode!=''">
+            and goods_code = #{goodsCode}
+        </if>
+        <if test="startPrice!=null and startPrice!=''">
+            AND shop_price &gt;= #{startPrice}
+        </if>
+        <if test="endPrice!=null and endPrice!=''">
+            AND shop_price &lt;= #{endPrice}
+        </if>
+        and site_id = #{siteId} and goods_status in(1,2) order by create_time desc
+    </select>
+
+    <select id="getGiftById" resultType="map">
+        SELECT  * from  b_goods where site_id = #{siteId} and goods_id = #{goodsId} order by create_time desc
+    </select>
+    <select id="getGiftResult" resultType="com.jk51.model.concession.GiftMsg">
+        SELECT goods_id AS goodsId,drug_name AS drugName,specif_cation AS specifCation,shop_price AS shopPrice from  b_goods where site_id = #{siteId} and goods_id = #{goodsId} order by create_time desc
+    </select>
+    <select id="selectGcodefromGids" resultType="java.lang.String">
+        select GROUP_CONCAT(goods_code) from b_goods where site_id=#{siteId}
+        <if test="gids!=null and gids!=''">
+            and goods_id in(${gids})
+        </if>
+    </select>
+
+    <update id="updateGoodsBarCode" parameterType="java.util.Map">
+      UPDATE b_goods SET  bar_code = #{barcode} WHERE site_id = #{siteId} AND goods_id = #{goodsId}
+    </update>
+
+    <select id="getGoodsInfoByGoodsCodes" resultType="map">
+        SELECT goods_id AS goodsId, goods_code AS goodsCode FROM b_goods
+        WHERE site_id = #{siteId} and goods_code IN
+        <foreach collection="goodsCodes" separator="," open="(" close=")" item="goodsCode" index="index">
+            #{goodsCode}
+        </foreach>
+    </select>
+
+    <select id="getGoodsByGoodsCodesAndStatusIs1Or2" resultType="map">
+        SELECT
+        goods_id,
+        goods_status,
+        app_goods_status,
+        goods_code,
+        goods_title,
+        specif_cation,
+        shop_price
+        FROM b_goods
+        WHERE site_id = #{siteId}
+        AND (goods_status in (1, 2)
+        OR app_goods_status IN (1, 2))
+        AND goods_code IN
+        <foreach collection="goodsCodes" separator="," open="(" close=")" item="goodsCode" index="index">
+            #{goodsCode}
+        </foreach>
+    </select>
+    <select id="selectGoodsListBysiteId" resultType="java.util.Map">
+    select goods_code,drug_name,drug_category,specif_cation from b_goods where site_id=#{site_id} and goods_status=#{goods_status}
+    </select>
+    <select id="selectGoodsListBysiteId2" resultType="java.util.Map">
+        select goods_id,shop_price from b_goods where site_id=#{site_id}
+        <if test="goods_status!=null">
+            and goods_status=#{goods_status}
+        </if>
+    </select>
+
+    <sql id="Goods_visit_Column">
+        bg.site_id AS siteId,bg.goods_id AS goodsId,bg.approval_number AS approvalNumber,
+        bg.drug_name AS drugName,bg.com_name AS comName,bg.specif_cation AS specifCation,
+	    bg.goods_company AS goodsCompany,bg.barnd_id AS barndId,bg.drug_category AS drugCategory,
+	    bg.goods_property AS goodsProperty,bg.goods_use AS goodsUse,bg.goods_forts AS goodsForts,
+	    bg.goods_validity AS goodsValidity,bg.goods_forpeople AS goodsForpeople,bg.user_cateid AS userCateid,
+	    bg.goods_title AS goodsTitle,bg.goods_tagsid AS goodsTagsid,bg.market_price AS marketPrice,
+	    bg.shop_price AS shopPrice,bg.cost_price AS costPrice,bg.discount_price AS discountPrice,
+	    bg.in_stock AS inStock,bg.goods_weight AS goodsWeight,bg.control_num AS controlNum,
+	    bg.goods_status AS goodsStatus,bg.freight_payer AS freightPayer,bg.list_time AS listTime,
+	    bg.delist_time AS delistTime,bg.postage_id AS postageId,bg.detail_tpl AS detailTpl,
+	    bg.is_medicare AS isMedicare,bg.medicare_code AS medicareCode,bg.medicare_top_price AS medicareTopPrice,
+	    bg.bar_code AS barCode,bg.mnemonic_code AS mnemonicCode,bg.purchase_way AS purchaseWay,bg.wx_purchase_way AS wxPurchaseWay,
+	    bg.goods_code AS goodsCode,bge.goodsextd_id AS goodsextdId,bge.browse_number AS browseNumber,
+	    bge.trans_mumber AS transMumber,bge.shopping_number AS shoppingNumber,bge.product_date AS productDate,
+	    bge.goods_batch_no AS goodsBatchNo,bge.create_time createTime,bge.update_time AS updateTime,
+	    bge.main_ingredient AS mainIngredient,bge.goods_indications AS goodsIndications,bge.goods_action AS goodsAction,
+	    bge.adverse_reactioins AS adverseReactioins,bge.goods_note AS goodsNote,bge.goods_use_method AS goodsUseMethod,
+	    bge.goods_contd AS goodsContd,bge.goods_desc AS goodsDesc,bge.goods_mobile_desc AS goodsMobileDesc,
+	    bge.goods_description AS goodsDescription,bge.goods_usage AS goodsUsage,bge.goods_deposit AS goodsDeposit,
+	    bge.forpeople_desc AS forpeopleDesc,bge.qualification AS qualification,bge.net_wt AS netWt
+    </sql>
+    <select id="getGoodsForVisit" resultType="java.util.Map">
+        SELECT
+        <include refid="Goods_visit_Column"/>
+        FROM b_goods bg
+        LEFT JOIN b_goodsextd bge ON bg.goods_id = bge.goods_id
+        AND bg.site_id = bge.site_id
+        WHERE
+        bg.goods_id = #{goodsId}
+        AND bg.site_id = #{siteId}
+        and bge.clerk_visit = 20
+    </select>
+
+    <sql id="clerk_visit_column">
+        bcv.id,bcv.site_id siteId, bcv.store_admin_id storeAdminId, bcv.admin_name adminName, bcv.store_id storeId, bcv.store_name storeName,
+        bcv.buyer_id buyerId, bcv.buyer_name buyerName, bcv.buyer_mobile buyerMobile, bcv.visit_type visitType, bcv.visit_time visitTime,
+        bcv.real_visit_time realVisitTime, bcv.goods_id goodsId, bcv.goods_title goodsTile, bcv.goods_num goodsNum, bcv.done_time doneTime, bcv.remark, bcv.status
+    </sql>
+    <select id="queryVisitGoodsInfo" parameterType="java.lang.Integer" resultType="java.util.Map">
+        SELECT
+        g.goods_id goodsId,g.drug_name drugName,g.specif_cation specifCation,g.shop_price shopPrice,g.market_price
+        marketPrice,
+        i. HASH imageId,bx.goods_indications goodsIndications,bx.goods_note goodsNote,bo.goods_num goodsNum
+        FROM b_goods AS g
+        LEFT JOIN b_goodsextd bx ON bx.site_id = g.site_id
+        AND bx.goods_id = g.goods_id
+        LEFT JOIN b_orders bo on bo.site_id =g.site_id and bo.goods_id= g.goods_id
+        LEFT JOIN b_images_attr i ON i.site_id = g.site_id
+        AND i.goods_id = g.goods_id
+        AND i.flag = 0
+        AND i.is_default = 1
+        WHERE
+        g.site_id = #{siteId}
+        <if test="goodsId != null">
+            AND g.goods_id IN
+            <foreach collection="goodsId" separator="," open="(" close=")" item="gid" index="index">
+                #{gid}
+            </foreach>
+        </if>
+        GROUP BY g.goods_id
+        ORDER BY g.shop_price DESC
+    </select>
+
+    <select id="queryTotalActivitys" resultType="com.jk51.model.promotions.PromotionsRule"
+            parameterType="java.lang.Integer">
+      SELECT id, promotions_type promotionsType, promotions_name promotionsName, label, status, promotions_rule promotionsRule,
+      amount, time_rule timeRule, is_firstOrder, order_type orderType, use_store useStore, total, limit_state, limit_remark
+      WHERE site_id = #{siteId} AND status = 0
+    </select>
+
+    <select id="findGoodsInfo" resultType="com.jk51.modules.im.service.iMRecode.response.GoodsInfo">
+        SELECT
+        g.goods_id goodsId,g.drug_name drugName,g.specif_cation specifCation,g.shop_price shopPrice,i.hash imageId
+        from b_goods as g
+        LEFT JOIN b_images_attr i on i.site_id = g.site_id and i.goods_id = g.goods_id and i.flag=0 and i.is_default = 1
+        WHERE
+        g.site_id = #{siteId}
+        AND g.goods_id IN
+        <foreach collection="ids" separator="," open="(" close=")" item="goodsId" index="index">
+            #{goodsId}
+        </foreach>
+    </select>
+
+    <select id="queryGoodsTagIds" resultType="java.util.Map">
+        SELECT
+            bgoods.site_id,
+            bgoods.goods_id,
+            bgoods.goods_tagsid
+            FROM
+                b_goods bgoods
+            LEFT JOIN (
+                SELECT
+                    borders.goods_id,
+                    btrades.site_id,
+                    btrades.buyer_id
+                FROM
+                    b_trades btrades
+                LEFT JOIN b_orders borders ON btrades.site_id = borders.site_id
+                AND btrades.trades_id = borders.trades_id
+                WHERE
+                    btrades.site_id = #{siteId}
+                AND btrades.buyer_id = #{buyerId}
+            ) goodsids ON goodsids.site_id = bgoods.site_id
+            AND goodsids.goods_id = bgoods.goods_id
+            WHERE
+                bgoods.site_id = #{siteId}
+            AND goodsids.buyer_id = #{buyerId}
+    </select>
+
+    <!--根据标签ID查询b_tags-->
+    <select id="queryGoodsTags" resultType="java.util.Map">
+        SELECT tags_id tagsId,tags_name tagsName FROM b_tags WHERE site_id = #{siteId} AND del_tag = 0 AND tags_id IN
+        <foreach collection="tagIds" separator="," open="(" close=")" item="tagsId" index="index">
+            #{tagsId}
+        </foreach>
+    </select>
+
+    <select id="getGoodsByPreNumber" resultMap="goodList">
+        SELECT
+            P.site_id siteId,
+            P.prebook_number prebookNumber,
+            P.prebook_trades prebookTrades,
+            P.prebook_phone prebookPhone,
+            P.prebook_goods_id prebookGoodsId,
+            P.prebook_goods_name prebookGoodsName,
+            P.prebook_goods_num drugNum,
+            P.prebook_style prebookStyle,
+            P.prebook_storeId prebookStoreId,
+            P.prebook_addressId prebookAddressId,
+            P.prebook_address prebookAddress,
+            P.receiver_name receiverName,
+            P.receiver_city_code receiverCityCode,
+            P.receiver_province_code receiverProvinceCode,
+            P.receiver_country_code receiverCountryCode,
+            P.receiver_address receiverAddress,
+            P.receiver_mobile receiverMobile,
+            P.receiver_phone receiverPhone,
+            P.receiver_zip receiverZip,
+            P.prebook_time prebookTime,
+            P.update_time updateTime,
+            G.approval_number AS approvalNumber,
+            G.bar_code AS barCode,
+            G.drug_name AS drugName,
+            E.goods_contd AS goodsContd,
+            G.goods_id AS goodsId,
+            G.site_id AS siteId,
+            G.goods_validity AS goodsValidity,
+            G.shop_price AS shopPrice,
+            G.specif_cation AS specifCation,
+            G.control_num AS controlNum,
+            G.market_price AS marketPrice,
+            G.shop_price AS merchantShopPrice,
+            G.cost_price AS costPrice,
+            G.erp_price AS erpPrice,
+            G.discount_price AS discountPrice
+        FROM
+            b_prebook_new P
+        LEFT JOIN b_goods G ON P.site_id = G.site_id AND P.prebook_goods_id = G.goods_id
+        LEFT JOIN b_goodsextd E ON G.goods_id = E.goods_id AND G.site_id = E.site_id
+        WHERE
+            G.goods_status = 1
+        AND P.site_id = #{siteId} AND P.prebook_number = #{preNumber}
+    </select>
+
+    <select id="queryGoodsIds" resultType="java.lang.String">
+        SELECT goods_id from b_goods where site_id =#{siteId} and goods_status =1
+    </select>
+
+    <select id="queryNotInGoods" resultType="java.lang.String">
+        SELECT goods_id from b_goods where site_id =#{siteId} and goods_status =1
+        <if test="list != null">
+            and goods_id not in
+            <foreach collection="list" item="goodsId" separator="," open="(" close=")">
+                #{goodsId}
+            </foreach>
+        </if>
+    </select>
+    <!--需求添加G.app_goods_status = 1，APP推荐活动商品，只查询商品状态为上架的-->
+    <select id="selectGoodsAndImgInGoodsId" resultMap="goodList">
+        SELECT
+        G.approval_number AS approvalNumber,
+        G.bar_code AS barCode,
+        G.drug_name AS drugName,
+        E.goods_contd AS goodsContd,
+        G.goods_id AS goodsId,
+        G.site_id AS siteId,
+        G.goods_validity AS goodsValidity,
+        G.shop_price AS shopPrice,
+        G.specif_cation AS specifCation,
+        G.control_num AS controlNum,
+        G.market_price AS marketPrice,
+        G.shop_price AS merchantShopPrice,
+        G.cost_price AS costPrice,
+        G.erp_price AS erpPrice,
+        G.discount_price AS discountPrice
+        FROM
+        b_goods G
+        LEFT JOIN b_goodsextd E ON G.goods_id = E.goods_id
+        AND G.site_id = E.site_id
+        WHERE
+        G.site_id = #{siteId} and G.app_goods_status = 1 and G.goods_id in
+        <foreach collection="goodsIdList" separator="," open="(" close=")" item="goodsId">
+            #{goodsId}
+        </foreach>
+    </select>
+
+    <select id="getGidsByGcodes" resultType="java.lang.String">
+        SELECT goods_id as goodIds from b_goods where site_id=#{siteId} and goods_code in
+        <foreach collection="gCodeList" separator="," open="(" close=")" item="gCode">
+            #{gCode}
+        </foreach>
+    </select>
+
+    <select id="getDefaultImgByGoodsCode" resultType="java.util.Map">
+        SELECT a.`hash`, a.size
+        FROM b_images_attr a
+        LEFT JOIN b_goods b ON a.site_id=b.site_id AND a.goods_id=b.goods_id
+        WHERE a.site_id = #{siteId} AND b.goods_code = #{goodsCode} AND a.flag=0 AND a.is_default=1 ORDER BY a.id DESC LIMIT 1
+    </select>
+    <insert id="addDefaultImage">
+        INSERT INTO b_images_attr(site_id,`hash`,width,height,size,flag,goods_id,is_default)
+        SELECT a.site_id, #{hash}, 1, 1, #{size}, 0, a.goods_id, 1
+        FROM b_goods a LEFT JOIN b_images_attr b ON a.site_id = b.site_id AND a.goods_id = b.goods_id
+        WHERE a.site_id = #{siteId} AND b.goods_id IS NULL
+    </insert>
+    <select id="getHasErpPriceOfMerchantExtBySiteId" resultType="java.lang.Integer">
+        SELECT has_erp_price FROM yb_merchant_ext WHERE merchant_id = #{siteId}
+    </select>
+    <update id="updateGoodsBySiteIdAndAppGoodsStatus">
+        UPDATE b_goods SET app_goods_status = #{para.appChecked}, app_purchase_way = #{para.appCheckedValue}
+        WHERE site_id = #{para.siteId} AND goods_id = #{para.goodsId}
+    </update>
+    <select id="getGoodsD2" resultType="java.util.Map" useCache="false" flushCache="false">
+        select
+        <include refid="Goods_extd_Column_List"/>
+        <!--<if test="hasImage!=null and hasImage!=''and hasImage!=0">-->
+        ,bi.`hash` as imgHash,bi.flag, bi.is_default as isDefault
+        <!--</if>-->
+        from b_goods bg
+        <!--<if test="hasImage!=null and hasImage!='' and hasImage!=0">-->
+        LEFT JOIN (
+        SELECT
+        *
+        FROM
+        b_images_attr
+        WHERE
+        site_id = #{siteId}
+        AND is_default = 1
+        AND flag=0
+        GROUP BY goods_id, is_default
+        ) AS bi ON bg.goods_id = bi.goods_id and bi.site_id = #{siteId}
+        <!--</if>-->
+        left JOIN b_goodsextd bge ON bg.goods_id = bge.goods_id and bg.site_id = bge.site_id
+        left JOIN b_integral_goods big ON bg.goods_id = big.goods_id and bg.site_id = big.site_id
+        <where>
+            <if test="goodsId != null">
+                and bg.goods_id = #{goodsId}
+            </if>
+            <if test="siteId != null">
+                and bg.site_id = #{siteId} and bge.site_id = #{siteId}
+            </if>
+            <if test="approvalNumber!=null and approvalNumber!=''">
+                and approval_number = #{approvalNumber}
+            </if>
+            <if test="specifCation!=null and specifCation!=''">
+                and specif_cation = #{specifCation}
+            </if>
+            <if test="goodsStatus!=null and goodsStatus!=''">
+                and goods_status in (${goodsStatus})
+            </if>
+        </where>
+        limit 1
+    </select>
+    <select id="getKaoHeBySiteIdAndStoreIdOrStoreAdminId" resultType="java.lang.String">
+        SELECT c.goodsId from b_taskplan b
+        INNER JOIN (
+            SELECT a.id,a.site_id,IFNULL(bl.goods_id,'all') goodsId
+        FROM
+            b_task AS a
+        INNER JOIN t_quota AS b ON a.`target_id` = b.`id` and b.group_id =1
+            INNER  JOIN b_task_blob AS bl ON bl.`task_id` = a.`id`
+        where
+             a.site_id = #{siteId}
+             and a.task_source =0
+        ) c on b.site_id =c.site_id and FIND_IN_SET(c.id,b.task_ids)
+        where
+         b.site_id = #{siteId} and b.`status` = 20
+        and IF(b.join_type = 10 ,  FIND_IN_SET(#{storeId},join_ids), FIND_IN_SET(#{storeAdminId},join_ids))
+    </select>
+    <select id="getBuyerRecordBySiteIdAndStoreIdOrStoreAdminId" resultType="integer">
+        SELECT DISTINCT bo.goods_id from b_trades bs
+        LEFT JOIN b_orders  bo
+        on bs.site_id = bo.site_id and bs.trades_id = bo.trades_id
+        where bs.site_id = #{site_id} and bs.is_payment = 1 and bs.buyer_id = (SELECT buyer_id
+        FROM b_member WHERE site_id = #{site_id} and mobile= #{mobile})
+    </select>
+
+    <select id="queryRelevanceClassify" resultType="java.util.Map">
+        SELECT
+            relevance_classify relevanceClassify, relevance_reson relevanceReson
+        FROM
+            b_relevance_sale
+        WHERE
+            site_id = #{siteId} AND cate_code = #{userCateid} AND is_relevance = 1 AND is_delete = 0 AND is_pause = 1
+    </select>
+    <select id="selectGoodsByCateType" resultType="Map">
+        SELECT
+        bg.site_id siteId,
+        bg.goods_id drugId,
+        bg.goods_code goodsNO,
+        bg.drug_name drugName,
+        bg.user_cateid productType,
+        bg.goods_title waresName,
+        bg.specif_cation drugFormat,
+        bg.goods_company drugFirm,
+        round(bg.shop_price / 100, 2) drugAmount,
+        round(bg.market_price / 100, 2) drugOriginal,
+        bia.`hash`,
+        IFNULL(bia.type, 10) imageType,
+        bc.cate_name cateName
+        FROM
+        b_goods bg
+        INNER JOIN (
+        SELECT
+        site_id,
+        cate_name,
+        cate_code
+        FROM
+        b_category
+        WHERE
+        site_id = #{siteId}
+        AND cate_name = #{cateName}
+        AND del_tag = 0
+        ) b_0 ON bg.site_id = b_0.site_id
+        AND bg.user_cateid LIKE concat('', b_0.cate_code, '%')
+        INNER JOIN b_category bc ON bc.cate_code = bg.user_cateid
+        AND bg.site_id = bc.site_id
+        AND bc.del_tag = 0
+        INNER JOIN b_images_attr bia ON bia.site_id = bg.site_id
+        AND bia.goods_id = bg.goods_id and bia.is_default=1
+        where bg.goods_status=1 GROUP BY bg.goods_id;
+    </select>
+    <select id="getDefaultImagesAndCate" resultType="Map">
+        SELECT
+        bg.site_id siteId,
+        round(bg.shop_price / 100, 2) drugAmount,
+        round(bg.market_price / 100, 2) drugOriginal,
+        bia.`hash` hash,
+        IFNULL(bia.type, 10) imageType,
+        bc.cate_name cateName,
+        bg.user_cateid productType
+        FROM
+        b_goods bg
+        LEFT JOIN b_category bc ON bc.site_id = bg.site_id
+        AND bc.cate_code = bg.user_cateid  AND bc.del_tag = 0
+        LEFT JOIN b_images_attr bia ON bia.site_id = bg.site_id
+        AND bia.goods_id = bg.goods_id AND bia.flag = 0
+        AND bia.is_default = 1
+        WHERE
+        bg.site_id = #{siteId}
+        AND bg.goods_code = #{goodsCode}
+        ORDER BY
+        bia.id DESC
+        LIMIT 1;
+    </select>
+    <select id="ckByGoodsId" parameterType="Map" resultType="Map" useCache="false">
+        select * from b_images_attr where site_id = #{siteId} and goods_id = #{goodsId} and flag = 0 and is_default = 1
+    </select>
+    <update id="ckUpdateByGoodsId" parameterType="Map">
+        update b_images_attr set is_default = 0 where site_id = #{site_id} and goods_id = #{goods_id} and hash &lt;&gt; #{hash};
+    </update>
+</mapper>

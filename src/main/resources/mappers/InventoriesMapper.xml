@@ -1,0 +1,505 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.pandian.mapper.InventoriesMapper">
+
+    <!--<select id="getInventoriesListByPandianNum" parameterType="java.lang.String" resultType="com.jk51.model.Inventories">
+        SELECT * from b_inventories where pandian_num = #{pandian_num}
+    </select>-->
+
+    <resultMap id="inventoriesMap" type="com.jk51.model.Inventories">
+        <id column="id" property="id" javaType="java.lang.Integer"/>
+        <result column="plan_id" property="plan_id" javaType="java.lang.Integer"/>
+        <result column="store_id" property="store_id" javaType="java.lang.Integer"/>
+        <result column="modify" property="modify" javaType="java.lang.Integer"/>
+        <result column="inventory_accounting" property="inventory_accounting" javaType="java.lang.Double"/>
+        <result column="actual_store" property="actual_store" javaType="java.lang.Double"/>
+        <result column="inventory_checker" property="inventory_checker" javaType="java.lang.Integer"/>
+        <result column="inventory_confirm" property="inventory_confirm" javaType="java.lang.Integer"/>
+        <result column="plan_stock_show" property="plan_stock_show" javaType="java.lang.Integer"/>
+        <result column="order_id" property="order_id" javaType="java.lang.Integer"/>
+        <result column="site_id" property="site_id" javaType="java.lang.Integer"/>
+        <result column="good_type" property="good_type" javaType="java.lang.String"/>
+        <result column="goods_code" property="goods_code" javaType="java.lang.String"/>
+        <result column="drug_name" property="drug_name" javaType="java.lang.String"/>
+        <result column="approval_number" property="approval_number" javaType="java.lang.String"/>
+        <result column="specif_cation" property="specif_cation" javaType="java.lang.String"/>
+        <result column="goods_company" property="goods_company" javaType="java.lang.String"/>
+        <result column="checkerName" property="checkerName" javaType="java.lang.String"/>
+        <result column="batch_number" property="batch_number" javaType="java.lang.String"/>
+        <result column="quality" property="quality" javaType="java.lang.String"/>
+        <result column="store_num" property="store_num" javaType="java.lang.String"/>
+        <result column="pandian_num" property="pandian_num" javaType="java.lang.String"/>
+        <result column="quality" property="quality" javaType="java.lang.String"/>
+        <result column="create_time" property="create_time" javaType="java.util.Date"/>
+        <result column="update_time" property="update_time" javaType="java.util.Date"/>
+        <result column="is_del" property="isDel" javaType="java.lang.Integer"/>
+        <association column="{goods_id=goods_id,site_id=site_id}"  property="hash" javaType="java.lang.String" select="selectImageHashforDefault"/>
+
+    </resultMap>
+
+    <select id="selectImageHashforDefault" resultType="java.lang.String" parameterType="java.util.Map">
+
+        SELECT hash from b_images_attr
+        where
+          goods_id = #{goods_id}
+          and site_id = #{site_id}
+         and is_default = 1
+         and flag = 0
+         limit 1
+    </select>
+    <select id="getInventories" resultMap="inventoriesMap" parameterType="com.jk51.modules.pandian.param.InventoryParam">
+        SELECT i.*,a.name checkerName,p.plan_stock_show,i.site_id,g.goods_id
+        from b_inventories i LEFT join b_store_adminext a on i.inventory_checker = a.storeadmin_id and i.site_id = a.site_id
+        LEFT JOIN b_goods g on i.goods_code = g.goods_code and i.site_id = g.site_id and g.goods_status in (1,2)
+        LEFT JOIN b_pandian_plan p on  i.plan_id = p.id and i.site_id = p.site_id
+
+        <trim prefix="where" prefixOverrides="OR">
+          <if test="drug_name!=null and drug_name!=''">
+             or (i.pandian_num = #{pandian_num} and i.store_id = #{storeId} and i.is_del = 0  and i.drug_name LIKE CONCAT("%",#{drug_name},"%"))
+          </if>
+          <if test="goods_code!=null and goods_code!=''">
+            or (i.pandian_num = #{pandian_num} and i.store_id = #{storeId} and i.is_del = 0 and i.goods_code = #{goods_code})
+          </if>
+          <if test="bar_code!=null and bar_code!=''">
+              or (i.pandian_num = #{pandian_num} and i.store_id = #{storeId} and i.is_del = 0 and i.goods_code in (SELECT goods_code from b_goods where site_id = #{siteId} and bar_code = #{bar_code} and goods_status in(1,2)))
+          </if>
+          <if test="batch_number!=null and batch_number!=''">
+              or (i.pandian_num = #{pandian_num} and i.store_id = #{storeId} and i.is_del = 0 and i.batch_number = #{batch_number})
+          </if>
+        </trim>
+
+    </select>
+
+    <select id="getInventories2" resultMap="inventoriesMap" parameterType="com.jk51.modules.pandian.param.InventoryParam">
+        SELECT i.*,a.name checkerName,p.plan_stock_show,i.site_id,g.goods_id
+        from b_inventories i LEFT join b_store_adminext a on i.inventory_checker = a.storeadmin_id and i.site_id = a.site_id
+        LEFT JOIN b_goods g on i.goods_code = g.goods_code and i.site_id = g.site_id and g.goods_status in (1,2)
+
+        LEFT JOIN b_pandian_plan p on  i.plan_id = p.id and i.site_id = p.site_id
+        where
+        i.pandian_num = #{pandian_num}
+        and i.is_del = 0
+        <if test="storeId!=null and storeId!=''">
+          and i.store_id = #{storeId}
+        </if>
+        <if test="drug_name!=null and drug_name!=''">
+            and i.drug_name LIKE CONCAT("%",#{drug_name},"%")
+        </if>
+        <if test="goods_code!=null and goods_code!=''">
+            and i.goods_code = #{goods_code}
+        </if>
+        <if test="bar_code!=null and bar_code!=''">
+            and i.goods_code in (SELECT goods_code from b_goods where  site_id = #{siteId} and bar_code = #{bar_code} and goods_status in(1,2))
+        </if>
+        <if test="batch_number!=null and batch_number!=''">
+            and i.batch_number = #{batch_number}
+        </if>
+
+
+    </select>
+
+    <!--<select id="getInventoriesListBygGoodsCode" resultType="com.jk51.model.Inventories">
+         SELECT * from b_inventories where pandian_num = #{pandian_num} and goods_code = #{goods_code}
+    </select>-->
+
+    <select id="getHasNotCheckInventoriesList" resultType="com.jk51.model.Inventories">
+        SELECT i.*,p.plan_stock_show
+        from b_inventories i LEFT JOIN b_pandian_plan p on i.plan_id =p.id
+         where
+         i.pandian_num = #{pandian_num}
+         and i.store_id = #{storeId}
+         and i.actual_store is null
+         and i.is_del = 0
+         <if test="goods_code!=null and goods_code!='' and drug_name!=null and drug_name!=''">
+             and (i.goods_code LIKE CONCAT(#{goods_code},"%") or i.drug_name like CONCAT("%",#{drug_name},"%"))
+         </if>
+
+    </select>
+
+    <select id="getHasDifferenceInventories" resultType="com.jk51.model.Inventories">
+        SELECT * from b_inventories where
+          pandian_num = #{pandian_num}
+          and inventory_checker = #{storeAdminId}
+          and actual_store is not null
+          and actual_store != inventory_accounting
+           and is_del = 0
+           and modify = 0
+    </select>
+    <select id="repeatInventoryForCondition" resultType="com.jk51.model.Inventories" parameterType="com.jk51.modules.pandian.param.RepeatInventoryForConditionParam">
+        SELECT * from b_inventories where
+          pandian_num = #{pandian_num}
+          and inventory_checker = #{storeAdminId}
+          and actual_store is not null
+           and is_del = 0
+           and (drug_name like CONCAT("%",#{drug_name},"%") or goods_code LIKE CONCAT(#{goods_code},"%") or goods_code in (SELECT goods_code from b_goods where bar_code = #{bar_code} and goods_status in(1,2)) )
+
+    </select>
+    <update id="restInventoryonfirm">
+        UPDATE b_inventories set inventory_confirm = 0,modify = 0,`repeat` = 1
+        WHERE
+          store_id = #{storeId} and pandian_num = #{pandian_num}  and is_del = 0
+    </update>
+
+
+    <select id="getInventoryByPrimaryKey" resultType="com.jk51.model.Inventories">
+        SELECT * from b_inventories WHERE  id = #{inventoryId}  and is_del = 0
+    </select>
+    <insert id="insertInventory" parameterType="com.jk51.model.Inventories" useGeneratedKeys="true" keyProperty="id">
+        insert into b_inventories
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="plan_id != null">
+                plan_id,
+            </if>
+            <if test="pandian_num != null">
+                pandian_num,
+            </if>
+            <if test="store_id != null">
+                store_id,
+            </if>
+            <if test="goods_code != null">
+                goods_code,
+            </if>
+            <if test="drug_name != null">
+                drug_name,
+            </if>
+            <if test="specif_cation != null">
+                specif_cation,
+            </if>
+            <if test="goods_company!=null">
+                goods_company,
+            </if>
+            <if test="inventory_accounting != null">
+                inventory_accounting,
+            </if>
+            <if test="actual_store != null">
+                actual_store,
+            </if>
+            <if test="site_id != null">
+                site_id,
+            </if>
+            <if test="inventory_checker != null">
+                inventory_checker,
+            </if>
+            <if test="batch_number != null">
+                batch_number,
+            </if>
+            <if test="quality!=null">
+                quality,
+            </if>
+            <if test="order_id!=null">
+                order_id,
+            </if>
+            <if test="store_num!=null">
+                store_num,
+            </if>
+            <if test="modify!=null">
+                modify,
+            </if>
+            <if test="esId!=null">
+                es_id,
+            </if>
+                create_time,
+                update_time
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="plan_id != null">
+                #{plan_id},
+            </if>
+            <if test="pandian_num != null">
+                #{pandian_num},
+            </if>
+            <if test="store_id != null">
+                #{store_id},
+            </if>
+            <if test="goods_code != null">
+                #{goods_code},
+            </if>
+            <if test="drug_name != null">
+                #{drug_name},
+            </if>
+            <if test="specif_cation != null">
+                #{specif_cation},
+            </if>
+            <if test="goods_company!=null">
+                #{goods_company},
+            </if>
+            <if test="inventory_accounting != null">
+                #{inventory_accounting},
+            </if>
+            <if test="actual_store != null">
+                #{actual_store},
+            </if>
+            <if test="site_id != null">
+                #{site_id},
+            </if>
+            <if test="inventory_checker != null">
+                #{inventory_checker},
+            </if>
+            <if test="batch_number != null">
+                #{batch_number},
+            </if>
+            <if test="quality!=null">
+                #{quality},
+            </if>
+            <if test="order_id!=null">
+                #{order_id},
+            </if>
+            <if test="store_num!=null">
+                #{store_num},
+            </if>
+            <if test="modify!=null">
+                #{modify},
+            </if>
+            <if test="esId!=null">
+                #{esId},
+            </if>
+            CURRENT_TIMESTAMP ,
+            CURRENT_TIMESTAMP
+        </trim>
+    </insert>
+    <update id="updateInventory" parameterType="com.jk51.model.Inventories">
+      UPDATE b_inventories
+      <set>
+          <if test="plan_id != null">
+              plan_id = #{plan_id},
+          </if>
+          <if test="pandian_num != null">
+              pandian_num = #{pandian_num},
+          </if>
+          <if test="store_id != null">
+              store_id = #{store_id},
+          </if>
+          <if test="goods_code != null">
+              goods_code = #{goods_code},
+          </if>
+          <if test="drug_name != null">
+              drug_name = #{drug_name},
+          </if>
+          <if test="specif_cation != null">
+              specif_cation = #{specif_cation},
+          </if>
+          <if test="goods_company!=null">
+              goods_company = #{goods_company},
+          </if>
+          <if test="inventory_accounting != null">
+              inventory_accounting = #{inventory_accounting},
+          </if>
+          <if test="actual_store != null">
+              actual_store = #{actual_store},
+          </if>
+          <if test="site_id != null">
+              site_id = #{site_id},
+          </if>
+          <if test="inventory_checker != null">
+              inventory_checker = #{inventory_checker},
+          </if>
+          <if test="batch_number != null">
+              batch_number = #{batch_number},
+          </if>
+          <if test="quality!=null">
+              quality = #{quality},
+          </if>
+          <if test="modify!=null">
+              modify = #{modify},
+          </if>
+          update_time =  CURRENT_TIMESTAMP
+      </set>
+        WHERE id = #{id}
+    </update>
+    <select id="getPandianOrderDetail" resultType="com.jk51.modules.pandian.Response.PandianOrderDetailResponse" parameterType="com.jk51.modules.pandian.param.PandianOrderDetailParam">
+
+
+        SELECT i.*,s.stores_number,s.name storeName,e.name checkerName,
+
+        if(confirm.confirm_operate_type=3,
+        ifnull(confirm.confirm_checker_name,(SELECT user_name from b_store_admin where user_type =1 and site_id = i.site_id and store_id  = i.store_id and status =1  limit 1) )
+        ,
+        confirm.confirm_checker_name) confirm_checker_name,
+        if(confirm.audit_operate_type=3,
+        ifnull(confirm.audit_checker_name,(SELECT user_name from b_store_admin where user_type =1 and site_id = i.site_id and store_id  = i.store_id and status =1  limit 1))
+        ,
+        confirm.audit_checker_name
+        )
+         audit_checker_name,
+        (i.actual_store-(IFNULL(i.inventory_accounting ,0))) profitAndLossNum,
+        (CASE
+        WHEN (IFNULL(i.inventory_accounting ,0)- i.actual_store) &gt;0 THEN '盘亏'
+        WHEN (IFNULL(i.inventory_accounting ,0)- i.actual_store)  &lt;0 THEN '盘盈'
+        WHEN (IFNULL(i.inventory_accounting ,0)- i.actual_store)  =0 THEN '盘平'
+        ELSE '未开始盘点' END
+        ) as profitAndLossStatus
+        FROM
+            b_inventories i LEFT JOIN b_stores s on i.site_id = s.site_id and i.store_id = s.id
+            LEFT join b_store_adminext e on e.site_id = i.site_id and i.inventory_checker = e.storeadmin_id
+
+            LEFT JOIN
+            ( SELECT if(
+                        confirm_operate_type=1,
+                        confirm_checker,
+                        if(
+                        confirm_operate_type=2,
+                        (SELECT realname from b_manager m where m.site_id = s.site_id and m.username = s.confirm_checker),
+                        (SELECT `name` from b_store_adminext e where s.site_id = e.site_id and s.confirm_checker = e.storeadmin_id)
+                        )) confirm_checker_name,
+
+                        if(
+                        audit_operate_type=1,
+                        audit_checker,
+                        if(
+                        audit_operate_type=2,
+                        (SELECT realname from b_manager m where m.site_id = s.site_id and m.username = s.audit_checker),
+                        (SELECT `name` from b_store_adminext e where s.site_id = e.site_id and s.audit_checker = e.storeadmin_id)
+                        )) audit_checker_name,s.pandian_num,s.store_id,s.status, s.confirm_operate_type,s.audit_operate_type
+
+        from b_pandian_order_status s
+            where
+                s.pandian_num = #{pandian_num}
+                and s.store_id = #{storeId}
+            ) confirm on i.pandian_num = confirm.pandian_num and i.store_id = confirm.store_id
+
+        WHERE
+          i.pandian_num = #{pandian_num}
+          and i.store_id = #{storeId}
+          and i.is_del = 0
+          <if test="profitOrLossStatu==1">
+              and  (i.actual_store-i.inventory_accounting) &gt; 0
+          </if>
+          <if test="profitOrLossStatu==0">
+              and (i.actual_store-i.inventory_accounting) = 0
+          </if>
+          <if test="profitOrLossStatu==-1">
+              and (i.actual_store-i.inventory_accounting) &lt; 0
+          </if>
+        <if test="goods_code!=null and goods_code!=''">
+            and i.goods_code like CONCAT(#{goods_code},"%")
+        </if>
+        <if test="drug_name!=null and drug_name!=''">
+            and i.drug_name like CONCAT("%",#{drug_name},"%")
+        </if>
+        <if test="goods_company!=null and goods_company!=''">
+            and i.goods_company like CONCAT("%",#{goods_company},"%")
+        </if>
+        <if test="inventory_confirm!=null">
+            and i.inventory_confirm = #{inventory_confirm}
+        </if>
+    </select>
+    <update id="storeAdminConfirm" parameterType="com.jk51.modules.pandian.param.StoreAdminConfirmParam">
+        UPDATE b_inventories
+        set inventory_confirm = 1
+        WHERE
+          pandian_num = #{pandian_num}
+          AND
+          store_id = #{storeId}
+          AND
+          inventory_checker = #{storeAdminId}
+           and is_del = 0
+    </update>
+    <select id="getHasNotStoreAdminConfirmNum" resultType="java.lang.Integer">
+        SELECT COUNT(0)
+        from b_inventories
+        WHERE
+          pandian_num = #{pandian_num} and store_id = #{storeId} and inventory_confirm != 1 and is_del = 0
+    </select>
+    <select id="getPandianDetailCount" resultType="java.lang.Integer">
+        SELECT COUNT(0)
+        from b_inventories
+        WHERE
+          pandian_num = #{pandian_num} and store_id = #{storeId}  and is_del = 0
+    </select>
+    <select id="getHasNotCheckInventoriesNum" resultType="java.lang.Integer">
+        select COUNT(0)
+        from b_inventories
+        where
+          pandian_num = #{pandian_num} and store_id = #{storeId}  and is_del = 0 and actual_store is null
+    </select>
+    <select id="findStoreAdminByPandianNum" parameterType="com.jk51.modules.pandian.param.StatusParam" resultType="java.lang.String">
+
+        select distinct inventory_checker
+        from b_inventories
+        where
+          pandian_num = #{pandian_num}
+          and store_id = #{storeId}
+          and is_del = 0
+    </select>
+
+    <select id="getNextNotCheckerInventories" resultMap="inventoriesMap" parameterType="com.jk51.modules.pandian.param.NextNotCheckerParam">
+        SELECT i.*,a.name checkerName,p.plan_stock_show,i.site_id,g.goods_id
+        from b_inventories i LEFT join b_store_adminext a on i.inventory_checker = a.storeadmin_id and i.site_id = a.site_id
+        LEFT JOIN b_goods g on i.goods_code = g.goods_code and i.site_id = g.site_id and g.goods_status in (1,2)
+        LEFT JOIN b_pandian_plan p on  i.plan_id = p.id and i.site_id = p.site_id
+        where
+         i.pandian_num = #{pandian_num}
+          and i.site_id = #{siteId}
+          and i.store_id = #{storeId}
+          and i.goods_code = #{goods_code}
+          and i.inventory_checker is null
+          and i.is_del = 0
+    </select>
+    <update id="updateInventoryByEsId" parameterType="com.jk51.model.Inventories">
+        UPDATE b_inventories
+        <set>
+            <if test="plan_id != null">
+                plan_id = #{plan_id},
+            </if>
+            <if test="pandian_num != null">
+                pandian_num = #{pandian_num},
+            </if>
+            <if test="store_id != null">
+                store_id = #{store_id},
+            </if>
+            <if test="goods_code != null">
+                goods_code = #{goods_code},
+            </if>
+            <if test="drug_name != null">
+                drug_name = #{drug_name},
+            </if>
+            <if test="specif_cation != null">
+                specif_cation = #{specif_cation},
+            </if>
+            <if test="goods_company!=null">
+                goods_company = #{goods_company},
+            </if>
+            <if test="inventory_accounting != null">
+                inventory_accounting = #{inventory_accounting},
+            </if>
+            <if test="actual_store != null">
+                actual_store = #{actual_store},
+            </if>
+            <if test="site_id != null">
+                site_id = #{site_id},
+            </if>
+            <if test="inventory_checker != null">
+                inventory_checker = #{inventory_checker},
+            </if>
+            <if test="batch_number != null">
+                batch_number = #{batch_number},
+            </if>
+            <if test="quality!=null">
+                quality = #{quality},
+            </if>
+            <if test="modify!=null">
+                modify = #{modify},
+            </if>
+            update_time =  CURRENT_TIMESTAMP
+        </set>
+        WHERE es_id = #{esId}
+    </update>
+    <select id="findByPandianNum" resultType="com.jk51.model.Inventories" >
+        select * from b_inventories where  pandian_num = #{pandian_num}
+    </select>
+    <update id="updateScore">
+        update b_inventories
+        set score = #{score}
+        where
+          pandian_num = #{pandianNum}
+          and
+          store_id = #{storeId}
+          and
+          goods_code = #{goodsCode}
+          and is_del = 0
+
+    </update>
+</mapper>

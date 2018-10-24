@@ -1,0 +1,1051 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.trades.mapper.MemberMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.order.Member">
+        <id column="member_id" property="memberId" jdbcType="INTEGER"/>
+        <id column="site_id" property="siteId" jdbcType="INTEGER"/>
+        <result column="buyer_id" property="buyerId" jdbcType="INTEGER"/>
+        <result column="buyer_nick" property="buyerNick" jdbcType="VARCHAR"/>
+        <result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+        <result column="passwd" property="passwd" jdbcType="VARCHAR"/>
+        <result column="sex" property="sex" jdbcType="INTEGER"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="idcard_number" property="idcardNumber" jdbcType="VARCHAR"/>
+        <result column="order_num" property="orderNum" jdbcType="INTEGER"/>
+        <result column="order_fee" property="orderFee" jdbcType="INTEGER"/>
+        <result column="register_stores" property="registerStores" jdbcType="INTEGER"/>
+        <result column="register_clerks" property="registerClerks" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="last_ipaddr" property="lastIpaddr" jdbcType="VARCHAR"/>
+        <result column="integrate" property="integrate" jdbcType="BIGINT"/>
+        <result column="total_get_integrate" property="totalGetIntegrate" jdbcType="BIGINT"/>
+        <result column="total_consume_integrate" property="totalConsumeIntegrate" jdbcType="BIGINT"/>
+        <result column="mem_source" property="memSource" jdbcType="INTEGER"/>
+        <result column="is_activated" property="isActivated" jdbcType="BIT"/>
+        <result column="ban_status" property="banStatus" jdbcType="BIT"/>
+        <result column="last_time" property="lastTime" jdbcType="TIMESTAMP"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="offline_integral" property="offlineIntegral" jdbcType="BIGINT"/>
+        <result column="first_erp" property="firstErp" jdbcType="BIT"/>
+        <result column="registerTime" property="registerTime" jdbcType="VARCHAR"/>
+        <result column="storName" property="storName" jdbcType="VARCHAR"/>
+    </resultMap>
+    <update id="updateIntegral" parameterType="com.jk51.model.order.Member">
+
+        update b_member set  integrate=#{integrate},update_time=CURRENT_TIMESTAMP() where site_id=#{siteId} and buyer_id=#{buyerId}
+    </update>
+
+    <select id="getMember" resultMap="BaseResultMap" useCache="false">
+        SELECT
+            *
+        FROM
+            b_member
+        where site_id=#{0} and buyer_id=#{1}
+    </select>
+
+    <select id="findUserAndPasswordByMembersId" resultType="com.jk51.model.order.Member" useCache="false">
+        select site_id siteId,member_id memberId,buyer_id buyerId,integrate,total_get_integrate totalGetIntegrate,total_consume_integrate totalConsumeIntegrate
+        from b_member where site_id=#{0} and mobile=#{1} and passwd=#{2};
+    </select>
+
+    <select id="findStoreAdminCloseIndex" resultType="com.jk51.model.packageEntity.StoreAdminCloseIndex">
+
+    SELECT adminext.storeadmin_id as storeadmin_id,adminext.site_id ,CONCAT("wechat_",member.buyer_id) as customer_user_name,CONCAT("helper_",adminext.site_id,"_",adminext.storeadmin_id) as storeadmin_user_name
+        from b_member as member
+    left join b_member_info as info on member.buyer_id = info.member_id and member.site_id = info.site_id
+    left join b_store_adminext as adminext on info.invite_code = adminext.clerk_invitation_code and adminext.site_id = info.site_id
+    where
+            member.create_time BETWEEN #{before} and #{now}
+        and member.buyer_id is not null
+        and info.invite_code != ""
+        and adminext.id is not null
+
+
+</select>
+    <select id="findMobileById" resultType="com.jk51.model.order.Member">
+        select buyer_id buyerId,site_id siteId,member_id memberId ,mobile from   b_member where site_id=#{0} and mobile=#{1} limit 1
+    </select>
+
+    <select id="findAllMember" resultType="com.jk51.model.order.Member">
+        SELECT site_id AS siteId,member_id AS memberId FROM b_member WHERE site_id = #{siteId}
+    </select>
+
+    <select id="findMembersByMemberIds" resultMap="BaseResultMap">
+        SELECT *
+        FROM b_member
+        WHERE site_id = #{siteId}
+        AND member_id IN
+        <foreach collection="ids" open="(" item="item" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="findAllMemberByPage" resultType="com.jk51.model.order.Member">
+        SELECT
+            site_id siteId,
+            member_id memberId
+        FROM
+            b_member
+        WHERE
+            site_id = #{siteId}
+        ORDER BY
+            member_id desc
+        LIMIT
+            #{pageNo}, #{pageNum}
+    </select>
+
+    <update id="updateVipMember" flushCache="true">
+        update b_member set  mobile=#{vipMemberAddSelectParams.mobile},integrate=#{vipMemberAddSelectParams.integrate} ,idcard_number=#{vipMemberAddSelectParams.idcardNumber},email=#{vipMemberAddSelectParams.email},memo=#{vipMemberAddSelectParams.memo},name=#{vipMemberAddSelectParams.name},sex=#{vipMemberAddSelectParams.sex} where site_id=#{vipMemberAddSelectParams.siteId} and member_id=#{vipMemberAddSelectParams.memberId}
+    </update>
+
+    <select id="getMemberByMemberId" resultType="com.jk51.model.order.Member" useCache="false">
+        select mobile,site_id siteId,member_id memberId,buyer_id buyerId,integrate,total_get_integrate totalGetIntegrate,total_consume_integrate totalConsumeIntegrate,open_id openId
+        from b_member where site_id=#{0} and member_id=#{1}
+    </select>
+
+    <select id="getMemberByOpenId" resultType="com.jk51.model.order.Member">
+        select mobile,site_id siteId,member_id memberId,buyer_id buyerId,integrate,total_get_integrate totalGetIntegrate,total_consume_integrate totalConsumeIntegrate,open_id openId
+        from b_member
+        where site_id = #{siteId}
+        and open_id = #{openId} LIMIT 1
+    </select>
+
+    <select id="selectYbMemberByPhone" resultType="com.jk51.model.order.YBMember" useCache="false">
+        select member_id memberId
+        from yb_member where mobile=#{0}
+    </select>
+
+    <insert id="saveMemberInfo" keyProperty="member.memberId" useGeneratedKeys="true" parameterType="com.jk51.model.order.Member">
+        insert into b_member
+        ( site_id,buyer_id,mobile,mem_source,is_activated,create_time,update_time,register_stores,register_clerks)
+        values (#{member.siteId},#{member.buyerId},#{member.mobile},#{member.memSource},#{member.isActivated},CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP(),#{member.registerStores},#{member.registerClerks})
+    </insert>
+    <insert id="insertYbUser" keyProperty="member.memberId" useGeneratedKeys="true" parameterType="com.jk51.model.order.YBMember">
+        insert into yb_member ( mobile,regin_source,is_activated,create_time,update_time,register_stores)
+        values(#{member.mobile},#{member.reginSource},#{member.isActivated},CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP(),#{member.registerStores})
+    </insert>
+
+    <select id="selectByMobileAndSiteId" resultMap="BaseResultMap">
+        SELECT site_id siteId,buyer_id buyerId FROM b_member WHERE mobile=#{mobile} AND site_id=#{siteId} limit 1
+    </select>
+    <select id="selectByMemberIdAndSiteId" resultMap="BaseResultMap">
+        SELECT * FROM b_member WHERE member_id=#{memberId} AND site_id=#{siteId}
+    </select>
+
+    <select id="getMemberById" resultType="java.util.Map" useCache="false">
+        select * from b_member b WHERE b.member_id = #{member_id}
+    </select>
+
+    <update id="update" flushCache="false" parameterType="java.util.Map">
+        UPDATE b_member SET buyer_id=#{member.buyer_id},name=#{member.name},mobile=#{member.mobile},register_stores=#{member.register_stores} where member_id=#{member.member_id}
+    </update>
+
+    <delete id="del" parameterType="int">
+        DELETE FROM b_member WHERE member_id=#{id}
+    </delete>
+
+    <!--账户设置-->
+    <select id="checkMember" resultType="map" useCache="false" parameterType="map">
+        select * from b_member  where site_id = #{siteId} and buyer_id = #{buyerId}
+    </select>
+    <update id="updatePassword" parameterType="map">
+        update b_member set passwd=#{newPasswd} where site_id=#{siteId} and buyer_id = #{buyerId}
+    </update>
+    <update id="updatePasswordByMobile" parameterType="map">
+        update b_member set passwd=#{newPasswd},is_activated=1 where site_id=#{siteId} and mobile = #{mobile}
+    </update>
+    <!--****************************************************************************************************************************-->
+    <resultMap id="memberInfo" type="java.util.HashMap" autoMapping="true">
+        <result column="site_id" property="siteId"></result>
+        <result column="member_id" property="memberId"></result>
+        <result column="buyer_id" property="buyerId"></result>
+        <result column="buyer_nick" property="buyerNick"></result>
+        <result column="mobile" property="mobile"></result>
+        <result column="passwd" property="passwd"></result>
+        <result column="sex" property="sex"></result>
+        <result column="email" property="email"></result>
+        <result column="idcard_number" property="idcardNumber"></result>
+        <result column="order_num" property="orderNum"></result>
+        <result column="order_fee" property="orderFee"></result>
+        <result column="memo" property="memo"></result>
+        <result column="register_stores" property="registerStores"></result>
+        <result column="register_clerks" property="registerClerks"></result>
+        <result column="name" property="name"></result>
+        <result column="last_ipaddr" property="lastIpaddr"></result>
+        <result column="integrate" property="integrate"></result>
+        <result column="total_get_integrate" property="totalGetIntegrate"></result>
+        <result column="total_consume_integrate" property="totalConsumeIntegrate"></result>
+        <result column="mem_source" property="memSource"></result>
+        <result column="is_activated" property="isActivated"></result>
+        <result column="ban_status" property="banStatus"></result>
+        <result column="last_time" property="lastTime"></result>
+        <result column="create_time" property="createTime" javaType="java.sql.Date"></result>
+        <result column="update_time" property="updateTime" javaType="java.sql.Date"></result>
+
+        <result column="birthday" property="birthday"></result>
+        <result column="concerned_time" property="concernedTime"></result>
+        <result column="integrate_used" property="integrateUsed"></result>
+        <result column="checkin_num" property="checkinNum"></result>
+        <result column="checkin_sum" property="checkinSum"></result>
+        <result column="checkin_lasttime" property="checkinLasttime"></result>
+        <result column="weixin_code" property="weixinCode"></result>
+        <result column="qq" property="qq"></result>
+        <result column="membership_number" property="membershipNumber"></result>
+        <result column="yibao_card" property="yibaoCard"></result>
+        <result column="store_id" property="storeId"></result>
+        <result column="invite_code" property="inviteCode"></result>
+        <result column="invite_code" property="inviteCode"></result>
+
+        <result column="tag" property="tag"></result>
+        <result column="memo" property="memo"></result>
+        <result column="registTime" property="registTime"></result>
+        <result column="open_id" property="openId"></result>
+
+    </resultMap>
+
+    <select id="getIntegrateByBuyerId" resultType="java.util.Map">
+        SELECT integrate FROM b_member WHERE buyer_id=#{buyerId} AND site_id=#{siteId}
+    </select>
+
+    <!--根据电话号码查询会员信息以及会员扩展表信息-->
+    <select id="queryMemberInfoByPhoneNum" resultMap="memberInfo" useCache="false">
+        SELECT ifnull(b_member.memo,'') as memo, ifnull(b_member_info.tag,'') as tag, b_member.create_time as
+        registTime,
+        bsa.`name` register_clerks_name, bs.`name` register_stores_name, b_member.*, b_member_info.*
+        FROM b_member
+        LEFT JOIN b_member_info ON b_member.buyer_id=b_member_info.member_id AND b_member.site_id=b_member_info.site_id
+        LEFT JOIN b_store_adminext bsa ON bsa.site_id=b_member.site_id AND
+        bsa.clerk_invitation_code=b_member_info.invite_code
+        LEFT JOIN b_stores bs ON bs.site_id=b_member.site_id AND bs.id=b_member.register_stores
+        WHERE b_member.mobile=#{phone}
+        <if test="site_id != null and site_id != ''">
+            AND b_member.site_id=#{site_id}
+        </if>
+
+        limit 1
+    </select>
+    <!--根据buyer_id更新会员基本信息-->
+    <update id="updateMember" parameterType="map" useGeneratedKeys="true">
+        UPDATE b_member
+        <set>
+            <!--<if test="name!=null and name!=''">
+                name = #{name},
+            </if>-->
+            name = #{name},
+            <if test="idcard_number!=null and idcard_number!=''">
+                idcard_number = #{idcard_number},
+            </if>
+            <if test="memo!=null and memo!=''">
+                memo = #{memo},
+            </if>
+            <if test="email!=null and email!=''">
+                email = #{email},
+            </if>
+            <if test="sex!=null">
+                sex = #{sex},
+            </if>
+        </set>
+        <where>
+            buyer_id = #{buyer_id} AND site_id = #{site_id}
+        </where>
+    </update>
+    <!--根据buyer_id更新会员扩展信息-->
+    <update id="updateMemberInfo" parameterType="map">
+        UPDATE b_member_info
+        <set>
+            <if test="tag!=null">
+                tag = #{tag},
+            </if>
+            <if test="birthday!=null and birthday!=''">
+                birthday = #{birthday},
+            </if>
+            <if test="address!=null">
+                address = #{address},
+            </if>
+            <if test="province!=null">
+                province = #{province},
+            </if>
+            <if test="city!=null">
+                city = #{city},
+            </if>
+            <if test="area!=null">
+                area = #{area},
+            </if>
+            <if test="membershipNumber!=null">
+                membership_number = #{membershipNumber},
+            </if>
+            <if test="age!=null">
+                age = #{age},
+            </if>
+        </set>
+        <where>
+            member_id = #{buyer_id} AND site_id=#{site_id}
+        </where>
+    </update>
+    <!--查询电话号码是否已经注册-->
+    <select id="queryMemberExist" resultType="int">
+        SELECT count(0) FROM b_member WHERE mobile = #{phone} and site_id=#{siteId}
+    </select>
+
+    <select id="queryMember" resultMap="BaseResultMap">
+        SELECT * FROM b_member WHERE mobile = #{phone} and site_id=#{siteId}
+    </select>
+    <!--根据id和site_id查询-->
+    <select id="queryBStoreAdminExt" resultType="hashmap">
+        SELECT clerk_invitation_code,store_id FROM b_store_adminext WHERE id = #{store_user_id} AND site_id = #{site_id}
+    </select>
+    <!--新增数据-->
+    <insert id="saveYbMember" parameterType="hashmap" useGeneratedKeys="true" keyProperty="buyer_id"
+            keyColumn="member_id">
+        INSERT INTO yb_member
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="last_login!=null">
+                last_login,
+            </if>
+            <if test="sex!=null">
+                sex,
+            </if>
+            <if test="area!=null">
+                area,
+            </if>
+            <if test="birthday!=null">
+                birthday,
+            </if>
+            <if test="register_stores!=null">
+                register_stores,
+            </if>
+            <if test="integrate!=null">
+                integrate,
+            </if>
+
+            <if test="buyer_nick!=null and buyer_nick!=''">
+                buyer_nick,
+            </if>
+            <if test="mobile!=null and mobile!=''">
+                mobile,
+            </if>
+            <if test="passwd!=null and passwd!=''">
+                passwd,
+            </if>
+            <if test="name!=null and name!=''">
+                name,
+            </if>
+            <if test="idcard_number!=null and idcard_number!=''">
+                idcard_number,
+            </if>
+            <if test="b_usersarr!=null and b_usersarr!=''">
+                b_usersarr,
+            </if>
+            <if test="last_ipaddr!=null and last_ipaddr!=''">
+                last_ipaddr,
+            </if>
+            regin_source,
+            create_time,
+            update_time,
+            is_activated
+        </trim>
+        <trim prefix=" values(" suffix=")" suffixOverrides=",">
+            <if test="last_login!=null">
+                #{last_login},
+            </if>
+            <if test="sex!=null">
+                #{sex},
+            </if>
+            <if test="area!=null">
+                #{area},
+            </if>
+            <if test="birthday!=null">
+                #{birthday},
+            </if>
+            <if test="register_stores!=null">
+                #{register_stores},
+            </if>
+            <if test="integrate!=null">
+                #{integrate},
+            </if>
+
+            <if test="buyer_nick!=null and buyer_nick!=''">
+                #{buyer_nick},
+            </if>
+            <if test="mobile!=null and mobile!=''">
+                #{mobile},
+            </if>
+            <if test="passwd!=null and passwd!=''">
+                #{passwd},
+            </if>
+            <if test="name!=null and name!=''">
+                #{name},
+            </if>
+            <if test="idcard_number!=null and idcard_number!=''">
+                #{idcard_number},
+            </if>
+            <if test="b_usersarr!=null and b_usersarr!=''">
+                #{b_usersarr},
+            </if>
+            <if test="last_ipaddr!=null and last_ipaddr!=''">
+                #{last_ipaddr},
+            </if>
+            130,
+            CURRENT_TIMESTAMP(),
+            CURRENT_TIMESTAMP(),
+            1
+        </trim>
+    </insert>
+    <insert id="saveMember" parameterType="hashmap" useGeneratedKeys="true" keyProperty="member_id">
+        insert into b_member
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="site_id!=null">
+                site_id,
+            </if>
+            <if test="buyer_id!=null">
+                buyer_id,
+            </if>
+            <if test="sex!=null">
+                sex,
+            </if>
+            <if test="order_num!=null">
+                order_num,
+            </if>
+            <if test="order_fee!=null">
+                order_fee,
+            </if>
+            <if test="register_stores!=null">
+                register_stores,
+            </if>
+            <if test="register_clerks!=null">
+                register_clerks,
+            </if>
+            <if test="integrate!=null">
+                integrate,
+            </if>
+            <if test="total_get_integrate!=null">
+                total_get_integrate,
+            </if>
+            <if test="total_consume_integrate!=null">
+                total_consume_integrate,
+            </if>
+            mem_source,
+            is_activated,
+            <if test="ban_status!=null">
+                ban_status,
+            </if>
+
+            <if test="buyer_nick!=null and buyer_nick!=''">
+                buyer_nick,
+            </if>
+            <if test="mobile!=null and mobile!=''">
+                mobile,
+            </if>
+            <if test="passwd!=null and passwd!=''">
+                passwd,
+            </if>
+            <if test="email!=null and email!=''">
+                email,
+            </if>
+            <if test="idcard_number!=null and idcard_number!=''">
+                idcard_number,
+            </if>
+            <if test="memo!=null and memo!=''">
+                memo,
+            </if>
+            <if test="name!=null and name!=''">
+                name,
+            </if>
+            <if test="last_ipaddr!=null and last_ipaddr!=''">
+                last_ipaddr,
+            </if>
+            last_time,create_time,update_time
+        </trim>
+        <trim prefix=" values(" suffix=")" suffixOverrides=",">
+            <if test="site_id!=null">
+                #{site_id},
+            </if>
+            <if test="buyer_id!=null">
+                #{buyer_id},
+            </if>
+            <if test="sex!=null">
+                #{sex},
+            </if>
+            <if test="order_num!=null">
+                #{order_num},
+            </if>
+            <if test="order_fee!=null">
+                #{order_fee},
+            </if>
+            <if test="register_stores!=null">
+                #{register_stores},
+            </if>
+            <if test="register_clerks!=null">
+                #{register_clerks},
+            </if>
+            <if test="integrate!=null">
+                #{integrate},
+            </if>
+            <if test="total_get_integrate!=null">
+                #{total_get_integrate},
+            </if>
+            <if test="total_consume_integrate!=null">
+                #{total_consume_integrate},
+            </if>
+            130,
+            1,
+            <if test="ban_status!=null">
+                #{ban_status},
+            </if>
+
+            <if test="buyer_nick!=null and buyer_nick!=''">
+                #{buyer_nick},
+            </if>
+            <if test="mobile!=null and mobile!=''">
+                #{mobile},
+            </if>
+            <if test="passwd!=null and passwd!=''">
+                #{passwd},
+            </if>
+            <if test="email!=null and email!=''">
+                #{email},
+            </if>
+            <if test="idcard_number!=null and idcard_number!=''">
+                #{idcard_number},
+            </if>
+            <if test="memo!=null and memo!=''">
+                #{memo},
+            </if>
+            <if test="name!=null and name!=''">
+                #{name},
+            </if>
+            <if test="last_ipaddr!=null and last_ipaddr!=''">
+                #{last_ipaddr},
+            </if>
+            CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP()
+        </trim>
+    </insert>
+
+    <select id="findBTriggerByTriggerCode" resultType="hashmap">
+        SELECT trigger_dispatch_count AS triggerDispatchCount,trigger_id AS triggerId,
+        date_format(trigger_start,'%Y-%m-%d %H:%i:%s') AS triggerStart,date_format(trigger_end,'%Y-%m-%d %H:%i:%s') AS triggerEnd,
+        trigger_title AS triggerTitle,trigger_use_count AS triggerUseCount,trigger_vals AS triggerVals,
+        trigger_store AS triggerStore,trigger_state AS triggerState
+        FROM b_trigger WHERE site_id=#{site_id} AND trigger_code='assistantshare' AND trigger_state=0
+    </select>
+
+    <select id="queryGoodCatNameByCatId" resultType="map">
+        SELECT cate_name FROM b_category WHERE site_id=#{siteId} AND cate_id=#{cateId} limit 1
+    </select>
+
+    <select id="getCheckin" parameterType="int">
+        SELECT checkin_lasttime as checkinLasttime FROM b_member_info where member_id=#{memberId} and site_id=#{siteId}
+    </select>
+    <update id="setCheckin" parameterType="int">
+        update b_member_info set checkin_sum=checkin_sum+1,checkin_lasttime=CURRENT_TIMESTAMP()
+        <if test="checkinNum==1">
+            ,checkin_num = checkin_num+1
+        </if>
+        <if test="checkinNum==0">
+            ,checkin_num = 1
+        </if>
+        where member_id=#{memberId} and site_id=#{siteId}
+    </update>
+
+    <insert id="saveMemberInfoMap" parameterType="hashmap">
+        insert into b_member_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="site_id!=null">
+                site_id,
+            </if>
+            <if test="id!=null">
+                id,
+            </if>
+            <if test="buyer_id!=null">
+                member_id,
+            </if>
+            <if test="birthday!=null">
+                birthday,
+            </if>
+            <if test="concerned!=null">
+                concerned,
+            </if>
+            <if test="concerned_time!=null">
+                concerned_time,
+            </if>
+            <if test="integrate!=null">
+                integrate,
+            </if>
+            <if test="integrate_used!=null">
+                integrate_used,
+            </if>
+            <if test="checkin_num!=null">
+                checkin_num,
+            </if>
+            <if test="checkin_sum!=null">
+                checkin_sum,
+            </if>
+            <if test="checkin_lasttime!=null">
+                checkin_lasttime,
+            </if>
+            <if test="country!=null">
+                country,
+            </if>
+            <if test="province!=null">
+                province,
+            </if>
+            <if test="city!=null">
+                city,
+            </if>
+            <if test="area!=null">
+                area,
+            </if>
+            <if test="age!=null">
+                age,
+            </if>
+            <if test="status!=null">
+                status,
+            </if>
+            <if test="register_stores!=null">
+                store_id,
+            </if>
+
+
+            <if test="weixin_code!=null and weixin_code!=''">
+                weixin_code,
+            </if>
+            <if test="qq!=null and qq!=''">
+                qq,
+            </if>
+            <if test="membership_number!=null and membership_number!=''">
+                membership_number,
+            </if>
+            <if test="barcode!=null and barcode!=''">
+                barcode,
+            </if>
+            <if test="address!=null and address!=''">
+                address,
+            </if>
+            <if test="tag!=null and tag!=''">
+                tag,
+            </if>
+            <if test="yibao_card!=null and yibao_card!=''">
+                yibao_card,
+            </if>
+            <if test="avatar!=null and avatar!=''">
+                avatar,
+            </if>
+            <if test="invite_code!=null and invite_code!=''">
+                invite_code,
+            </if>
+            create_time,update_time
+        </trim>
+        <trim prefix=" values(" suffix=")" suffixOverrides=",">
+            <if test="site_id!=null">
+                #{site_id},
+            </if>
+            <if test="id!=null">
+                #{id},
+            </if>
+            <if test="buyer_id!=null">
+                #{buyer_id},
+            </if>
+            <if test="birthday!=null">
+                #{birthday},
+            </if>
+            <if test="concerned!=null">
+                #{concerned},
+            </if>
+            <if test="concerned_time!=null">
+                #{concerned_time},
+            </if>
+            <if test="integrate!=null">
+                #{integrate},
+            </if>
+            <if test="integrate_used!=null">
+                #{integrate_used},
+            </if>
+            <if test="checkin_num!=null">
+                #{checkin_num},
+            </if>
+            <if test="checkin_sum!=null">
+                #{checkin_sum},
+            </if>
+            <if test="checkin_lasttime!=null">
+                #{checkin_lasttime},
+            </if>
+            <if test="country!=null">
+                #{country},
+            </if>
+            <if test="province!=null">
+                #{province},
+            </if>
+            <if test="city!=null">
+                #{city},
+            </if>
+            <if test="area!=null">
+                #{area},
+            </if>
+            <if test="age!=null">
+                #{age},
+            </if>
+            <if test="status!=null">
+                #{status},
+            </if>
+            <if test="register_stores!=null">
+                #{register_stores},
+            </if>
+
+
+            <if test="weixin_code!=null and weixin_code!=''">
+                #{weixin_code},
+            </if>
+            <if test="qq!=null and qq!=''">
+                #{qq},
+            </if>
+            <if test="membership_number!=null and membership_number!=''">
+                #{membership_number},
+            </if>
+            <if test="barcode!=null and barcode!=''">
+                #{barcode},
+            </if>
+            <if test="address!=null and address!=''">
+                #{address},
+            </if>
+            <if test="tag!=null and tag!=''">
+                #{tag},
+            </if>
+            <if test="yibao_card!=null and yibao_card!=''">
+                #{yibao_card},
+            </if>
+            <if test="avatar!=null and avatar!=''">
+                #{avatar},
+            </if>
+            <if test="invite_code!=null and invite_code!=''">
+                #{invite_code},
+            </if>
+            CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP()
+        </trim>
+    </insert>
+    <select id="selectMemberCountBydays" resultType="java.util.Map">
+      select date(create_time) AS query_time,count(*) AS value from b_member where site_id=#{siteId} and create_time between #{start} and #{end} group by query_time
+    </select>
+    <select id="getPullNewCount" resultType="java.util.Map">
+        SELECT count(a.buyer_id) as membercount,IFNULL(b.name,'--')storeadminname, IFNULL(c.name,'--') sotrename,b.avatar url
+        FROM b_member a
+        LEFT JOIN b_store_adminext b ON b.site_id=a.site_id AND a.register_clerks=b.id
+        LEFT JOIN b_stores c ON c.id=b.store_id AND c.site_id=a.site_id
+        WHERE a.site_id=#{siteId}
+        and a.create_time <![CDATA[ > ]]> #{nowDay}
+        AND a.register_clerks>0
+        GROUP BY storeadminname,sotrename,url  ORDER BY membercount desc LIMIT 0,10
+    </select>
+    <select id="queryMemberListForCouponActive" resultType="com.jk51.model.order.Member">
+        select bm.site_id AS siteId ,bm.member_id AS memberId,bm.name,bm.is_activated as isActivated,bm.ban_status as
+        banStatus,date_format(bm.create_time,'%Y-%m-%d %H:%i:%S') as registerTime,bm.mobile,bs.name as storName
+        from b_member bm
+        LEFT JOIN b_stores bs
+        on (bm.site_id=bs.site_id and bm.register_stores=bs.id)
+        where bm.site_id=#{siteId}
+
+        <if test="memberlist!=null ">
+            and bm.member_id in
+            <foreach collection="memberlist" item="memberId" index="index"
+                     open="(" close=")" separator=",">
+                #{memberId}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="queryForImportByPhoneAndSiteId" resultType="map">
+        SELECT
+        member.member_id memberId,
+        member.mobile phone,
+        member.create_time createTime,
+        member.ban_status status,
+        store.name storeName
+        FROM b_member member
+        LEFT JOIN b_stores store
+        ON
+        member.site_id = store.site_id
+        AND
+        member.register_stores = store.id
+        AND
+        member.site_id = #{siteId}
+        WHERE
+        member.mobile IN
+        <foreach collection="phoneList" separator="," open="(" close=")" item="phoneNum">
+            #{phoneNum}
+        </foreach>
+        AND
+        member.site_id = #{siteId}
+    </select>
+    <select id="findMobilesByMemberIds" resultType="string">
+        SELECT GROUP_CONCAT(mobile)useObject FROM b_member
+        WHERE site_id=#{siteId}
+        AND member_id IN
+        <foreach collection="ids" open="(" item="item" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="queryMembersInfoByMemberIds" resultType="map">
+        SELECT
+        m.member_id,
+        m.mobile,
+        s.name,
+        m.create_time,
+        m.ban_status
+        FROM b_member m
+        LEFT JOIN b_stores s ON m.register_stores = s.id AND m.site_id = s.site_id
+        WHERE m.site_id = #{siteId}
+        AND m.member_id IN
+        <foreach collection="ids" open="(" item="item" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="selectMemberInfoList" resultType="java.util.Map">
+        SELECT site_id, buyer_id, mobile memberMobile, integrate memberIntegrate
+        FROM b_member
+        WHERE site_id=#{siteId} AND buyer_id IN
+        <foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <update id="updateOpenId" flushCache="false" parameterType="com.jk51.model.order.Member">
+        UPDATE b_member SET
+        <if test="member.openId!=null and member.openId!=''">
+            open_id=#{member.openId}
+        </if>
+        <if test="member.aliUserId!=null and member.aliUserId!=''">
+            ali_user_id=#{member.aliUserId}
+        </if>
+        where member_id=#{member.memberId} and site_id=#{member.siteId}
+    </update>
+    <select id="findMobileByIdByTime" resultType="string">
+        SELECT
+        register_stores
+        FROM
+        b_member
+        where site_id=#{siteId} and mobile=#{mobile} AND CURRENT_TIMESTAMP()<![CDATA[ < ]]>
+        date_add(create_time, interval 1 HOUR) and register_stores is not null
+    </select>
+
+    <select id="queryMemberInfoByBuyerId" parameterType="java.util.Map" resultType="java.util.Map">
+      SELECT bm.member_id , bm.name, bm.mobile, bm.sex, bm.integrate, bmi.age, bmi.tag, bmi.labels, bmi.avatar,bmi.membership_number membershipNumber FROM  b_member bm
+      LEFT JOIN b_member_info bmi ON bm.site_id = bmi.site_id AND bm.buyer_id = bmi.member_id
+      WHERE bm.site_id = #{siteId} AND bm.buyer_id = #{buyerId}
+    </select>
+
+    <!--查询会员经纬度-->
+    <select id="getMembersLngAndLat" resultType="java.util.Map">
+        SELECT user_gaode_lng userGaodeLng, user_gaode_lat userGaodeLat FROM b_user_stores_distance_log WHERE site_id = #{siteId} AND user_id = #{memberId}
+        ORDER BY create_time DESC LIMIT 1
+    </select>
+
+    <!--计算距离门店的距离-->
+    <select id="calculateDistance" resultType="java.util.Map">
+        SELECT round(6378.138*2*asin(sqrt(pow(sin( (#{userGaodeLat}*pi()/180-gaode_lat*pi()/180)/2),2)+cos(#{userGaodeLat}*pi()/180)*cos(gaode_lat*pi()/180)* pow(sin( (#{userGaodeLng}*pi()/180-gaode_lng*pi()/180)/2),2)))*1000) distance
+        FROM b_stores t WHERE site_id = #{siteId} AND id = #{storeId}
+    </select>
+
+
+    <select id="queryMemberId" resultType="java.lang.String">
+      SELECT member_id from b_member where site_id =#{siteId}
+    </select>
+
+    <select id="getMemberByMobile" resultType="com.jk51.modules.appInterface.util.MemberInfo" >
+        SELECT m.site_id siteId, m.mobile, m.buyer_id buyerId, m.is_activated activated, COUNT(t.id) orderNum
+        FROM b_member m
+        LEFT JOIN b_trades t ON m.site_id=t.site_id AND m.buyer_id=t.buyer_id
+        WHERE m.site_id = #{siteId} AND m.mobile = #{mobile} GROUP BY m.site_id,m.mobile
+    </select>
+
+    <!--根据基本信息查询顾客列表-->
+    <select id="queryCustomerByInfo" resultType="java.util.Map">
+        SELECT bm.buyer_id buyerId, bm.buyer_nick buyerNick, bm.mobile, bm.name, bm.end_order endOrder, NULLIF(bm.order_fee,0)/NULLIF(bm.order_num,0) perPrice, bm.integrate, bm.register_stores registerStores, bm.end_order endOrder,bmi.avatar FROM b_member bm
+        LEFT JOIN b_member_info bmi ON bm.site_id = bmi.site_id AND bm.buyer_id = bmi.member_id
+        WHERE bm.site_id = #{siteId}
+        AND
+        (bm.buyer_nick LIKE concat('%',#{keywords},'%')
+        OR bm.mobile LIKE concat('%',#{keywords},'%')
+        OR bm.name LIKE concat('%',#{keywords},'%'))
+        <choose>
+            <when test="orderColumn == 'buyTime' and orderWay == 'ASC' ">
+                ORDER BY bm.end_order ASC
+            </when>
+            <when test="orderColumn == 'buyTime' and orderWay == 'DESC' ">
+                ORDER BY bm.end_order DESC
+            </when>
+            <when test="orderColumn == 'perPrice' and orderWay == 'ASC' ">
+                ORDER BY perPrice ASC
+            </when>
+            <when test="orderColumn == 'perPrice' and orderWay == 'DESC' ">
+                ORDER BY perPrice DESC
+            </when>
+            <when test="orderColumn == 'registerTime' and orderWay == 'ASC'">
+                ORDER BY bm.create_time ASC
+            </when>
+            <when test="orderColumn == 'registerTime' and orderWay == 'DESC'">
+                ORDER BY bm.create_time DESC
+            </when>
+            <when test="orderColumn == 'integral' and orderWay == 'ASC' ">
+                ORDER BY bm.integrate ASC
+            </when>
+            <when test="orderColumn == 'integral' and orderWay == 'DESC' ">
+                ORDER BY bm.integrate DESC
+            </when>
+        </choose>
+    </select>
+
+    <!--根据药品搜索-->
+    <select id="queryCustomerByDrug" resultType="java.util.Map" parameterType="java.util.Map">
+        SELECT
+            DISTINCT
+            bm.buyer_id buyerId,
+            bm.buyer_nick buyerNick,
+            bm.mobile,
+            bm.name,
+            NULLIF(bm.order_fee, 0) / NULLIF(bm.order_num, 0) perPrice,
+            bm.integrate, bm.register_stores registerStores, bm.end_order endOrder,bmi.avatar
+        FROM
+            b_member bm
+        LEFT JOIN b_member_info bmi ON bm.site_id = bmi.site_id AND bm.buyer_id = bmi.member_id
+        LEFT JOIN b_trades bt ON bm.site_id = bt.site_id AND bm.buyer_id = bt.buyer_id
+        LEFT JOIN b_orders bo ON bm.site_id = bo.site_id AND bt.trades_id = bo.trades_id
+        WHERE bm.site_id = #{siteId}
+        AND bt.create_time >= now() - INTERVAL 1 YEAR
+        AND
+        bo.goods_id IN
+        (SELECT
+        goods_id
+        FROM
+        b_goods
+        WHERE
+        site_id = #{siteId}
+        AND (
+        goods_title LIKE concat('%',#{keywords},'%')
+        OR drug_name LIKE concat('%',#{keywords},'%')
+        OR com_name LIKE concat('%',#{keywords},'%')
+        OR goods_code LIKE concat('%',#{keywords},'%')
+        ))
+        <choose>
+            <when test="orderColumn == 'buyTime' and orderWay == 'ASC' ">
+                ORDER BY bm.end_order ASC
+            </when>
+            <when test="orderColumn == 'buyTime' and orderWay == 'DESC' ">
+                ORDER BY bm.end_order DESC
+            </when>
+            <when test="orderColumn == 'perPrice' and orderWay == 'ASC' ">
+                ORDER BY perPrice ASC
+            </when>
+            <when test="orderColumn == 'perPrice' and orderWay == 'DESC' ">
+                ORDER BY perPrice DESC
+            </when>
+            <when test="orderColumn == 'registerTime' and orderWay == 'ASC'">
+                ORDER BY bm.create_time ASC
+            </when>
+            <when test="orderColumn == 'registerTime' and orderWay == 'DESC'">
+                ORDER BY bm.create_time DESC
+            </when>
+            <when test="orderColumn == 'integral' and orderWay == 'ASC' ">
+                ORDER BY bm.integrate ASC
+            </when>
+            <when test="orderColumn == 'integral' and orderWay == 'DESC' ">
+                ORDER BY bm.integrate DESC
+            </when>
+        </choose>
+    </select>
+
+    <select id="getCustomerByLabel" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT bm.buyer_id buyerId, bm.buyer_nick buyerNick, bm.mobile, bm.name, NULLIF(bm.order_fee,0)/NULLIF(bm.order_num,0) perPrice, bm.integrate, bm.register_stores registerStores, bm.end_order endOrder,bmi.avatar FROM b_member bm
+        LEFT JOIN b_member_info bmi ON bm.site_id = bmi.site_id AND bm.buyer_id = bmi.member_id
+        WHERE bm.site_id = #{siteId}
+            AND bm.member_id IN
+            <foreach item="item" index="index" collection="memberIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        <choose>
+            <when test="orderColumn == 'buyTime' and orderWay == 'ASC' ">
+                ORDER BY bm.end_order ASC
+            </when>
+            <when test="orderColumn == 'buyTime' and orderWay == 'DESC' ">
+                ORDER BY bm.end_order DESC
+            </when>
+            <when test="orderColumn == 'perPrice' and orderWay == 'ASC' ">
+                ORDER BY perPrice ASC
+            </when>
+            <when test="orderColumn == 'perPrice' and orderWay == 'DESC' ">
+                ORDER BY perPrice DESC
+            </when>
+            <when test="orderColumn == 'registerTime' and orderWay == 'ASC'">
+            ORDER BY bm.create_time ASC
+            </when>
+            <when test="orderColumn == 'registerTime' and orderWay == 'DESC'">
+                ORDER BY bm.create_time DESC
+            </when>
+            <when test="orderColumn == 'integral' and orderWay == 'ASC' ">
+                ORDER BY bm.integrate ASC
+            </when>
+            <when test="orderColumn == 'integral' and orderWay == 'DESC' ">
+                ORDER BY bm.integrate DESC
+            </when>
+        </choose>
+    </select>
+
+    <select id="getMobileByTradesId" resultType="java.lang.String" >
+        SELECT recevier_mobile FROM b_trades WHERE site_id = #{siteId} AND trades_id = #{tradesId}
+    </select>
+    
+    <select id="getMemberInfoByOpenId" parameterType="java.util.Map" resultType="java.util.Map">
+      SELECT a.name, a.mobile, a.sex, b.age FROM b_member a
+      LEFT JOIN b_member_info b ON a.site_id = b.site_id
+      AND a.buyer_id = b.member_id
+      WHERE
+	  a.site_id = #{siteId} AND a.open_id = #{openId}
+	  LIMIT 1
+    </select>
+    
+    <select id="queryMemInfo" parameterType="java.util.Map" resultType="java.util.Map">
+      SELECT * FROM b_member WHERE site_id = #{siteId} AND open_id = #{openId}
+      LIMIT 1
+    </select>
+    
+    
+    <insert id="inserUserInfoLog" parameterType="java.util.Map">
+      INSERT INTO b_heart_serve (site_id, accessKey_id, accessKey_secret, deviceId, equipment_number, open_id, unique_user_id51jk, user_name, user_phone, sex, age, blood_pressure_high, blood_pressure_low, blood_glucose, height, weight, condition_sum, update_time)
+      VALUES (#{siteId}, #{accessKeyId}, #{accessKeySecret}, #{deviceId}, #{equipmentNumber}, #{openId}, #{uniqueUserId51jk}, #{userName}, #{userPhone}, #{sex},#{age}, #{bloodPressureHigh}, #{bloodPressureLow},#{bloodGlucose}, #{height}, #{weight}, #{conditionSum}, CURRENT_TIMESTAMP);
+    </insert>
+
+
+    <insert id="saveCheckLog" parameterType="java.util.Map">
+        INSERT INTO b_heart_resultlog (template_id, unique_user_id51jk, record_id, heart_rate, record_time, test_results, conclusion, update_time)
+        VALUES (#{templateId}, #{uniqueUserId51jk}, #{recordId}, #{heartRate}, #{recordTime}, #{testResults}, #{conclusion}, CURRENT_TIMESTAMP);
+    </insert>
+
+
+    <select id="queryBySiteIdAndPhone" resultType="java.util.Map">
+      SELECT
+        a.buyer_id buyerId,
+        b.store_id storeId,
+        a.open_id openId
+      FROM
+	  b_member a
+      LEFT JOIN b_member_info b ON a.site_id = b.site_id
+      AND a.buyer_id = b.member_id
+      WHERE
+	  a.site_id = #{siteId} AND a.mobile = #{userPhone}
+    </select>
+
+    <select id="queryEquipment" resultType="java.util.Map">
+      SELECT * FROM b_heart_equipment WHERE site_id = #{siteId} AND equipment_number = #{equipmentNumber}
+    </select>
+
+    <select id="queryUserInfo" resultType="java.util.Map">
+        SELECT equipment_number equipmentNumber, unique_user_id51jk uniqueUserId51jk, user_name userName, user_phone userPhone, sex, age, blood_pressure_high bloodPressureHigh, blood_pressure_low bloodPressureLow, blood_glucose bloodGlucose, height, weight, condition_sum conditionSum
+        FROM b_heart_serve WHERE site_id = #{siteId} AND open_id = #{openId}
+        ORDER BY create_time DESC
+        LIMIT 1
+    </select>
+</mapper>

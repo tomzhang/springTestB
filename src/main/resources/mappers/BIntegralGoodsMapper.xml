@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.goods.mapper.BIntegralGoodsMapper">
+
+    <!-- 插入积分商品表 -->
+    <insert id="insertIntegralGoods" keyProperty="id" useGeneratedKeys="true" parameterType="com.jk51.model.goods.BIntegralGoods" flushCache="true">
+
+        INSERT INTO b_integral_goods
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="goodsId != null">
+                goods_id,
+            </if>
+            <if test="integralExchanges != null">
+                intrgral_exchanges,
+            </if>
+            <if test="storeIds != null">
+                store_ids,
+            </if>
+            <if test="limitCount != null">
+                limit_count,
+            </if>
+            <if test="limitEach != null">
+                limit_each,
+            </if>
+            <if test="num != null">
+                num,
+            </if>
+
+            status,
+            start_time,
+            end_time
+
+        </trim>
+
+        <trim prefix=" values(" suffix=")" suffixOverrides=",">
+
+            <if test="siteId != null">
+                #{siteId},
+            </if>
+            <if test="goodsId != null">
+                #{goodsId},
+            </if>
+            <if test="integralExchanges != null">
+                #{integralExchanges},
+            </if>
+            <if test="storeIds != null">
+                #{storeIds},
+            </if>
+            <if test="limitCount != null">
+                #{limitCount},
+            </if>
+            <if test="limitEach != null">
+                #{limitEach},
+            </if>
+            <if test="num != null">
+                #{num},
+            </if>
+
+            (CASE
+                WHEN !(#{endTime} IS NULL) AND #{endTime} <![CDATA[ <= ]]> NOW() THEN
+                  20
+                WHEN !(#{startTime} IS NULL) AND #{startTime} <![CDATA[ <= ]]> NOW() THEN
+                  10
+                WHEN #{startTime} IS NULL THEN
+                  10
+                WHEN !(#{startTime} IS NULL) AND #{startTime} <![CDATA[ > ]]> NOW() THEN
+                  0
+                ELSE
+                  0
+            END),
+            <if test="startTime != null">
+                #{startTime},
+            </if>
+            <if test="startTime == null">
+                now(),
+            </if>
+            <if  test="endTime != null">
+                #{endTime},
+            </if>
+            <if  test="endTime == null">
+                '0000-00-00 00:00:00'
+            </if>
+        </trim>
+
+    </insert>
+
+    <!--更新积分商品-->
+    <update id="updateByGoodsId">
+        UPDATE b_integral_goods
+        <set>
+            <trim suffix="," suffixOverrides=",">
+                <if test="integralExchanges != null">
+                    intrgral_exchanges = #{integralExchanges},
+                </if>
+                <if test="storeIds != null">
+                    store_ids = #{storeIds},
+                </if>
+                <if test="status != null">
+                    status = #{status},
+                </if>
+                <if test="isDel != null">
+                    is_del = #{isDel},
+                </if>
+                <if test="limitCount != null">
+                    limit_count=#{limitCount},
+                </if>
+                <if test="limitEach != null">
+                    limit_each=#{limitEach},
+                </if>
+                <if test="num != null">
+                    num = #{num},
+                </if>
+
+                    status = (CASE
+                              WHEN !(#{endTime} IS NULL) AND #{endTime} &lt;= NOW() THEN
+                                20
+                              WHEN !(#{startTime} IS NULL) AND #{startTime} &lt;= NOW() THEN
+                                10
+                              WHEN #{startTime} IS NULL THEN
+                                10
+                              WHEN !(#{startTime} IS NULL) AND #{startTime} &gt; NOW() THEN
+                                0
+                              ELSE
+                                0
+                              END ),
+
+                <if test="startTime != null ">
+                    start_time = #{startTime},
+                </if>
+                <if test="startTime == null ">
+                    start_time = now(),
+                </if>
+                <if  test="endTime != null">
+                    end_time = #{endTime}
+                </if>
+                <if  test="endTime == null">
+                    end_time = '0000-00-00 00:00:00'
+                </if>
+            </trim>
+        </set>
+        <where>
+            site_id = #{siteId}
+            AND goods_id = #{goodsId}
+        </where>
+
+    </update>
+
+    <select id="getBIntegralGoodsByGoodsId" resultType="com.jk51.model.goods.BIntegralGoods" useCache="false">
+        SELECT * FROM b_integral_goods WHERE site_id = #{siteId} AND goods_id = #{goodsId}
+    </select>
+
+    <!--查询下一分钟之前需要开启的积分商品定时任务-->
+    <select id="listIntegralGoodsTimingOpenTask" resultType="com.jk51.modules.integral.model.IntegralGoodsTask" useCache="false">
+        SELECT
+          GROUP_CONCAT(goods_id) AS goodsIds,
+          TIMESTAMPDIFF(SECOND, NOW(), start_time) AS timeInterval,
+          NOW() AS databaseTime
+        FROM
+          b_integral_goods
+        WHERE
+          status != 10
+          AND is_del = 1
+          AND start_time &lt; DATE_ADD(NOW(), INTERVAL 1 MINUTE)
+          AND (end_time &gt; NOW() OR end_time = '0000-00-00 00:00:00')
+        GROUP BY
+          timeInterval
+        HAVING
+          timeInterval &lt; 60
+        ORDER BY
+          timeInterval ASC
+    </select>
+
+    <!--定时开启积分商品任务-->
+    <update id="updateIntegralGoodsStartStatus">
+        UPDATE b_integral_goods
+        SET status = 10
+        <where>
+            is_del = 1
+            AND status != 10
+            AND goods_id IN
+            <foreach collection="goodsIds" index="index" item="goods_id" open="(" separator="," close=")">
+                #{goods_id}
+            </foreach>
+        </where>
+
+    </update>
+
+    <select id="listIntegralGoodsTimingCloseTask" resultType="com.jk51.modules.integral.model.IntegralGoodsTask" useCache="false">
+        SELECT
+            GROUP_CONCAT(goods_id) AS goodsIds,
+            TIMESTAMPDIFF(SECOND, NOW(), end_time) AS timeInterval,
+            NOW() AS databaseTime
+        FROM
+          b_integral_goods
+        WHERE
+          status != 20
+          AND is_del = 1
+          AND end_time &lt; DATE_ADD(NOW(), INTERVAL 1 MINUTE)
+        GROUP BY
+          timeInterval
+        HAVING
+          timeInterval &lt; 60
+        ORDER BY
+          timeInterval ASC
+    </select>
+
+    <!--定时关闭的积分商品任务-->
+    <update id="updateIntegralGoodsEndStatus">
+        UPDATE b_integral_goods
+        SET status = 20
+        <where>
+            is_del = 1
+            AND status != 20
+            AND goods_id IN
+            <foreach collection="goodsIds" index="index" item="goods_id" open="(" separator="," close=")">
+                #{goods_id}
+            </foreach>
+        </where>
+    </update>
+
+    <update id="deleteIntegralGoods">
+
+        UPDATE b_integral_goods
+        SET is_del = #{is_del}
+        WHERE id = #{id}
+
+    </update>
+
+
+
+</mapper>

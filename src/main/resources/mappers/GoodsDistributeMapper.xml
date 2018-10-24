@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.distribution.mapper.GoodsDistributeMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.distribute.GoodsDistribute" >
+        <id column="goods_id" property="goodsId" jdbcType="INTEGER" />
+        <id column="site_id" property="siteId" jdbcType="INTEGER" />
+        <result column="approval_number" property="approvalNumber" jdbcType="VARCHAR" />
+        <result column="drug_name" property="drugName" jdbcType="VARCHAR" />
+        <result column="com_name" property="comName" jdbcType="VARCHAR" />
+        <result column="specif_cation" property="specifCation" jdbcType="VARCHAR" />
+        <result column="goods_company" property="goodsCompany" jdbcType="VARCHAR" />
+        <result column="barnd_id" property="barndId" jdbcType="VARCHAR" />
+        <result column="drug_category" property="drugCategory" jdbcType="INTEGER" />
+        <result column="goods_property" property="goodsProperty" jdbcType="INTEGER" />
+        <result column="goods_use" property="goodsUse" jdbcType="VARCHAR" />
+        <result column="goods_forts" property="goodsForts" jdbcType="INTEGER" />
+        <result column="goods_validity" property="goodsValidity" jdbcType="INTEGER" />
+        <result column="goods_forpeople" property="goodsForpeople" jdbcType="VARCHAR" />
+        <result column="user_cateid" property="userCateid" jdbcType="VARCHAR" />
+        <result column="goods_title" property="goodsTitle" jdbcType="VARCHAR" />
+        <result column="goods_tagsid" property="goodsTagsid" jdbcType="VARCHAR" />
+        <result column="market_price" property="marketPrice" jdbcType="INTEGER" />
+        <result column="shop_price" property="shopPrice" jdbcType="INTEGER" />
+        <result column="cost_price" property="costPrice" jdbcType="INTEGER" />
+        <result column="discount_price" property="discountPrice" jdbcType="INTEGER" />
+        <result column="in_stock" property="inStock" jdbcType="INTEGER" />
+        <result column="goods_weight" property="goodsWeight" jdbcType="INTEGER" />
+        <result column="control_num" property="controlNum" jdbcType="INTEGER" />
+        <result column="goods_status" property="goodsStatus" jdbcType="INTEGER" />
+        <result column="freight_payer" property="freightPayer" jdbcType="INTEGER" />
+        <result column="list_time" property="listTime" jdbcType="TIMESTAMP" />
+        <result column="delist_time" property="delistTime" jdbcType="TIMESTAMP" />
+        <result column="postage_id" property="postageId" jdbcType="INTEGER" />
+        <result column="detail_tpl" property="detailTpl" jdbcType="INTEGER" />
+        <result column="is_medicare" property="isMedicare" jdbcType="BIT" />
+        <result column="medicare_code" property="medicareCode" jdbcType="CHAR" />
+        <result column="medicare_top_price" property="medicareTopPrice" jdbcType="INTEGER" />
+        <result column="bar_code" property="barCode" jdbcType="CHAR" />
+        <result column="mnemonic_code" property="mnemonicCode" jdbcType="VARCHAR" />
+        <result column="purchase_way" property="purchaseWay" jdbcType="INTEGER" />
+        <result column="wx_purchase_way" property="wxPurchaseWay" jdbcType="INTEGER" />
+        <result column="goods_code" property="goodsCode" jdbcType="VARCHAR" />
+        <result column="yb_goods_id" property="ybGoodsId" jdbcType="INTEGER" />
+        <result column="distribution_template" property="distributionTemplate" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+       g.goods_id,g.site_id,g.approval_number,g.drug_name,g.com_name,g.specif_cation,g.goods_company,g.barnd_id,
+	   g.drug_category,g.goods_property,g.goods_use,g.goods_forts,g.goods_validity,g.goods_forpeople,g.user_cateid,
+	   g.goods_title,g.goods_tagsid,g.market_price,g.shop_price,g.cost_price,g.discount_price,g.in_stock,g.goods_weight,
+	   g.control_num,g.goods_status,g.freight_payer,g.list_time,g.delist_time,g.postage_id,g.detail_tpl,g.is_medicare,
+	   g.medicare_code,g.medicare_top_price,g.bar_code,g.mnemonic_code,g.purchase_way,g.wx_purchase_way,g.goods_code,
+	   g.yb_goods_id,d.distribution_template,g.create_time,g.update_time
+    </sql>
+    <select id="selectByGoodsIdAndSiteId" resultMap="BaseResultMap">
+      SELECT <include refid="Base_Column_List"/> FROM b_goods_distribute AS d
+        LEFT JOIN  b_goods AS g  ON (d.site_id = g.site_id AND d.goods_id = g.goods_id)
+       WHERE g.goods_id=#{goodsId} AND g.site_id=#{siteId}
+        and d.distribution_template > 0
+    </select>
+
+    <select id="queryByGoodsIdAndSiteId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM b_goods_distribute AS d
+        LEFT JOIN  b_goods AS g  ON (d.site_id = g.site_id AND d.goods_id = g.goods_id)
+        WHERE g.goods_id=#{goodsId} AND g.site_id=#{siteId}
+    </select>
+    <select id="findGoodsDistribute" parameterType="com.jk51.model.distribute.QueryGoodsDistribute" resultType="com.jk51.model.goods.PageData">
+        SELECT
+        i.id,
+        i. HASH,
+        i.width,
+        i.height,
+        i.size,
+        i.type,
+        i.host_id,
+        i.flag,
+        i.goods_id as tgoodsid,
+        i.is_default,
+        i.create_time,
+        d.site_id,
+        g.goods_title,
+        g.drug_name,
+        g.specif_cation,
+        g.goods_code,
+        g.shop_price,
+        <if test="has_erp != null and has_erp != ''">
+            g.erp_price,
+        </if>
+        d.distribution_template,
+        g.cost_price,
+        g.goods_id,
+        t.reward,
+        t.discount,
+        t.name,
+        t.type AS reward_type
+        FROM b_goods_distribute AS d
+        LEFT JOIN  b_goods AS g  ON (d.site_id = g.site_id AND d.goods_id = g.goods_id)
+        LEFT  JOIN (
+        SELECT
+        *
+        FROM
+        b_images_attr
+        WHERE
+        site_id = #{siteId}
+        AND flag = 0
+        AND is_default = 1
+        GROUP BY goods_id, is_default
+        )  AS i ON (d.site_id = i.site_id AND d.goods_id = i.goods_id)
+        LEFT  JOIN d_reward_template AS t ON (d.distribution_template = t.id)
+        <where>
+            g.site_id =#{siteId}
+            AND g.goods_status =1
+            AND i.is_default = 1
+            AND i.flag = 0
+            and t.is_used=1
+            <if test="userCateid!=null and userCateid!=''">
+                AND g.drug_category LIKE concat('%',#{userCateid},'%')
+            </if>
+            <if test="drugName!=null and drugName!=''">
+                AND g.drug_name LIKE concat('%',#{drugName},'%')
+            </if>
+            <if test="goodsTitle!=null and goodsTitle!=''">
+                AND g.goods_title LIKE concat('%',#{goodsTitle},'%')
+            </if>
+            <if test="goodsCode!=null and goodsCode!=''">
+                AND g.goods_code LIKE concat('%',#{goodsCode},'%')
+            </if>
+            <if test="minPrice!=null and minPrice!=''">
+                AND  g.shop_price &gt;= #{minPrice}
+            </if>
+            <if test="maxPrice!=null and maxPrice!=''">
+                AND  g.shop_Price &lt;= #{maxPrice}
+            </if>
+            <if test="templateName!=null and templateName!=''">
+                AND t.name LIKE concat('%',#{templateName},'%')
+            </if>
+            and d.distribution_template > 0
+        </where>
+        GROUP BY d.goods_id
+        ORDER BY d.create_time DESC
+    </select>
+
+    <update id="changeById" parameterType="java.lang.Integer">
+        UPDATE b_goods_distribute  SET =1
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateDistributionTemplate" parameterType="com.jk51.model.distribute.QueryGoodsDistribute">
+        UPDATE b_goods_distribute
+        <set>
+            <if test="templateid != null">
+                distribution_template = #{templateid,jdbcType=INTEGER},
+            </if>
+
+        </set>
+        where goods_id = #{goods_id,jdbcType=INTEGER}
+    </update>
+
+    <select id="queryGoodsDistributeBytempId" parameterType="com.jk51.model.distribute.QueryGoodsDistribute" resultType="com.jk51.model.goods.PageData">
+        SELECT
+
+        d.site_id,
+        g.goods_title,
+        g.drug_name,
+        g.specif_cation,
+        g.goods_code,
+        <!--g.shop_price-->
+        g.shop_price,
+        d.distribution_template,
+        g.cost_price,
+        g.goods_id
+
+        FROM b_goods_distribute AS d
+        LEFT JOIN  b_goods AS g  ON (d.site_id = g.site_id AND d.goods_id = g.goods_id)
+        <where>
+            d.site_id =#{siteId}
+            AND
+            d.distribution_template=#{templateid}
+            AND d.distribution_template>0
+        </where>
+        ORDER BY d.create_time DESC
+    </select>
+
+    <update id="updategoodsDistributeBymodelid" >
+        UPDATE
+        b_goods_distribute
+        SET distribution_template=0
+        where distribution_template=#{0}
+              and site_id=#{1}
+    </update>
+
+    <insert id="insertgoodsDistribute" parameterType="com.jk51.model.Goods">
+        insert into b_goods_distribute
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="goods.siteId != null">
+                site_id,
+            </if>
+            <if test="goods.goodsId != null">
+                goods_id,
+            </if>
+            <if test="goods.approvalNumber != null">
+                approval_number,
+            </if>
+            <if test="goods.drugName != null">
+                drug_name,
+            </if>
+            <if test="goods.comName != null">
+                com_name,
+            </if>
+            <if test="goods.specifCation != null">
+                specif_cation,
+            </if>
+            <if test="goods.goodsCompany != null">
+                goods_company,
+            </if>
+            <if test="goods.barndId != null">
+                barnd_id,
+            </if>
+            <if test="goods.drugCategory != null">
+                drug_category,
+            </if>
+            <if test="goods.goodsProperty != null">
+                goods_property,
+            </if>
+            <if test="goods.goodsUse != null">
+                goods_use,
+            </if>
+            <if test="goods.goodsForts != null">
+                goods_forts,
+            </if>
+            <if test="goods.goodsValidity != null">
+                goods_validity,
+            </if>
+            <if test="goods.goodsForpeople != null">
+                goods_forpeople,
+            </if>
+            <if test="goods.userCateid != null">
+                user_cateid,
+            </if>
+            <if test="goods.goodsTitle != null">
+                goods_title,
+            </if>
+            <if test="goods.goodsTagsid != null">
+                goods_tagsid,
+            </if>
+            <if test="goods.marketPrice != null">
+                market_price,
+            </if>
+            <if test="goods.shopPrice != null">
+                shop_price,
+            </if>
+            <if test="goods.costPrice != null">
+                cost_price,
+            </if>
+            <if test="goods.discountPrice != null">
+                discount_price,
+            </if>
+            <if test="goods.inStock != null">
+                in_stock,
+            </if>
+            <if test="goods.goodsWeight != null">
+                goods_weight,
+            </if>
+            <if test="goods.controlNum != null">
+                control_num,
+            </if>
+            <if test="goods.goodsStatus != null">
+                goods_status,
+            </if>
+            <if test="goods.freightPayer != null">
+                freight_payer,
+            </if>
+            <if test="goods.listTime != null">
+                list_time,
+            </if>
+            <if test="goods.delistTime != null">
+                delist_time,
+            </if>
+            <if test="goods.postageId != null">
+                postage_id,
+            </if>
+            <if test="goods.detailTpl != null">
+                detail_tpl,
+            </if>
+            <if test="goods.isMedicare != null">
+                is_medicare,
+            </if>
+            <if test="goods.medicareCode != null">
+                medicare_code,
+            </if>
+            <if test="goods.medicareTopPrice != null">
+                medicare_top_price,
+            </if>
+            <if test="goods.barCode != null">
+                bar_code,
+            </if>
+            <if test="goods.mnemonicCode != null">
+                mnemonic_code,
+            </if>
+            <if test="goods.purchaseWay != null">
+                purchase_way,
+            </if>
+            <if test="goods.wxPurchaseWay != null">
+                wx_purchase_way,
+            </if>
+            <if test="goods.goodsCode != null">
+                goods_code,
+            </if>
+            <if test="goods.ybGoodsId != null">
+                yb_goods_id,
+            </if>
+
+            distribution_template,
+
+            <if test="goods.createTime != null">
+                create_time,
+            </if>
+            <if test="goods.updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="goods.siteId != null">
+                #{goods.siteId},
+            </if>
+            <if test="goods.goodsId != null">
+                #{goods.goodsId},
+            </if>
+            <if test="goods.approvalNumber != null">
+                #{goods.approvalNumber},
+            </if>
+            <if test="goods.drugName != null">
+                #{goods.drugName},
+            </if>
+            <if test="goods.comName != null">
+                #{goods.comName},
+            </if>
+            <if test="goods.specifCation != null">
+                #{goods.specifCation},
+            </if>
+            <if test="goods.goodsCompany != null">
+                #{goods.goodsCompany},
+            </if>
+            <if test="goods.barndId != null">
+                #{goods.barndId},
+            </if>
+            <if test="goods.drugCategory != null">
+                #{goods.drugCategory},
+            </if>
+            <if test="goods.goodsProperty != null">
+                #{goods.goodsProperty},
+            </if>
+            <if test="goods.goodsUse != null">
+                #{goods.goodsUse},
+            </if>
+            <if test="goods.goodsForts != null">
+                #{goods.goodsForts},
+            </if>
+            <if test="goods.goodsValidity != null">
+                #{goods.goodsValidity},
+            </if>
+            <if test="goods.goodsForpeople != null">
+                #{goods.goodsForpeople},
+            </if>
+            <if test="goods.userCateid != null">
+                #{goods.userCateid},
+            </if>
+            <if test="goods.goodsTitle != null">
+                #{goods.goodsTitle},
+            </if>
+            <if test="goods.goodsTagsid != null">
+                #{goods.goodsTagsid},
+            </if>
+            <if test="goods.marketPrice != null">
+                #{goods.marketPrice},
+            </if>
+            <if test="goods.shopPrice != null">
+                #{goods.shopPrice},
+            </if>
+            <if test="goods.costPrice != null">
+                #{goods.costPrice},
+            </if>
+            <if test="goods.discountPrice != null">
+                #{goods.discountPrice},
+            </if>
+            <if test="goods.inStock != null">
+                #{goods.inStock},
+            </if>
+            <if test="goods.goodsWeight != null">
+                #{goods.goodsWeight},
+            </if>
+            <if test="goods.controlNum != null">
+                #{goods.controlNum},
+            </if>
+            <if test="goods.goodsStatus != null">
+                #{goods.goodsStatus},
+            </if>
+            <if test="goods.freightPayer != null">
+                #{goods.freightPayer},
+            </if>
+            <if test="goods.listTime != null">
+                #{goods.listTime},
+            </if>
+            <if test="goods.delistTime != null">
+                #{goods.delistTime},
+            </if>
+            <if test="goods.postageId != null">
+                #{goods.postageId},
+            </if>
+            <if test="goods.detailTpl != null">
+                #{goods.detailTpl},
+            </if>
+            <if test="goods.isMedicare != null">
+                #{goods.isMedicare},
+            </if>
+            <if test="goods.medicareCode != null">
+                #{goods.medicareCode},
+            </if>
+            <if test="goods.medicareTopPrice != null">
+                #{goods.medicareTopPrice},
+            </if>
+            <if test="goods.barCode != null">
+                #{goods.barCode},
+            </if>
+            <if test="goods.mnemonicCode != null">
+                #{goods.mnemonicCode},
+            </if>
+            <if test="goods.purchaseWay != null">
+                #{goods.purchaseWay},
+            </if>
+            <if test="goods.wxPurchaseWay != null">
+                #{goods.wxPurchaseWay},
+            </if>
+            <if test="goods.goodsCode != null">
+                #{goods.goodsCode},
+            </if>
+            <if test="goods.ybGoodsId != null">
+                #{goods.ybGoodsId},
+            </if>
+
+            #{tempid},
+
+            <if test="goods.createTime != null">
+                #{goods.createTime},
+            </if>
+            <if test="goods.updateTime != null">
+                CURRENT_TIMESTAMP(),
+            </if>
+
+        </trim>
+    </insert>
+
+    <update id="updateDistributionTemplateBysiteIdAndGoodsId">
+        UPDATE b_goods_distribute
+        SET distribution_template=#{0}
+        where site_id = #{1}
+        AND  goods_id=#{2}
+    </update>
+</mapper>

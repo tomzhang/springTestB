@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.pay.mapper.WxPublicConfigMapper">
+    <resultMap id="WxPublicConfigMap" type="com.jk51.model.pay.WxPublicConfig">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="appid" jdbcType="VARCHAR" property="appid" />
+        <result column="appsecret" jdbcType="VARCHAR" property="appsecret" />
+        <result column="mp_verify" jdbcType="VARCHAR" property="mpVerify" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+
+    <select id="findConfigBySiteId" resultMap="WxPublicConfigMap">
+        select id,site_id,appid,appsecret,mp_verify,create_time,update_time from yb_wx_public_config where site_id=#{siteId};
+    </select>
+
+</mapper>

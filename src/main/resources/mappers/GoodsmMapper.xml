@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.goods.mapper.GoodsmMapper">
+
+    <select id="getImgByGoodsId" resultType="Map" useCache="false" parameterType="Integer">
+        select * from b_images_attr where goods_id = #{goodsId} and flag = 0
+    </select>
+
+    <select id="getGoodsCountByCateCode" parameterType="Map" resultType="INT">
+        select count(1) as goodsNum from b_goods WHERE site_id =#{siteId} and user_cateid = #{cateCode} and goods_status!=4
+    </select>
+
+    <insert id="insertGoodsImg" parameterType="Map">
+        insert into b_images_attr (hash,goods_id) values
+        <foreach collection="list" item="imgId" separator="," open="(" close=")">
+            #{imgId},#{goodsId}
+        </foreach>
+    </insert>
+
+
+    <insert id="insertGoodsImgBatch" parameterType="Map">
+        insert into b_images_attr (site_id,hash,width,height,size,type,host_id,flag,goods_id,is_default,create_time) values
+        <foreach collection="imgMap" item="imgId" separator="," >
+            (#{img.siteId},#{imgId},#{img.width},#{img.height},#{img.size},#{img.type},#{img.hostId},0,#{img.goodsId},#{img.isDefault},CURRENT_TIMESTAMP)
+        </foreach>
+    </insert>
+
+
+    <select id="goodsSearch" resultType="Map" useCache="false" parameterType="Map">
+        select * from b_goods
+        <where>
+            <if test="site_id !=null and site_id !=''">
+                and site_id = #{siteId}
+            </if>
+            <!-- 商品名-->
+            <if test="drugName !=null and drugName !=''">
+                and (drug_name like concat('%',#{drugName},'%' ) or com_name like concat('%',#{drugName},'%' ))
+            </if>
+            <!-- 商品分类-->
+            <if test="cateCode !=null and cateCode !=''">
+                and user_cateid like concat('',#{cateCode},'%')
+            </if>
+            <!-- 商品状态-->
+            <if test="goodsStatus !=null and goodsStatus !=''">
+                and goods_status = #{goodsStatus}
+            </if>
+            <!-- 药品类别-->
+            <if test="drugCategory !=null and drugCategory !=''">
+                and drug_category = #{drugCategory}
+            </if>
+            <!-- 商品标题-->
+            <if test="goodsTitle !=null and goodsTitle !=''">
+                and goods_title = #{goodsTitle}
+            </if>
+            <!-- 商品图片-->
+            <if test="goodsImg !=null and goodsImg !='' and siteId !=null and siteId != '' ">
+                and exists ( select id from b_images_attr where site_id = #{siteId} and goods_id = b_goods.goods_id and
+                flag
+                = 0 )
+            </if>
+            <!-- 商品模板-->
+            <if test="detailTpl !=null and detailTpl !=''">
+                and detail_tpl = #{detailTpl}
+            </if>
+            <!-- 药品属性-->
+            <if test="goodsProperty !=null and goodsProperty !=''">
+                and goods_property = #{goodsProperty}
+            </if>
+            <!-- 批准文号-->
+            <if test="approvalNumber !=null and approvalNumber !=''">
+                and approval_number = #{approvalNumber}
+            </if>
+            <!-- 品牌-->
+            <if test="barndId !=null and barndId !='' and siteId !=null and siteId != '' ">
+                and barnd_id in (select barnd_id from b_barnd where site_id = #{siteId} and barnd_name like
+                concat("%",#{barndId},"%"))
+            </if>
+            <!-- 购买方式-->
+            <if test="purchaseWay !=null and purchaseWay !=''">
+                <if test="purchaseWay == 140">
+                    and purchase_way = 140
+                </if>
+                <if test="purchaseWay != 140">
+                    and purchase_way != 140
+                </if>
+            </if>
+            <if test="wxPurchaseWay !=null and wxPurchaseWay !=''">
+                <if test="wxPurchaseWay == 140">
+                    and wx_purchase_way = 120
+                </if>
+                <if test="wxPurchaseWay != 140">
+                    and wx_purchase_way != 120
+                </if>
+            </if>
+            <!-- 商品编码-->
+            <if test="goodsCode !=null and goodsCode !=''">
+                and goods_code like concat('%',#{goodsCode},'%' )
+            </if>
+            <!-- 条形码-->
+            <if test="barCode !=null and barCode !=''">
+                <if test="barCode == 'no'">
+                    and (bar_code is null or bar_code = '')
+                </if>
+                <if test="barCode == 'yes'">
+                    and bar_code is not null and bar_code !=''
+                </if>
+            </if>
+            <!-- 价格-->
+            <if test="shopPriceMin !=null and shopPriceMin !=''">
+                and shop_price >= #{shopPriceMin}
+            </if>
+            <if test="shopPriceMax !=null and shopPriceMax !=''">
+                and shop_price &lt;= #{shopPriceMax}
+            </if>
+        </where>
+    </select>
+
+    <select id="getByGoodsId" parameterType="Map" resultType="Map" useCache="false">
+        select * from b_images_attr where site_id = #{siteId} and goods_id = #{goodsId} and flag = 0
+    </select>
+
+    <select id="getByGoodsIdAndHash" parameterType="Map" resultType="INT" useCache="false">
+        select count(*) from b_images_attr where site_id = #{siteId} and goods_id = #{goodsId} and hash = #{hash} and flag = 0
+    </select>
+    <select id="getByGoodsIdAndHashflag" parameterType="Map" resultType="INT" useCache="false">
+        select count(*) from b_images_attr where site_id = #{siteId} and goods_id = #{goodsId} and hash = #{hash} and flag = 1
+    </select>
+
+    <update id="updateByGoodsIdAndHashFlag" parameterType="Map">
+        update b_images_attr set flag=0 where site_id=#{siteId}  and goods_id = #{goodsId} and hash = #{hash};
+    </update>
+    <update id="delDefaultImg" parameterType="Map">
+        update b_images_attr set is_default = 0 where site_id = #{siteId} and goods_id = #{goodsId}
+    </update>
+
+    <update id="setDefaultImg" parameterType="Map">
+        update b_images_attr set is_default = 1 where site_id = #{siteId} and goods_id = #{goodsId} and hash =
+        #{imgHash}
+    </update>
+
+    <update id="del" parameterType="Map">
+        update b_images_attr set flag = 1 where hash = #{imgHash} and site_id = #{siteId} and goods_id = #{goodsId}
+    </update>
+
+    <update id="delImg" parameterType="Map">
+        update b_images_attr set flag = 1 where site_id = #{siteId} and goods_id = #{goodsId}
+    </update>
+
+    <insert id="insert" parameterType="Map">
+        insert into b_images_attr (site_id,hash,width,height,size,type,host_id,flag,goods_id,is_default,create_time)
+        values
+        (#{siteId},#{hash},#{width},#{height},#{size},#{type},#{hostId},0,#{goodsId},#{isDefault},CURRENT_TIMESTAMP)
+    </insert>
+
+    <insert id="insert2" parameterType="Map">
+        insert into b_images_attr (site_id,hash,width,height,size,type,host_id,flag,goods_id,is_default,create_time)
+        values
+        (#{siteId},#{hash},#{width},#{height},#{picSize},#{type},#{hostId},0,#{goodsId},#{isDefault},CURRENT_TIMESTAMP)
+    </insert>
+
+
+    <insert id="saveImgMulti" parameterType="Integer">
+        INSERT INTO b_images_attr (site_id,hash,width,height,size,type,host_id,flag,goods_id,is_default) SELECT site_id,hash,width,height,size,type,host_id,flag,#{goods_id}, is_default FROM b_images_attr WHERE site_id = #{site_id} AND goods_id = #{goods_id_old}
+
+    </insert>
+
+    <insert id="copy51jkImgByYbGoodsId">
+        INSERT INTO b_images_attr (
+            site_id, goods_id, hash, width, height, `size`, `type`, host_id, flag, is_default
+        ) SELECT
+            #{siteId}, #{goodsId}, i.hash, i.width, i.height, i.size, i.type, i.host_id, i.flag, i.is_default
+        FROM
+            yb_goods AS g
+        LEFT JOIN yb_images_attr AS i ON (
+            g.goods_id = i.goods_id
+        )
+        WHERE
+            g.goods_id = #{ybGoodsId}
+    </insert>
+
+    <select id="isUpListShopMainImg" resultType="map">
+        SELECT
+            g.goods_id, g.goods_status, i.is_default
+        FROM
+            b_goods AS g
+            LEFT JOIN b_images_attr AS i ON (
+            g.site_id = i.site_id
+            AND g.goods_id = i.goods_id
+            )
+        WHERE
+            g.goods_id = #{goodsId}
+            AND g.site_id = #{siteId}
+            and i.hash = #{imgHash}
+            and flag = 0
+        limit 1
+    </select>
+
+    <select id="selectImgById" resultType="map">
+        SELECT
+        *
+        FROM
+        b_images_attr
+        where site_id = #{siteId} and goods_id = #{goodsId} and is_default=1 limit 1
+    </select>
+
+</mapper>

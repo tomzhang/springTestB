@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.goods.mapper.YbGoodsSyncDraftMapper">
+    <sql id="Table_Name">
+      `yb_goods_sync_draft`
+    </sql>
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.jk51.model.goods.YbGoodsSyncDraft" flushCache="true">
+        INSERT INTO yb_goods_sync_draft
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            site_id,
+            <if test="sync_type != null">
+                sync_type,
+            </if>
+            <if test="yb_goods_id != null">
+                yb_goods_id,
+            </if>
+            <if test="detail_tpl != null">
+                detail_tpl,
+            </if>
+            <if test="brand_id != null">
+                brand_id,
+            </if>
+            <if test="drug_name != null">
+                drug_name,
+            </if>
+            <if test="specif_cation != null">
+                specif_cation,
+            </if>
+            <if test="approval_number != null">
+                approval_number,
+            </if>
+            <if test="info_sync_status != null">
+                info_sync_status,
+            </if>
+            <if test="img_sync_status != null">
+                img_sync_status,
+            </if>
+        </trim>
+        <trim prefix="VALUE (" suffix=")" suffixOverrides=",">
+            #{site_id},
+            <if test="sync_type != null">
+                #{sync_type},
+            </if>
+            <if test="yb_goods_id != null">
+                #{yb_goods_id},
+            </if>
+            <if test="detail_tpl != null">
+                #{detail_tpl},
+            </if>
+            <if test="brand_id != null">
+                #{brand_id},
+            </if>
+            <if test="drug_name != null">
+                #{drug_name},
+            </if>
+            <if test="specif_cation != null">
+                #{specif_cation},
+            </if>
+            <if test="approval_number != null">
+                #{approval_number},
+            </if>
+            <if test="info_sync_status != null">
+                #{info_sync_status},
+            </if>
+            <if test="img_sync_status != null">
+                #{img_sync_status},
+            </if>
+        </trim>
+    </insert>
+</mapper>

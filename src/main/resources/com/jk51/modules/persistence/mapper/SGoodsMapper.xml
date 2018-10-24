@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.persistence.mapper.SGoodsMapper">
+    <sql id="bgoods">
+        G.site_id AS siteId,G.goods_id AS goodsId,G.approval_number AS approvalNumber,G.drug_name AS drugName,G.com_name AS comName,G.specif_cation AS specifCation,G.goods_company AS goodsCompany,
+        G.barnd_id AS barndId,G.drug_category AS drugCategory,G.goods_property AS goodsProperty,G.goods_use AS goodsUse,G.goods_forts AS goodsForts,G.goods_validity AS goodsValidity,
+        G.goods_forpeople AS goodsForpeople,G.user_cateid AS userCateid,G.goods_title AS goodsTitle,G.goods_tagsid AS goodsTagsid,G.market_price AS marketPrice,G.shop_price AS shopPrice,G.cost_price AS costPrice,G.discount_price AS discountPrice,G.in_stock AS inStock,
+        G.goods_weight AS goodsWeight,G.control_num AS controlNum,G.goods_status AS goodsStatus,G.freight_payer AS freightPayer,date_format(G.list_time,'%Y-%m-%d %H:%i:%s') AS listTime,date_format(G.delist_time,'%Y-%m-%d %H:%i:%s') AS delistTime,G.postage_id AS postageId,G.detail_tpl AS detailTpl,G.is_medicare AS isMedicare,
+        G.medicare_code AS medicareCode,G.medicare_top_price AS medicareTopPrice,G.bar_code AS barCode,G.mnemonic_code AS mnemonicCode,G.purchase_way AS purchaseWay,G.wx_purchase_way AS wxPurchaseWay,G.goods_code AS goodsCode,G.yb_goods_id AS ybGoodsId,
+        date_format(G.create_time,'%Y-%m-%d %H:%i:%s') AS createTime,date_format(G.update_time,'%Y-%m-%d %H:%i:%s') AS updateTime
+    </sql>
+    <sql id="bgoodsextd">
+        E.goodsextd_id AS goodsextdId,E.main_ingredient AS mainIngredient,E.goods_indications AS goodsIndications,E.goods_action AS goodsAction,E.adverse_reactioins AS adverseReactioins,E.goods_note AS goodsNote,E.goods_use_method AS goodsUseMethod,E.goods_contd AS goodsContd,E.goods_desc AS goodsDesc,
+        E.goods_mobile_desc AS goodsMobileDesc,E.goods_description AS goodsDescription,E.browse_number AS browseNumber,E.trans_mumber AS transMumber,E.shopping_number AS shoppingNumber,date_format(E.product_date,'%Y-%m-%d %H:%i:%s') AS productDate,E.goods_usage AS goodsUsage,E.goods_deposit AS goodsDeposit,E.forpeople_desc AS forpeopleDesc,
+        E.qualification AS qualification,E.goods_batch_no AS goodsBatchNo
+    </sql>
+
+
+    <select id="get" resultType="com.jk51.model.order.SGoods" useCache="false" timeout="1800" flushCache="false">
+        select * from b_goods where goods_id = #{goods_id}
+    </select>
+    <select id="findByGoodsIdAndBarcode" resultType="com.jk51.model.order.SGoods">
+        SELECT * from b_goods where site_id=#{siteId} and bar_code = #{barcode} and goods_id != #{goods_id} limit 1
+    </select>
+    <select id="getList" resultType="com.jk51.model.order.SGoods" useCache="false">
+        select * from b_goods
+    </select>
+
+    <update id="update" flushCache="true">
+        update b_goods set drug_name = #{drug_name} where #{goods_id}
+    </update>
+
+    <resultMap id="barcodeResult" type="HashMap">
+        <association property="defUrl" javaType="HashMap" select="selectDefaultImg"
+                     column="{goods_id=goodsId,site_id=siteId}"/>
+        <collection property="goodsUrl" ofType="HashMap" select="selectUnDefaultImg"
+                    column="{goods_id=goodsId,site_id=siteId}"/>
+    </resultMap>
+    <!--根据商品id查询药品详情-->
+    <select id="queryGoodsDetailByGoodId" resultMap="barcodeResult">
+        select
+        <include refid="bgoods"/>,<include refid="bgoodsextd"/>,B.barnd_name AS barndName
+        from b_goods G
+        LEFT JOIN b_goodsextd E ON G.goods_id=E.goods_id AND G.site_id=E.site_id
+        LEFT JOIN b_barnd B ON B.site_id=G.site_id AND B.barnd_id=G.barnd_id
+        WHERE 1=1 AND G.goods_id=#{goods_id} AND G.site_id=#{site_id}
+    </select>
+    <select id="selectDefaultImg" resultType="HashMap">
+        SELECT I.host_id AS hostId,I.hash AS imageId FROM b_images_attr I WHERE I.flag = 0 AND I.is_default=1 AND
+        I.goods_id=#{goods_id} AND I.site_id=#{site_id} limit 1
+    </select>
+    <select id="selectUnDefaultImg" resultType="HashMap">
+        SELECT I.host_id AS hostId,I.hash AS imageId FROM b_images_attr I WHERE I.flag = 0 AND I.is_default=0 AND
+        I.goods_id=#{goods_id} AND I.site_id=#{site_id} limit 5
+    </select>
+    <resultMap id="goodList" type="HashMap" autoMapping="true">
+        <result column="goodsId" property="goodsId"/>
+        <association property="defUrl" javaType="HashMap" select="selectDefaultImg" column="{goods_id=goodsId,site_id=siteId}"/>
+    </resultMap>
+    <!--条件查询商品列表-->
+    <select id="queryGoodsListByConditions" resultMap="goodList">
+        select
+        G.approval_number AS approvalNumber,G.bar_code AS barCode,G.drug_name AS drugName,E.goods_contd AS
+        goodsContd,G.goods_id AS goodsId,G.site_id AS siteId,G.goods_validity AS goodsValidity,G.shop_price AS shopPrice,G.specif_cation AS
+        specifCation
+        from b_goods G
+        LEFT JOIN b_goodsextd E ON G.goods_id=E.goods_id AND G.site_id=E.site_id
+        WHERE 1=1
+        <if test="drug_type!=null">
+            <choose>
+                <when test="drug_type==1">
+                    AND G.bar_code=#{drug_name}
+                </when>
+                <when test="drug_type==3">
+                    AND G.drug_name LIKE #{drug_name}
+                </when>
+                <when test="drug_type==0">
+                    AND G.drug_name LIKE #{drug_name}
+                </when>
+                <when test="drug_type==4">
+                    AND G.approval_number=#{drug_name}
+                </when>
+                <when test="drug_type==5">
+                    AND G.goods_code=#{drug_name}
+                </when>
+            </choose>
+        </if>
+        <if test="goods_status!=-1">
+            AND G.goods_status=#{goods_status}
+        </if>
+        <if test="hav_barcode!=null">
+            <choose>
+                <when test="hav_barcode==1">
+                    AND G.bar_code is NOT NULL
+                </when>
+                <when test="hav_barcode==2">
+                    AND G.bar_code is NULL
+                </when>
+            </choose>
+        </if>
+        AND G.site_id=#{site_id}
+        limit 50;
+    </select>
+    <!--修改二维码-->
+    <update id="updateBarCode">
+        UPDATE b_goods SET bar_code=#{bar_code} WHERE site_id=#{site_id} AND goods_id=#{goods_id}
+    </update>
+    <select id="queryGoodsNameByGoodsId" resultType="Map">
+        select drug_name from b_goods WHERE site_id=#{siteId} AND goods_id=#{goodId} limit 1
+    </select>
+    <select id="getGoodsInfoByGoodIds" resultType="hashmap">
+        SELECT bg.goods_id as product_id,bg.drug_name as product_name,bg.shop_price as product_price,bg.specif_cation as product_cation,bg.goods_weight as product_weight,bg.control_num as control_num
+        FROM b_goods bg
+        WHERE bg.site_id=#{siteId} AND bg.goods_id in
+        <foreach collection="goodIds" separator="," open="(" close=")" item="goodId">
+            #{goodId}
+        </foreach>
+        order by bg.goods_id
+    </select>
+
+    <resultMap id="StorePriceMap" type="com.jk51.model.goods.YbStoresGoodsPrice" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="site_id" property="siteId" jdbcType="INTEGER" />
+        <result column="store_id" property="storeId" jdbcType="INTEGER" />
+        <result column="goods_id" property="goodsId" jdbcType="INTEGER" />
+        <result column="goods_price" property="goodsPrice" jdbcType="INTEGER" />
+        <result column="discount_price" property="discountPrice" jdbcType="INTEGER" />
+        <result column="in_stock" property="inStock" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <select id="queryGoodStorePrice" resultMap="StorePriceMap" useCache="false">
+        select * from yb_stores_goods_price WHERE site_id=#{site_id} and goods_id=#{goods_id} and store_id=#{store_id} and del_tag=0;
+    </select>
+
+</mapper>

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.pandian.mapper.BPandianFileMapper" >
+  <resultMap id="BaseResultMap" type="com.jk51.model.BPandianFile" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="site_id" property="siteId" jdbcType="INTEGER" />
+    <result column="store_id" property="storeId" jdbcType="INTEGER" />
+    <result column="order_id" property="orderId" jdbcType="INTEGER" />
+    <result column="pandian_num" property="pandianNum" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="file_name" property="fileName" jdbcType="VARCHAR" />
+    <result column="file_size" property="fileSize" jdbcType="VARCHAR" />
+    <result column="part_time" property="partTime" jdbcType="VARCHAR" />
+    <result column="up_time" property="upTime" jdbcType="VARCHAR" />
+    <result column="parse_time" property="parseTime" jdbcType="VARCHAR" />
+    <result column="file_url" property="fileUrl" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="res" property="res" jdbcType="INTEGER" />
+    <result column="ext" property="ext" jdbcType="VARCHAR" />
+    <result column="res_url" property="resUrl" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, site_id, store_id, order_id, pandian_num, type, file_name, file_size, part_time, 
+    up_time, parse_time, file_url, status, create_time, update_time, res, ext, res_url
+  </sql>
+
+  <update id="updateStatusById" >
+    update b_pandian_file
+    <set >
+      <if test="parseTime != null" >
+        parse_time = #{parseTime},
+      </if>
+      <if test="status != null" >
+        status = #{status},
+      </if>
+      <if test="ext != null" >
+        ext = #{ext},
+      </if>
+    </set>
+    where id = #{fileId}
+  </update>
+
+
+  <insert id="insertSelective" parameterType="com.jk51.model.BPandianFile" useGeneratedKeys="true" keyProperty="id" >
+    insert into b_pandian_file
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="siteId != null" >
+        site_id,
+      </if>
+      <if test="storeId != null" >
+        store_id,
+      </if>
+      <if test="orderId != null" >
+        order_id,
+      </if>
+      <if test="pandianNum != null" >
+        pandian_num,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="fileName != null" >
+        file_name,
+      </if>
+      <if test="fileSize != null" >
+        file_size,
+      </if>
+      <if test="partTime != null" >
+        part_time,
+      </if>
+      <if test="upTime != null" >
+        up_time,
+      </if>
+      <if test="parseTime != null" >
+        parse_time,
+      </if>
+      <if test="fileUrl != null" >
+        file_url,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="res != null" >
+        res,
+      </if>
+      <if test="ext != null" >
+        ext,
+      </if>
+      <if test="resUrl != null" >
+        res_url,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="siteId != null" >
+        #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="storeId != null" >
+        #{storeId,jdbcType=INTEGER},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=INTEGER},
+      </if>
+      <if test="pandianNum != null" >
+        #{pandianNum,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="fileName != null" >
+        #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="fileSize != null" >
+        #{fileSize,jdbcType=VARCHAR},
+      </if>
+      <if test="partTime != null" >
+        #{partTime,jdbcType=VARCHAR},
+      </if>
+      <if test="upTime != null" >
+        #{upTime,jdbcType=VARCHAR},
+      </if>
+      <if test="parseTime != null" >
+        #{parseTime,jdbcType=VARCHAR},
+      </if>
+      <if test="fileUrl != null" >
+        #{fileUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="res != null" >
+        #{res,jdbcType=INTEGER},
+      </if>
+      <if test="ext != null" >
+        #{ext,jdbcType=VARCHAR},
+      </if>
+      <if test="resUrl != null" >
+        #{resUrl,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.BPandianFile" >
+    update b_pandian_file
+    <set >
+      <if test="siteId != null" >
+        site_id = #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="storeId != null" >
+        store_id = #{storeId,jdbcType=INTEGER},
+      </if>
+      <if test="orderId != null" >
+        order_id = #{orderId,jdbcType=INTEGER},
+      </if>
+      <if test="pandianNum != null" >
+        pandian_num = #{pandianNum,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="fileName != null" >
+        file_name = #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="fileSize != null" >
+        file_size = #{fileSize,jdbcType=VARCHAR},
+      </if>
+      <if test="partTime != null" >
+        part_time = #{partTime,jdbcType=VARCHAR},
+      </if>
+      <if test="upTime != null" >
+        up_time = #{upTime,jdbcType=VARCHAR},
+      </if>
+      <if test="parseTime != null" >
+        parse_time = #{parseTime,jdbcType=VARCHAR},
+      </if>
+      <if test="fileUrl != null" >
+        file_url = #{fileUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="res != null" >
+        res = #{res,jdbcType=INTEGER},
+      </if>
+      <if test="ext != null" >
+        ext = #{ext,jdbcType=VARCHAR},
+      </if>
+      <if test="resUrl != null" >
+        res_url = #{resUrl,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="getFileUrlByPDNum" resultType="java.lang.String" >
+    SELECT file_url FROM b_pandian_file WHERE site_id = #{siteId} AND pandian_num = #{pdNum} ORDER BY id DESC LIMIT 1
+  </select>
+</mapper>

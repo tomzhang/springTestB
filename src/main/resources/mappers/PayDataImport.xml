@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.account.mapper.PayDataImportMapper">
+
+
+    <select id="getImportListByTradesId" resultType="com.jk51.model.account.models.PayDataImport" useCache="false">
+        select id, pay_style,data_type,trades_id,income_amount,business_order_sn,spending_amount,trades_status,trading_scenario
+        ,account_checking_status,check_status,create_time
+        from yb_pay_data_import where trades_id=#{trades_id} and account_checking_status=0 GROUP BY trades_status
+    </select>
+
+    <select id="getPayDataImportListByCheckStatus" resultType="com.jk51.model.account.models.PayDataImport" useCache="false">
+        select id, pay_style,data_type,substring_index(trades_id,"_",1)trades_id,income_amount,business_order_sn,spending_amount,trades_status,trading_scenario
+        ,account_checking_status,check_status,create_time
+        from yb_pay_data_import where check_status=0 and account_checking_status=-1
+    </select>
+
+    <insert id="savePayDataImport" parameterType="com.jk51.model.account.models.PayDataImport">
+        insert into yb_pay_data_import ( pay_style,data_type,trades_id,income_amount,user_account,
+        pay_time,business_order_sn,spending_amount,appid,trades_status,trading_scenario,remark,
+        account_checking_status,check_status,create_time,update_time,business,platform_payment_amount,platform_service_fee,account_balance) VALUES (
+        #{payDataImportList.pay_style},#{payDataImportList.data_type},#{payDataImportList.trades_id},#{payDataImportList.income_amount},#{payDataImportList.user_account},
+        #{payDataImportList.pay_time},#{payDataImportList.business_order_sn},#{payDataImportList.spending_amount},#{payDataImportList.appid},#{payDataImportList.trades_status},#{payDataImportList.trading_scenario},#{payDataImportList.remark},
+        #{payDataImportList.account_checking_status},#{payDataImportList.check_status},CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,#{payDataImportList.business},#{payDataImportList.platform_payment_amount},#{payDataImportList.platform_service_fee},
+        #{payDataImportList.account_balance}
+        )
+    </insert>
+    <update id="updateImportStatus"  flushCache="true">
+        update yb_pay_data_import set update_time=CURRENT_TIMESTAMP(),account_checking_status=#{account_status},check_status=1
+         where  substring_index(trades_id,'_',1)=#{trade_id} and data_type=#{data_type} and account_checking_status != 0 and check_status != 1
+    </update>
+    <insert id="add" parameterType="com.jk51.model.account.models.PayDataImport">
+        insert into yb_pay_data_import(pay_style,pay_time) VALUES (#{payDataImport.pay_style},#{payDataImport.pay_time})
+    </insert>
+
+    <select id="getPayLogList" resultType="com.jk51.model.account.models.PayDataImport">
+        SELECT
+        trades_id ,spending_amount,
+        pay_style ,trades_status,create_time
+        FROM
+        yb_pay_data_import
+        <where>
+            1=1
+            <if test="payDataImportParams.trades_id!=null and payDataImportParams.trades_id!=''" >
+                AND trades_id = #{payDataImportParams.trades_id}
+            </if>
+        </where>
+    </select>
+<sql id="getPayDataImportListForSelect">
+        a.id,a.trades_status,
+        a.trades_id,
+        a.account_checking_status,
+        a.business_order_sn,
+        case a.pay_style
+        WHEN 'wx' THEN '微信'
+            when 'cash' then '现金'
+            when 'ali' then '支付宝'
+            when 'health_insurance' then '医保'
+            when  'unionPay' then '银联'
+            else '其他'
+        end pay_style,
+        date_format(a.pay_time,'%Y-%m-%d %H:%i:%S') as pay_time_intro,
+        date_format(a.update_time,'%Y-%m-%d %H:%i:%S') as sellement_time_intro,
+        -- format(a.income_amount/100,2) income_amount,
+        -- format(a.spending_amount/100,2) spending_amount,
+        CASE c.account_checking_status
+            WHEN 1 THEN '对账成功'
+            WHEN 2 THEN '对账失败'
+            ELSE '未对账'
+        END account_checking_status_intro,
+        CASE c.refund_checking_status
+        WHEN 0 THEN
+        '对账失败'
+        WHEN 1 THEN
+        '对账成功'
+        ELSE
+        '未对账'
+        END refund_checking_status_intro
+</sql>
+    <!--支付平台对账情况-->
+    <select id="getPayDataImportList" parameterType="map" resultType="map">
+      (SELECT
+        round(a.income_amount/100,2) income_amount,
+        CASE WHEN (b.finance_no!=b.finance_no_refund OR b.finance_no_refund ='') AND b.finance_no!='' THEN 0.00 ELSE IFNULL(round(a.spending_amount/100,2),0.00) END spending_amount,
+        IFNULL(b.finance_no,'---') finance_no,
+        <include refid="getPayDataImportListForSelect"/>
+        FROM
+        yb_pay_data_import a LEFT JOIN b_trades b on a.trades_id=b.trades_id
+        LEFT JOIN yb_settlement_detail c on a.trades_id=c.trades_id
+        <where>
+            1=1
+            AND a.trades_status!='服务费'
+            <if test="finance_no!=null and finance_no!=''" >
+                AND b.finance_no  in
+                <foreach collection="financesNos" index="index" open="(" separator="," close=")" item="item">
+                    #{item}
+                </foreach>
+            </if>
+            <include refid="getPayDataImportListForWhere"/>
+        </where>
+      )
+  UNION ALL
+      (
+        SELECT
+        0.00 income_amount,
+        CASE WHEN b.is_refund=120 THEN IFNULL(round(a.spending_amount/100,2), 0.00) ELSE 0.00 END spending_amount,
+        IFNULL(b.finance_no_refund,'---') finance_no,
+        <include refid="getPayDataImportListForSelect"/>
+        FROM
+        yb_pay_data_import a LEFT JOIN b_trades b on a.trades_id=b.trades_id
+        LEFT JOIN yb_settlement_detail c on a.trades_id=c.trades_id
+        <where>
+            1=1
+            AND a.trades_status!='服务费'
+            AND b.finance_no_refund !=''
+            AND b.finance_no_refund != b.finance_no
+            <if test="finance_no!=null and finance_no!=''" >
+                AND b.finance_no_refund  in
+                <foreach collection="financesNos" index="index" open="(" separator="," close=")" item="item">
+                    #{item}
+                </foreach>
+            </if>
+            <include refid="getPayDataImportListForWhere"/>
+        </where>
+      )
+    </select>
+<sql id="getPayDataImportListForWhere">
+    <if test="tradesId!=null and tradesId!=''" >
+        AND a.trades_id = #{tradesId}
+    </if>
+    <if test="merchantId!=null and merchantId!=''" >
+        AND b.site_id = #{merchantId}
+    </if>
+    <if test="payNumber!=null and payNumber!=''" >
+        AND a.business_order_sn = #{payNumber}
+    </if>
+    <if test="payStyle!=null and payStyle!=''" >
+        AND a.pay_style = #{payStyle}
+    </if>
+    <if test="payCheckingStatus==1 and payCheckingStatus!=''" >
+        AND c.account_checking_status = 1
+    </if>
+    <if test="payCheckingStatus==2 and payCheckingStatus!=''" >
+        AND c.account_checking_status = 2
+    </if>
+    <if test="payCheckingStatus==0 and payCheckingStatus!=''" >
+        AND( c.account_checking_status = 0 or c.account_checking_status is null)
+    </if>
+    <if test="refundCheckingStatus==0 and refundCheckingStatus!=''" >
+        AND c.refund_checking_status = 0
+    </if>
+    <if test="refundCheckingStatus==1 and refundCheckingStatus!=''" >
+        AND c.refund_checking_status = 1
+    </if>
+    <if test="refundCheckingStatus==-1 and refundCheckingStatus!=''" >
+        AND( c.refund_checking_status = -1 or c.refund_checking_status is null)
+    </if>
+    <if test="refundAmountStart!=null and refundAmountStart!=''" >
+        AND a.spending_amount <![CDATA[ >= ]]> #{refundAmountStart}
+    </if>
+    <if test="refundAmountEnd!=null and refundAmountEnd!=''" >
+        AND a.spending_amount <![CDATA[ <= ]]>  #{refundAmountEnd}
+    </if>
+    <if test="payAmountStart!=null and payAmountStart!=''" >
+        AND a.income_amount <![CDATA[ >= ]]> #{payAmountStart}
+    </if>
+    <if test="payAmountEnd!=null and payAmountEnd!=''" >
+        AND a.income_amount <![CDATA[ <= ]]>  #{payAmountEnd}
+    </if>
+    <if test="pay_time_start!=null and pay_time_start!=''" >
+        AND a.pay_time <![CDATA[ >= ]]> str_to_date(#{pay_time_start},'%Y-%m-%d')
+    </if>
+    <if test="pay_time_end!=null and pay_time_end!=''" >
+        AND a.pay_time <![CDATA[ <= ]]> str_to_date( ADDDATE(#{pay_time_end},1),'%Y-%m-%d')
+    </if>
+    <if test="data_type==0" >
+        AND a.data_type =0 and a.trades_id not in (SELECT trades_id from yb_pay_data_import where data_type=1)
+    </if>
+    <if test="data_type==1" >
+        AND a.data_type =1
+    </if>
+    order by a.pay_time desc
+</sql>
+
+    <select id="getPayDataImportExcel" parameterType="map" resultType="map">
+        SELECT
+        a.id,
+        a.trades_id,
+        a.account_checking_status,
+        a.business_order_sn,
+        case a.pay_style
+        WHEN 'wx' THEN '微信'
+        when 'cash' then '现金'
+        when 'ali' then '支付宝'
+        when 'health_insurance' then '医保'
+        when  'unionPay' then '银联'
+        else '其他' end pay_style,
+        date_format(a.pay_time,'%Y-%m-%d %H:%i:%S') as pay_time_intro,
+        date_format(a.update_time,'%Y-%m-%d %H:%i:%S') as sellement_time_intro,
+        format(a.income_amount/100,2) income_amount,
+        format(a.spending_amount/100,2) spending_amount,
+        case a.account_checking_status
+        WHEN -1 THEN '未对账'
+        when 0 then '对账成功'
+        when 1 then '对账失败'
+        else '其他' end account_checking_status_intro,
+        IFNULL(b.finance_no,'---') finance_no
+        FROM
+        yb_pay_data_import a LEFT JOIN b_trades b on a.trades_id=b.trades_id
+        LEFT JOIN yb_settlement_detail c on a.trades_id=c.trades_id
+        <where>
+            1=1
+            <if test="tradesId!=null and tradesId!=''" >
+                AND a.trades_id = #{tradesId}
+            </if>
+            <if test="merchantId!=null and merchantId!=''" >
+                AND b.seller_id= #{merchantId}
+            </if>
+            <if test="financesNos!=null">
+                AND b.finance_no in
+                <foreach collection="financesNos" index="index" open="(" separator="," close=")" item="item">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="payNumber!=null and payNumber!=''" >
+                AND a.business_order_sn = #{payNumber}
+            </if>
+            <if test="payStyle!=null and payStyle!=''" >
+                AND a.pay_style = #{payStyle}
+            </if>
+            <if test="payCheckingStatus==1 and payCheckingStatus!=''" >
+                AND c.account_checking_status = 1
+            </if>
+            <if test="payCheckingStatus==2 and payCheckingStatus!=''" >
+                AND c.account_checking_status = 2
+            </if>
+            <if test="payCheckingStatus==0 and payCheckingStatus!=''" >
+                AND( c.account_checking_status = 0 or c.account_checking_status is null)
+            </if>
+            <if test="refundCheckingStatus==0 and refundCheckingStatus!=''" >
+                AND c.refund_checking_status = 0
+            </if>
+            <if test="refundCheckingStatus==1 and refundCheckingStatus!=''" >
+                AND c.refund_checking_status = 1
+            </if>
+            <if test="refundCheckingStatus==-1 and refundCheckingStatus!=''" >
+                AND( c.refund_checking_status = -1 or c.refund_checking_status is null)
+            </if>
+            <if test="refundAmountStart!=null and refundAmountStart!=''" >
+                AND a.spending_amount <![CDATA[ >= ]]> #{refundAmountStart}
+            </if>
+            <if test="refundAmountEnd!=null and refundAmountEnd!=''" >
+                AND a.spending_amount <![CDATA[ <= ]]>  #{refundAmountEnd}
+            </if>
+            <if test="payAmountStart!=null and payAmountStart!=''" >
+                AND a.income_amount <![CDATA[ >= ]]> #{payAmountStart}
+            </if>
+            <if test="payAmountEnd!=null and payAmountEnd!=''" >
+                AND a.income_amount <![CDATA[ <= ]]>  #{payAmountEnd}
+            </if>
+            <if test="pay_time_start!=null and pay_time_start!=''" >
+                AND a.pay_time <![CDATA[ >= ]]> str_to_date(#{pay_time_start},'%Y-%m-%d')
+            </if>
+            <if test="pay_time_end!=null and pay_time_end!=''" >
+                AND a.pay_time <![CDATA[ <= ]]> str_to_date( ADDDATE(#{pay_time_end},1),'%Y-%m-%d')
+            </if>
+            <if test="data_type==0" >
+                AND a.data_type =0 and a.trades_id not in (SELECT trades_id from yb_pay_data_import where data_type=1)
+            </if>
+            <if test="data_type==1" >
+                AND a.data_type =1
+            </if>
+            order by a.pay_time desc
+        </where>
+    </select>
+
+    <select id="getPayDataImportByTradesIdAndStatus" resultType="com.jk51.model.account.models.PayDataImport">
+      select * from yb_pay_data_import where trades_id=#{tradesId} and trades_status=#{tradesStatus}
+    </select>
+
+    <update id="updateImportList" parameterType="com.jk51.model.account.models.PayDataImport">
+        UPDATE yb_pay_data_import
+        <trim prefix="set" suffixOverrides=",">
+            <if test="payDataImport.pay_style!=null">
+                pay_style=#{payDataImport.pay_style},
+            </if>
+            <if test="payDataImport.data_type!=null">
+                data_type=#{payDataImport.data_type},
+            </if>
+            <if test="payDataImport.trades_id!=null">
+                trades_id=#{payDataImport.trades_id},
+            </if>
+            <if test="payDataImport.income_amount!=null">
+                income_amount=#{payDataImport.income_amount},
+            </if>
+            <if test="payDataImport.pay_time!=null">
+                pay_time=#{payDataImport.pay_time},
+            </if>
+            <if test="payDataImport.business_order_sn!=null">
+                business_order_sn=#{payDataImport.business_order_sn},
+            </if>
+            <if test="payDataImport.spending_amount!=null">
+                spending_amount=#{payDataImport.spending_amount},
+            </if>
+            <if test="payDataImport.appid!=null">
+                appid=#{payDataImport.appid},
+            </if>
+            <if test="payDataImport.trades_status!=null">
+                trades_status=#{payDataImport.trades_status},
+            </if>
+            <if test="payDataImport.trading_scenario!=null">
+                trading_scenario=#{payDataImport.trading_scenario},
+            </if>
+            <if test="payDataImport.remark!=null">
+                remark=#{payDataImport.remark},
+            </if>
+            <if test="payDataImport.account_checking_status!=null">
+                account_checking_status=#{payDataImport.account_checking_status},
+            </if>
+            <if test="payDataImport.check_status!=null">
+                check_status=#{payDataImport.check_status},
+            </if>
+            <if test="payDataImport.business!=null">
+                business=#{payDataImport.business},
+            </if>
+            <if test="payDataImport.platform_payment_amount!=null">
+                platform_payment_amount=#{payDataImport.platform_payment_amount},
+            </if>
+            <if test="payDataImport.platform_service_fee!=null">
+                platform_service_fee=#{payDataImport.platform_service_fee},
+            </if>
+            update_time = CURRENT_TIMESTAMP(),
+        </trim>
+        WHERE id = #{payDataImport.id}
+    </update>
+
+    <update id="updateCheckStatusById" parameterType="map" flushCache="true">
+        update yb_pay_data_import set update_time=CURRENT_TIMESTAMP(),account_checking_status=#{account_checking_status},remark=#{remark}
+        where id=#{id}
+    </update>
+    <update id="updateLostTradesId">
+        update yb_pay_data_import i,yb_pay_data_import r
+        set i.trades_id =r.trades_id,i.account_status = 1
+        where i.business_order_sn = r.business_order_sn and i.data_type = 3 and LENGTH(i.trades_id) <![CDATA[ < ]]> 19 and i.trades_status != '提现'
+    </update>
+
+    <select id="selectPayDataByTradesId" parameterType="string" resultType="com.jk51.model.account.models.PayDataImport">
+        SELECT * FROM yb_pay_data_import where  trades_id like CONCAT(#{trades_id},'%')
+    </select>
+
+    <!--获取划账数据-->
+    <select id="getPayDataImportListByRemitAccountStatus" resultType="com.jk51.model.account.models.PayDataImport">
+        select substring_index(trades_id,'_',1) as trades_id,pay_style,min(business_order_sn) as business_order_sn,
+              sum(case when pay_style = 'ali' and trades_status = '在线支付' then income_amount
+                        when pay_style = 'wx' and trades_status in('SUCCESS','REVOKED') then income_amount-spending_amount
+                        when pay_style = 'wx' and trades_status = 'SUCCESS' then income_amount else 0 end) as income_amount,
+              sum(case when pay_style = 'ali' and trades_status = '交易退款' then spending_amount when pay_style = 'wx' then spending_amount else 0 end) as spending_amount,
+              sum(case when pay_style = 'ali' and trades_status = '退费' then income_amount  else 0 end) as refund_fee,
+              sum(case when pay_style = 'ali' and trades_status = '收费' then platform_payment_amount when pay_style = 'wx' then platform_payment_amount else 0 end) as platform_payment_amount,
+              min(pay_time) as pay_time,
+              min(create_time) as daoru_time,
+              platform_service_fee as rate,data_type
+        from yb_pay_data_import
+        where data_type = 3 and trades_status in ('在线支付','退费','交易退款','收费','SUCCESS','REFUND','REVOKED')
+        group by platform_service_fee,substring_index(trades_id,'_',1),pay_style
+    </select>
+
+    <select id="getPayDataImportStastic" resultType="map">
+      SELECT ROUND(SUM(income_amount)/100,2)income_amount,spending_amount FROM
+      (SELECT DISTINCT p.trades_id,IFNULL(p.income_amount,0) income_amount
+        from b_trades t
+        left join yb_pay_data_import p on p.trades_id = t.trades_id
+        left join yb_settlement_detail d ON t.trades_id= d.trades_id
+        WHERE
+        1=1
+        <if test="finance_no!=null and finance_no!=''">
+            AND t.finance_no in
+            <foreach collection="financesNos" index="index" open="(" separator="," close=")" item="item">
+                #{item}
+            </foreach>
+        </if>
+        <include refid="getPayDataImportStasticForWhere"/>) i,
+      (SELECT ROUND(SUM(IFNULL(p.spending_amount,0))/100,2) spending_amount
+        from b_trades t
+        left join yb_pay_data_import p on p.trades_id = t.trades_id
+        left join yb_settlement_detail d ON t.trades_id= d.trades_id
+        WHERE
+        1=1
+        AND t.refund_fee=p.spending_amount
+        <if test="finance_no!=null and finance_no!=''">
+            AND t.finance_no_refund in
+            <foreach collection="financesNos" index="index" open="(" separator="," close=")" item="item">
+                #{item}
+            </foreach>
+        </if>
+        <include refid="getPayDataImportStasticForWhere"/>) s
+    </select>
+    <sql id="getPayDataImportStasticForWhere">
+            AND p.data_type in (0,1)
+            AND p.trades_status != '服务费'
+        <if test="tradesId!=null and tradesId!=''" >
+            AND p.trades_id = #{tradesId}
+        </if>
+        <if test="merchantId!=null and merchantId!=''" >
+            AND t.site_id = #{merchantId}
+        </if>
+        <if test="payNumber!=null and payNumber!=''" >
+            AND p.business_order_sn = #{payNumber}
+        </if>
+        <if test="payStyle!=null and payStyle!=''" >
+            AND p.pay_style = #{payStyle}
+        </if>
+        <if test="payCheckingStatus!=null and payCheckingStatus!=''" >
+            AND d.account_checking_status = #{payCheckingStatus}
+        </if>
+        <if test="refundCheckingStatus!=null and refundCheckingStatus!=''" >
+            AND d.refund_checking_status = #{refundCheckingStatus}
+        </if>
+        <if test="refundAmountStart!=null and refundAmountStart!=''" >
+            AND p.spending_amount <![CDATA[ >= ]]> #{refundAmountStart}
+        </if>
+        <if test="refundAmountEnd!=null and refundAmountEnd!=''" >
+            AND p.spending_amount <![CDATA[ <= ]]>  #{refundAmountEnd}
+        </if>
+        <if test="payAmountStart!=null and payAmountStart!=''" >
+            AND p.income_amount <![CDATA[ >= ]]> #{payAmountStart}
+        </if>
+        <if test="payAmountEnd!=null and payAmountEnd!=''" >
+            AND p.income_amount <![CDATA[ <= ]]>  #{payAmountEnd}
+        </if>
+        <if test="pay_time_start!=null and pay_time_start!=''" >
+            AND p.pay_time <![CDATA[ >= ]]> str_to_date(#{pay_time_start},'%Y-%m-%d')
+        </if>
+        <if test="pay_time_end!=null and pay_time_end!=''" >
+            AND p.pay_time <![CDATA[ <= ]]> str_to_date( ADDDATE(#{pay_time_end},1),'%Y-%m-%d')
+        </if>
+    </sql>
+
+    <select id="selectPayDataByTradesIdAndAccountBalance" resultType="com.jk51.model.account.models.PayDataImport">
+        select * from yb_pay_data_import where trades_id=#{tradesId} and trades_status=#{tradesStatus} AND account_balance=#{accountBalance}
+    </select>
+    <select id="selectPayDataForCheck" resultType="com.jk51.model.account.models.PayDataImport">
+        SELECT id, pay_style,data_type,substring_index(trades_id,"_",1)trades_id,SUM(IFNULL(income_amount,0)) income_amount,business_order_sn,SUM(IFNULL(spending_amount,0)) spending_amount,
+			 trades_status,trading_scenario,account_checking_status,check_status,create_time
+        FROM yb_pay_data_import
+	    WHERE check_status=0 AND account_checking_status=-1
+			 AND data_type=0 AND trades_status IN('买家已支付','蚂蚁优惠集分宝补贴','红包')
+			 GROUP BY substring_index(trades_id,"_",1)
+    </select>
+
+</mapper>

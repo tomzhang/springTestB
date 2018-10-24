@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.persistence.mapper.SBGoodsPrebookMapper" >
+  <resultMap id="BaseResultMap" type="com.jk51.model.order.SBGoodsPrebook" >
+    <id column="prebook_id" property="prebookId" jdbcType="INTEGER" />
+    <id column="site_id" property="siteId" jdbcType="INTEGER" />
+    <result column="prebook_phone" property="prebookPhone" jdbcType="VARCHAR" />
+    <result column="prebook_goods_id" property="prebookGoodsId" jdbcType="INTEGER" />
+    <result column="prebook_goods_name" property="prebookGoodsName" jdbcType="VARCHAR" />
+    <result column="prebook_goods_num" property="prebookGoodsNum" jdbcType="INTEGER" />
+    <result column="prebook_clerk_id" property="prebookClerkId" jdbcType="INTEGER" />
+    <result column="prebook_clerk" property="prebookClerk" jdbcType="VARCHAR" />
+    <result column="prebook_trades" property="prebookTrades" jdbcType="VARCHAR" />
+    <result column="prebook_accept_time" property="prebookAcceptTime" jdbcType="TIMESTAMP" />
+    <result column="prebook_trades_time" property="prebookTradesTime" jdbcType="TIMESTAMP" />
+    <result column="prebook_state" property="prebookState" jdbcType="BIT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    prebook_id, site_id, prebook_phone, prebook_goods_id, prebook_goods_name, prebook_goods_num, 
+    prebook_clerk_id, prebook_clerk, prebook_trades, prebook_accept_time, prebook_trades_time, 
+    prebook_state, create_time, update_time
+  </sql>
+
+
+    <select id="selectByPrimaryKeyMap" resultType="java.util.Map" >
+        select
+          prebook_id AS prebookId, prebook_phone AS prebookPhone, prebook_goods_name AS prebookGoodsName, prebook_goods_num AS prebookGoodsNum, prebook_goods_id
+        from b_goods_prebook
+        where prebook_id = #{prebookId}
+        and site_id = #{siteId}
+    </select>
+
+  <select id="getPrebookListMap" resultType="java.util.Map" >
+    select
+      prebook_id AS prebookId, prebook_phone AS prebookPhone, date_format(create_time,'%Y-%m-%d %H:%i:%s') AS createTime, prebook_state AS prebookState, prebook_trades AS prebookTrades
+    from b_goods_prebook
+    where site_id = #{siteId} AND prebook_clerk_id = #{prebookClerkId}
+    ORDER BY CASE prebook_state WHEN 0 THEN 99 WHEN 1 THEN 9 WHEN  2 THEN 999 ELSE 9999 END ASC
+  </select>
+
+
+  <select id="getPreOrderCount" resultType="java.lang.Integer">
+    SELECT count(*)
+    from b_goods_prebook
+    WHERE
+      prebook_state = 1
+      AND
+      prebook_clerk_id = #{storeUserId}
+  </select>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from b_goods_prebook
+    where prebook_id = #{prebookId}
+      and site_id = #{siteId}
+  </select>
+
+  <update id="updataPrebook" >
+    UPDATE b_goods_prebook SET prebook_state = #{prebookState}, update_time = CURRENT_TIMESTAMP
+    WHERE site_id = #{siteId} AND prebook_id = #{prebookId} AND prebook_clerk_id = #{prebookClerkId}
+  </update>
+
+    <select id="getPrebookList" resultMap="BaseResultMap" >
+        select
+        <include refid="Base_Column_List" />
+        from b_goods_prebook
+        where site_id = #{siteId} AND prebook_clerk_id = #{prebookClerkId}
+        ORDER BY CASE prebook_state WHEN 0 THEN 99 WHEN 1 THEN 9 WHEN  2 THEN 999 ELSE 9999 END ASC
+    </select>
+
+  <update id="acceptPrebook" >
+    UPDATE b_goods_prebook SET prebook_state = 1, prebook_clerk_id = #{prebookClerkId}, prebook_clerk = #{name}, update_time = CURRENT_TIMESTAMP
+    WHERE site_id = #{siteId} AND prebook_id = #{prebookId}
+  </update>
+
+
+  <delete id="deleteByPrimaryKey" >
+    delete from b_goods_prebook
+    where prebook_id = #{prebookId,jdbcType=INTEGER}
+      and site_id = #{siteId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.jk51.model.order.SBGoodsPrebook" >
+    insert into b_goods_prebook (prebook_id, site_id, prebook_phone, 
+      prebook_goods_id, prebook_goods_name, prebook_goods_num, 
+      prebook_clerk_id, prebook_clerk, prebook_trades, 
+      prebook_accept_time, prebook_trades_time, 
+      prebook_state, create_time, update_time
+      )
+    values (#{prebookId,jdbcType=INTEGER}, #{siteId,jdbcType=INTEGER}, #{prebookPhone,jdbcType=VARCHAR}, 
+      #{prebookGoodsId,jdbcType=INTEGER}, #{prebookGoodsName,jdbcType=VARCHAR}, #{prebookGoodsNum,jdbcType=INTEGER}, 
+      #{prebookClerkId,jdbcType=INTEGER}, #{prebookClerk,jdbcType=VARCHAR}, #{prebookTrades,jdbcType=VARCHAR}, 
+      #{prebookAcceptTime,jdbcType=TIMESTAMP}, #{prebookTradesTime,jdbcType=TIMESTAMP}, 
+      #{prebookState,jdbcType=BIT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.jk51.model.order.SBGoodsPrebook" >
+    insert into b_goods_prebook
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="prebookId != null" >
+        prebook_id,
+      </if>
+      <if test="siteId != null" >
+        site_id,
+      </if>
+      <if test="prebookPhone != null" >
+        prebook_phone,
+      </if>
+      <if test="prebookGoodsId != null" >
+        prebook_goods_id,
+      </if>
+      <if test="prebookGoodsName != null" >
+        prebook_goods_name,
+      </if>
+      <if test="prebookGoodsNum != null" >
+        prebook_goods_num,
+      </if>
+      <if test="prebookClerkId != null" >
+        prebook_clerk_id,
+      </if>
+      <if test="prebookClerk != null" >
+        prebook_clerk,
+      </if>
+      <if test="prebookTrades != null" >
+        prebook_trades,
+      </if>
+      <if test="prebookAcceptTime != null" >
+        prebook_accept_time,
+      </if>
+      <if test="prebookTradesTime != null" >
+        prebook_trades_time,
+      </if>
+      <if test="prebookState != null" >
+        prebook_state,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="prebookId != null" >
+        #{prebookId,jdbcType=INTEGER},
+      </if>
+      <if test="siteId != null" >
+        #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="prebookPhone != null" >
+        #{prebookPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="prebookGoodsId != null" >
+        #{prebookGoodsId,jdbcType=INTEGER},
+      </if>
+      <if test="prebookGoodsName != null" >
+        #{prebookGoodsName,jdbcType=VARCHAR},
+      </if>
+      <if test="prebookGoodsNum != null" >
+        #{prebookGoodsNum,jdbcType=INTEGER},
+      </if>
+      <if test="prebookClerkId != null" >
+        #{prebookClerkId,jdbcType=INTEGER},
+      </if>
+      <if test="prebookClerk != null" >
+        #{prebookClerk,jdbcType=VARCHAR},
+      </if>
+      <if test="prebookTrades != null" >
+        #{prebookTrades,jdbcType=VARCHAR},
+      </if>
+      <if test="prebookAcceptTime != null" >
+        #{prebookAcceptTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="prebookTradesTime != null" >
+        #{prebookTradesTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="prebookState != null" >
+        #{prebookState,jdbcType=BIT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.order.SBGoodsPrebook" >
+    update b_goods_prebook
+    <set >
+      <if test="prebookPhone != null" >
+        prebook_phone = #{prebookPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="prebookGoodsId != null" >
+        prebook_goods_id = #{prebookGoodsId,jdbcType=INTEGER},
+      </if>
+      <if test="prebookGoodsName != null" >
+        prebook_goods_name = #{prebookGoodsName,jdbcType=VARCHAR},
+      </if>
+      <if test="prebookGoodsNum != null" >
+        prebook_goods_num = #{prebookGoodsNum,jdbcType=INTEGER},
+      </if>
+      <if test="prebookClerkId != null" >
+        prebook_clerk_id = #{prebookClerkId,jdbcType=INTEGER},
+      </if>
+      <if test="prebookClerk != null" >
+        prebook_clerk = #{prebookClerk,jdbcType=VARCHAR},
+      </if>
+      <if test="prebookTrades != null" >
+        prebook_trades = #{prebookTrades,jdbcType=VARCHAR},
+      </if>
+      <if test="prebookAcceptTime != null" >
+        prebook_accept_time = #{prebookAcceptTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="prebookTradesTime != null" >
+        prebook_trades_time = #{prebookTradesTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="prebookState != null" >
+        prebook_state = #{prebookState,jdbcType=BIT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where prebook_id = #{prebookId,jdbcType=INTEGER}
+      and site_id = #{siteId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jk51.model.order.SBGoodsPrebook" >
+    update b_goods_prebook
+    set prebook_phone = #{prebookPhone,jdbcType=VARCHAR},
+      prebook_goods_id = #{prebookGoodsId,jdbcType=INTEGER},
+      prebook_goods_name = #{prebookGoodsName,jdbcType=VARCHAR},
+      prebook_goods_num = #{prebookGoodsNum,jdbcType=INTEGER},
+      prebook_clerk_id = #{prebookClerkId,jdbcType=INTEGER},
+      prebook_clerk = #{prebookClerk,jdbcType=VARCHAR},
+      prebook_trades = #{prebookTrades,jdbcType=VARCHAR},
+      prebook_accept_time = #{prebookAcceptTime,jdbcType=TIMESTAMP},
+      prebook_trades_time = #{prebookTradesTime,jdbcType=TIMESTAMP},
+      prebook_state = #{prebookState,jdbcType=BIT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where prebook_id = #{prebookId,jdbcType=INTEGER}
+      and site_id = #{siteId,jdbcType=INTEGER}
+  </update>
+</mapper>

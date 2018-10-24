@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.trades.mapper.TradesUpdatePriceLogMapper">
+    <resultMap id="tradesUpdatePriceLogMap" type="com.jk51.model.order.TradesUpdatePriceLog">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <id column="site_id" jdbcType="INTEGER" property="siteId" />
+        <result column="trades_no" jdbcType="VARCHAR" property="tradesNo" />
+        <result column="original_price" jdbcType="INTEGER" property="originalPrice" />
+        <result column="change_price_before" jdbcType="INTEGER" property="changePriceBefore" />
+        <result column="change_price_after" jdbcType="INTEGER" property="changePriceAfter" />
+        <result column="operation_platform" jdbcType="TINYINT" property="operationPlatform" />
+        <result column="store_name" jdbcType="VARCHAR" property="storeName" />
+        <result column="store_id" jdbcType="INTEGER" property="storeId" />
+        <result column="operation_account" jdbcType="VARCHAR" property="operationAccount" />
+        <result column="operation_user" jdbcType="VARCHAR" property="operationUser" />
+        <result column="operation_id" jdbcType="INTEGER" property="operationId" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="remark" jdbcType="VARCHAR" property="remark" />
+    </resultMap>
+
+    <insert id="insertTradesUpdatePriceLog" parameterType="com.jk51.model.order.TradesUpdatePriceLog">
+        insert into b_trades_update_price_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="tradesNo != null">
+                trades_no,
+            </if>
+            <if test="originalPrice != null">
+                original_price,
+            </if>
+            <if test="changePriceBefore != null">
+                change_price_before,
+            </if>
+            <if test="changePriceAfter != null">
+                change_price_after,
+            </if>
+            <if test="operationPlatform != null">
+                operation_platform,
+            </if>
+            <if test="storeName != null">
+                store_name,
+            </if>
+            <if test="storeId != null">
+                store_id,
+            </if>
+            <if test="operationAccount != null">
+                operation_account,
+            </if>
+            <if test="operationUser != null">
+                operation_user,
+            </if>
+            <if test="operationId != null">
+                operation_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="tradesNo != null">
+                #{tradesNo,jdbcType=VARCHAR},
+            </if>
+            <if test="originalPrice != null">
+                #{originalPrice,jdbcType=INTEGER},
+            </if>
+            <if test="changePriceBefore != null">
+                #{changePriceBefore,jdbcType=INTEGER},
+            </if>
+            <if test="changePriceAfter != null">
+                #{changePriceAfter,jdbcType=INTEGER},
+            </if>
+            <if test="operationPlatform != null">
+                #{operationPlatform,jdbcType=TINYINT},
+            </if>
+            <if test="storeName != null">
+                #{storeName,jdbcType=VARCHAR},
+            </if>
+            <if test="storeId != null">
+                #{storeId,jdbcType=INTEGER},
+            </if>
+            <if test="operationAccount != null">
+                #{operationAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="operationUser != null">
+                #{operationUser,jdbcType=VARCHAR},
+            </if>
+            <if test="operationId != null">
+                #{operationId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <sql id="Base_Column_List">
+        id, site_id, trades_no, original_price, change_price_before, change_price_after,
+        operation_platform, store_name, store_id, operation_account, operation_user, operation_id,
+        create_time, update_time, remark
+    </sql>
+    <select id="selectTradesUpProceLog" resultMap="tradesUpdatePriceLogMap">
+        SELECT <include refid="Base_Column_List"/> FROM b_trades_update_price_log tup WHERE tup.site_id=#{siteId} AND tup.trades_no=#{tradeId} ORDER BY tup.create_time DESC
+    </select>
+
+</mapper>

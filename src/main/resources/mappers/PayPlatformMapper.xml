@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.account.mapper.PayPlatformMapper">
+
+    <select id="getPayPlatformById" resultType="com.jk51.model.account.models.PayPlatform">
+        SELECT * FROM yb_pay_platform WHERE site_id=#{site_id} AND pay_type=#{pay_type}
+    </select>
+    <!--增加一条记录-->
+    <insert id="addPayPlatform"  parameterType="com.jk51.model.account.models.PayPlatform"
+            flushCache="true">
+        insert into yb_pay_platform
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+           `site_id`,
+            <if test="payPlatform.pay_type != null">
+                `pay_type`,
+            </if>
+            <if test="payPlatform.payment_name != null">
+                `payment_name`,
+            </if>
+            <if test="payPlatform.payment_desc != null">
+                `payment_desc`,
+            </if>
+            <if test="payPlatform.my_account != null">
+                `my_account`,
+            </if>
+            create_time,update_time,
+            <if test="payPlatform.code != null">
+                `code`,
+            </if>
+            <if test="payPlatform.procedure_fee != null">
+                `procedure_fee`,
+            </if>
+        </trim>
+        <trim prefix="value (" suffix=")" suffixOverrides=",">
+                #{payPlatform.site_id},
+            <if test="payPlatform.pay_type != null">
+                #{payPlatform.pay_type},
+            </if>
+            <if test="payPlatform.payment_name != null">
+                #{payPlatform.payment_name},
+            </if>
+            <if test="payPlatform.payment_desc != null">
+                #{payPlatform.payment_desc},
+            </if>
+            <if test="payPlatform.my_account != null">
+                #{payPlatform.my_account},
+            </if>
+            CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP(),
+            <if test="payPlatform.code != null">
+                #{payPlatform.code},
+            </if>
+            <if test="payPlatform.procedure_fee != null">
+                #{payPlatform.procedure_fee},
+            </if>
+
+        </trim>
+    </insert>
+
+    <update id="updatePayPlatform" flushCache="true">
+        update yb_pay_platform
+        <trim prefix="set" suffixOverrides=",">
+            <if test="payPlatform.pay_type != null">
+                `pay_type`= #{payPlatform.pay_type},
+            </if>
+            <if test="payPlatform.payment_name != null">
+                `payment_name` = #{payPlatform.payment_name},
+            </if>
+            <if test="payPlatform.payment_desc != null">
+                `payment_desc` = #{payPlatform.payment_desc},
+            </if>
+            <if test="payPlatform.my_account != null">
+                `my_account` = #{payPlatform.my_account},
+            </if>
+            <if test="payPlatform.code != null">
+                `code` = #{payPlatform.code},
+            </if>
+            <if test="payPlatform.procedure_fee != null">
+                `procedure_fee` = #{payPlatform.procedure_fee},
+            </if>
+            `update_time` = CURRENT_TIMESTAMP(),
+        </trim>
+        <where>
+            site_id = #{payPlatform.site_id} AND id = #{payPlatform.id}
+        </where>
+    </update>
+</mapper>

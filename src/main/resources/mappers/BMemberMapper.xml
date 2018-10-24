@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.appInterface.mapper.BMemberMapper">
+
+
+    <select id="selectMemberMapByPhoneNum" resultType="java.util.Map">
+        SELECT  * from b_member
+        WHERE
+        site_id = #{siteId}
+        and
+        mobile = #{mobile}
+        limit 1
+    </select>
+    <select id="selectMemberInfoToWX" resultType="java.util.Map">
+SELECT
+	bm.site_id siteId,
+	bm.buyer_id buyerId,
+	bs.stores_number uid,
+	bs.`name` storeName,
+	bm.`name` `memberName`,
+	bm.sex sex,
+	bmi.address address,
+	bmi.birthday birthday,
+	bsat.storeadmin_id clerkId,
+	bsat.`name` clerkName,
+	bm.create_time ctime,
+	bm.first_erp firsterp
+FROM
+	b_member bm
+LEFT JOIN b_member_info bmi ON bm.site_id = bmi.site_id
+AND bm.buyer_id = bmi.member_id
+LEFT JOIN b_stores bs ON bm.register_stores = bs.id
+AND bm.site_id = bs.site_id
+LEFT JOIN b_store_adminext bsat ON bsat.site_id = bm.site_id
+AND bsat.store_id = bs.id
+AND bm.register_clerks = bsat.storeadmin_id
+WHERE
+	bm.site_id = #{siteId}
+AND bm.mobile = #{mobile} ORDER BY bm.create_time DESC limit 1;
+    </select>
+    <select id="findMemberBySiteIdAndMobile" resultType="com.jk51.model.order.BMember">
+        SELECT  * from b_member
+        WHERE
+          site_id = #{siteId}
+          and
+          mobile = #{mobile}
+        limit 1
+    </select>
+    <select id="findRegisterInfo" resultType="java.util.Map">
+        SELECT mobile,create_time as create_time
+        FROM b_member
+        WHERE
+          buyer_id = #{member_id}
+          and
+          site_id = #{siteId}
+    </select>
+    <select id="getMemberList" resultType="com.jk51.model.order.BMember">
+        SELECT *
+        FROM b_member
+        WHERE
+          buyer_id = #{userId}
+    </select>
+
+    <select id="selectByPhoneNum" resultType="com.jk51.model.order.BMember">
+        select * from b_member where site_id=#{site_id,jdbcType=INTEGER} and mobile=#{mobile,jdbcType=VARCHAR} limit 1
+    </select>
+
+    <!--会员列表查询start-->
+    <resultMap id="member_list_info" type="java.util.HashMap" autoMapping="true">
+        <result column="member_id"></result>
+        <result column="mobile"></result>
+        <result column="member_name" property="member_name"></result>
+        <result column="create_time"></result>
+        <result column="invite_code"></result>
+        <result column="invite_name" property="invite_name"></result>
+        <result column="last_time"></result>
+        <result column="integrate"></result>
+        <result column="register_clerks"></result>
+        <result column="site_id"></result>
+    </resultMap>
+
+    <select id="getOfflineInfo" resultType="java.util.Map">
+      SELECT
+	    bm.mobile mobile_no,bm.`name`,bm.sex,bmi.birthday,bmi.address,bm.idcard_number certif_no
+      FROM
+      	b_member bm
+      LEFT JOIN b_member_info bmi ON bm.site_id = bmi.site_id
+      AND bm.buyer_id = bmi.member_id
+      WHERE
+    	bm.site_id = #{siteId}
+      AND bm.mobile = #{mobile}
+    </select>
+
+    <select id="getMemberMapList" resultType="com.jk51.modules.appInterface.util.MemberReturnModel">
+        SELECT
+        m.*,
+        c.name AS invite_name
+        FROM
+        -- 链接b_member_info先左外连接按条件查作为中间表
+        (
+        SELECT
+        a.member_id,
+        a.mobile,
+        a.member_name,
+        DATE_FORMAT(a.create_time,'%Y-%m-%d %H:%i:%s') AS create_time,
+        b.invite_code,
+        DATE_FORMAT(a.last_time,'%Y-%m-%d %H:%i:%s') AS last_time,
+        a.integrate,
+        a.register_clerks,
+        a.site_id
+        FROM
+        -- b_member先左外连接按条件查出一页作为中间表
+        (
+        SELECT
+        member_id,
+        mobile,
+        name AS member_name,
+        register_clerks,
+        site_id,
+        buyer_id,
+        create_time,
+        last_time,
+        integrate
+        FROM b_member
+        <where>
+            site_id = #{site_id}
+            AND
+            register_stores = #{store_id}
+            <if test="mobile != null">
+                AND mobile = #{mobile}
+            </if>
+            <if test="date_start != null">
+                AND create_time &gt;= #{date_start}
+            </if>
+            <if test="date_end != null">
+                AND create_time &lt; #{date_end}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+        <if test="rows_index != null">
+            LIMIT #{rows_index},
+            <if test="page_size != null">
+                #{page_size}
+            </if>
+            <if test="page_size == null">
+                15
+            </if>
+        </if>
+        )AS a
+        LEFT JOIN b_member_info AS b
+        ON a.buyer_id = b.member_id
+        AND a.site_id = b.site_id
+        <where>
+            <if test="invite_code != null">
+                AND b.invite_code = #{invite_code}
+            </if>
+        </where>
+        ) m
+        LEFT JOIN b_store_adminext AS c
+        ON m.invite_code = SUBSTRING_INDEX(c.clerk_invitation_code,'_',-1)
+        AND
+        m.site_id = c.site_id
+
+
+    </select>
+
+    <select id="getMemberCount" resultType="java.lang.Integer">
+        SELECT
+        COUNT(1)
+        FROM
+
+        -- 先左外连接按条件查出一页作为中间表
+        (
+        SELECT
+        b.invite_code,
+        a.site_id
+        FROM
+        -- b_member先左外连接按条件查出一页作为中间表
+        (
+        SELECT
+        site_id,
+        register_clerks,
+        buyer_id
+        FROM b_member
+        <where>
+            site_id = #{site_id}
+            AND
+            register_stores = #{store_id}
+            <if test="mobile != null">
+                AND mobile = #{mobile}
+            </if>
+            <if test="date_start != null">
+                AND create_time &gt;= #{date_start}
+            </if>
+            <if test="date_end != null">
+                AND create_time &lt; #{date_end}
+            </if>
+        </where>
+        )AS a
+        LEFT JOIN b_member_info AS b
+        ON a.buyer_id = b.member_id
+        AND a.site_id = b.site_id
+        <where>
+            <if test="invite_code != null">
+                AND b.invite_code = #{invite_code}
+            </if>
+        </where>
+        ) m
+        LEFT JOIN b_store_adminext AS c
+        ON m.invite_code = c.clerk_invitation_code
+        AND m.site_id = c.site_id
+
+    </select>
+    <select id="getCardNo" resultType="java.util.Map">
+        SELECT
+	      bmi.membership_number card_no
+        FROM
+    	b_member bm
+        LEFT JOIN b_member_info bmi ON bm.site_id = bmi.site_id
+        AND bm.buyer_id = bmi.member_id
+        WHERE
+      	bm.site_id = #{siteId}
+        AND bm.mobile = #{mobile}
+    </select>
+
+    <update id="updateIdNum">
+        update b_member
+        <set>
+            <if test="certif_no!=null">
+                idcard_number =#{certif_no}
+            </if>
+        </set>
+        where site_id =#{siteId} and mobile=#{mobile}
+    </update>
+
+    <!--会员列表查询end-->
+
+    <!--会员添加start-->
+
+    <select id="selectByPhoneNumCount" resultType="java.lang.Integer">
+        select count(1) from b_member where mobile=#{mobile,jdbcType=VARCHAR} AND site_id = #{site_id}
+    </select>
+
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="member_id"
+            parameterType="com.jk51.model.order.BMember">
+
+        insert into b_member
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="member_id != null">
+                member_id,
+            </if>
+            <if test="site_id != null">
+                site_id,
+            </if>
+            <if test="buyer_id != null">
+                buyer_id,
+            </if>
+            <if test="buyer_nick != null">
+                buyer_nick,
+            </if>
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="passwd != null">
+                passwd,
+            </if>
+            <if test="sex != null">
+                sex,
+            </if>
+            <if test="email != null">
+                email,
+            </if>
+            <if test="idcard_number != null">
+                idcard_number,
+            </if>
+            <if test="order_num != null">
+                order_num,
+            </if>
+            <if test="order_fee!= null">
+                order_fee,
+            </if>
+            <if test="register_stores != null">
+                register_stores,
+            </if>
+            <if test="register_clerks != null">
+                register_clerks,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="last_ipaddr != null">
+                last_ipaddr,
+            </if>
+            <if test="integrate != null">
+                integrate,
+            </if>
+            <if test="total_get_integrate != null">
+                total_get_integrate,
+            </if>
+            <if test="total_consume_integrate != null">
+                total_consume_integrate,
+            </if>
+            <if test="mem_source != null">
+                mem_source,
+            </if>
+            <if test="is_activated != null">
+                is_activated,
+            </if>
+            <if test="ban_status != null">
+                ban_status,
+            </if>
+            <if test="last_time != null">
+                last_time,
+            </if>
+            <if test="memo != null">
+                memo,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="member_id != null">
+                #{member_id,jdbcType=INTEGER},
+            </if>
+            <if test="site_id != null">
+                #{site_id,jdbcType=INTEGER},
+            </if>
+            <if test="buyer_id != null">
+                #{buyer_id,jdbcType=INTEGER},
+            </if>
+            <if test="buyer_nick != null">
+                #{buyer_nick,jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+                #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="passwd != null">
+                #{passwd,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null">
+                #{sex,jdbcType=INTEGER},
+            </if>
+            <if test="email != null">
+                #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="idcard_number != null">
+                #{idcard_number,jdbcType=VARCHAR},
+            </if>
+            <if test="order_num != null">
+                #{order_num,jdbcType=INTEGER},
+            </if>
+            <if test="order_fee!= null">
+                #{order_fee,jdbcType=INTEGER},
+            </if>
+            <if test="register_stores != null">
+                #{register_stores,jdbcType=INTEGER},
+            </if>
+            <if test="register_clerks != null">
+                #{register_clerks,jdbcType=BIGINT},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="last_ipaddr != null">
+                #{last_ipaddr,jdbcType=VARCHAR},
+            </if>
+            <if test="integrate != null">
+                #{integrate,jdbcType=BIGINT},
+            </if>
+            <if test="total_get_integrate != null">
+                #{total_get_integrate,jdbcType=BIGINT},
+            </if>
+            <if test="total_consume_integrate != null">
+                #{total_consume_integrate,jdbcType=BIGINT},
+            </if>
+            <if test="mem_source != null">
+                #{mem_source,jdbcType=INTEGER},
+            </if>
+            <if test="is_activated != null">
+                #{is_activated,jdbcType=TINYINT},
+            </if>
+            <if test="ban_status != null">
+                #{ban_status,jdbcType=TINYINT},
+            </if>
+            <if test="last_time != null">
+                #{last_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="memo != null">
+                #{memo,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <!--会员添加end-->
+
+    <!--会员更新start-->
+    <select id="getMember" resultType="com.jk51.model.order.BMember">
+        SELECT *
+        FROM b_member
+        <where>
+            member_id = #{member_id} AND site_id = #{site_id} AND register_stores = #{register_stores}
+        </where>
+    </select>
+
+    <select id="getMemberBySiteIdAndMemberId" resultType="com.jk51.model.order.BMember">
+        SELECT *
+        FROM b_member
+        WHERE member_id = #{member_id} AND site_id = #{site_id}
+    </select>
+
+    <select id="getMemberByBuyerId" resultType="java.util.Map">
+        SELECT *
+        FROM b_member
+        <where>
+            buyer_id = #{buyerId} AND site_id = #{siteId}
+        </where>
+    </select>
+
+    <update id="updateLastLoginTime">
+        update b_member set last_time=CURRENT_TIMESTAMP() where site_id=#{siteId,jdbcType=INTEGER} and member_id=#{memberId,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateMemberByMemberId" parameterType="com.jk51.model.order.BMember">
+
+        UPDATE b_member
+        <set>
+            <if test="buyer_id != null">
+                buyer_id = #{buyer_id,jdbcType=INTEGER},
+            </if>
+            <if test="buyer_nick != null">
+                buyer_nick = #{buyer_nick,jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+                mobile = #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="passwd != null">
+                passwd = #{passwd,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null">
+                sex = #{sex,jdbcType=INTEGER},
+            </if>
+            <if test="email != null">
+                email = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="idcard_number != null">
+                idcard_number = #{idcard_number,jdbcType=VARCHAR},
+            </if>
+            <if test="order_num != null">
+                order_num = #{order_num,jdbcType=INTEGER},
+            </if>
+            <if test="order_fee!= null">
+                order_fee = #{order_fee,jdbcType=INTEGER},
+            </if>
+            <if test="register_stores != null">
+                register_stores = #{register_stores,jdbcType=INTEGER},
+            </if>
+            <if test="register_clerks != null">
+                register_clerks = #{register_clerks,jdbcType=BIGINT},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="last_ipaddr != null">
+                last_ipaddr = #{last_ipaddr,jdbcType=VARCHAR},
+            </if>
+            <if test="integrate != null">
+                integrate = #{integrate,jdbcType=BIGINT},
+            </if>
+            <if test="total_get_integrate != null">
+                total_get_integrate = #{total_get_integrate,jdbcType=BIGINT},
+            </if>
+            <if test="total_consume_integrate != null">
+                total_consume_integrate = #{total_consume_integrate,jdbcType=BIGINT},
+            </if>
+            <if test="mem_source != null">
+                mem_source = #{mem_source,jdbcType=INTEGER},
+            </if>
+            <if test="is_activated != null">
+                is_activated = #{is_activated,jdbcType=TINYINT},
+            </if>
+            <if test="ban_status != null">
+                ban_status = #{ban_status,jdbcType=TINYINT},
+            </if>
+            <if test="last_time != null">
+                last_time = #{last_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="memo != null">
+                memo = #{memo,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        <where>
+            member_id = #{member_id} AND site_id = #{site_id}
+        </where>
+
+    </update>
+
+    <select id="selectAll" resultType="java.util.Map">
+        SELECT * FROM b_member
+    </select>
+    <update id="updateFirstErp">
+        update b_member SET first_erp=1 where site_id=#{siteId} and mobile=#{mobile}
+    </update>
+    <update id="updateMember" parameterType="java.util.Map">
+        UPDATE b_member
+        <set>
+            <if test="name!=null">
+                name = #{name},
+            </if>
+            <if test="sex!=null">
+                sex = #{sex},
+            </if>
+            <if test="email!=null">
+                email = #{email},
+            </if>
+            <if test="idcard_number!=null">
+                idcard_number = #{idcard_number}
+            </if>
+        </set>
+        WHERE site_id=#{site_id} AND mobile=#{mobile}
+    </update>
+    <update id="updateOfflineIntegral" parameterType="java.util.Map">
+        update b_member SET offline_integral =#{olIntegral} where site_id=#{siteId} AND mobile =#{mobile}
+    </update>
+
+    <select id="findBySiteIdAndMobile" resultType="com.jk51.modules.im.service.iMRecode.response.Member">
+        SELECT mobile,buyer_id buyerId
+        from b_member
+        WHERE
+        site_id = #{site_id}
+        <if test="mobile!=null and mobile!=''">
+            and mobile LIKE CONCAT("%",#{mobile},"%")
+        </if>
+    </select>
+    <select id="selectMemberBySiteIdAndMobile" resultType="java.util.Map">
+        select bm.mobile,bm.sex,bmi.membership_number card_no,
+        bm.name,bm.integrate,bmi.birthday,bmi.province,bmi.city,bmi.area,bmi.address
+        from b_member bm
+        left join b_member_info bmi on bm.site_id = bmi.site_id and bm.buyer_id =bmi.member_id
+        where bm.site_id=#{siteId}
+        <if test="mobile!=null">
+            and bm.mobile=#{mobile}
+        </if>
+    </select>
+    <select id="queryIsMember" parameterType="java.util.Map" resultType="java.util.Map">
+      SELECT member_id memberId, buyer_id buyerId FROM b_member
+      WHERE site_id = #{siteId} AND open_id = #{openId}
+      limit 1
+    </select>
+
+    <select id="queryMemberCardId" parameterType="java.lang.Integer" resultType="java.lang.String">
+      SELECT merchant_card_id FROM yb_merchant WHERE merchant_id = #{siteId}
+    </select>
+</mapper>

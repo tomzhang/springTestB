@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.distribution.mapper.DDisappconfigMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.distribute.DDisappconfig">
+        <result column="id" property="id" javaType="integer" jdbcType="INTEGER"/>
+        <result column="site_id" property="siteId" javaType="integer" jdbcType="INTEGER"/>
+        <result column="app_name" property="appName" javaType="string" jdbcType="VARCHAR"/>
+        <result column="ios" property="ios" javaType="string" jdbcType="VARCHAR"/>
+        <result column="android" property="android" javaType="string" jdbcType="VARCHAR"/>
+        <result column="host" property="host" javaType="string" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="findBySiteId" resultMap="BaseResultMap">
+        select * from d_disappconfig where site_id = #{siteId}
+    </select>
+
+</mapper>

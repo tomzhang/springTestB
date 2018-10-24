@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.account.mapper.AccountCommissionRateMapper">
+
+    <select id="getCommissionRatById" parameterType="Integer" resultType="com.jk51.model.account.models.AccountCommissionRate">
+        SELECT * FROM yb_accout_commission_rate WHERE site_id=#{siteId}
+    </select>
+    <!--增加一条记录-->
+    <insert id="addAccount" keyProperty="site_id" useGeneratedKeys="true" parameterType="com.jk51.model.account.models.AccountCommissionRate"
+                                                                                                        flushCache="true">
+        insert into yb_accout_commission_rate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            `site_id`,
+            <if test="accountCommissionRate.direct_purchase_rate != null">
+                `direct_purchase_rate`,
+            </if>
+            <if test="accountCommissionRate.distributor_rate != null">
+                `distributor_rate`,
+            </if>
+            <if test="accountCommissionRate.shipping_fee_rate != null">
+                `shipping_fee_rate`,
+            </if>
+            create_time,update_time,
+        </trim>
+        <trim prefix="value (" suffix=")" suffixOverrides=",">
+            #{accountCommissionRate.site_id},
+            <if test="accountCommissionRate.direct_purchase_rate != null">
+                #{accountCommissionRate.direct_purchase_rate},
+            </if>
+            <if test="accountCommissionRate.distributor_rate != null">
+                #{accountCommissionRate.distributor_rate},
+            </if>
+            <if test="accountCommissionRate.shipping_fee_rate != null">
+                #{accountCommissionRate.shipping_fee_rate},
+            </if>
+          CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP(),
+        </trim>
+    </insert>
+
+    <update id="updateAccount" flushCache="true">
+        update yb_accout_commission_rate
+        <trim prefix="set" suffixOverrides=",">
+            <if test="accountCommissionRate.direct_purchase_rate != null">
+                `direct_purchase_rate` = #{accountCommissionRate.direct_purchase_rate},
+            </if>
+            <if test="accountCommissionRate.distributor_rate != null">
+                `distributor_rate` = #{accountCommissionRate.distributor_rate},
+            </if>
+            <if test="accountCommissionRate.shipping_fee_rate != null">
+                `shipping_fee_rate` = #{accountCommissionRate.shipping_fee_rate},
+            </if>
+            `update_time` = CURRENT_TIMESTAMP(),
+        </trim>
+        <where>
+            site_id = #{accountCommissionRate.site_id}
+        </where>
+    </update>
+</mapper>

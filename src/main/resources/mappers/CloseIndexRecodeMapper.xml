@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.index.mapper.CloseIndexRecodeMapper">
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into b_close_index_recode (site_id,storeadmin_id,customer_user_name,history_index,order_index,create_time)
+        values
+        <foreach collection="list" item="item" index="index" separator="," >
+            (#{item.site_id},#{item.storeadmin_id},#{item.customer_user_name},#{item.history_index},#{item.order_index},CURRENT_TIMESTAMP)
+        </foreach>
+    </insert>
+
+    <select id="findCloseIndexRecode" resultType="com.jk51.model.CloseIndexRecode">
+        SELECT *
+        from b_close_index_recode
+        WHERE
+          site_id = #{site_id}
+          AND
+          storeadmin_id = #{storeAdminId}
+          AND
+          customer_user_name = #{sender}
+        order by create_time DESC
+    </select>
+    <select id="findCloseIndexRecodeBySenderAndSiteId" resultType="com.jk51.model.CloseIndexRecode">
+         SELECT *
+        from b_close_index_recode
+        WHERE
+          site_id = #{site_id}
+          AND
+          customer_user_name = #{sender}
+          AND
+          create_time BETWEEN #{before} and #{now}
+
+    </select>
+</mapper>

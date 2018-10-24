@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.balance.mapper.BaseFeeMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.balance.BaseFeeSet">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="scene" jdbcType="VARCHAR" property="scene"/>
+        <result column="delivery_type" jdbcType="VARCHAR" property="deliveryType"/>
+        <result column="pay_type" jdbcType="VARCHAR" property="payType"/>
+        <result column="fee_rule" jdbcType="INTEGER" property="feeRule"/>
+        <result column="fee_type" jdbcType="INTEGER" property="feeType"/>
+        <result column="fee_rate" jdbcType="FLOAT" property="feeRate"/>
+        <result column="refuse_rule" jdbcType="VARCHAR" property="refuseRule"/>
+        <result column="mark" jdbcType="VARCHAR" property="mark"/>
+        <result column="is_del" jdbcType="INTEGER" property="isDel"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+
+    <sql id="base_column_list">
+        id,site_id,name,scene,delivery_type,pay_type,fee_rule,fee_type,fee_rate,refuse_rule,mark,is_del,create_time,update_time
+    </sql>
+
+    <select id="getBaseFeeLst" resultMap="BaseResultMap"  parameterType="int">
+        SELECT <include refid="base_column_list"/> FROM b_base_fee_set WHERE site_id=#{siteId} AND is_del=1
+    </select>
+    <select id="getBaseFee" resultMap="BaseResultMap">
+        SELECT <include refid="base_column_list"/> FROM b_base_fee_set WHERE site_id=#{siteId} AND id=#{id}
+    </select>
+
+    <insert id="addBaseFee" parameterType="com.jk51.model.balance.BaseFeeSet" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO b_base_fee_set (site_id, name, scene, delivery_type, pay_type, fee_rule, refuse_rule, fee_rate, fee_type, mark, is_del, update_time, create_time)
+        VALUES (#{siteId}, #{name}, #{scene}, #{deliveryType}, #{payType}, #{feeRule}, #{refuseRule}, #{feeRate}, #{feeType}, #{mark}, 1, now(), now())
+    </insert>
+
+    <update id="updBaseFee" parameterType="com.jk51.model.balance.BaseFeeSet">
+        UPDATE b_base_fee_set
+        <set>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="scene != null">
+                scene=#{scene},
+            </if>
+            <if test="deliveryType != null">
+                delivery_type=#{deliveryType},
+            </if>
+            <if test="payType != null">
+                pay_type=#{payType},
+            </if>
+            <if test="feeRule != null">
+                fee_rule=#{feeRule},
+            </if>
+            <if test="feeRate != null">
+                fee_rate=#{feeRate},
+            </if>
+            <if test="feeType != null">
+                fee_type=#{feeType},
+            </if>
+            <if test="refuseRule != null">
+                refuse_rule=#{refuseRule},
+            </if>
+            <if test="mark != null">
+                mark=#{mark},
+            </if>
+            <if test="isDel != null">
+                is_del=#{isDel},
+            </if>
+        </set>
+        WHERE site_id=#{siteId} AND id=#{id}
+    </update>
+
+    <update id="delBaseFee">
+        UPDATE b_base_fee_set SET is_del=0 WHERE site_id=#{siteId} AND id=#{id}
+    </update>
+
+</mapper>

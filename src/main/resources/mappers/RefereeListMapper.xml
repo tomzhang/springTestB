@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.distribution.mapper.RefereeListMapper">
+
+    <select id="selectRefereeList" resultType="com.jk51.modules.distribution.result.RefereeList">
+
+        SELECT
+          a.referee_id AS refereeId,
+          a.referee_name AS refereeName,
+          a.total_income_amount AS totalIncomeAmount,
+          a.total_expenditure AS totalExpenditure,
+          a.account_balance AS accountBalance
+        FROM d_referee_list a,d_distributor b
+        WHERE a.referee_id = #{distributorId}
+          AND b.id = a.referee_id
+          AND b.owner = #{siteId}
+
+    </select>
+
+    <insert id="insertRefereeList" parameterType="com.jk51.modules.distribution.result.RefereeList">
+
+        INSERT INTO d_referee_list
+
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="refereeId != null">
+                referee_id,
+            </if>
+            <if test="refereeName != null">
+                referee_name,
+            </if>
+            <if test="totalIncomeAmount != null">
+                total_income_amount,
+            </if>
+            <if test="totalExpenditure != null">
+                total_expenditure,
+            </if>
+            <if test="accountBalance != null">
+                account_balance
+            </if>
+        </trim>
+
+        <trim prefix="VALUE (" suffix=")" suffixOverrides=",">
+
+            <if test="refereeId != null">
+                #{refereeId},
+            </if>
+            <if test="refereeName != null">
+                #{refereeName},
+            </if>
+            <if test="totalIncomeAmount != null">
+                #{totalIncomeAmount},
+            </if>
+            <if test="totalExpenditure != null">
+                #{totalExpenditure},
+            </if>
+            <if test="accountBalance != null">
+                #{accountBalance}
+            </if>
+
+        </trim>
+
+
+    </insert>
+
+    <update id="updateRefereeList" parameterType="com.jk51.modules.distribution.result.RefereeList">
+
+        UPDATE d_referee_list
+        SET
+
+            <if test="totalIncomeAmount != null">
+                total_income_amount = #{totalIncomeAmount},
+            </if>
+            <if test="totalExpenditure != null">
+                total_expenditure = #{totalExpenditure},
+            </if>
+            <if test="accountBalance != null">
+                account_balance = #{accountBalance}
+            </if>
+
+        <where>
+            <if test="refereeId != null">
+                AND referee_id = #{refereeId}
+            </if>
+            <if test="refereeName != null">
+                AND referee_name = #{refereeName}
+            </if>
+        </where>
+
+    </update>
+
+    <select id="selectRefereeLists" resultType="com.jk51.modules.distribution.result.DistributorReward" parameterType="java.util.Map" >
+        SELECT
+          a.id AS distributorId,
+          a.owner,
+          a.user_name AS mobile,
+          c.total_income_amount AS rewardCount,
+          c.total_expenditure AS expenditureCount,
+          c.account_balance AS remainingCount
+        FROM
+            d_referee_list AS c
+            LEFT JOIN  d_distributor AS a on c.referee_id = a.id
+        WHERE
+           a.owner = #{siteId}
+            <if test="mobile != null">
+                AND a.user_name = #{mobile}
+            </if>
+        ORDER BY c.referee_id DESC
+        LIMIT
+        <if test="rowsIndex != null">
+            #{rowsIndex}
+        </if>
+        <if test="rowsIndex == null">
+            0
+        </if>,
+        <if test="pageSize != null">
+            #{pageSize}
+        </if>
+        <if test="pageSize == null">
+            15
+        </if>
+    </select>
+
+    <select id="selectRefereeListCount" resultType="java.lang.Long" parameterType="java.util.Map" >
+        SELECT
+          count(1)
+        FROM
+        d_referee_list AS c
+        LEFT JOIN  d_distributor AS a on c.referee_id = a.id
+        WHERE
+        a.owner = #{siteId}
+        <if test="mobile != null">
+            AND a.user_name = #{mobile}
+        </if>
+    </select>
+
+    <select id="selectRefereeListTotal" resultType="com.jk51.modules.distribution.result.DistributorReward" parameterType="java.util.Map">
+        SELECT
+          a.owner,
+          SUM(c.total_income_amount) AS rewardCount,
+          SUM(c.total_expenditure) AS expenditureCount,
+          SUM(c.account_balance) AS remainingCount
+        FROM
+        d_referee_list AS c
+        LEFT JOIN  d_distributor AS a on c.referee_id = a.id
+        WHERE
+        a.owner = #{siteId}
+        <if test="mobile != null">
+            AND a.user_name = #{mobile}
+        </if>
+    </select>
+
+
+</mapper>

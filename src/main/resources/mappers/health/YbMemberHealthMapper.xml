@@ -1,0 +1,906 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.health.mapper.YbMemberHealthMapper">
+  <resultMap id="BaseResultMap" type="com.jk51.model.health.YbMemberHealth">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="memberId" jdbcType="INTEGER" property="memberId" />
+    <result column="cardNo" jdbcType="VARCHAR" property="cardNo" />
+    <result column="height" jdbcType="REAL" property="height" />
+    <result column="weight" jdbcType="REAL" property="weight" />
+    <result column="bmi" jdbcType="REAL" property="bmi" />
+    <result column="sbp" jdbcType="INTEGER" property="sbp" />
+    <result column="dbp" jdbcType="INTEGER" property="dbp" />
+    <result column="pulse" jdbcType="INTEGER" property="pulse" />
+    <result column="bo" jdbcType="INTEGER" property="bo" />
+    <result column="fat" jdbcType="REAL" property="fat" />
+    <result column="bmr" jdbcType="INTEGER" property="bmr" />
+    <result column="water" jdbcType="INTEGER" property="water" />
+    <result column="waistline" jdbcType="REAL" property="waistline" />
+    <result column="hipline" jdbcType="REAL" property="hipline" />
+    <result column="whr" jdbcType="REAL" property="whr" />
+    <result column="PEF" jdbcType="INTEGER" property="PEF" />
+    <result column="FVC" jdbcType="REAL" property="FVC" />
+    <result column="FEV1" jdbcType="REAL" property="FEV1" />
+    <result column="TT" jdbcType="REAL" property="TT" />
+    <result column="VisionLeft" jdbcType="REAL" property="visionLeft" />
+    <result column="VisionRight" jdbcType="REAL" property="visionRight" />
+    <result column="CMP" jdbcType="VARCHAR" property="CMP" />
+    <result column="glu" jdbcType="REAL" property="glu" />
+    <result column="hoursAfterMeal" jdbcType="INTEGER" property="hoursAfterMeal" />
+    <result column="ua" jdbcType="REAL" property="ua" />
+    <result column="chol" jdbcType="REAL" property="chol" />
+    <result column="NGSP" jdbcType="REAL" property="NGSP" />
+    <result column="CHOL1" jdbcType="REAL" property="CHOL1" />
+    <result column="TG" jdbcType="REAL" property="TG" />
+    <result column="HDL" jdbcType="REAL" property="HDL" />
+    <result column="LDL" jdbcType="REAL" property="LDL" />
+    <result column="FGCParam" jdbcType="VARCHAR" property="FGCParam" />
+    <result column="FGCData" jdbcType="VARCHAR" property="FGCData" />
+    <result column="URO" jdbcType="VARCHAR" property="URO" />
+    <result column="BLD" jdbcType="VARCHAR" property="BLD" />
+    <result column="BIL" jdbcType="VARCHAR" property="BIL" />
+    <result column="KET" jdbcType="VARCHAR" property="KET" />
+    <result column="BC_GLU" jdbcType="VARCHAR" property="BC_GLU" />
+    <result column="PRO" jdbcType="VARCHAR" property="PRO" />
+    <result column="PH" jdbcType="REAL" property="PH" />
+    <result column="NIT" jdbcType="VARCHAR" property="NIT" />
+    <result column="LEU" jdbcType="VARCHAR" property="LEU" />
+    <result column="SG" jdbcType="REAL" property="SG" />
+    <result column="VC" jdbcType="VARCHAR" property="VC" />
+    <result column="ecgpng_url" jdbcType="VARCHAR" property="ecgpng_url" />
+    <result column="ecg_result" jdbcType="VARCHAR" property="ecg_result" />
+    <result column="bd_png" jdbcType="VARCHAR" property="bd_png" />
+    <result column="bd_xml" jdbcType="VARCHAR" property="bd_xml" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, memberId, cardNo, height, weight, bmi, sbp, dbp, pulse, bo, fat, bmr, water, 
+    waistline, hipline, whr, PEF, FVC, FEV1, TT, VisionLeft, VisionRight, CMP, glu, hoursAfterMeal, 
+    ua, chol, NGSP, CHOL1, TG, HDL, LDL, FGCParam, FGCData, URO, BLD, BIL, KET, BC_GLU, 
+    PRO, PH, NIT, LEU, SG, VC, ecgpng_url, ecg_result, bd_png, bd_xml
+  </sql>
+  <select id="selectByExample" parameterType="com.jk51.model.health.YbMemberHealthExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from yb_member_health
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limit != null">
+      <if test="offset != null">
+        limit ${offset}, ${limit}
+      </if>
+      <if test="offset == null">
+        limit ${limit}
+      </if>
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yb_member_health
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from yb_member_health
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jk51.model.health.YbMemberHealthExample">
+    delete from yb_member_health
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jk51.model.health.YbMemberHealth">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into yb_member_health (memberId, cardNo, height, 
+      weight, bmi, sbp, dbp, 
+      pulse, bo, fat, bmr, 
+      water, waistline, hipline, 
+      whr, PEF, FVC, FEV1, 
+      TT, VisionLeft, VisionRight, 
+      CMP, glu, hoursAfterMeal, 
+      ua, chol, NGSP, CHOL1, 
+      TG, HDL, LDL, FGCParam, 
+      FGCData, URO, BLD, 
+      BIL, KET, BC_GLU, PRO, 
+      PH, NIT, LEU, SG, 
+      VC, ecgpng_url, ecg_result, 
+      bd_png, bd_xml)
+    values (#{memberId,jdbcType=INTEGER}, #{cardNo,jdbcType=VARCHAR}, #{height,jdbcType=REAL}, 
+      #{weight,jdbcType=REAL}, #{bmi,jdbcType=REAL}, #{sbp,jdbcType=INTEGER}, #{dbp,jdbcType=INTEGER}, 
+      #{pulse,jdbcType=INTEGER}, #{bo,jdbcType=INTEGER}, #{fat,jdbcType=REAL}, #{bmr,jdbcType=INTEGER}, 
+      #{water,jdbcType=INTEGER}, #{waistline,jdbcType=REAL}, #{hipline,jdbcType=REAL}, 
+      #{whr,jdbcType=REAL}, #{PEF,jdbcType=INTEGER}, #{FVC,jdbcType=REAL}, #{FEV1,jdbcType=REAL}, 
+      #{TT,jdbcType=REAL}, #{visionLeft,jdbcType=REAL}, #{visionRight,jdbcType=REAL}, 
+      #{CMP,jdbcType=VARCHAR}, #{glu,jdbcType=REAL}, #{hoursAfterMeal,jdbcType=INTEGER}, 
+      #{ua,jdbcType=REAL}, #{chol,jdbcType=REAL}, #{NGSP,jdbcType=REAL}, #{CHOL1,jdbcType=REAL}, 
+      #{TG,jdbcType=REAL}, #{HDL,jdbcType=REAL}, #{LDL,jdbcType=REAL}, #{FGCParam,jdbcType=VARCHAR}, 
+      #{FGCData,jdbcType=VARCHAR}, #{URO,jdbcType=VARCHAR}, #{BLD,jdbcType=VARCHAR}, 
+      #{BIL,jdbcType=VARCHAR}, #{KET,jdbcType=VARCHAR}, #{BC_GLU,jdbcType=VARCHAR}, #{PRO,jdbcType=VARCHAR}, 
+      #{PH,jdbcType=REAL}, #{NIT,jdbcType=VARCHAR}, #{LEU,jdbcType=VARCHAR}, #{SG,jdbcType=REAL}, 
+      #{VC,jdbcType=VARCHAR}, #{ecgpng_url,jdbcType=VARCHAR}, #{ecg_result,jdbcType=VARCHAR}, 
+      #{bd_png,jdbcType=VARCHAR}, #{bd_xml,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jk51.model.health.YbMemberHealth">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into yb_member_health
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="memberId != null">
+        memberId,
+      </if>
+      <if test="cardNo != null">
+        cardNo,
+      </if>
+      <if test="height != null">
+        height,
+      </if>
+      <if test="weight != null">
+        weight,
+      </if>
+      <if test="bmi != null">
+        bmi,
+      </if>
+      <if test="sbp != null">
+        sbp,
+      </if>
+      <if test="dbp != null">
+        dbp,
+      </if>
+      <if test="pulse != null">
+        pulse,
+      </if>
+      <if test="bo != null">
+        bo,
+      </if>
+      <if test="fat != null">
+        fat,
+      </if>
+      <if test="bmr != null">
+        bmr,
+      </if>
+      <if test="water != null">
+        water,
+      </if>
+      <if test="waistline != null">
+        waistline,
+      </if>
+      <if test="hipline != null">
+        hipline,
+      </if>
+      <if test="whr != null">
+        whr,
+      </if>
+      <if test="PEF != null">
+        PEF,
+      </if>
+      <if test="FVC != null">
+        FVC,
+      </if>
+      <if test="FEV1 != null">
+        FEV1,
+      </if>
+      <if test="TT != null">
+        TT,
+      </if>
+      <if test="visionLeft != null">
+        VisionLeft,
+      </if>
+      <if test="visionRight != null">
+        VisionRight,
+      </if>
+      <if test="CMP != null">
+        CMP,
+      </if>
+      <if test="glu != null">
+        glu,
+      </if>
+      <if test="hoursAfterMeal != null">
+        hoursAfterMeal,
+      </if>
+      <if test="ua != null">
+        ua,
+      </if>
+      <if test="chol != null">
+        chol,
+      </if>
+      <if test="NGSP != null">
+        NGSP,
+      </if>
+      <if test="CHOL1 != null">
+        CHOL1,
+      </if>
+      <if test="TG != null">
+        TG,
+      </if>
+      <if test="HDL != null">
+        HDL,
+      </if>
+      <if test="LDL != null">
+        LDL,
+      </if>
+      <if test="FGCParam != null">
+        FGCParam,
+      </if>
+      <if test="FGCData != null">
+        FGCData,
+      </if>
+      <if test="URO != null">
+        URO,
+      </if>
+      <if test="BLD != null">
+        BLD,
+      </if>
+      <if test="BIL != null">
+        BIL,
+      </if>
+      <if test="KET != null">
+        KET,
+      </if>
+      <if test="BC_GLU != null">
+        BC_GLU,
+      </if>
+      <if test="PRO != null">
+        PRO,
+      </if>
+      <if test="PH != null">
+        PH,
+      </if>
+      <if test="NIT != null">
+        NIT,
+      </if>
+      <if test="LEU != null">
+        LEU,
+      </if>
+      <if test="SG != null">
+        SG,
+      </if>
+      <if test="VC != null">
+        VC,
+      </if>
+      <if test="ecgpng_url != null">
+        ecgpng_url,
+      </if>
+      <if test="ecg_result != null">
+        ecg_result,
+      </if>
+      <if test="bd_png != null">
+        bd_png,
+      </if>
+      <if test="bd_xml != null">
+        bd_xml,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="memberId != null">
+        #{memberId,jdbcType=INTEGER},
+      </if>
+      <if test="cardNo != null">
+        #{cardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="height != null">
+        #{height,jdbcType=REAL},
+      </if>
+      <if test="weight != null">
+        #{weight,jdbcType=REAL},
+      </if>
+      <if test="bmi != null">
+        #{bmi,jdbcType=REAL},
+      </if>
+      <if test="sbp != null">
+        #{sbp,jdbcType=INTEGER},
+      </if>
+      <if test="dbp != null">
+        #{dbp,jdbcType=INTEGER},
+      </if>
+      <if test="pulse != null">
+        #{pulse,jdbcType=INTEGER},
+      </if>
+      <if test="bo != null">
+        #{bo,jdbcType=INTEGER},
+      </if>
+      <if test="fat != null">
+        #{fat,jdbcType=REAL},
+      </if>
+      <if test="bmr != null">
+        #{bmr,jdbcType=INTEGER},
+      </if>
+      <if test="water != null">
+        #{water,jdbcType=INTEGER},
+      </if>
+      <if test="waistline != null">
+        #{waistline,jdbcType=REAL},
+      </if>
+      <if test="hipline != null">
+        #{hipline,jdbcType=REAL},
+      </if>
+      <if test="whr != null">
+        #{whr,jdbcType=REAL},
+      </if>
+      <if test="PEF != null">
+        #{PEF,jdbcType=INTEGER},
+      </if>
+      <if test="FVC != null">
+        #{FVC,jdbcType=REAL},
+      </if>
+      <if test="FEV1 != null">
+        #{FEV1,jdbcType=REAL},
+      </if>
+      <if test="TT != null">
+        #{TT,jdbcType=REAL},
+      </if>
+      <if test="visionLeft != null">
+        #{visionLeft,jdbcType=REAL},
+      </if>
+      <if test="visionRight != null">
+        #{visionRight,jdbcType=REAL},
+      </if>
+      <if test="CMP != null">
+        #{CMP,jdbcType=VARCHAR},
+      </if>
+      <if test="glu != null">
+        #{glu,jdbcType=REAL},
+      </if>
+      <if test="hoursAfterMeal != null">
+        #{hoursAfterMeal,jdbcType=INTEGER},
+      </if>
+      <if test="ua != null">
+        #{ua,jdbcType=REAL},
+      </if>
+      <if test="chol != null">
+        #{chol,jdbcType=REAL},
+      </if>
+      <if test="NGSP != null">
+        #{NGSP,jdbcType=REAL},
+      </if>
+      <if test="CHOL1 != null">
+        #{CHOL1,jdbcType=REAL},
+      </if>
+      <if test="TG != null">
+        #{TG,jdbcType=REAL},
+      </if>
+      <if test="HDL != null">
+        #{HDL,jdbcType=REAL},
+      </if>
+      <if test="LDL != null">
+        #{LDL,jdbcType=REAL},
+      </if>
+      <if test="FGCParam != null">
+        #{FGCParam,jdbcType=VARCHAR},
+      </if>
+      <if test="FGCData != null">
+        #{FGCData,jdbcType=VARCHAR},
+      </if>
+      <if test="URO != null">
+        #{URO,jdbcType=VARCHAR},
+      </if>
+      <if test="BLD != null">
+        #{BLD,jdbcType=VARCHAR},
+      </if>
+      <if test="BIL != null">
+        #{BIL,jdbcType=VARCHAR},
+      </if>
+      <if test="KET != null">
+        #{KET,jdbcType=VARCHAR},
+      </if>
+      <if test="BC_GLU != null">
+        #{BC_GLU,jdbcType=VARCHAR},
+      </if>
+      <if test="PRO != null">
+        #{PRO,jdbcType=VARCHAR},
+      </if>
+      <if test="PH != null">
+        #{PH,jdbcType=REAL},
+      </if>
+      <if test="NIT != null">
+        #{NIT,jdbcType=VARCHAR},
+      </if>
+      <if test="LEU != null">
+        #{LEU,jdbcType=VARCHAR},
+      </if>
+      <if test="SG != null">
+        #{SG,jdbcType=REAL},
+      </if>
+      <if test="VC != null">
+        #{VC,jdbcType=VARCHAR},
+      </if>
+      <if test="ecgpng_url != null">
+        #{ecgpng_url,jdbcType=VARCHAR},
+      </if>
+      <if test="ecg_result != null">
+        #{ecg_result,jdbcType=VARCHAR},
+      </if>
+      <if test="bd_png != null">
+        #{bd_png,jdbcType=VARCHAR},
+      </if>
+      <if test="bd_xml != null">
+        #{bd_xml,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jk51.model.health.YbMemberHealthExample" resultType="java.lang.Long">
+    select count(*) from yb_member_health
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update yb_member_health
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.memberId != null">
+        memberId = #{record.memberId,jdbcType=INTEGER},
+      </if>
+      <if test="record.cardNo != null">
+        cardNo = #{record.cardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.height != null">
+        height = #{record.height,jdbcType=REAL},
+      </if>
+      <if test="record.weight != null">
+        weight = #{record.weight,jdbcType=REAL},
+      </if>
+      <if test="record.bmi != null">
+        bmi = #{record.bmi,jdbcType=REAL},
+      </if>
+      <if test="record.sbp != null">
+        sbp = #{record.sbp,jdbcType=INTEGER},
+      </if>
+      <if test="record.dbp != null">
+        dbp = #{record.dbp,jdbcType=INTEGER},
+      </if>
+      <if test="record.pulse != null">
+        pulse = #{record.pulse,jdbcType=INTEGER},
+      </if>
+      <if test="record.bo != null">
+        bo = #{record.bo,jdbcType=INTEGER},
+      </if>
+      <if test="record.fat != null">
+        fat = #{record.fat,jdbcType=REAL},
+      </if>
+      <if test="record.bmr != null">
+        bmr = #{record.bmr,jdbcType=INTEGER},
+      </if>
+      <if test="record.water != null">
+        water = #{record.water,jdbcType=INTEGER},
+      </if>
+      <if test="record.waistline != null">
+        waistline = #{record.waistline,jdbcType=REAL},
+      </if>
+      <if test="record.hipline != null">
+        hipline = #{record.hipline,jdbcType=REAL},
+      </if>
+      <if test="record.whr != null">
+        whr = #{record.whr,jdbcType=REAL},
+      </if>
+      <if test="record.PEF != null">
+        PEF = #{record.PEF,jdbcType=INTEGER},
+      </if>
+      <if test="record.FVC != null">
+        FVC = #{record.FVC,jdbcType=REAL},
+      </if>
+      <if test="record.FEV1 != null">
+        FEV1 = #{record.FEV1,jdbcType=REAL},
+      </if>
+      <if test="record.TT != null">
+        TT = #{record.TT,jdbcType=REAL},
+      </if>
+      <if test="record.visionLeft != null">
+        VisionLeft = #{record.visionLeft,jdbcType=REAL},
+      </if>
+      <if test="record.visionRight != null">
+        VisionRight = #{record.visionRight,jdbcType=REAL},
+      </if>
+      <if test="record.CMP != null">
+        CMP = #{record.CMP,jdbcType=VARCHAR},
+      </if>
+      <if test="record.glu != null">
+        glu = #{record.glu,jdbcType=REAL},
+      </if>
+      <if test="record.hoursAfterMeal != null">
+        hoursAfterMeal = #{record.hoursAfterMeal,jdbcType=INTEGER},
+      </if>
+      <if test="record.ua != null">
+        ua = #{record.ua,jdbcType=REAL},
+      </if>
+      <if test="record.chol != null">
+        chol = #{record.chol,jdbcType=REAL},
+      </if>
+      <if test="record.NGSP != null">
+        NGSP = #{record.NGSP,jdbcType=REAL},
+      </if>
+      <if test="record.CHOL1 != null">
+        CHOL1 = #{record.CHOL1,jdbcType=REAL},
+      </if>
+      <if test="record.TG != null">
+        TG = #{record.TG,jdbcType=REAL},
+      </if>
+      <if test="record.HDL != null">
+        HDL = #{record.HDL,jdbcType=REAL},
+      </if>
+      <if test="record.LDL != null">
+        LDL = #{record.LDL,jdbcType=REAL},
+      </if>
+      <if test="record.FGCParam != null">
+        FGCParam = #{record.FGCParam,jdbcType=VARCHAR},
+      </if>
+      <if test="record.FGCData != null">
+        FGCData = #{record.FGCData,jdbcType=VARCHAR},
+      </if>
+      <if test="record.URO != null">
+        URO = #{record.URO,jdbcType=VARCHAR},
+      </if>
+      <if test="record.BLD != null">
+        BLD = #{record.BLD,jdbcType=VARCHAR},
+      </if>
+      <if test="record.BIL != null">
+        BIL = #{record.BIL,jdbcType=VARCHAR},
+      </if>
+      <if test="record.KET != null">
+        KET = #{record.KET,jdbcType=VARCHAR},
+      </if>
+      <if test="record.BC_GLU != null">
+        BC_GLU = #{record.BC_GLU,jdbcType=VARCHAR},
+      </if>
+      <if test="record.PRO != null">
+        PRO = #{record.PRO,jdbcType=VARCHAR},
+      </if>
+      <if test="record.PH != null">
+        PH = #{record.PH,jdbcType=REAL},
+      </if>
+      <if test="record.NIT != null">
+        NIT = #{record.NIT,jdbcType=VARCHAR},
+      </if>
+      <if test="record.LEU != null">
+        LEU = #{record.LEU,jdbcType=VARCHAR},
+      </if>
+      <if test="record.SG != null">
+        SG = #{record.SG,jdbcType=REAL},
+      </if>
+      <if test="record.VC != null">
+        VC = #{record.VC,jdbcType=VARCHAR},
+      </if>
+      <if test="record.ecgpng_url != null">
+        ecgpng_url = #{record.ecgpng_url,jdbcType=VARCHAR},
+      </if>
+      <if test="record.ecg_result != null">
+        ecg_result = #{record.ecg_result,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bd_png != null">
+        bd_png = #{record.bd_png,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bd_xml != null">
+        bd_xml = #{record.bd_xml,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update yb_member_health
+    set id = #{record.id,jdbcType=INTEGER},
+      memberId = #{record.memberId,jdbcType=INTEGER},
+      cardNo = #{record.cardNo,jdbcType=VARCHAR},
+      height = #{record.height,jdbcType=REAL},
+      weight = #{record.weight,jdbcType=REAL},
+      bmi = #{record.bmi,jdbcType=REAL},
+      sbp = #{record.sbp,jdbcType=INTEGER},
+      dbp = #{record.dbp,jdbcType=INTEGER},
+      pulse = #{record.pulse,jdbcType=INTEGER},
+      bo = #{record.bo,jdbcType=INTEGER},
+      fat = #{record.fat,jdbcType=REAL},
+      bmr = #{record.bmr,jdbcType=INTEGER},
+      water = #{record.water,jdbcType=INTEGER},
+      waistline = #{record.waistline,jdbcType=REAL},
+      hipline = #{record.hipline,jdbcType=REAL},
+      whr = #{record.whr,jdbcType=REAL},
+      PEF = #{record.PEF,jdbcType=INTEGER},
+      FVC = #{record.FVC,jdbcType=REAL},
+      FEV1 = #{record.FEV1,jdbcType=REAL},
+      TT = #{record.TT,jdbcType=REAL},
+      VisionLeft = #{record.visionLeft,jdbcType=REAL},
+      VisionRight = #{record.visionRight,jdbcType=REAL},
+      CMP = #{record.CMP,jdbcType=VARCHAR},
+      glu = #{record.glu,jdbcType=REAL},
+      hoursAfterMeal = #{record.hoursAfterMeal,jdbcType=INTEGER},
+      ua = #{record.ua,jdbcType=REAL},
+      chol = #{record.chol,jdbcType=REAL},
+      NGSP = #{record.NGSP,jdbcType=REAL},
+      CHOL1 = #{record.CHOL1,jdbcType=REAL},
+      TG = #{record.TG,jdbcType=REAL},
+      HDL = #{record.HDL,jdbcType=REAL},
+      LDL = #{record.LDL,jdbcType=REAL},
+      FGCParam = #{record.FGCParam,jdbcType=VARCHAR},
+      FGCData = #{record.FGCData,jdbcType=VARCHAR},
+      URO = #{record.URO,jdbcType=VARCHAR},
+      BLD = #{record.BLD,jdbcType=VARCHAR},
+      BIL = #{record.BIL,jdbcType=VARCHAR},
+      KET = #{record.KET,jdbcType=VARCHAR},
+      BC_GLU = #{record.BC_GLU,jdbcType=VARCHAR},
+      PRO = #{record.PRO,jdbcType=VARCHAR},
+      PH = #{record.PH,jdbcType=REAL},
+      NIT = #{record.NIT,jdbcType=VARCHAR},
+      LEU = #{record.LEU,jdbcType=VARCHAR},
+      SG = #{record.SG,jdbcType=REAL},
+      VC = #{record.VC,jdbcType=VARCHAR},
+      ecgpng_url = #{record.ecgpng_url,jdbcType=VARCHAR},
+      ecg_result = #{record.ecg_result,jdbcType=VARCHAR},
+      bd_png = #{record.bd_png,jdbcType=VARCHAR},
+      bd_xml = #{record.bd_xml,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.health.YbMemberHealth">
+    update yb_member_health
+    <set>
+      <if test="memberId != null">
+        memberId = #{memberId,jdbcType=INTEGER},
+      </if>
+      <if test="cardNo != null">
+        cardNo = #{cardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="height != null">
+        height = #{height,jdbcType=REAL},
+      </if>
+      <if test="weight != null">
+        weight = #{weight,jdbcType=REAL},
+      </if>
+      <if test="bmi != null">
+        bmi = #{bmi,jdbcType=REAL},
+      </if>
+      <if test="sbp != null">
+        sbp = #{sbp,jdbcType=INTEGER},
+      </if>
+      <if test="dbp != null">
+        dbp = #{dbp,jdbcType=INTEGER},
+      </if>
+      <if test="pulse != null">
+        pulse = #{pulse,jdbcType=INTEGER},
+      </if>
+      <if test="bo != null">
+        bo = #{bo,jdbcType=INTEGER},
+      </if>
+      <if test="fat != null">
+        fat = #{fat,jdbcType=REAL},
+      </if>
+      <if test="bmr != null">
+        bmr = #{bmr,jdbcType=INTEGER},
+      </if>
+      <if test="water != null">
+        water = #{water,jdbcType=INTEGER},
+      </if>
+      <if test="waistline != null">
+        waistline = #{waistline,jdbcType=REAL},
+      </if>
+      <if test="hipline != null">
+        hipline = #{hipline,jdbcType=REAL},
+      </if>
+      <if test="whr != null">
+        whr = #{whr,jdbcType=REAL},
+      </if>
+      <if test="PEF != null">
+        PEF = #{PEF,jdbcType=INTEGER},
+      </if>
+      <if test="FVC != null">
+        FVC = #{FVC,jdbcType=REAL},
+      </if>
+      <if test="FEV1 != null">
+        FEV1 = #{FEV1,jdbcType=REAL},
+      </if>
+      <if test="TT != null">
+        TT = #{TT,jdbcType=REAL},
+      </if>
+      <if test="visionLeft != null">
+        VisionLeft = #{visionLeft,jdbcType=REAL},
+      </if>
+      <if test="visionRight != null">
+        VisionRight = #{visionRight,jdbcType=REAL},
+      </if>
+      <if test="CMP != null">
+        CMP = #{CMP,jdbcType=VARCHAR},
+      </if>
+      <if test="glu != null">
+        glu = #{glu,jdbcType=REAL},
+      </if>
+      <if test="hoursAfterMeal != null">
+        hoursAfterMeal = #{hoursAfterMeal,jdbcType=INTEGER},
+      </if>
+      <if test="ua != null">
+        ua = #{ua,jdbcType=REAL},
+      </if>
+      <if test="chol != null">
+        chol = #{chol,jdbcType=REAL},
+      </if>
+      <if test="NGSP != null">
+        NGSP = #{NGSP,jdbcType=REAL},
+      </if>
+      <if test="CHOL1 != null">
+        CHOL1 = #{CHOL1,jdbcType=REAL},
+      </if>
+      <if test="TG != null">
+        TG = #{TG,jdbcType=REAL},
+      </if>
+      <if test="HDL != null">
+        HDL = #{HDL,jdbcType=REAL},
+      </if>
+      <if test="LDL != null">
+        LDL = #{LDL,jdbcType=REAL},
+      </if>
+      <if test="FGCParam != null">
+        FGCParam = #{FGCParam,jdbcType=VARCHAR},
+      </if>
+      <if test="FGCData != null">
+        FGCData = #{FGCData,jdbcType=VARCHAR},
+      </if>
+      <if test="URO != null">
+        URO = #{URO,jdbcType=VARCHAR},
+      </if>
+      <if test="BLD != null">
+        BLD = #{BLD,jdbcType=VARCHAR},
+      </if>
+      <if test="BIL != null">
+        BIL = #{BIL,jdbcType=VARCHAR},
+      </if>
+      <if test="KET != null">
+        KET = #{KET,jdbcType=VARCHAR},
+      </if>
+      <if test="BC_GLU != null">
+        BC_GLU = #{BC_GLU,jdbcType=VARCHAR},
+      </if>
+      <if test="PRO != null">
+        PRO = #{PRO,jdbcType=VARCHAR},
+      </if>
+      <if test="PH != null">
+        PH = #{PH,jdbcType=REAL},
+      </if>
+      <if test="NIT != null">
+        NIT = #{NIT,jdbcType=VARCHAR},
+      </if>
+      <if test="LEU != null">
+        LEU = #{LEU,jdbcType=VARCHAR},
+      </if>
+      <if test="SG != null">
+        SG = #{SG,jdbcType=REAL},
+      </if>
+      <if test="VC != null">
+        VC = #{VC,jdbcType=VARCHAR},
+      </if>
+      <if test="ecgpng_url != null">
+        ecgpng_url = #{ecgpng_url,jdbcType=VARCHAR},
+      </if>
+      <if test="ecg_result != null">
+        ecg_result = #{ecg_result,jdbcType=VARCHAR},
+      </if>
+      <if test="bd_png != null">
+        bd_png = #{bd_png,jdbcType=VARCHAR},
+      </if>
+      <if test="bd_xml != null">
+        bd_xml = #{bd_xml,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jk51.model.health.YbMemberHealth">
+    update yb_member_health
+    set memberId = #{memberId,jdbcType=INTEGER},
+      cardNo = #{cardNo,jdbcType=VARCHAR},
+      height = #{height,jdbcType=REAL},
+      weight = #{weight,jdbcType=REAL},
+      bmi = #{bmi,jdbcType=REAL},
+      sbp = #{sbp,jdbcType=INTEGER},
+      dbp = #{dbp,jdbcType=INTEGER},
+      pulse = #{pulse,jdbcType=INTEGER},
+      bo = #{bo,jdbcType=INTEGER},
+      fat = #{fat,jdbcType=REAL},
+      bmr = #{bmr,jdbcType=INTEGER},
+      water = #{water,jdbcType=INTEGER},
+      waistline = #{waistline,jdbcType=REAL},
+      hipline = #{hipline,jdbcType=REAL},
+      whr = #{whr,jdbcType=REAL},
+      PEF = #{PEF,jdbcType=INTEGER},
+      FVC = #{FVC,jdbcType=REAL},
+      FEV1 = #{FEV1,jdbcType=REAL},
+      TT = #{TT,jdbcType=REAL},
+      VisionLeft = #{visionLeft,jdbcType=REAL},
+      VisionRight = #{visionRight,jdbcType=REAL},
+      CMP = #{CMP,jdbcType=VARCHAR},
+      glu = #{glu,jdbcType=REAL},
+      hoursAfterMeal = #{hoursAfterMeal,jdbcType=INTEGER},
+      ua = #{ua,jdbcType=REAL},
+      chol = #{chol,jdbcType=REAL},
+      NGSP = #{NGSP,jdbcType=REAL},
+      CHOL1 = #{CHOL1,jdbcType=REAL},
+      TG = #{TG,jdbcType=REAL},
+      HDL = #{HDL,jdbcType=REAL},
+      LDL = #{LDL,jdbcType=REAL},
+      FGCParam = #{FGCParam,jdbcType=VARCHAR},
+      FGCData = #{FGCData,jdbcType=VARCHAR},
+      URO = #{URO,jdbcType=VARCHAR},
+      BLD = #{BLD,jdbcType=VARCHAR},
+      BIL = #{BIL,jdbcType=VARCHAR},
+      KET = #{KET,jdbcType=VARCHAR},
+      BC_GLU = #{BC_GLU,jdbcType=VARCHAR},
+      PRO = #{PRO,jdbcType=VARCHAR},
+      PH = #{PH,jdbcType=REAL},
+      NIT = #{NIT,jdbcType=VARCHAR},
+      LEU = #{LEU,jdbcType=VARCHAR},
+      SG = #{SG,jdbcType=REAL},
+      VC = #{VC,jdbcType=VARCHAR},
+      ecgpng_url = #{ecgpng_url,jdbcType=VARCHAR},
+      ecg_result = #{ecg_result,jdbcType=VARCHAR},
+      bd_png = #{bd_png,jdbcType=VARCHAR},
+      bd_xml = #{bd_xml,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

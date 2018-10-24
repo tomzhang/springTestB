@@ -1,0 +1,1567 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.goods.mapper.YbGoodsMapper">
+    <!-- 条件查询商品信息以及结果集-->
+    <resultMap id="pageDataList" type="com.jk51.model.goods.PageData" autoMapping="true">
+        <association property="def_url" javaType="com.jk51.model.goods.PageData">
+            <result column="hash" property="hash" javaType="String"></result>
+            <result column="host_id" property="hostId" javaType="String"></result>
+        </association>
+    </resultMap>
+
+    <select id="getList" resultMap="pageDataList" useCache="false" parameterType="com.jk51.model.goods.YbGoodsGrid" >
+        SELECT
+        G.goods_id,G.approval_number ,G.drug_name ,G.com_name ,G.specif_cation ,G.goods_company ,G.barnd_id
+        ,G.drug_category ,G.goods_property
+        ,G.goods_use ,G.goods_forts ,G.goods_validity ,G.goods_forpeople ,G.user_cateid ,G.goods_title ,G.goods_tagsid
+        ,G.market_price
+        ,G.shop_price ,G.discount_price ,G.in_stock ,G.goods_weight ,G.control_num ,G.goods_status ,G.freight_payer
+        ,G.postage_id ,G.detail_tpl
+        ,G.is_medicare ,G.medicare_code ,G.medicare_top_price ,G.bar_code ,G.mnemonic_code ,G.goods_code
+        ,G.update_status ,G.update_img
+        ,G.merchant_id ,date_format(G.update_time,'%Y-%m-%d %H:%i:%s') AS update_time,
+        <if test="hasExtdFields">
+            extd.goodsextd_id,extd.main_ingredient,extd.goods_indications,extd.goods_action ,extd.adverse_reactioins
+            ,extd.goods_note ,extd.goods_use_method
+            ,extd.goods_contd ,extd.goods_desc ,extd.goods_description ,extd.browse_number ,extd.trans_mumber
+            ,extd.shopping_number ,extd.product_date ,extd.goods_usage
+            ,extd.goods_deposit ,extd.forpeople_desc ,extd.qualification,
+        </if>
+        B.barnd_name,
+        Cat.cate_name,
+        Cat.cate_code,
+        Img.host_id,
+        Img.`hash`
+        FROM
+        yb_goods G
+        <if test="hasExtdFields">
+            LEFT JOIN yb_goodsextd extd on G.goods_id = extd.goods_id
+        </if>
+        LEFT JOIN yb_barnd B ON G.barnd_id = B.barnd_id
+        LEFT JOIN yb_category Cat ON Cat.cate_code = G.user_cateid
+        LEFT JOIN yb_images_attr Img ON G.goods_id = Img.goods_id
+        <where>
+            1=1
+            <choose>
+                <when test="goods_status==null">
+                    AND G.goods_status != 3
+                </when>
+                <otherwise>
+                    AND G.goods_status = #{goods_status}
+                </otherwise>
+            </choose>
+            <if test='renewable=="Y"'>
+                AND G.update_status = 1
+            </if>
+            <if test="drug_name!=null and drug_name!=''">
+                AND G.drug_name like CONCAT('%',#{drug_name},'%')
+            </if>
+            <if test="approval_number!=null and approval_number!=''">
+                AND G.approval_number=#{approval_number}
+            </if>
+            <if test="id!=null">
+                AND G.goods_id=#{id}
+            </if>
+            <if test="specif_cation!=null and specif_cation!=''">
+                AND G.specif_cation=#{specif_cation}
+            </if>
+            <if test="specif_code!=null and specif_code!=''">
+                AND G.bar_code=#{specif_code}
+            </if>
+            <if test="brand_name!=null and brand_name!=''">
+                AND B.barnd_name=#{brand_name}
+            </if>
+
+            <choose>
+                <when test="start_date!=null and end_date!=null">
+                    AND G.update_time &gt; #{start_date} AND G.update_time &lt; #{end_date}
+                </when>
+                <when test="start_date!=null">
+                    AND G.update_time &gt; #{start_date}
+                </when>
+                <when test="end_date!=null">
+                    AND G.update_time &lt; #{end_date}
+                </when>
+            </choose>
+
+            <if test="goods_company!=null and goods_company!=''">
+                AND G.goods_company=#{goods_company}
+            </if>
+
+            <choose>
+                <when test="has_image==1">
+                    AND Img.is_default = 1 AND Img.flag = 0
+                </when>
+                <when test="has_image==0">
+                    AND Img.is_default is NULL
+                </when>
+            </choose>
+            <if test="udateimg_status!=null">
+                AND G.update_img=#{udateimg_status}
+            </if>
+
+            <if test="detail_tpl!=null">
+                AND G.detail_tpl=#{detail_tpl}
+            </if>
+
+            <if test="update_status!=null">
+                AND G.update_status=#{update_status}
+            </if>
+
+            <if test="cats!=null">
+                AND G.user_cateid IN
+                <foreach collection="cats" open="(" close=")" separator="," item="cat">
+                    #{cat}
+                </foreach>
+            </if>
+
+            <!--<if test="cate_id!=null and cate_id!=''">-->
+            <!--AND G.user_cateid LIKE concat(#{cate_id},"","%")-->
+            <!--</if>-->
+            ORDER BY G.update_time DESC
+        </where>
+    </select>
+
+    <resultMap id="ignoreImgExistsList" type="HashMap" autoMapping="true">
+        <id column="goods_id" property="goods_id"></id>
+        <id column="parent_id" property="parent_id"></id>
+        <association property="def_url" javaType="HashMap" select="queryImg" column="{goods_id=goods_id}"/>
+        <association property="first_category_id" javaType="HashMap" select="queryFirstCategoryId" column="{parent_id=parent_id}"/>
+    </resultMap>
+    <select id="queryFirstCategoryId" resultType="java.lang.String">
+        SELECT parent_id from yb_category where cate_id = ${parent_id}
+    </select>
+    <select id="queryImg" resultType="HashMap">
+        select hash,host_id AS hostId from yb_images_attr WHERE flag=0 AND goods_id=#{goods_id} AND is_default=1 limit 1;
+    </select>
+    <select id="getListIgnoreImgExists" resultMap="ignoreImgExistsList" parameterType="com.jk51.model.goods.YbGoodsGrid">
+        SELECT
+        G.goods_id,G.approval_number ,G.drug_name ,G.com_name ,G.specif_cation ,G.goods_company ,G.barnd_id
+        ,G.drug_category ,G.goods_property
+        ,G.goods_use ,G.goods_forts ,G.goods_validity ,G.goods_forpeople ,G.user_cateid ,G.goods_title ,G.goods_tagsid
+        ,G.market_price
+        ,G.shop_price ,G.discount_price ,G.in_stock ,G.goods_weight ,G.control_num ,G.goods_status ,G.freight_payer
+        ,G.postage_id ,G.detail_tpl
+        ,G.is_medicare ,G.medicare_code ,G.medicare_top_price ,G.bar_code ,G.mnemonic_code ,G.goods_code
+        ,G.update_status ,G.update_img
+        ,G.merchant_id ,date_format(G.update_time,'%Y-%m-%d %H:%i:%s') AS update_time,date_format(G.delist_time,'%Y-%m-%d %H:%i:%s') as delist_time,
+        <if test="hasExtdFields">
+            extd.goodsextd_id,extd.main_ingredient,extd.goods_indications,extd.goods_action ,extd.adverse_reactioins
+            ,extd.goods_note ,extd.goods_use_method
+            ,extd.goods_contd ,extd.goods_desc ,extd.goods_description ,extd.browse_number ,extd.trans_mumber
+            ,extd.shopping_number ,extd.product_date ,extd.goods_usage
+            ,extd.goods_deposit ,extd.forpeople_desc ,extd.qualification,
+        </if>
+        B.barnd_name,
+        Cat.cate_name,
+        Cat.cate_code,
+        Cat.parent_id,
+        Cat.cate_id
+        FROM
+        yb_goods G
+        <if test="hasExtdFields">
+            LEFT JOIN yb_goodsextd extd on G.goods_id = extd.goods_id
+        </if>
+        LEFT JOIN yb_barnd B ON G.barnd_id = B.barnd_id
+        LEFT JOIN yb_category Cat ON Cat.cate_code = G.user_cateid
+        <where>
+            1=1
+            <choose>
+                <when test="goods_status==null or goods_status ==''">
+                    AND G.goods_status != 3
+                </when>
+                <otherwise>
+                    AND G.goods_status = #{goods_status}
+                </otherwise>
+            </choose>
+            <if test='renewable=="Y"'>
+                AND G.update_status = 1
+            </if>
+            <if test="drug_name!=null and drug_name!=''">
+                AND G.drug_name like CONCAT('%',#{drug_name},'%')
+            </if>
+            <if test="approval_number!=null and approval_number!=''">
+                AND G.approval_number=#{approval_number}
+            </if>
+            <if test="id!=null">
+                AND G.goods_id=#{id}
+            </if>
+            <if test="specif_cation!=null and specif_cation!=''">
+                AND G.specif_cation=#{specif_cation}
+            </if>
+            <if test="specif_code!=null and specif_code!=''">
+                AND G.bar_code=#{specif_code}
+            </if>
+            <if test="brand_name!=null and brand_name!=''">
+                AND B.barnd_name=#{brand_name}
+            </if>
+
+            <choose>
+                <when test="start_date!=null and end_date!=null">
+                    AND G.update_time &gt; #{start_date} AND G.update_time &lt; #{end_date}
+                </when>
+                <when test="start_date!=null">
+                    AND G.update_time &gt; #{start_date}
+                </when>
+                <when test="end_date!=null">
+                    AND G.update_time &lt; #{end_date}
+                </when>
+            </choose>
+
+            <if test="goods_company!=null and goods_company!=''">
+                AND G.goods_company=#{goods_company}
+            </if>
+            <if test="udateimg_status!=null">
+                AND G.update_img=#{udateimg_status}
+            </if>
+
+            <if test="detail_tpl!=null">
+                AND G.detail_tpl=#{detail_tpl}
+            </if>
+
+            <if test="update_status!=null">
+                AND G.update_status=#{update_status}
+            </if>
+
+            <if test="cats!=null">
+                AND G.user_cateid IN
+                <foreach collection="cats" open="(" close=")" separator="," item="cat">
+                    #{cat}
+                </foreach>
+            </if>
+
+            <if test="status==1">
+                AND G.delist_time = "0000-00-00 00:00:00"
+            </if>
+            <if test="status==2">
+                AND G.delist_time != "0000-00-00 00:00:00"
+            </if>
+
+            <!--<if test="cate_id!=null and cate_id!=''">-->
+            <!--AND G.user_cateid LIKE concat(#{cate_id},"","%")-->
+            <!--</if>-->
+        </where>
+        ORDER BY G.update_time DESC
+    </select>
+    <!-- #########################################################################################################################################-->
+    <!-- 根据商品品牌名称查询品牌信息 -->
+    <select id="queryBarnd" parameterType="string" resultType="com.jk51.model.goods.YbBarnd" useCache="false">
+        SELECT * FROM yb_barnd WHERE barnd_name=#{brand_name}
+    </select>
+    <!-- 根据类目id查询类目信息-->
+    <select id="queryCate" parameterType="string" resultType="com.jk51.model.goods.YbCategory" useCache="false">
+        SELECT * FROM yb_category WHERE cate_id=#{cate_id}
+    </select>
+
+    <update id="updateGoodsCate" >
+        UPDATE yb_goods set  user_cateid = #{cate_code} where goods_id = #{goodsId}
+    </update>
+    <!-- 批量删除商品-->
+    <update id="batchDel">
+        UPDATE yb_goods SET goods_status=3,update_time=CURRENT_TIMESTAMP()
+        WHERE goods_id IN
+        <foreach collection="array" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+    <!-- 关联删除图片表数据-->
+    <update id="batchDelPic">
+        UPDATE yb_images_attr SET flag=1
+        WHERE goods_id IN
+        <foreach collection="array" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <!-- 批量处理图片状态-->
+    <update id="batchUpdateImg">
+        UPDATE yb_goods SET update_img=1
+        WHERE goods_id IN
+        <foreach collection="array" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+    <update id="setGoodImgStatusToUnhandle">
+        UPDATE yb_goods SET update_img=0
+        WHERE goods_id=#{goods_id}
+    </update>
+    <!-- 根据商品id查询所有图片信息-->
+    <select id="queryImgsByGoodId" resultType="com.jk51.model.goods.YbImagesAttr" parameterType="int">
+        SELECT * FROM yb_images_attr WHERE goods_id=#{goodId} and flag=0 ORDER BY create_time
+    </select>
+    <!-- 查询主图片是否存在 -->
+    <select id="queryDefaultImg" resultType="com.jk51.model.goods.YbImagesAttr" parameterType="int">
+        select * from yb_images_attr WHERE goods_id=#{good_id} AND is_default=1 AND flag=0 limit 1;
+    </select>
+    <!-- 查询某商品第一张图片-->
+    <select id="queryImgLimitOne" resultType="com.jk51.model.goods.YbImagesAttr" parameterType="int">
+        select * from yb_images_attr WHERE goods_id=#{good_id} AND flag=0 limit 1;
+    </select>
+    <!-- 设置某一张图片为主图-->
+    <update id="updateGoodDefaultImg">
+        UPDATE yb_images_attr SET is_default=1 WHERE hash=#{hashId} AND goods_id=#{goodId};
+    </update>
+    <!-- 将主图变为非主图-->
+    <update id="updateImgToNotDefault">
+        UPDATE yb_images_attr SET is_default=0 WHERE goods_id=#{id};
+    </update>
+    <!-- 删除单张图片-->
+    <delete id="delSinglePic">
+        UPDATE yb_images_attr SET flag=1 WHERE goods_id=#{goodId} AND hash=#{hashId}
+    </delete>
+    <!-- 保存单张图片-->
+    <insert id="saveSinglePic" parameterType="com.jk51.model.goods.YbImagesAttr" useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO yb_images_attr
+        <trim prefix="(" suffix=")" prefixOverrides=",">
+            <if test="hash!=null and hash!=''">
+                hash,
+            </if>
+            <if test="width!=null and width!=''">
+                width,
+            </if>
+            <if test="height!=null and height!=''">
+                height,
+            </if>
+            <if test="size!=null and size!=''">
+                size,
+            </if>
+            <if test="type!=null and type!=''">
+                type,
+            </if>
+            <if test="host_id!=null and host_id!=''">
+                host_id,
+            </if>
+            <if test="goods_id!=null and goods_id!=''">
+                goods_id,
+            </if>
+            <if test="is_default!=null and is_default!=''">
+                is_default,
+            </if>
+            flag,
+            create_time
+        </trim>
+        <trim prefix=" values (" suffix=")" suffixOverrides=",">
+            <if test="hash!=null and hash!=''">
+                #{hash},
+            </if>
+            <if test="width!=null and width!=''">
+                #{width},
+            </if>
+            <if test="height!=null and height!=''">
+                #{height},
+            </if>
+            <if test="size!=null and size!=''">
+                #{size},
+            </if>
+            <if test="type!=null and type!=''">
+                #{type},
+            </if>
+            <if test="host_id!=null and host_id!=''">
+                #{host_id},
+            </if>
+            <if test="goods_id!=null and goods_id!=''">
+                #{goods_id},
+            </if>
+            <if test="is_default!=null and is_default!=''">
+                #{is_default},
+            </if>
+            0,
+            CURRENT_TIMESTAMP()
+        </trim>
+    </insert>
+    <!-- 获取单个商品的详细信息以及关联表信息-->
+    <select id="querySingleGoodDetail" resultType="com.jk51.model.goods.PageData">
+        SELECT * FROM yb_goods INNER JOIN yb_goodsextd ON yb_goods.goods_id=yb_goodsextd.goods_id
+        WHERE yb_goods.goods_id=#{goodId}
+    </select>
+    <!-- 新增品牌 -->
+    <insert id="saveBarnd" parameterType="string">
+        INSERT INTO yb_barnd (barnd_name,barnd_sort,create_time,update_time,add_status)
+        VALUES (#{barnd_name},99999,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP(),10)
+    </insert>
+    <!--更新单个商品数据-->
+    <update id="updateItem" parameterType="com.jk51.model.goods.PageData">
+        UPDATE yb_goods
+        <set>
+            <if test="approval_number!=null and approval_number!=''">
+                approval_number=#{approval_number},
+            </if>
+            <if test="drug_name!=null and drug_name!=''">
+                drug_name=#{drug_name},
+            </if>
+            <if test="com_name!=null and com_name!=''">
+                com_name=#{com_name},
+            </if>
+            <if test="specif_cation!=null and specif_cation!=''">
+                specif_cation=#{specif_cation},
+            </if>
+            <if test="goods_company!=null and goods_company!=''">
+                goods_company=#{goods_company},
+            </if>
+            <if test="barnd_name!=null and barnd_name!=''">
+                barnd_id=#{barnd_name},
+            </if>
+            <if test="drug_category!=null and drug_category!=''">
+                drug_category=#{drug_category},
+            </if>
+            <if test="goods_property!=null and goods_property!=''">
+                goods_property=#{goods_property},
+            </if>
+            <if test="goods_use!=null and goods_use!=''">
+                goods_use=#{goods_use},
+            </if>
+            <if test="goods_forts!=null and goods_forts!=''">
+                goods_forts=#{goods_forts},
+            </if>
+            <if test="goods_validity!=null and goods_validity!=''">
+                goods_validity=#{goods_validity},
+            </if>
+            <if test="goods_forpeople!=null and goods_forpeople!=''">
+                goods_forpeople=#{goods_forpeople},
+            </if>
+            <if test="user_cateid!=null and user_cateid!=''">
+                user_cateid=#{user_cateid},
+            </if>
+            <if test="goods_title!=null and goods_title!=''">
+                goods_title=#{goods_title},
+            </if>
+            <if test="goods_tagsid!=null and goods_tagsid!=''">
+                goods_tagsid=#{goods_tagsid},
+            </if>
+            <if test="market_price!=null and market_price!=''">
+                market_price=#{market_price},
+            </if>
+            <if test="shop_price!=null and shop_price!=''">
+                shop_price=#{shop_price},
+            </if>
+            <if test="discount_price!=null and discount_price!=''">
+                discount_price=#{discount_price},
+            </if>
+            <if test="in_stock!=null and in_stock!=''">
+                in_stock=#{in_stock},
+            </if>
+            <if test="goods_weight!=null and goods_weight!=''">
+                goods_weight=#{goods_weight},
+            </if>
+            <if test="control_num!=null and control_num!=''">
+                control_num=#{control_num},
+            </if>
+            <if test="goods_status!=null and goods_status!=''">
+                goods_status=#{goods_status},
+            </if>
+            <if test="freight_payer!=null and freight_payer!=''">
+                freight_payer=#{freight_payer},
+            </if>
+            <if test="list_time!=null and list_time!=''">
+                list_time=#{list_time},
+            </if>
+            <if test="delist_time!=null and delist_time!=''">
+                delist_time=#{delist_time},
+            </if>
+            <if test="postage_id!=null and postage_id!=''">
+                postage_id=#{postage_id},
+            </if>
+            <if test="detail_tpl!=null and detail_tpl!=''">
+                detail_tpl=#{detail_tpl},
+            </if>
+            <if test="is_medicare!=null and is_medicare!=''">
+                is_medicare=#{is_medicare},
+            </if>
+            <if test="medicare_code!=null and medicare_code!=''">
+                medicare_code=#{medicare_code},
+            </if>
+            <if test="medicare_top_price!=null and medicare_top_price!=''">
+                medicare_top_price=#{medicare_top_price},
+            </if>
+            <if test="bar_code!=null">
+                bar_code=#{bar_code},
+            </if>
+            <if test="mnemonic_code!=null and mnemonic_code!=''">
+                mnemonic_code=#{mnemonic_code},
+            </if>
+            <if test="goods_code!=null and goods_code!=''">
+                goods_code=#{goods_code},
+            </if>
+            <if test="update_status!=null and update_status!=''">
+                update_status=#{update_status},
+            </if>
+            <if test="update_img!=null and update_img!=''">
+                update_img=#{update_img},
+            </if>
+            <if test="syncdate_time!=null and syncdate_time!=''">
+                syncdate_time=#{syncdate_time},
+            </if>
+            <if test="merchant_id!=null and merchant_id!=''">
+                merchant_id=#{merchant_id},
+            </if>
+            update_time=CURRENT_TIMESTAMP()
+        </set>
+        WHERE goods_id=#{goods_id};
+    </update>
+    <!--更新单个商品扩展表数据-->
+    <update id="updateGoodExtd" parameterType="com.jk51.model.goods.PageData">
+        UPDATE yb_goodsextd
+        <set>
+            <if test="main_ingredient!=null and main_ingredient!=''">
+                main_ingredient=#{main_ingredient},
+            </if>
+            <if test="goods_indications!=null and goods_indications!=''">
+                goods_indications=#{goods_indications},
+            </if>
+            <if test="goods_action!=null and goods_action!=''">
+                goods_action=#{goods_action},
+            </if>
+            <if test="adverse_reactioins!=null and adverse_reactioins!=''">
+                adverse_reactioins=#{adverse_reactioins},
+            </if>
+            <if test="goods_note!=null and goods_note!=''">
+                goods_note=#{goods_note},
+            </if>
+            <if test="goods_use_method!=null and goods_use_method!=''">
+                goods_use_method=#{goods_use_method},
+            </if>
+            <if test="goods_contd!=null and goods_contd!=''">
+                goods_contd=#{goods_contd},
+            </if>
+            <if test="goods_des!=null and goods_des!=''">
+                goods_des=#{goods_des},
+            </if>
+            <if test="goods_description!=null and goods_description!=''">
+                goods_description=#{goods_description},
+            </if>
+            <if test="browse_number!=null and browse_number!=''">
+                browse_number=#{browse_number},
+            </if>
+            <if test="trans_mumber!=null and trans_mumber!=''">
+                trans_mumber=#{trans_mumber},
+            </if>
+            <if test="shopping_number!=null and shopping_number!=''">
+                shopping_number=#{shopping_number},
+            </if>
+            <if test="product_date!=null and product_date!=''">
+                product_date=#{product_date},
+            </if>
+            <if test="goods_usage!=null and goods_usage!=''">
+                goods_usage=#{goods_usage},
+            </if>
+            <if test="goods_deposit!=null and goods_deposit!=''">
+                goods_deposit=#{goods_deposit},
+            </if>
+            <if test="forpeople_desc!=null and forpeople_desc!=''">
+                forpeople_desc=#{forpeople_desc},
+            </if>
+            <if test="qualification!=null and qualification!=''">
+                qualification=#{qualification},
+            </if>
+            update_time=CURRENT_TIMESTAMP()
+        </set>
+        WHERE goods_id=#{goods_id};
+    </update>
+    <!--新增商品-->
+    <insert id="saveGood" parameterType="com.jk51.model.goods.PageData" useGeneratedKeys="true" keyProperty="goods_id">
+        INSERT INTO yb_goods
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="approval_number!=null and approval_number!=''">
+                approval_number,
+            </if>
+            <if test="drug_name!=null and drug_name!=''">
+                drug_name,
+            </if>
+            <if test="com_name!=null and com_name!=''">
+                com_name,
+            </if>
+            <if test="specif_cation!=null and specif_cation!=''">
+                specif_cation,
+            </if>
+            <if test="goods_company!=null and goods_company!=''">
+                goods_company,
+            </if>
+            <if test="barnd_name!=null and barnd_name!=''">
+                barnd_id,
+            </if>
+            <if test="drug_category!=null and drug_category!=''">
+                drug_category,
+            </if>
+            <if test="goods_property!=null and goods_property!=''">
+                goods_property,
+            </if>
+            <if test="goods_use!=null and goods_use!=''">
+                goods_use,
+            </if>
+            <if test="goods_forts!=null and goods_forts!=''">
+                goods_forts,
+            </if>
+            <if test="goods_validity!=null and goods_validity!=''">
+                goods_validity,
+            </if>
+            <if test="goods_forpeople!=null and goods_forpeople!=''">
+                goods_forpeople,
+            </if>
+            <if test="user_cateid!=null and user_cateid!=''">
+                user_cateid,
+            </if>
+            <if test="goods_title!=null and goods_title!=''">
+                goods_title,
+            </if>
+            <if test="goods_tagsid!=null and goods_tagsid!=''">
+                goods_tagsid,
+            </if>
+            <if test="market_price!=null and market_price!=''">
+                market_price,
+            </if>
+            <if test="shop_price!=null and shop_price!=''">
+                shop_price,
+            </if>
+            <if test="discount_price!=null and discount_price!=''">
+                discount_price,
+            </if>
+            <if test="in_stock!=null and in_stock!=''">
+                in_stock,
+            </if>
+            <if test="goods_weight!=null and goods_weight!=''">
+                goods_weight,
+            </if>
+            <if test="control_num!=null and control_num!=''">
+                control_num,
+            </if>
+            <if test="list_time!=null and list_time!=''">
+                list_time,
+            </if>
+            <if test="delist_time!=null and delist_time!=''">
+                delist_time,
+            </if>
+            <if test="postage_id!=null and postage_id!=''">
+                postage_id,
+            </if>
+            <if test="detail_tpl!=null and detail_tpl!=''">
+                detail_tpl,
+            </if>
+            <if test="is_medicare!=null and is_medicare!=''">
+                is_medicare,
+            </if>
+            <if test="medicare_code!=null and medicare_code!=''">
+                medicare_code,
+            </if>
+            <if test="medicare_top_price!=null and medicare_top_price!=''">
+                medicare_top_price,
+            </if>
+            <if test="bar_code!=null and bar_code!=''">
+                bar_code,
+            </if>
+            <if test="mnemonic_code!=null and mnemonic_code!=''">
+                mnemonic_code,
+            </if>
+            <if test="goods_code!=null and goods_code!=''">
+                goods_code,
+            </if>
+            <if test="syncdate_time!=null and syncdate_time!=''">
+                syncdate_time,
+            </if>
+            goods_title,
+            market_price,
+            shop_price,
+            <if test="update_status!=null and update_status!=''">
+                update_status,
+            </if>
+            merchant_id,
+            update_img,
+            <if test="goods_status!=null and goods_status!=''">
+                goods_status,
+            </if>
+            freight_payer,
+            create_time,
+            update_time
+        </trim>
+        <trim prefix=" values(" suffix=")" suffixOverrides=",">
+            <if test="approval_number!=null and approval_number!=''">
+                #{approval_number},
+            </if>
+            <if test="drug_name!=null and drug_name!=''">
+                #{drug_name},
+            </if>
+            <if test="com_name!=null and com_name!=''">
+                #{com_name},
+            </if>
+            <if test="specif_cation!=null and specif_cation!=''">
+                #{specif_cation},
+            </if>
+            <if test="goods_company!=null and goods_company!=''">
+                #{goods_company},
+            </if>
+            <if test="barnd_name!=null and barnd_name!=''">
+                #{barnd_name},
+            </if>
+            <if test="drug_category!=null and drug_category!=''">
+                #{drug_category},
+            </if>
+            <if test="goods_property!=null and goods_property!=''">
+                #{goods_property},
+            </if>
+            <if test="goods_use!=null and goods_use!=''">
+                #{goods_use},
+            </if>
+            <if test="goods_forts!=null and goods_forts!=''">
+                #{goods_forts},
+            </if>
+            <if test="goods_validity!=null and goods_validity!=''">
+                #{goods_validity},
+            </if>
+            <if test="goods_forpeople!=null and goods_forpeople!=''">
+                #{goods_forpeople},
+            </if>
+            <if test="user_cateid!=null and user_cateid!=''">
+                #{user_cateid},
+            </if>
+            <if test="goods_title!=null and goods_title!=''">
+                #{goods_title},
+            </if>
+            <if test="goods_tagsid!=null and goods_tagsid!=''">
+                #{goods_tagsid},
+            </if>
+            <if test="market_price!=null and market_price!=''">
+                #{market_price},
+            </if>
+            <if test="shop_price!=null and shop_price!=''">
+                #{shop_price},
+            </if>
+            <if test="discount_price!=null and discount_price!=''">
+                #{discount_price},
+            </if>
+            <if test="in_stock!=null and in_stock!=''">
+                #{in_stock},
+            </if>
+            <if test="goods_weight!=null and goods_weight!=''">
+                #{goods_weight},
+            </if>
+            <if test="control_num!=null and control_num!=''">
+                #{control_num},
+            </if>
+            <if test="list_time!=null and list_time!=''">
+                #{list_time},
+            </if>
+            <if test="delist_time!=null and delist_time!=''">
+                #{delist_time},
+            </if>
+            <if test="postage_id!=null and postage_id!=''">
+                #{postage_id},
+            </if>
+            <if test="detail_tpl!=null and detail_tpl!=''">
+                #{detail_tpl},
+            </if>
+            <if test="is_medicare!=null and is_medicare!=''">
+                #{is_medicare},
+            </if>
+            <if test="medicare_code!=null and medicare_code!=''">
+                #{medicare_code},
+            </if>
+            <if test="medicare_top_price!=null and medicare_top_price!=''">
+                #{medicare_top_price},
+            </if>
+            <if test="bar_code!=null and bar_code!=''">
+                #{bar_code},
+            </if>
+            <if test="mnemonic_code!=null and mnemonic_code!=''">
+                #{mnemonic_code},
+            </if>
+            <if test="goods_code!=null and goods_code!=''">
+                #{goods_code},
+            </if>
+            <if test="syncdate_time!=null and syncdate_time!=''">
+                #{syncdate_time},
+            </if>
+            '', /*商品标题*/
+            0, /*market_price*/
+            0, /*shop_price*/
+            <if test="update_status!=null and update_status!=''">
+                #{update_status},
+            </if>
+            0,
+            0,
+            <if test="goods_status!=null and goods_status!=''">
+                #{goods_status},
+            </if>
+            2,
+            CURRENT_TIMESTAMP(),
+            CURRENT_TIMESTAMP()
+        </trim>
+    </insert>
+    <!--新增商品扩展信息-->
+    <insert id="saveGoodExtd" parameterType="com.jk51.model.goods.PageData">
+        INSERT INTO yb_goodsextd
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="main_ingredient!=null and main_ingredient!=''">
+                main_ingredient,
+            </if>
+            <if test="goods_indications!=null and goods_indications!=''">
+                goods_indications,
+            </if>
+            <if test="goods_action!=null and goods_action!=''">
+                goods_action,
+            </if>
+            <if test="adverse_reactioins!=null and adverse_reactioins!=''">
+                adverse_reactioins,
+            </if>
+            <if test="goods_note!=null and goods_note!=''">
+                goods_note,
+            </if>
+            <if test="goods_use_method!=null and goods_use_method!=''">
+                goods_use_method,
+            </if>
+            <if test="goods_contd!=null and goods_contd!=''">
+                goods_contd,
+            </if>
+            <if test="goods_des!=null and goods_des!=''">
+                goods_des,
+            </if>
+            <if test="goods_description!=null and goods_description!=''">
+                goods_description,
+            </if>
+            <if test="browse_number!=null and browse_number!=''">
+                browse_number,
+            </if>
+            <if test="trans_mumber!=null and trans_mumber!=''">
+                trans_mumber,
+            </if>
+            <if test="shopping_number!=null and shopping_number!=''">
+                shopping_number,
+            </if>
+            <if test="product_date!=null and product_date!=''">
+                product_date,
+            </if>
+            <if test="goods_usage!=null and goods_usage!=''">
+                goods_usage,
+            </if>
+            <if test="goods_deposit!=null and goods_deposit!=''">
+                goods_deposit,
+            </if>
+            <if test="forpeople_desc!=null and forpeople_desc!=''">
+                forpeople_desc,
+            </if>
+            <if test="qualification!=null and qualification!=''">
+                qualification,
+            </if>
+            create_time,
+            update_time,
+            goods_id
+        </trim>
+        <trim prefix=" values(" suffix=")" suffixOverrides=",">
+            <if test="main_ingredient!=null and main_ingredient!=''">
+                #{main_ingredient},
+            </if>
+            <if test="goods_indications!=null and goods_indications!=''">
+                #{goods_indications},
+            </if>
+            <if test="goods_action!=null and goods_action!=''">
+                #{goods_action},
+            </if>
+            <if test="adverse_reactioins!=null and adverse_reactioins!=''">
+                #{adverse_reactioins},
+            </if>
+            <if test="goods_note!=null and goods_note!=''">
+                #{goods_note},
+            </if>
+            <if test="goods_use_method!=null and goods_use_method!=''">
+                #{goods_use_method},
+            </if>
+            <if test="goods_contd!=null and goods_contd!=''">
+                #{goods_contd},
+            </if>
+            <if test="goods_des!=null and goods_des!=''">
+                #{goods_des},
+            </if>
+            <if test="goods_description!=null and goods_description!=''">
+                #{goods_description},
+            </if>
+            <if test="browse_number!=null and browse_number!=''">
+                #{browse_number},
+            </if>
+            <if test="trans_mumber!=null and trans_mumber!=''">
+                #{trans_mumber},
+            </if>
+            <if test="shopping_number!=null and shopping_number!=''">
+                #{shopping_number},
+            </if>
+            <if test="product_date!=null and product_date!=''">
+                #{product_date},
+            </if>
+            <if test="goods_usage!=null and goods_usage!=''">
+                #{goods_usage},
+            </if>
+            <if test="goods_deposit!=null and goods_deposit!=''">
+                #{goods_deposit},
+            </if>
+            <if test="forpeople_desc!=null and forpeople_desc!=''">
+                #{forpeople_desc},
+            </if>
+            <if test="qualification!=null and qualification!=''">
+                #{qualification},
+            </if>
+            CURRENT_TIMESTAMP(),
+            CURRENT_TIMESTAMP(),
+            #{goods_id}
+        </trim>
+    </insert>
+    <!--根据批准文号和规格查询唯一一条商品数据以及扩展表数据-->
+    <select id="queryYbGoodByPzwhAndGg" resultType="com.jk51.model.goods.PageData">
+        SELECT
+            G.*, E.*, b.barnd_name
+        FROM
+            yb_goods G
+        LEFT JOIN yb_goodsextd E ON G.goods_id = E.goods_id
+        LEFT JOIN yb_barnd as b on b.barnd_id = G.barnd_id
+        WHERE
+            G.approval_number = #{approval_number}
+        AND G.specif_cation = #{specif_cation}
+        AND G.detail_tpl = #{detail_tpl}
+        LIMIT 1;
+    </select>
+    <select id="queryYbGoodByPzwhBarCode" resultType="com.jk51.model.goods.PageData">
+        SELECT
+        G.*, E.*, b.barnd_name
+        FROM
+        yb_goods G
+        LEFT JOIN yb_goodsextd E ON G.goods_id = E.goods_id
+        LEFT JOIN yb_barnd as b on b.barnd_id = G.barnd_id
+        <where>
+            G.detail_tpl = #{detail_tpl}
+            AND (
+            G.approval_number = #{approval_number}
+            <if test=" bar_code!=null and bar_code!='' ">
+                OR G.bar_code = #{bar_code}
+            </if>
+            )
+            AND G.goods_status != 3
+        </where>
+        ORDER BY G.update_time desc
+        LIMIT 1;
+    </select>
+    <select id="queryYbGoodByPzwh" resultType="com.jk51.model.goods.PageData">
+        SELECT
+            G.*, E.*, b.barnd_name
+        FROM
+            yb_goods G
+        LEFT JOIN yb_goodsextd E ON G.goods_id = E.goods_id
+        LEFT JOIN yb_barnd as b on b.barnd_id = G.barnd_id
+        WHERE
+            G.approval_number = #{approval_number}
+        AND G.detail_tpl = #{detail_tpl}
+        ORDER BY G.update_time desc
+        LIMIT 1;
+    </select>
+    <select id="queryYbGoodByGoodCode" resultType="com.jk51.model.goods.PageData">
+        SELECT
+        G.*, E.*, b.barnd_name
+        FROM
+        yb_goods G
+        LEFT JOIN yb_goodsextd E ON G.goods_id = E.goods_id
+        LEFT JOIN yb_barnd as b on b.barnd_id = G.barnd_id
+        WHERE
+        G.goods_code = #{goods_code}
+        AND G.detail_tpl = #{detail_tpl}
+        ORDER BY G.update_time desc
+        LIMIT 1;
+    </select>
+
+    <select id="queryYbGoodByBarCodeORApprovalNumber" resultType="com.jk51.model.goods.PageData">
+      SELECT
+        G.*, E.*, b.barnd_name, count(img.id) imgCount
+        FROM
+        yb_goods G
+        LEFT JOIN yb_goodsextd E ON G.goods_id = E.goods_id
+        LEFT JOIN yb_barnd as b on b.barnd_id = G.barnd_id
+        LEFT JOIN yb_images_attr AS img ON img.goods_id = G.goods_id AND img.flag = 0
+        <where>
+            <trim prefix="(" suffix=")" prefixOverrides="OR">
+                <if test = "bar_code != null and bar_code != ''">
+                    G.bar_code = #{bar_code}
+                </if>
+                <if test = "approval_number != null and approval_number != ''">
+                    OR G.approval_number = #{approval_number}
+                </if>
+            </trim>
+            AND G.goods_status = 2
+            AND G.detail_tpl = #{detail_tpl}
+        </where>
+        ORDER BY G.update_time desc
+    </select>
+
+    <!--根据图片id查询图片信息-->
+    <select id="queryImgById" resultType="com.jk51.model.goods.YbImagesAttr">
+        SELECT * FROM yb_images_attr WHERE id=#{id} limit 1;
+    </select>
+
+    <!--新增商户商品-->
+    <insert id="saveGoodOfMerchant" parameterType="com.jk51.model.goods.PageData" useGeneratedKeys="true"
+            keyProperty="goods_id">
+        INSERT INTO yb_goods
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="approval_number!=null and approval_number!=''">
+                approval_number,
+            </if>
+            <if test="drug_name!=null and drug_name!=''">
+                drug_name,
+            </if>
+            <if test="com_name!=null and com_name!=''">
+                com_name,
+            </if>
+            <if test="specif_cation!=null and specif_cation!=''">
+                specif_cation,
+            </if>
+            <if test="goods_company!=null and goods_company!=''">
+                goods_company,
+            </if>
+            <if test="brand_id!=null and brand_id!=''">
+                barnd_id,
+            </if>
+            <if test="drug_category!=null and drug_category!=''">
+                drug_category,
+            </if>
+            <if test="goods_property!=null and goods_property!=''">
+                goods_property,
+            </if>
+            <if test="goods_use!=null and goods_use!=''">
+                goods_use,
+            </if>
+            <if test="goods_forts!=null and goods_forts!=''">
+                goods_forts,
+            </if>
+            <if test="goods_validity!=null and goods_validity!=''">
+                goods_validity,
+            </if>
+            <if test="goods_forpeople!=null and goods_forpeople!=''">
+                goods_forpeople,
+            </if>
+            <if test="user_cateid!=null and user_cateid!=''">
+                user_cateid,
+            </if>
+            <if test="goods_title!=null and goods_title!=''">
+                goods_title,
+            </if>
+            <if test="goods_tagsid!=null and goods_tagsid!=''">
+                goods_tagsid,
+            </if>
+            <if test="market_price!=null and market_price!=''">
+                market_price,
+            </if>
+            <if test="shop_price!=null and shop_price!=''">
+                shop_price,
+            </if>
+            <if test="discount_price!=null and discount_price!=''">
+                discount_price,
+            </if>
+            <if test="in_stock!=null and in_stock!=''">
+                in_stock,
+            </if>
+            <if test="goods_weight!=null and goods_weight!=''">
+                goods_weight,
+            </if>
+            <if test="control_num!=null and control_num!=''">
+                control_num,
+            </if>
+            <if test="list_time!=null and list_time!=''">
+                list_time,
+            </if>
+            <if test="delist_time!=null and delist_time!=''">
+                delist_time,
+            </if>
+            <if test="postage_id!=null and postage_id!=''">
+                postage_id,
+            </if>
+            <if test="detail_tpl!=null and detail_tpl!=''">
+                detail_tpl,
+            </if>
+            <if test="is_medicare!=null and is_medicare!=''">
+                is_medicare,
+            </if>
+            <if test="medicare_code!=null and medicare_code!=''">
+                medicare_code,
+            </if>
+            <if test="medicare_top_price!=null and medicare_top_price!=''">
+                medicare_top_price,
+            </if>
+            <if test="bar_code!=null and bar_code!=''">
+                bar_code,
+            </if>
+            <if test="mnemonic_code!=null and mnemonic_code!=''">
+                mnemonic_code,
+            </if>
+            <if test="goods_code!=null and goods_code!=''">
+                goods_code,
+            </if>
+            <if test="syncdate_time!=null and syncdate_time!=''">
+                syncdate_time,
+            </if>
+            <if test="site_id!=null and site_id!=''">
+                merchant_id,
+            </if>
+            update_status,
+            update_img,
+            goods_status,
+            freight_payer,
+            create_time,
+            update_time
+        </trim>
+        <trim prefix=" values(" suffix=")" suffixOverrides=",">
+            <if test="approval_number!=null and approval_number!=''">
+                #{approval_number},
+            </if>
+            <if test="drug_name!=null and drug_name!=''">
+                #{drug_name},
+            </if>
+            <if test="com_name!=null and com_name!=''">
+                #{com_name},
+            </if>
+            <if test="specif_cation!=null and specif_cation!=''">
+                #{specif_cation},
+            </if>
+            <if test="goods_company!=null and goods_company!=''">
+                #{goods_company},
+            </if>
+            <if test="brand_id!=null and brand_id!=''">
+                #{brand_id},
+            </if>
+            <if test="drug_category!=null and drug_category!=''">
+                #{drug_category},
+            </if>
+            <if test="goods_property!=null and goods_property!=''">
+                #{goods_property},
+            </if>
+            <if test="goods_use!=null and goods_use!=''">
+                #{goods_use},
+            </if>
+            <if test="goods_forts!=null and goods_forts!=''">
+                #{goods_forts},
+            </if>
+            <if test="goods_validity!=null and goods_validity!=''">
+                #{goods_validity},
+            </if>
+            <if test="goods_forpeople!=null and goods_forpeople!=''">
+                #{goods_forpeople},
+            </if>
+            <if test="user_cateid!=null and user_cateid!=''">
+                #{user_cateid},
+            </if>
+            <if test="goods_title!=null and goods_title!=''">
+                #{goods_title},
+            </if>
+            <if test="goods_tagsid!=null and goods_tagsid!=''">
+                #{goods_tagsid},
+            </if>
+            <if test="market_price!=null and market_price!=''">
+                #{market_price},
+            </if>
+            <if test="shop_price!=null and shop_price!=''">
+                #{shop_price},
+            </if>
+            <if test="discount_price!=null and discount_price!=''">
+                #{discount_price},
+            </if>
+            <if test="in_stock!=null and in_stock!=''">
+                #{in_stock},
+            </if>
+            <if test="goods_weight!=null and goods_weight!=''">
+                #{goods_weight},
+            </if>
+            <if test="control_num!=null and control_num!=''">
+                #{control_num},
+            </if>
+            <if test="list_time!=null and list_time!=''">
+                #{list_time},
+            </if>
+            <if test="delist_time!=null and delist_time!=''">
+                #{delist_time},
+            </if>
+            <if test="postage_id!=null and postage_id!=''">
+                #{postage_id},
+            </if>
+            <if test="detail_tpl!=null and detail_tpl!=''">
+                #{detail_tpl},
+            </if>
+            <if test="is_medicare!=null and is_medicare!=''">
+                #{is_medicare},
+            </if>
+            <if test="medicare_code!=null and medicare_code!=''">
+                #{medicare_code},
+            </if>
+            <if test="medicare_top_price!=null and medicare_top_price!=''">
+                #{medicare_top_price},
+            </if>
+            <if test="bar_code!=null and bar_code!=''">
+                #{bar_code},
+            </if>
+            <if test="mnemonic_code!=null and mnemonic_code!=''">
+                #{mnemonic_code},
+            </if>
+            <if test="goods_code!=null and goods_code!=''">
+                #{goods_code},
+            </if>
+            <if test="syncdate_time!=null and syncdate_time!=''">
+                #{syncdate_time},
+            </if>
+            <if test="site_id!=null and site_id!=''">
+                #{site_id},
+            </if>
+            0,
+            0,
+            <choose>
+                <when test="goods_status!=null and goods_status!=''">
+                    #{goods_status},
+                </when>
+                <otherwise>
+                    1,
+                </otherwise>
+            </choose>
+            2,
+            CURRENT_TIMESTAMP(),
+            CURRENT_TIMESTAMP()
+        </trim>
+    </insert>
+    <!--新增商户商品扩展信息-->
+    <insert id="saveGoodExtdOfMerchant" parameterType="com.jk51.model.goods.PageData">
+        INSERT INTO yb_goodsextd
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="main_ingredient!=null and main_ingredient!=''">
+                main_ingredient,
+            </if>
+            <if test="goods_indications!=null and goods_indications!=''">
+                goods_indications,
+            </if>
+            <if test="goods_action!=null and goods_action!=''">
+                goods_action,
+            </if>
+            <if test="adverse_reactioins!=null and adverse_reactioins!=''">
+                adverse_reactioins,
+            </if>
+            <if test="goods_note!=null and goods_note!=''">
+                goods_note,
+            </if>
+            <if test="goods_use_method!=null and goods_use_method!=''">
+                goods_use_method,
+            </if>
+            <if test="goods_contd!=null and goods_contd!=''">
+                goods_contd,
+            </if>
+            <if test="goods_des!=null and goods_des!=''">
+                goods_des,
+            </if>
+            <if test="goods_description!=null and goods_description!=''">
+                goods_description,
+            </if>
+            <if test="browse_number!=null and browse_number!=''">
+                browse_number,
+            </if>
+            <if test="trans_mumber!=null and trans_mumber!=''">
+                trans_mumber,
+            </if>
+            <if test="shopping_number!=null and shopping_number!=''">
+                shopping_number,
+            </if>
+            <if test="product_date!=null and product_date!=''">
+                product_date,
+            </if>
+            <if test="goods_usage!=null and goods_usage!=''">
+                goods_usage,
+            </if>
+            <if test="goods_deposit!=null and goods_deposit!=''">
+                goods_deposit,
+            </if>
+            <if test="forpeople_desc!=null and forpeople_desc!=''">
+                forpeople_desc,
+            </if>
+            <if test="qualification!=null and qualification!=''">
+                qualification,
+            </if>
+            create_time,
+            update_time,
+            goods_id
+        </trim>
+        <trim prefix=" values(" suffix=")" suffixOverrides=",">
+            <if test="main_ingredient!=null and main_ingredient!=''">
+                #{main_ingredient},
+            </if>
+            <if test="goods_indications!=null and goods_indications!=''">
+                #{goods_indications},
+            </if>
+            <if test="goods_action!=null and goods_action!=''">
+                #{goods_action},
+            </if>
+            <if test="adverse_reactioins!=null and adverse_reactioins!=''">
+                #{adverse_reactioins},
+            </if>
+            <if test="goods_note!=null and goods_note!=''">
+                #{goods_note},
+            </if>
+            <if test="goods_use_method!=null and goods_use_method!=''">
+                #{goods_use_method},
+            </if>
+            <if test="goods_contd!=null and goods_contd!=''">
+                #{goods_contd},
+            </if>
+            <if test="goods_des!=null and goods_des!=''">
+                #{goods_des},
+            </if>
+            <if test="goods_description!=null and goods_description!=''">
+                #{goods_description},
+            </if>
+            <if test="browse_number!=null and browse_number!=''">
+                #{browse_number},
+            </if>
+            <if test="trans_mumber!=null and trans_mumber!=''">
+                #{trans_mumber},
+            </if>
+            <if test="shopping_number!=null and shopping_number!=''">
+                #{shopping_number},
+            </if>
+            <if test="product_date!=null and product_date!=''">
+                #{product_date},
+            </if>
+            <if test="goods_usage!=null and goods_usage!=''">
+                #{goods_usage},
+            </if>
+            <if test="goods_deposit!=null and goods_deposit!=''">
+                #{goods_deposit},
+            </if>
+            <if test="forpeople_desc!=null and forpeople_desc!=''">
+                #{forpeople_desc},
+            </if>
+            <if test="qualification!=null and qualification!=''">
+                #{qualification},
+            </if>
+            CURRENT_TIMESTAMP(),
+            CURRENT_TIMESTAMP(),
+            #{goods_id}
+        </trim>
+    </insert>
+
+    <!--还原删除商品-->
+    <update id="restore">
+        UPDATE yb_goods SET goods_status = 1, update_status = 0 WHERE goods_id = #{goodsId}
+    </update>
+
+    <select id="queryImgsByGoodIdAndHash" resultType="com.jk51.model.goods.YbImagesAttr">
+        SELECT * from yb_images_attr where goods_id=#{goods_id} AND hash=#{hash} AND flag=0
+    </select>
+
+    <select id="findYbGoodsByBarCode" resultType="java.util.Map" parameterType="java.lang.String">
+        SELECT * from yb_goods
+        where bar_code = #{bar_code}
+        limit 1
+    </select>
+    
+    <select id="queryYbGoodsColumns" resultType="java.lang.String">
+        SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE table_name = 'yb_goods'
+        UNION
+        SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE table_name = 'yb_goodsextd'
+    </select>
+
+    <select id="getMerchantList" resultMap="pageDataList" useCache="false" parameterType="com.jk51.model.goods.YbGoodsGrid" >
+        SELECT
+        G.goods_id AS merchant_id,G.approval_number ,G.drug_name ,G.com_name ,G.specif_cation ,G.goods_company ,G.barnd_id
+        ,G.drug_category ,G.goods_property
+        ,G.goods_use ,G.goods_forts ,G.goods_validity ,G.goods_forpeople ,G.user_cateid ,G.goods_title ,G.goods_tagsid
+        ,G.market_price
+        ,G.shop_price ,G.discount_price ,G.in_stock ,G.goods_weight ,G.control_num ,G.goods_status ,G.freight_payer
+        ,G.postage_id ,G.detail_tpl
+        ,G.is_medicare ,G.medicare_code ,G.medicare_top_price ,G.bar_code ,G.mnemonic_code ,G.goods_code
+        ,date_format(G.update_time,'%Y-%m-%d %H:%i:%s') AS update_time,
+        <if test="hasExtdFields">
+            extd.goodsextd_id,extd.main_ingredient,extd.goods_indications,extd.goods_action ,extd.adverse_reactioins
+            ,extd.goods_note ,extd.goods_use_method
+            ,extd.goods_contd ,extd.goods_desc ,extd.goods_description ,extd.browse_number ,extd.trans_mumber
+            ,extd.shopping_number ,extd.product_date ,extd.goods_usage
+            ,extd.goods_deposit ,extd.forpeople_desc ,extd.qualification,
+        </if>
+        B.barnd_name,
+        Cat.cate_name,
+        Cat.cate_code,
+        Img.host_id,
+        Img.`hash`
+        FROM
+        b_goods G
+        <if test="hasExtdFields">
+            LEFT JOIN yb_goodsextd extd on G.goods_id = extd.goods_id
+        </if>
+        LEFT JOIN yb_barnd B ON G.barnd_id = B.barnd_id
+        LEFT JOIN yb_category Cat ON Cat.cate_code = G.user_cateid
+        LEFT JOIN yb_images_attr Img ON G.goods_id = Img.goods_id
+        <where>
+            1=1
+            <choose>
+                <when test="goods_status==null">
+                    AND G.goods_status != 3
+                </when>
+                <otherwise>
+                    AND G.goods_status = #{goods_status}
+                </otherwise>
+            </choose>
+            <if test='renewable=="Y"'>
+                AND G.update_status = 1
+            </if>
+            <if test="drug_name!=null and drug_name!=''">
+                AND G.drug_name like CONCAT('%',#{drug_name},'%')
+            </if>
+            <if test="approval_number!=null and approval_number!=''">
+                AND G.approval_number=#{approval_number}
+            </if>
+            <if test="id!=null">
+                AND G.goods_id=#{id}
+            </if>
+            <if test="siteId!=null">
+                AND G.site_id=#{siteId}
+            </if>
+            <if test="specif_cation!=null and specif_cation!=''">
+                AND G.specif_cation=#{specif_cation}
+            </if>
+            <if test="specif_code!=null and specif_code!=''">
+                AND G.bar_code=#{specif_code}
+            </if>
+            <if test="brand_name!=null and brand_name!=''">
+                AND B.barnd_name=#{brand_name}
+            </if>
+
+            <choose>
+                <when test="start_date!=null and end_date!=null">
+                    AND G.update_time &gt; #{start_date} AND G.update_time &lt; #{end_date}
+                </when>
+                <when test="start_date!=null">
+                    AND G.update_time &gt; #{start_date}
+                </when>
+                <when test="end_date!=null">
+                    AND G.update_time &lt; #{end_date}
+                </when>
+            </choose>
+
+            <if test="goods_company!=null and goods_company!=''">
+                AND G.goods_company=#{goods_company}
+            </if>
+
+            <choose>
+                <when test="has_image==1">
+                    AND Img.is_default = 1 AND Img.flag = 0
+                </when>
+                <when test="has_image==0">
+                    AND Img.is_default is NULL
+                </when>
+            </choose>
+            <if test="udateimg_status!=null">
+                AND G.update_img=#{udateimg_status}
+            </if>
+
+            <if test="detail_tpl!=null">
+                AND G.detail_tpl=#{detail_tpl}
+            </if>
+
+            <if test="update_status!=null">
+                AND G.update_status=#{update_status}
+            </if>
+
+            <if test="cats!=null">
+                AND G.user_cateid IN
+                <foreach collection="cats" open="(" close=")" separator="," item="cat">
+                    #{cat}
+                </foreach>
+            </if>
+
+            <!--<if test="cate_id!=null and cate_id!=''">-->
+            <!--AND G.user_cateid LIKE concat(#{cate_id},"","%")-->
+            <!--</if>-->
+            ORDER BY G.update_time DESC
+        </where>
+    </select>
+
+    <select id="getList2" resultMap="pageDataList" useCache="false" parameterType="com.jk51.model.goods.YbGoodsGrid" >
+        SELECT
+            t1.goods_id, approval_number, drug_name, com_name, specif_cation,
+            goods_title, goods_company, goods_status, update_img, update_status,
+            t2.`hash`, t2.host_id, date_format(t1.update_time,'%Y-%m-%d %H:%i:%s') as update_time
+        FROM yb_goods AS t1
+        LEFT JOIN yb_images_attr as t2 ON (
+            t1.goods_id = t2.goods_id AND t2.flag = 0 AND  t2.is_default = 1
+        )
+        <choose>
+            <when test="brand_name!=null and brand_name!=''">
+                LEFT JOIN yb_barnd AS B ON t1.barnd_id = B.barnd_id
+            </when>
+        </choose>
+        <where>
+            <if test="id!=null">
+                AND t1.goods_id=#{id}
+            </if>
+            <choose>
+                <when test="goods_status==null">
+                    AND t1.goods_status != 3
+                </when>
+                <otherwise>
+                    AND t1.goods_status = #{goods_status}
+                </otherwise>
+            </choose>
+            <if test='renewable=="Y"'>
+                AND t1.update_status = 1
+            </if>
+            <if test="drug_name!=null and drug_name!=''">
+                AND t1.drug_name like CONCAT('%',#{drug_name},'%')
+            </if>
+            <if test="approval_number!=null and approval_number!=''">
+                AND t1.approval_number like CONCAT('%',#{approval_number},'%')
+            </if>
+            <if test="specif_cation!=null and specif_cation!=''">
+                AND t1.specif_cation like CONCAT('%',#{specif_cation},'%')
+            </if>
+            <if test="specif_code!=null and specif_code!=''">
+                AND t1.bar_code=#{specif_code}
+            </if>
+            <if test="brand_name!=null and brand_name!=''">
+                AND B.barnd_name=#{brand_name}
+            </if>
+
+            <choose>
+                <when test="start_date!=null and end_date!=null">
+                    AND t1.update_time &gt; #{start_date} AND G.update_time &lt; #{end_date}
+                </when>
+                <when test="start_date!=null">
+                    AND t1.update_time &gt; #{start_date}
+                </when>
+                <when test="end_date!=null">
+                    AND t1.update_time &lt; #{end_date}
+                </when>
+            </choose>
+
+            <if test="goods_company!=null and goods_company!=''">
+                AND t1.goods_company like CONCAT('%',#{goods_company},'%')
+            </if>
+
+            <choose>
+                <when test="has_image==1">
+                    AND t2.hash IS NOT NULL
+                </when>
+                <when test="has_image==0">
+                    AND t1.goods_id NOT IN (SELECT goods_id FROM yb_images_attr WHERE flag = 0 GROUP BY goods_id)
+                </when>
+            </choose>
+            <if test="udateimg_status!=null">
+                AND t1.update_img=#{udateimg_status}
+            </if>
+
+            <if test="detail_tpl!=null">
+                AND t1.detail_tpl=#{detail_tpl}
+            </if>
+
+            <if test="update_status!=null">
+                AND t1.update_status=#{update_status}
+            </if>
+
+            <if test="cats!=null">
+                AND t1.user_cateid IN
+                <foreach collection="cats" open="(" close=")" separator="," item="cat">
+                    #{cat}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY t1.update_time DESC
+    </select>
+
+</mapper>

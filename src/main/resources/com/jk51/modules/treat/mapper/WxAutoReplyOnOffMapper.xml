@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.treat.mapper.WxAutoReplyOnOffMapper">
+  <resultMap id="BaseResultMap" type="com.jk51.model.treat.WxAutoReplyOnOff">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <id column="site_id" jdbcType="INTEGER" property="siteId" />
+    <result column="on_off" jdbcType="INTEGER" property="onOff" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, site_id, on_off, create_time, update_time
+  </sql>
+
+  <select id="getWxReplyOnOffBySiteId" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List"/> FROM b_wx_autoreply_onoff WHERE site_id=#{siteId} limit 1
+  </select>
+
+  <update id="updReplyOnOff">
+    UPDATE b_wx_autoreply_onoff SET on_off=#{onOff} WHERE site_id=#{siteId}
+  </update>
+
+  <insert id="creReplyOnOff" parameterType="com.jk51.model.treat.WxAutoReplyOnOff">
+    INSERT INTO b_wx_autoreply_onoff (site_id,on_off,create_time,update_time) VALUES (#{siteId},1,now(),now())
+  </insert>
+
+</mapper>
+

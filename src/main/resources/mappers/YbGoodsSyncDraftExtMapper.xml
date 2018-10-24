@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.goods.mapper.YbGoodsSyncDraftExtMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.goods.YbGoodsSyncDraftExt">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="sync_draft_id" jdbcType="INTEGER" property="syncDraftId"/>
+        <result column="com_name" jdbcType="VARCHAR" property="comName"/>
+        <result column="goods_company" jdbcType="VARCHAR" property="goodsCompany"/>
+        <result column="drug_category" jdbcType="INTEGER" property="drugCategory"/>
+        <result column="goods_property" jdbcType="INTEGER" property="goodsProperty"/>
+        <result column="goods_forts" jdbcType="INTEGER" property="goodsForts"/>
+        <result column="goods_validity" jdbcType="INTEGER" property="goodsValidity"/>
+        <result column="goods_use" jdbcType="VARCHAR" property="goodsUse"/>
+        <result column="goods_forpeople" jdbcType="VARCHAR" property="goodsForpeople"/>
+        <result column="is_medicare" jdbcType="BIT" property="isMedicare"/>
+        <result column="medicare_code" jdbcType="CHAR" property="medicareCode"/>
+        <result column="bar_code" jdbcType="CHAR" property="barCode"/>
+        <result column="goods_weight" jdbcType="INTEGER" property="goodsWeight"/>
+        <result column="goods_title" jdbcType="VARCHAR" property="goodsTitle"/>
+        <result column="goods_code" jdbcType="VARCHAR" property="goodsCode"/>
+        <result column="user_cateid" jdbcType="VARCHAR" property="userCateid"/>
+        <result column="fields_pk" jdbcType="VARCHAR" property="fieldsPk"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.jk51.model.goods.YbGoodsSyncDraftExtWithBLOBs">
+        <result column="main_ingredient" jdbcType="LONGVARCHAR" property="mainIngredient"/>
+        <result column="goods_indications" jdbcType="LONGVARCHAR" property="goodsIndications"/>
+        <result column="goods_use_method" jdbcType="LONGVARCHAR" property="goodsUseMethod"/>
+        <result column="forpeople_desc" jdbcType="LONGVARCHAR" property="forpeopleDesc"/>
+        <result column="goods_action" jdbcType="LONGVARCHAR" property="goodsAction"/>
+        <result column="goods_desc" jdbcType="LONGVARCHAR" property="goodsDesc"/>
+        <result column="adverse_reactioins" jdbcType="LONGVARCHAR" property="adverseReactioins"/>
+        <result column="goods_note" jdbcType="LONGVARCHAR" property="goodsNote"/>
+        <result column="goods_contd" jdbcType="LONGVARCHAR" property="goodsContd"/>
+        <result column="goods_deposit" jdbcType="LONGVARCHAR" property="goodsDeposit"/>
+        <result column="goods_description" jdbcType="LONGVARCHAR" property="goodsDescription"/>
+        <result column="goods_imgs" jdbcType="LONGVARCHAR" property="goodsImgs"/>
+        <result column="fields" jdbcType="LONGVARCHAR" property="fields"/>
+    </resultMap>
+
+    <sql id="Table_Name">
+        `yb_goods_sync_draft_ext`
+    </sql>
+
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.jk51.model.goods.YbGoodsSyncDraftExtWithBLOBs" flushCache="true">
+        INSERT INTO yb_goods_sync_draft_ext
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            `sync_draft_id`,
+            <if test="comName != null">
+                `com_name`,
+            </if>
+            <if test="goodsCompany != null">
+                `goods_company`,
+            </if>
+            <if test="drugCategory != null">
+                `drug_category`,
+            </if>
+            <if test="goodsProperty != null">
+                `goods_property`,
+            </if>
+            <if test="goodsForts != null">
+                `goods_forts`,
+            </if>
+            <if test="goodsValidity != null">
+                `goods_validity`,
+            </if>
+            <if test="goodsUse != null">
+                `goods_use`,
+            </if>
+            <if test="goodsForpeople != null">
+                `goods_forpeople`,
+            </if>
+            <if test="isMedicare != null">
+                `is_medicare`,
+            </if>
+            <if test="medicareCode != null">
+                `medicare_code`,
+            </if>
+            <if test="barCode != null">
+                `bar_code`,
+            </if>
+            <if test="mainIngredient != null">
+                `main_ingredient`,
+            </if>
+            <if test="goodsIndications != null">
+                `goods_indications`,
+            </if>
+            <if test="goodsUseMethod != null">
+                `goods_use_method`,
+            </if>
+            <if test="forpeopleDesc != null">
+                `forpeople_desc`,
+            </if>
+            <if test="goodsAction != null">
+                `goods_action`,
+            </if>
+            <if test="goodsWeight != null">
+                `goods_weight`,
+            </if>
+            <if test="goodsTitle != null">
+                `goods_title`,
+            </if>
+            <if test="goodsCode != null">
+                `goods_code`,
+            </if>
+            <if test="goodsDesc != null">
+                `goods_desc`,
+            </if>
+            <if test="adverseReactioins != null">
+                `adverse_reactioins`,
+            </if>
+            <if test="goodsNote != null">
+                `goods_note`,
+            </if>
+            <if test="goodsContd != null">
+                `goods_contd`,
+            </if>
+            <if test="goodsDeposit != null">
+                `goods_deposit`,
+            </if>
+            <if test="goodsDescription != null">
+                `goods_description`,
+            </if>
+            <if test="userCateid != null">
+                `user_cateid`,
+            </if>
+            <if test="goodsImgs != null">
+                `goods_imgs`,
+            </if>
+            <if test="fieldsPk != null">
+                `fields_pk`,
+            </if>
+            <if test="fields != null">
+                `fields`,
+            </if>
+        </trim>
+        <trim prefix="VALUE (" suffix=")" suffixOverrides=",">
+            #{syncDraftId},
+            <if test="comName != null">
+                #{comName},
+            </if>
+            <if test="goodsCompany != null">
+                #{goodsCompany},
+            </if>
+            <if test="drugCategory != null">
+                #{drugCategory},
+            </if>
+            <if test="goodsProperty != null">
+                #{goodsProperty},
+            </if>
+            <if test="goodsForts != null">
+                #{goodsForts},
+            </if>
+            <if test="goodsValidity != null">
+                #{goodsValidity},
+            </if>
+            <if test="goodsUse != null">
+                #{goodsUse},
+            </if>
+            <if test="goodsForpeople != null">
+                #{goodsForpeople},
+            </if>
+            <if test="isMedicare != null">
+                #{isMedicare},
+            </if>
+            <if test="medicareCode != null">
+                #{medicareCode},
+            </if>
+            <if test="barCode != null">
+                #{barCode},
+            </if>
+            <if test="mainIngredient != null">
+                #{mainIngredient},
+            </if>
+            <if test="goodsIndications != null">
+                #{goodsIndications},
+            </if>
+            <if test="goodsUseMethod != null">
+                #{goodsUseMethod},
+            </if>
+            <if test="forpeopleDesc != null">
+                #{forpeopleDesc},
+            </if>
+            <if test="goodsAction != null">
+                #{goodsAction},
+            </if>
+            <if test="goodsWeight != null">
+                #{goodsWeight},
+            </if>
+            <if test="goodsTitle != null">
+                #{goodsTitle},
+            </if>
+            <if test="goodsCode != null">
+                #{goodsCode},
+            </if>
+            <if test="goodsDesc != null">
+                #{goodsDesc},
+            </if>
+            <if test="adverseReactioins != null">
+                #{adverseReactioins},
+            </if>
+            <if test="goodsNote != null">
+                #{goodsNote},
+            </if>
+            <if test="goodsContd != null">
+                #{goodsContd},
+            </if>
+            <if test="goodsDeposit != null">
+                #{goodsDeposit},
+            </if>
+            <if test="goodsDescription != null">
+                #{goodsDescription},
+            </if>
+            <if test="userCateid != null">
+                #{userCateid},
+            </if>
+            <if test="goodsImgs != null">
+                #{goodsImgs},
+            </if>
+            <if test="fieldsPk != null">
+                #{fieldsPk},
+            </if>
+            <if test="fields != null">
+                #{fields},
+            </if>
+        </trim>
+    </insert>
+</mapper>

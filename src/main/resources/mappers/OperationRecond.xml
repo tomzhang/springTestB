@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.distribution.mapper.OperationRecodMapper">
+
+    <insert id="insert" parameterType="com.jk51.model.distribute.OperationRecond">
+        INSERT into `d_operation_recond` (d_id,autding_status,remark,snapshot,update_time) VALUES (#{d_id},#{autding_status},#{remark},#{snapshot},#{update_time})
+    </insert>
+
+    <select id="getDistributorChangeRecord" parameterType="java.lang.Integer" resultType="com.jk51.model.distribute.OperationRecond">
+      SELECT *
+      from
+        `d_operation_recond`
+      WHERE
+        d_id = #{d_id}
+      ORDER by update_time DESC
+    </select>
+</mapper>

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.goods.mapper.YbGoodsSyncMapper">
+    <!-- 查询需要更新或者新增的商品列表 -->
+    <select id="querySyncGoodsList" parameterType="com.jk51.model.goods.YbGoodsSyncGrid" resultType="com.jk51.model.goods.PageData">
+        SELECT
+        G.id,G.site_id ,G.sync_type ,G.yb_goods_id ,G.detail_tpl ,G.brand_id ,G.drug_name ,G.specif_cation ,G.approval_number
+        ,G.info_sync_status ,G.img_sync_status ,date_format(G.create_time,'%Y-%m-%d %H:%i:%s') AS create_time ,date_format(G.update_time,'%Y-%m-%d %H:%i:%s') AS update_time
+        ,E.goods_company,M.merchant_name
+        FROM
+        yb_goods_sync_draft G
+        LEFT JOIN yb_goods_sync_draft_ext E ON G.id = E.sync_draft_id
+        LEFT JOIN yb_merchant M ON G.site_id = M.merchant_id
+        LEFT JOIN yb_goods YG ON G.yb_goods_id=YG.goods_id
+        <where>
+            (YG.goods_status is null or YG.goods_status != 3)
+            <if test="sync_type != null" >
+                AND G.sync_type = #{sync_type}
+            </if>
+            <if test="info_sync_status!=null and info_sync_status!=''" >
+                AND G.info_sync_status = #{info_sync_status}
+            </if>
+            <if test="img_sync_status!=null and img_sync_status!=''">
+                AND G.img_sync_status = #{img_sync_status}
+            </if>
+            <if test="detail_tpl!=null and detail_tpl!=''">
+                AND G.detail_tpl = #{detail_tpl}
+            </if>
+            <if test="drug_name!=null and drug_name!=''">
+                AND G.drug_name = #{drug_name}
+            </if>
+            <if test="approval_number!=null and approval_number!=''">
+                AND G.approval_number = #{approval_number}
+            </if>
+            <if test="specif_cation!=null and specif_cation!=''">
+                AND G.specif_cation = #{specif_cation}
+            </if>
+            <if test="goods_company!=null and goods_company!=''">
+                AND E.goods_company = #{goods_company}
+            </if>
+            <if test="bar_code!=null and bar_code!=''">
+                AND E.bar_code = #{bar_code}
+            </if>
+            <if test="merchant_name!=null and merchant_name!=''">
+                AND M.merchant_name = #{merchant_name}
+            </if>
+            <if test="goods_status!=null and goods_status!=''">
+                AND B.goods_status = #{goods_status}
+            </if>
+            <choose>
+                <when test="start_date!=null and end_date!=null">
+                    AND G.create_time &gt; #{start_date} AND G.create_time &lt; #{end_date}
+                </when>
+                <when test="start_date!=null">
+                    AND G.create_time &gt; #{start_date}
+                </when>
+                <when test="end_date!=null">
+                    AND G.create_time &lt; #{end_date}
+                </when>
+            </choose>
+        </where>
+        ORDER BY G.update_time DESC
+    </select>
+    <!--批量删除需要更新或者新增的商品列表-->
+    <update id="batchDelSyncGoods">
+        UPDATE yb_goods_sync_draft
+        <set>
+            sync_type=0,update_time=CURRENT_TIMESTAMP()
+        </set>
+        WHERE id IN
+        <foreach collection="array" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+    <!-- 查询sync_config列表 -->
+    <select id="queryGoodsConfigList" resultType="com.jk51.model.goods.PageData">
+        SELECT * FROM yb_config_goods_sync
+        <where>
+            <if test="detail_tpl!=null and detail_tpl!=''">
+                detail_tpl=#{detail_tpl}
+            </if>
+        </where>
+    </select>
+    <!-- 设置sync_config -->
+    <update id="setGoodConfig" parameterType="com.jk51.model.goods.PageData">
+        UPDATE yb_config_goods_sync
+        <set>
+            <if test="allow_add!=null">
+                allow_add = #{allow_add},
+            </if>
+            <if test="allow_update!=null">
+                allow_update = #{allow_update},
+            </if>
+            <if test="fields!=null and fields!=''">
+                fields = #{fields},
+            </if>
+            <if test="fields_pk!=null and fields_pk!=''">
+                fields_pk = #{fields_pk},
+            </if>
+            update_time = CURRENT_TIMESTAMP()
+        </set>
+        <where>
+            <if test="detail_tpl!=null and detail_tpl!=''">
+                detail_tpl = #{detail_tpl}
+            </if>
+        </where>
+    </update>
+    <!-- 根据同步表的id查询同步表和扩展表内容 -->
+    <select id="querySyncGoodBySyncDraftId" resultType="com.jk51.model.goods.PageData">
+        SELECT G.*,E.* FROM yb_goods_sync_draft G
+        LEFT JOIN yb_goods_sync_draft_ext E ON G.id=E.sync_draft_id
+        WHERE G.id=#{sync_draft_id} limit 1
+    </select>
+    <!--忽略更新-->
+    <update id="ignoreUpdate">
+        UPDATE yb_goods_sync_draft
+        <set>
+            info_sync_status=120,
+            update_time=CURRENT_TIMESTAMP()
+        </set>
+        <where>
+            id = #{good_sync_id}
+        </where>
+    </update>
+    <!--忽略更新-->
+    <update id="handleUpdateImgStatus">
+        UPDATE yb_goods_sync_draft
+        <set>
+            img_sync_status=130,
+            update_time=CURRENT_TIMESTAMP()
+        </set>
+        <where>
+            id = #{good_sync_id}
+        </where>
+    </update>
+    <select id="queryIyfImageByMd5" resultType="Map">
+        SELECT * FROM b_images_attr WHERE hash=#{hash} limit 1
+    </select>
+
+    <update id="setStatus">
+        UPDATE yb_goods_sync_draft
+        <set>
+            info_sync_status=130,
+            update_time=CURRENT_TIMESTAMP()
+        </set>
+        <where>
+            id = #{syncGood_id}
+        </where>
+    </update>
+
+    <update id="updatePic">
+        UPDATE yb_goods_sync_draft
+        SET
+        yb_goods_id=#{id}
+        WHERE
+        id = #{yb_goods_id}
+    </update>
+
+    <select id="queryIyfImageByHash" resultType="java.lang.String">
+        SELECT url FROM i_yf_image WHERE md5Key=#{hash} limit 1
+    </select>
+
+    <!-- 批量商品同步查询 -->
+    <select id="goodsSyncQueryList" parameterType="map" resultType="com.jk51.model.goods.PageData">
+        SELECT
+        G.drug_name,G.goods_id ,G.bar_code ,G.detail_tpl ,G.specif_cation ,G.approval_number,GS.site_id,G.goods_status
+        ,G.goods_company ,date_format(G.create_time,'%Y-%m-%d %H:%i:%s') AS create_time ,date_format(G.update_time,'%Y-%m-%d %H:%i:%s') AS update_time
+        ,M.merchant_name
+        FROM
+        b_goods_synchro_log GS
+        LEFT JOIN b_goods G ON GS.goods_id = G.goods_id AND GS.site_id=G.site_id
+        LEFT JOIN yb_merchant M ON GS.site_id = M.merchant_id
+        <where>
+            1 = 1
+            AND  GS.synchro_status=1
+            AND GS.status=1
+            <if test="detail_tpl!=null and detail_tpl!=''">
+                AND G.detail_tpl = #{detail_tpl}
+            </if>
+            <if test="drug_name!=null and drug_name!=''">
+                AND G.drug_name like  concat('%',#{drug_name},'%' )
+            </if>
+            <if test="approval_number!=null and approval_number!=''">
+                AND G.approval_number  like  concat('%',#{approval_number},'%')
+            </if>
+            <if test="specif_cation!=null and specif_cation!=''">
+                AND G.specif_cation  like  concat('%',#{specif_cation},'%' )
+            </if>
+            <if test="goods_company!=null and goods_company!=''">
+                AND G.goods_company  like  concat('%',#{goods_company},'%' )
+            </if>
+            <if test="bar_code!=null and bar_code!=''">
+                AND G.bar_code = #{bar_code}
+            </if>
+            <if test="merchant_name!=null and merchant_name!=''">
+                AND M.merchant_name  like  concat('%',#{merchant_name},'%' )
+            </if>
+            <choose>
+                <when test="start_date!=null and end_date!=null">
+                    AND GS.create_time &gt; #{start_date} AND GS.create_time &lt; #{end_date}
+                </when>
+                <when test="start_date!=null">
+                    AND GS.create_time &gt; #{start_date}
+                </when>
+                <when test="end_date!=null">
+                    AND GS.create_time &lt; #{end_date}
+                </when>
+            </choose>
+        </where>
+        ORDER BY GS.update_time DESC
+    </select>
+
+    <!-- 51后台批量同步报表中批量删除商品-->
+    <update id="batchSyncDel">
+        UPDATE b_goods_synchro_log SET status=2,update_time=CURRENT_TIMESTAMP()
+        WHERE goods_id IN
+        <foreach collection="array" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+</mapper>

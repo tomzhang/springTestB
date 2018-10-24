@@ -1,0 +1,520 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.promotions.mapper.PromotionsRuleMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.promotions.PromotionsRule">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="promotions_type" jdbcType="INTEGER" property="promotionsType"/>
+        <result column="promotions_name" jdbcType="VARCHAR" property="promotionsName"/>
+        <result column="label" jdbcType="VARCHAR" property="label"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="amount" jdbcType="INTEGER" property="amount"/>
+        <result column="is_first_order" jdbcType="BIT" property="isFirstOrder"/>
+        <result column="order_type" jdbcType="VARCHAR" property="orderType"/>
+        <result column="use_store" jdbcType="VARCHAR" property="useStore"/>
+        <result column="use_area" jdbcType="LONGVARCHAR" property="useArea"/>
+        <result column="version" jdbcType="INTEGER" property="version"/>
+        <result column="total" jdbcType="INTEGER" property="total"/>
+        <result column="use_amount" jdbcType="INTEGER" property="useAmount"/>
+        <result column="send_amount" jdbcType="INTEGER" property="sendAmount"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="promotions_rule" jdbcType="LONGVARCHAR" property="promotionsRule"/>
+        <result column="time_rule" jdbcType="LONGVARCHAR" property="timeRule"/>
+        <result column="limit_state" jdbcType="LONGVARCHAR" property="limitState"/>
+        <result column="limit_remark" jdbcType="LONGVARCHAR" property="limitRemark"/>
+        <result column="activitytId" jdbcType="INTEGER" property="activityId"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, site_id, promotions_type, promotions_name, label, status, amount, is_first_order,
+        order_type, use_store,use_area, version, total, use_amount, send_amount, create_time, update_time, promotions_rule, time_rule,
+        limit_state, limit_remark
+    </sql>
+
+    <!-- insert start -->
+    <insert id="create" parameterType="com.jk51.model.promotions.PromotionsRule">
+        INSERT INTO b_promotions_rule (
+        site_id,
+        id,
+        promotions_type,
+        promotions_name,
+        label,
+        STATUS,
+        promotions_rule,
+        amount,
+        time_rule,
+        is_first_order,
+        order_type,
+        use_store,
+        <if test="promotionsRule.useArea!=null">
+            use_area,
+        </if>
+        version,
+        total,
+        use_amount,
+        send_amount,
+        create_time,
+        update_time,
+        limit_state,
+        limit_remark
+        )
+        VALUES
+        (
+        #{promotionsRule.siteId},
+        NULL,
+        #{promotionsRule.promotionsType},
+        #{promotionsRule.promotionsName},
+        #{promotionsRule.label},
+        #{promotionsRule.status},
+        #{promotionsRule.promotionsRule},
+        #{promotionsRule.amount},
+        #{promotionsRule.timeRule},
+        #{promotionsRule.isFirstOrder},
+        #{promotionsRule.orderType},
+        #{promotionsRule.useStore},
+        <if test="promotionsRule.useArea!=null">
+            #{promotionsRule.useArea},
+        </if>
+        0,
+        #{promotionsRule.total},
+        0,
+        0,
+        #{promotionsRule.createTime},
+        #{promotionsRule.updateTime},
+        #{promotionsRule.limitState},
+        #{promotionsRule.limitRemark}
+        )
+    </insert>
+
+    <insert id="createAndGetId" parameterType="com.jk51.model.promotions.PromotionsRule" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+            b_promotions_rule (site_id,
+            promotions_type,
+            promotions_name,
+            label,
+            STATUS,
+            promotions_rule,
+            amount,
+            time_rule,
+            is_first_order,
+            order_type,
+            use_store,
+            <if test="useArea!=null">
+                use_area,
+            </if>
+            version,
+            total,
+            use_amount,
+            send_amount,
+            create_time,
+            update_time,
+            limit_state,
+            limit_remark)
+        VALUES(#{siteId},
+            #{promotionsType},
+            #{promotionsName},
+            #{label},
+            #{status},
+            #{promotionsRule},
+            #{amount},
+            #{timeRule},
+            #{isFirstOrder},
+            #{orderType},
+            #{useStore},
+            <if test="useArea!=null">
+                #{useArea},
+            </if>
+            0,
+            #{total},
+            0,
+            0,
+            #{createTime},
+            #{updateTime},
+            #{limitState},
+            #{limitRemark})
+    </insert>
+
+    <!-- insert end -->
+
+    <!-- update start -->
+    <update id="updateStatusByIdAndSiteId">
+        UPDATE b_promotions_rule
+        SET status = #{status}
+        WHERE
+            id = #{id}
+            AND
+            site_id = #{siteId}
+    </update>
+
+    <update id="update">
+        UPDATE b_promotions_rule
+        SET
+        promotions_type = #{promotionsRule.promotionsType},
+        promotions_name = #{promotionsRule.promotionsName},
+        label = #{promotionsRule.label},
+        status = #{promotionsRule.status},
+        promotions_rule = #{promotionsRule.promotionsRule},
+        amount = #{promotionsRule.amount},
+        time_rule = #{promotionsRule.timeRule},
+        is_first_order = #{promotionsRule.isFirstOrder},
+        order_type = #{promotionsRule.orderType},
+        use_store = #{promotionsRule.useStore},
+        <if test="promotionsRule.useArea!=null">
+            use_area = #{promotionsRule.useArea},
+        </if>
+        version = #{promotionsRule.version},
+        total = #{promotionsRule.total},
+        use_amount = #{promotionsRule.useAmount},
+        send_amount = #{promotionsRule.sendAmount},
+        create_time = #{promotionsRule.createTime},
+        update_time = #{promotionsRule.updateTime},
+        limit_state = #{promotionsRule.limitState},
+        limit_remark = #{promotionsRule.limitRemark}
+        WHERE
+        site_id = #{promotionsRule.siteId}
+        AND id = #{promotionsRule.id};
+    </update>
+
+    <update id="updateOneFiled">
+        UPDATE
+            b_promotions_rule
+        SET
+            `${field}` = #{value}
+        WHERE
+            site_id = #{siteId}
+            AND
+            id = #{id}
+    </update>
+
+    <update id="updateEndTimeBySiteIdAndRuleId">
+        UPDATE b_promotions_rule
+        SET time_rule = #{endTime}
+        WHERE
+        id = #{ruleId}
+        AND
+        site_id = #{siteId}
+    </update>
+
+    <update id="updateEndTimeBySiteIdAndActId">
+        UPDATE b_promotions_activity
+        SET end_time = #{endTime}
+        WHERE
+        id = #{act_id}
+        AND
+        site_id = #{siteId}
+    </update>
+
+    <!-- update end -->
+
+    <!-- select start -->
+    <select id="findByParam" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"/>
+        FROM b_promotions_rule
+        <where>
+            <if test="siteId != null">
+                AND site_id = #{siteId}
+            </if>
+
+            <if test="statusList != null and statusList.size() != 0">
+                AND status IN
+                <foreach collection="statusList" item="item_status" separator="," open="(" close=")">
+                    ${item_status}
+                </foreach>
+            </if>
+
+
+        </where>
+    </select>
+
+    <select id="promRuleList" resultType="com.jk51.model.goods.PageData"
+            parameterType="com.jk51.modules.promotions.request.ProCouponRuleDto">
+        SELECT IFNULL(a.rule_name,'---') rule_name,
+        CASE
+        when a.coupon_type=100 and a.ruleType=1 THEN '现金劵'
+        when a.coupon_type=200 and a.ruleType=1 THEN '打折券'
+        when a.coupon_type=300 and a.ruleType=1 THEN '限价券'
+        when a.coupon_type=400 and a.ruleType=1 THEN '包邮券'
+        when a.coupon_type=500 and a.ruleType=1 THEN '满赠券'
+        when a.coupon_type=10 and a.ruleType=2 THEN '满赠活动'
+        when a.coupon_type=20 and a.ruleType=2 THEN '打折活动'
+        when a.coupon_type=30 and a.ruleType=2 THEN '包邮活动'
+        when a.coupon_type=40 and a.ruleType=2 THEN '满减活动'
+        when a.coupon_type=50 and a.ruleType=2 THEN '限价活动'
+        ELSE '---'
+        END coupon_type,
+        a.status,
+        a.aim_at,
+        date_format(a.create_time,'%Y-%m-%d %H:%i:%s') create_time,a.rule_id,
+        a.total,a.use_amount,a.amount,a.ruleType,a.limit_rule,a.send_amount from (
+        SELECT rule_id, rule_name,coupon_type,total,use_amount,0 as send_amount,amount,site_id,
+        create_time,status,limit_rule,goods_rule, time_rule,"1" as ruleType,aim_at
+        FROM b_coupon_rule
+        UNION
+        SELECT id as rule_id,promotions_name as rule_name,promotions_type as
+        coupon_type,total,use_amount,send_amount,amount,site_id,
+        create_time,status,promotions_rule as limit_rule,promotions_rule as goods_rule ,time_rule,"2" as ruleType,"1" as
+        aim_at
+        FROM b_promotions_rule
+
+        order by create_time desc ) a
+        <where>
+
+            <if test="proCouponRuleDto.siteId != null">
+                AND a.site_id = #{proCouponRuleDto.siteId}
+            </if>
+            <if test="proCouponRuleDto.proRuleName != null and proCouponRuleDto.proRuleName!=''">
+                AND a.rule_name like concat('%',#{proCouponRuleDto.proRuleName},'%')
+            </if>
+            <if test="proCouponRuleDto.proRuleType != null and proCouponRuleDto.proRuleType!=''">
+                AND a.coupon_type = #{proCouponRuleDto.proRuleType}
+            </if>
+            <if test="proCouponRuleDto.status!=null and proCouponRuleDto.status!=''">
+                AND a.status = #{proCouponRuleDto.status}
+            </if>
+            <if test="proCouponRuleDto.startTime!=null and proCouponRuleDto.startTime != ''">
+                AND a.create_time <![CDATA[ >= ]]> #{proCouponRuleDto.startTime}
+            </if>
+            <if test="proCouponRuleDto.endTime!=null and proCouponRuleDto.endTime != ''">
+                AND a.create_time <![CDATA[ <= ]]> CONCAT(#{proCouponRuleDto.endTime},'23:59:59')
+            </if>
+        </where>
+
+    </select>
+
+    <select id="couponRuleList" resultType="com.jk51.model.goods.PageData" parameterType="com.jk51.modules.promotions.request.ProCouponRuleDto">
+        SELECT IFNULL(a.rule_name,'---') rule_name,
+        CASE
+        when a.coupon_type=100 and a.ruleType=1 THEN '现金劵'
+        when a.coupon_type=200 and a.ruleType=1 THEN '打折券'
+        when a.coupon_type=300 and a.ruleType=1 THEN '限价券'
+        when a.coupon_type=400 and a.ruleType=1 THEN '包邮券'
+        when a.coupon_type=500 and a.ruleType=1 THEN '满赠券'
+        ELSE '---'
+        END coupon_type,
+        a.status,
+        a.aim_at,
+        date_format(a.create_time,'%Y-%m-%d %H:%i:%s')  create_time,a.rule_id,
+        a.total,a.use_amount,a.amount,a.ruleType,a.limit_rule,a.send_amount from (
+        SELECT rule_id, rule_name,coupon_type,total,use_amount,0 as send_amount,amount,site_id,
+        create_time,status,limit_rule,goods_rule, time_rule,"1" as ruleType,aim_at
+        FROM b_coupon_rule
+        order by create_time desc ) a
+        <where>
+
+            <if test="proCouponRuleDto.siteId != null">
+                AND a.site_id = #{proCouponRuleDto.siteId}
+            </if>
+            <if test="proCouponRuleDto.proRuleName != null and proCouponRuleDto.proRuleName!=''">
+                AND a.rule_name like concat('%',#{proCouponRuleDto.proRuleName},'%')
+            </if>
+            <if test="proCouponRuleDto.proRuleType != null and proCouponRuleDto.proRuleType!=''">
+                AND a.coupon_type = #{proCouponRuleDto.proRuleType}
+            </if>
+            <if test="proCouponRuleDto.status!=null and proCouponRuleDto.status!=''">
+                AND a.status = #{proCouponRuleDto.status}
+            </if>
+            <if test="proCouponRuleDto.startTime!=null and proCouponRuleDto.startTime != ''">
+                AND a.create_time <![CDATA[ >= ]]> #{proCouponRuleDto.startTime}
+            </if>
+            <if test="proCouponRuleDto.endTime!=null and proCouponRuleDto.endTime != ''">
+                AND a.create_time <![CDATA[ <= ]]> CONCAT(#{proCouponRuleDto.endTime},'23:59:59')
+            </if>
+        </where>
+
+    </select>
+    <select id="getPromotionsRule" resultMap="BaseResultMap"
+            parameterType="com.jk51.modules.promotions.request.ProCouponRuleDto">
+        select
+        <include refid="Base_Column_List"/>
+        from b_promotions_rule
+        <where>
+            <if test="siteId != null">
+                AND site_id = #{siteId}
+            </if>
+            <if test="id != null">
+                AND id = #{id}
+            </if>
+
+        </where>
+    </select>
+
+    <select id="getPromotionsRuleByIdAndSiteId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        b_promotions_rule
+        WHERE
+        site_id = #{siteId}
+        AND
+        id = #{id}
+    </select>
+
+    <select id="getPromotionsRuleByIdAndSiteIdAndStatus" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        b_promotions_rule
+        WHERE
+        site_id = #{siteId}
+        AND
+        id = #{id}
+        AND
+        status=0
+    </select>
+
+    <select id="getPromotionsRuleBySiteIdAndActivityIds" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"/>
+        FROM
+            b_promotions_rule
+        WHERE
+            site_id = #{siteId}
+            AND id IN (
+            SELECT promotions_id
+            FROM b_promotions_activity
+            WHERE site_id = #{siteId}
+            AND id IN
+                <foreach collection="activityIdList" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            );
+    </select>
+
+    <select id="getPromotionsRuleBySiteIdAndActivityId" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"/>
+        FROM
+            b_promotions_rule
+        WHERE
+            id = (
+            SELECT promotions_id
+            FROM b_promotions_activity
+            WHERE site_id = #{siteId}
+            AND id = #{activityId}
+            );
+    </select>
+
+    <select id="getPromotionsRuleBySiteId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        b_promotions_rule
+        WHERE
+        site_id = #{siteId}
+        AND
+        status = 0
+    </select>
+
+    <select id="getPromotionsRuleByIdsAndSiteId" resultMap="BaseResultMap">
+        SELECT promoRule.*,activity.id as activitytId
+        FROM
+        b_promotions_activity activity
+        INNER JOIN b_promotions_rule promoRule
+        on (activity.promotions_id=promoRule.id and activity.promotions_id)
+        WHERE
+        promoRule.site_id = #{siteId}
+        AND activity.id in
+        <foreach item="item" index="index" collection="promotionsIdsMap" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        order by promoRule.create_time desc
+    </select>
+
+    <select id="getPromotionsRuleByIdsAndSiteId2" resultMap="BaseResultMap">
+        SELECT * FROM b_promotions_rule
+        WHERE site_id = #{siteId}
+        AND id in
+            <foreach item="ruleId" collection="promotionsRuleIds" open="(" separator="," close=")">
+                #{ruleId}
+            </foreach>
+    </select>
+
+    <select id="proRuleListForUsable" resultType="java.util.Map">
+        select activity.id as proActivityId,rule.*
+        from b_promotions_activity activity
+        INNER JOIN
+        b_promotions_rule rule
+        ON (activity.site_id=rule.site_id and rule.id=activity.promotions_id)
+       where 1=1
+       and  activity.site_id=#{siteId}
+       and  activity.status=0
+       and  rule.status=0
+       order by activity.create_time desc, field(promotions_type,50,20,40,30,10)
+    </select>
+
+    <select id="choosePromList" resultType="com.jk51.model.goods.PageData"
+            parameterType="com.jk51.modules.promotions.request.ProCouponRuleDto">
+        SELECT IFNULL(a.rule_name,'---') rule_name,
+        CASE
+        when a.coupon_type=100 and a.ruleType=1 THEN '现金劵'
+        when a.coupon_type=200 and a.ruleType=1 THEN '打折券'
+        when a.coupon_type=300 and a.ruleType=1 THEN '现价券'
+        when a.coupon_type=400 and a.ruleType=1 THEN '包邮券'
+        when a.coupon_type=10 and a.ruleType=2 THEN '满赠活动'
+        when a.coupon_type=20 and a.ruleType=2 THEN '打折活动'
+        when a.coupon_type=30 and a.ruleType=2 THEN '包邮活动'
+        when a.coupon_type=40 and a.ruleType=2 THEN '满减活动'
+        when a.coupon_type=50 and a.ruleType=2 THEN '限价活动'
+        ELSE '---'
+        END coupon_type,
+        CASE
+        when a.`status`=0 THEN '可发放'
+        when a.`status`=1 and a.ruleType=1 THEN '已发完'
+        when a.`status`=2 and a.ruleType=1 THEN '手动停发'
+        when a.`status`=3 and a.ruleType=1 THEN '已过期'
+        when a.`status`=4 and a.ruleType=1 THEN '手动作废'
+        when a.`status`=10 and a.ruleType=1 THEN '待发放'
+        when a.`status`=1 and a.ruleType=2 THEN '正常'
+        when a.`status`=2 and a.ruleType=2 THEN '已发完'
+        when a.`status`=3 and a.ruleType=2 THEN '已过期'
+        when a.`status`=4 and a.ruleType=2 THEN '手动停发'
+        when a.`status`=10 and a.ruleType=2 THEN '手动作废'
+        ELSE '---'
+        END status,
+        date_format(a.create_time,'%Y-%m-%d %H:%i:%s') create_time,a.rule_id,a.limit_rule,
+        a.total,a.use_amount,a.amount,a.ruleType,a.time_rule from (
+        SELECT id as rule_id,promotions_name as rule_name,promotions_type as
+        coupon_type,total,use_amount,amount,site_id,
+        create_time,status,promotions_rule as limit_rule,promotions_rule as goods_rule ,time_rule,"2" as ruleType
+        FROM b_promotions_rule
+
+        order by create_time desc ) a
+        <where>
+
+            <if test="proCouponRuleDto.siteId != null">
+                AND a.site_id = #{proCouponRuleDto.siteId}
+            </if>
+            <if test="proCouponRuleDto.proRuleName != null and proCouponRuleDto.proRuleName!=''">
+                AND a.rule_name like concat('%',#{proCouponRuleDto.proRuleName},'%')
+            </if>
+            <if test="proCouponRuleDto.proRuleType != null and proCouponRuleDto.proRuleType!=''">
+                AND a.coupon_type = #{proCouponRuleDto.proRuleType}
+            </if>
+            <if test="proCouponRuleDto.status!=null and proCouponRuleDto.status!=''">
+                AND a.status = #{proCouponRuleDto.status}
+            </if>
+            <if test="proCouponRuleDto.startTime!=null and proCouponRuleDto.startTime != ''">
+                AND a.create_time <![CDATA[ >= ]]> #{proCouponRuleDto.startTime}
+            </if>
+            <if test="proCouponRuleDto.endTime!=null and proCouponRuleDto.endTime != ''">
+                AND a.create_time <![CDATA[ <= ]]> CONCAT(#{proCouponRuleDto.endTime},'23:59:59')
+            </if>
+        </where>
+
+    </select>
+
+    <select id="getPromotionsRuleToJob" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        b_promotions_rule
+        WHERE
+        status in (0, 1, 3)
+    </select>
+
+
+    <!-- select end -->
+
+
+</mapper>

@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.authority.mapper.PermissionMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.role.Permission">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="type_id" jdbcType="INTEGER" property="typeId"/>
+        <result column="platform" jdbcType="SMALLINT" property="platform"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="action" jdbcType="VARCHAR" property="action"/>
+        <result column="permission_desc" jdbcType="VARCHAR" property="permissionDesc"/>
+        <result column="deleted_at" jdbcType="TIMESTAMP" property="deletedAt"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createtime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updatetime"/>
+        <result column="is_del" jdbcType="INTEGER" property="isDel"></result>
+    </resultMap>
+
+    <resultMap id="PermissionInitResultMap" type="com.jk51.model.role.SysPermissionInit">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="url" jdbcType="VARCHAR" property="url"/>
+        <result column="permission_init" jdbcType="VARCHAR" property="permissionInit"/>
+        <result column="deleted_at" jdbcType="TIMESTAMP" property="deletedAt"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createtime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updatetime"/>
+        <result column="sort" jdbcType="INTEGER" property="sort"></result>
+        <result column="is_del" jdbcType="INTEGER" property="isDel"></result>
+    </resultMap>
+    <resultMap id="permissionCheckResultMap" type="com.jk51.model.role.StorePermission">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="platform" jdbcType="INTEGER" property="platform"/>
+        <result column="typename" jdbcType="INTEGER" property="name"></result>
+        <collection property="permisionList" ofType="com.jk51.model.role.Permission" javaType="List">
+            <id column="per_id" jdbcType="INTEGER" property="id"/>
+            <result column="per_type_id" jdbcType="INTEGER" property="typeId"/>
+            <result column="per_platform" jdbcType="SMALLINT" property="platform"/>
+            <result column="per_name" jdbcType="VARCHAR" property="name"/>
+            <result column="per_action" jdbcType="VARCHAR" property="action"/>
+            <result column="per_permission_desc" jdbcType="VARCHAR" property="permissionDesc"/>
+            <result column="per_deleted_at" jdbcType="TIMESTAMP" property="deletedAt"/>
+            <result column="per_create_time" jdbcType="TIMESTAMP" property="createtime"/>
+            <result column="per_update_time" jdbcType="TIMESTAMP" property="updatetime"/>
+            <result column="per_is_del" jdbcType="INTEGER" property="isDel"></result>
+        </collection>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, type_id, platform, name, action, permission_desc, deleted_at, create_time, update_time,is_del
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+       SELECT
+        permission.id as id,
+        permission.type_id as typeId,
+        permission.platform as platform,
+        permission.name as name,
+        permission.action as action,
+        permission.permission_desc as permissionDesc
+        FROM
+        b_role role
+        RIGHT OUTER JOIN yb_role_has_permission rolehaspermission ON role.id = rolehaspermission.role_id
+        AND role.site_id = rolehaspermission.site_id
+        RIGHT OUTER JOIN yb_permission permission ON rolehaspermission.permission_id = permission.id
+        WHERE
+        role.id=#{id}
+        AND role.site_id=#{siteId}
+        and role.is_active=1
+        and rolehaspermission.is_del=0
+        AND permission.is_del=0
+    </select>
+    <select id="selectById" resultType="com.jk51.model.role.Permission">
+        SELECT
+        p.id AS id,
+        type_id AS typeId,
+        p.platform AS platform,
+        p.NAME AS name,
+        p.action AS action,
+        p.permission_desc AS permissionDesc,
+        p.deleted_at AS deletedAt,
+        p.create_time AS createtime,
+        p.update_time AS updatetime,
+        p.is_del AS isDel,
+        p.reorder as reorder,
+        t.name AS permissionTypeName
+        from yb_permission AS p LEFT  JOIN  yb_permission_type AS t on p.type_id = t.id
+        where p.id=#{id,jdbcType=INTEGER}
+    </select>
+    <update id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    UPDATE yb_permission SET is_del=1
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    <insert id="insertSelective" parameterType="com.jk51.model.role.Permission" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into yb_permission
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="typeId != null">
+                type_id,
+            </if>
+
+            platform,
+
+            <if test="name != null">
+                name,
+            </if>
+            <if test="action != null">
+                action,
+            </if>
+            <if test="permissionDesc != null">
+                permission_desc,
+            </if>
+            <if test="deletedAt != null">
+                deleted_at,
+            </if>
+            <if test="createtime != null">
+                create_time,
+            </if>
+            <if test="updatetime != null">
+                update_time,
+            </if>
+            <if test="isDel!=null">
+                is_del,
+            </if>
+            <if test="reorder!=null">
+                reorder,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="typeId != null">
+                #{typeId,jdbcType=INTEGER},
+            </if>
+
+            (select platform from yb_permission_type where id=#{typeId,jdbcType=INTEGER}),
+
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="action != null">
+                #{action,jdbcType=VARCHAR},
+            </if>
+            <if test="permissionDesc != null">
+                #{permissionDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="deletedAt != null">
+                #{deletedAt,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createtime != null">
+                #{createtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatetime != null">
+                #{updatetime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDel!=null">
+                0,
+            </if>
+            <if test="reorder!=null">
+                #{reorder,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="delPermission">
+        update  yb_permission
+        set is_del = 1
+        where id=#{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.role.Permission">
+        update yb_permission
+        <set>
+            <if test="typeId != null">
+                type_id = #{typeId,jdbcType=INTEGER},
+            </if>
+            <if test="platform != null">
+                platform = #{platform,jdbcType=SMALLINT},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="action != null">
+                action = #{action,jdbcType=VARCHAR},
+            </if>
+            <if test="permissionDesc != null">
+                permission_desc = #{permissionDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="deletedAt != null">
+                deleted_at = #{deletedAt,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createtime != null">
+                create_time = #{createtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatetime != null">
+                update_time = #{updatetime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="reorder != null">
+                reorder = #{reorder,jdbcType=INTEGER},
+            </if>
+            is_del=0
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="getPermissionsByRole" parameterType="com.jk51.model.role.RoleKey" resultMap="BaseResultMap">
+        SELECT
+        permission.id as id,
+        permission.type_id as typeId,
+        permission.platform as platform,
+        permission.name as name,
+        permission.action as action,
+        permission.permission_desc as permissionDesc
+        FROM
+        b_role role
+        RIGHT OUTER JOIN yb_role_has_permission rolehaspermission ON role.id = rolehaspermission.role_id
+        AND role.site_id = rolehaspermission.site_id
+        RIGHT OUTER JOIN yb_permission permission ON rolehaspermission.permission_id = permission.id
+        WHERE
+        role.id=#{id}
+        AND role.site_id=#{siteId}
+        and role.is_active=1
+        and rolehaspermission.is_del=0
+        AND permission.is_del=0
+    </select>
+    <!-- 根据平台获取所有权限信息-->
+    <select id="selectByPlatform" resultMap="BaseResultMap">
+        SELECT
+        *
+        FROM
+        yb_permission
+        WHERE
+        platform = #{platform,jdbcType=INTEGER}
+        and is_del!=1
+        order by reorder asc;
+    </select>
+    <select id="selectPermisssionAll" resultMap="BaseResultMap">
+        SELECT
+        *
+        FROM
+        yb_permission
+        WHERE
+        is_del=0
+    </select>
+
+    <select id="findSysPermissionInit" resultMap="PermissionInitResultMap">
+        SELECT
+        *
+        FROM
+        sys_permission_init
+        WHERE
+        is_del=0
+        order by sort
+    </select>
+    <select id="selectPermissionByTypeName" resultMap="permissionCheckResultMap">
+        select ypt.id id,ypt.platform platform,ypt.name typename,yp.id per_id,yp.type_id per_type_id,
+        yp.platform per_platform,yp.name per_name,yp.action per_action, yp.permission_desc per_permission_desc,
+        yp.deleted_at per_deleted_at,yp.create_time per_create_time,yp.update_time per_update_time,yp.is_del per_is_del
+        from yb_permission yp LEFT JOIN yb_permission_type ypt on
+        yp.platform=ypt.platform and ypt.id=yp.type_id
+        where yp.is_del=0 and ypt.platform=#{platform}
+        and ypt.name in
+        <foreach collection="typeNames" item="typeName" index="index" open="(" close=")" separator=",">
+            #{typeName}
+        </foreach>
+    </select>
+    <select id="selectPermissionUnchecked" resultType="java.lang.Integer">
+        SELECT
+        p.id
+        FROM
+        yb_permission p
+        LEFT JOIN yb_permission_type pt ON p.platform = pt.platform
+        AND p.is_del = pt.is_del
+        AND p.type_id = pt.id
+        WHERE
+        pt.platform = #{platform}
+        AND pt. NAME = #{desc}
+        AND pt.is_del = #{status}
+        AND p.id NOT IN
+        <foreach collection="permissionId" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>;
+    </select>
+    <select id="selectStoresPermissions" resultType="java.util.Map">
+        SELECT
+        p.id id,
+        p.platform platform,
+        p.type_id type_id,
+        pt.name typeName,
+        p.name name,
+        p.action action
+        FROM
+        yb_permission p
+        LEFT JOIN yb_permission_type pt ON p.platform = pt.platform
+        AND p.is_del = pt.is_del
+        AND p.type_id = pt.id
+        WHERE
+        pt.platform = #{platform}
+        AND pt.NAME = #{desc}
+        AND pt.is_del = #{status}
+        AND p.id IN
+        <foreach collection="permissionId" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>;
+    </select>
+</mapper>

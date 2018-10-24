@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.account.mapper.AccountPayCheckMapper">
+
+    <select id="getPayCheck" parameterType="Map" resultType="com.jk51.model.account.models.AccountCheckData">
+        SELECT b.trades_id,b.pay_time,FORMAT(b.real_pay/100,2) real_pay,
+        CASE
+            WHEN b.pay_style='wx' THEN '微信'
+            WHEN b.pay_style='ali' THEN '支付宝'
+        END pay_style,
+        s.pay_number,FORMAT(s.platform_payment_amount/100,2) platform_payment_amount,s.create_time,
+        CASE
+            WHEN s.account_checking_status IS NULL THEN '未对账'
+            WHEN s.account_checking_status=0 THEN '未对账'
+            WHEN s.account_checking_status=1 THEN '一致'
+            WHEN s.account_checking_status=2 THEN '不一致'
+        END account_checking_status
+        FROM b_trades b
+        LEFT JOIN yb_settlement_detail s ON b.trades_id=s.trades_id
+        <include refid="account_checking_param" />
+        order by b.pay_time desc
+    </select>
+
+    <select id="getPayCheckReport" parameterType="Map" resultType="map">
+        SELECT b.trades_id,date_format(b.pay_time,'%Y-%m-%d %H:%i:%s') pay_time,FORMAT(b.real_pay/100,2) real_pay,
+        CASE
+        WHEN b.pay_style='wx' THEN '微信'
+        WHEN b.pay_style='ali' THEN '支付宝'
+        END pay_style,
+        s.pay_number,FORMAT(s.platform_payment_amount/100,2) platform_payment_amount,date_format(s.create_time,'%Y-%m-%d %H:%i:%s') create_time,
+        CASE
+        WHEN s.account_checking_status IS NULL THEN '未对账'
+        WHEN s.account_checking_status=0 THEN '未对账'
+        WHEN s.account_checking_status=1 THEN '一致'
+        WHEN s.account_checking_status=2 THEN '不一致'
+        END account_checking_status
+        FROM b_trades b
+        LEFT JOIN yb_settlement_detail s ON b.trades_id=s.trades_id
+        <include refid="account_checking_param" />
+        order by b.pay_time desc
+    </select>
+
+    <select id="getRefundPayCheck" parameterType="Map" resultType="com.jk51.model.account.models.AccountCheckData">
+        SELECT b.trade_id trades_id,FORMAT(b.real_refund_money/100,2) refund_fee,b.refund_time,
+        CASE
+        WHEN b.pay_style='wx' THEN '微信'
+        WHEN b.pay_style='ali' THEN '支付宝'
+        END pay_style,
+        s.pay_number,s.create_time,
+        CASE
+        WHEN s.refund_checking_status IS NULL THEN '未对账'
+        WHEN s.refund_checking_status=-1 THEN '未对账'
+        WHEN s.refund_checking_status=1 THEN '一致'
+        WHEN s.refund_checking_status=0 THEN '不一致'
+        END account_checking_status,
+        FORMAT(yb.spending_amount/100,2) import_refund_fee
+        FROM b_refund b
+        LEFT JOIN b_trades bs ON b.site_id = bs.site_id AND b.trade_id = bs.trades_id
+        LEFT JOIN yb_pay_data_import yb ON b.trade_id=yb.trades_id AND yb.data_type=1
+        LEFT JOIN yb_settlement_detail s ON b.trade_id=s.trades_id
+        <include refid="account_checking_refund_sql"/>
+        order by b.refund_time desc
+    </select>
+
+    <select id="getRefundPayCheckReport" parameterType="Map" resultType="map">
+        SELECT b.trade_id trades_id,FORMAT(b.real_refund_money/100,2) refund_fee,date_format(b.refund_time,'%Y-%m-%d %H:%i:%s') refund_time,
+        CASE
+        WHEN b.pay_style='wx' THEN '微信'
+        WHEN b.pay_style='ali' THEN '支付宝'
+        END pay_style,
+        s.pay_number, date_format(s.create_time,'%Y-%m-%d %H:%i:%s') create_time,
+        CASE
+        WHEN s.refund_checking_status IS NULL THEN '未对账'
+        WHEN s.refund_checking_status=-1 THEN '未对账'
+        WHEN s.refund_checking_status=1 THEN '一致'
+        WHEN s.refund_checking_status=0 THEN '不一致'
+        END account_checking_status,
+        FORMAT(yb.spending_amount/100,2) import_refund_fee
+        FROM b_refund b
+        LEFT JOIN b_trades bs ON b.site_id = bs.site_id AND b.trade_id = bs.trades_id
+        LEFT JOIN yb_pay_data_import yb ON b.trade_id=yb.trades_id AND yb.data_type=1
+        LEFT JOIN yb_settlement_detail s ON b.trade_id=s.trades_id
+        <include refid="account_checking_refund_sql"/>
+        order by b.refund_time desc
+    </select>
+
+    <sql id="account_checking_refund_sql">
+        <where>
+            b.site_id=#{siteId} AND bs.is_service_order = 1 AND FIND_IN_SET(b.pay_style,'ali,wx')
+            <if test="tradesId != null and tradesId != ''">
+                AND b.trade_id = #{tradesId}
+            </if>
+            <if test="payStyle != null and payStyle != ''">
+                AND b.pay_style = #{payStyle}
+            </if>
+            <if test="realPayA != null and realPayA != '' ">
+                AND b.real_refund_money &gt;= #{realPayA}
+            </if>
+            <if test="realPayB != null and realPayB != '' ">
+                AND b.real_refund_money &lt;= #{realPayB}
+            </if>
+            <if test="payTimeA != null and payTimeA != ''">
+                AND b.refund_time &gt;= str_to_date(concat(#{payTimeA},' 00:00:00'),'%Y-%m-%d %H:%i:%s')
+            </if>
+            <if test="payTimeB != null and payTimeB != ''">
+                AND b.refund_time &lt;= str_to_date(concat(#{payTimeB},' 23:59:59'),'%Y-%m-%d %H:%i:%s')
+            </if>
+            <if test="payNumber != null and payNumber != ''">
+                AND s.pay_number = #{payNumber}
+            </if>
+            <if test="checkStatus != null and checkStatus==-1">
+                AND b.account_checking_status = 0
+            </if>
+            <if test="checkStatus != null and checkStatus!=-1">
+                AND s.refund_checking_status = #{checkStatus}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="account_checking_param">
+        <where>
+            b.site_id=#{siteId} and b.trades_del=0 AND b.is_payment=1 AND b.is_service_order = 1 AND FIND_IN_SET(b.pay_style,'ali,wx')
+            <!--<if test="isRefund==1">
+                AND b.is_refund=120
+            </if>
+            <if test="isRefund==0">
+                AND b.is_refund=0
+            </if>-->
+            <if test="tradesId != null and tradesId != ''">
+                AND b.trades_id = #{tradesId}
+            </if>
+            <if test="payStyle != null and payStyle != ''">
+                AND b.pay_style = #{payStyle}
+            </if>
+            <if test="realPayA != null and realPayA != '' ">
+                AND b.real_pay &gt;= #{realPayA}
+            </if>
+            <if test="realPayB != null and realPayB != '' ">
+                AND b.real_pay &lt;= #{realPayB}
+            </if>
+            <if test="payTimeA != null and payTimeA != ''">
+                AND b.pay_time &gt;= str_to_date(concat(#{payTimeA},' 00:00:00'),'%Y-%m-%d %H:%i:%s')
+            </if>
+            <if test="payTimeB != null and payTimeB != ''">
+                AND b.pay_time &lt;= str_to_date(concat(#{payTimeB},' 23:59:59'),'%Y-%m-%d %H:%i:%s')
+            </if>
+            <if test="payNumber != null and payNumber != ''">
+                AND s.pay_number = #{payNumber}
+            </if>
+            <if test="checkStatus != null and checkStatus == 0">
+                AND (s.account_checking_status = 0 or s.account_checking_status is null)
+            </if>
+            <if test="checkStatus != null and checkStatus != 0">
+                AND s.account_checking_status = #{checkStatus}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

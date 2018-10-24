@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.userScenarios.mapper.QrcodeMapper">
+
+
+    <update id="insertAliQrcode">
+        UPDATE b_store_adminext SET aliqrcode_url=#{url}
+        WHERE site_id=#{siteId} AND storeadmin_id=#{storeadminId}
+    </update>
+
+    <update id="insertQrcodeIntoStoreadmin">
+        UPDATE b_store_adminext SET qrcode_url=#{url}
+        WHERE site_id=#{siteId} AND clerk_invitation_code=#{clerkCode}
+    </update>
+
+    <select id="queryStroeAdminId" resultType="java.lang.Integer">
+        SELECT storeadmin_id FROM b_store_adminext WHERE site_id=#{siteId} AND clerk_invitation_code=#{clerkCode}
+    </select>
+
+    <select id="queryStroeId" resultType="java.lang.Integer">
+        SELECT id FROM b_stores WHERE site_id=#{siteId} AND stores_number=#{storesNumber}
+    </select>
+    
+    <insert id="insertConcern">
+        INSERT INTO b_concern ( site_id,type_pk,TYPE,open_id,scene_str,create_time)
+        VALUES (#{concern.siteId},#{concern.typePk},#{concern.type},#{concern.openId},#{concern.sceneStr},FROM_UNIXTIME(#{concern.createTime}))
+    </insert>
+
+    <select id="queryAppidAndSecret" resultType="java.util.Map">
+        SELECT wx_appid,wx_secret FROM yb_merchant_ext WHERE merchant_id=#{siteId}
+    </select>
+    
+    <select id="queryAdminInfo" resultType="java.util.Map">
+        SELECT `name`,qrcode_url,SUBSTRING_INDEX(clerk_invitation_code,'_',-1) as clerk ,clerk_invitation_code FROM b_store_adminext WHERE site_id=#{siteId} AND storeadmin_id=#{id}
+    </select>
+
+    <select id="merchantList" resultType="java.lang.Integer">
+        SELECT merchant_id FROM yb_merchant_ext WHERE wx_appid<![CDATA[ <> ]]>'' AND wx_appid IS NOT NULL AND wx_secret<![CDATA[ <> ]]>'' AND wx_secret IS NOT NULL
+    </select>
+
+    <select id="allStoreAdminId" resultType="java.util.Map">
+
+        SELECT storeadmin_id,clerk_invitation_code FROM b_store_adminext WHERE site_id =#{siteId}
+    </select>
+
+    <select id="isExist" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM b_concern WHERE site_id=#{siteId} AND open_id=#{openId} AND create_time=FROM_UNIXTIME(#{createTime})
+    </select>
+
+    <select id="queryOpenid" resultType="java.lang.String">
+        SELECT open_id FROM b_member WHERE site_id=#{siteId} AND buyer_id=#{buyerId}
+    </select>
+
+    <update id="insertOpenid">
+        UPDATE b_member SET open_id = #{openid} WHERE site_id=#{siteId} AND buyer_id=#{buyerId}
+    </update>
+
+    <update id="insertAliUserId">
+        UPDATE b_member SET ali_user_id = #{aliUserId} WHERE site_id=#{siteId} AND buyer_id=#{buyerId}
+    </update>
+
+    <update id="cancelConcern">
+        UPDATE b_concern SET concern_status = 0 WHERE site_id=#{site_id} AND open_id=#{open_id}
+    </update>
+
+    <select id="queryConcernStatus" resultType="Map">
+        SELECT concern_status FROM b_concern WHERE site_id=#{site_id} AND open_id=#{open_id} order by create_time desc limit 1
+    </select>
+
+</mapper>

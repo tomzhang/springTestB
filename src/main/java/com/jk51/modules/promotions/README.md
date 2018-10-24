@@ -1,0 +1,19 @@
+# 一些注意点
+promotions是活动
+promotionsRule是活动规则
+promotionsActivity是活动发放
+coupon是优惠券
+couponRule是优惠券规则
+couponActivity是优惠券发放
+OrderDeductionService 优惠券下单页抵扣
+VerifyActivityService 活动相关验证
+VerifyRuleService 规则相关验证
+
+# 活动实体类与对应表
+
+# 状态扭转
+规则的状态根据数量和时间变更入口 com.jk51.modules.promotions.service.PromotionsRuleService.autoChangeStatus
+规则的状态手动变更入口 com.jk51.modules.promotions.controller.PromotionsRuleController.changeStatus
+
+发放的状态根据数量和时间变更入口 com.jk51.modules.promotions.service.PromotionsActivityService.autoChangeStatus
+发放的状态手动变更入口 com.jk51.modules.promotions.controller.PromotionsActivityController.changeStatus

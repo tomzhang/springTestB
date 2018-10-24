@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.persistence.mapper.BAppLogsMapper">
+    <insert id="insertSelective" parameterType="com.jk51.model.order.SBAppLogs">
+        insert into b_app_logs
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="site_id != null">
+                site_id,
+            </if>
+            <if test="id != null">
+                id,
+            </if>
+            <if test="operator_id != null">
+                operator_id,
+            </if>
+            <if test="operator!= null">
+                operator,
+            </if>
+            <if test="operator_type != null">
+                operator_type,
+            </if>
+            <if test="action != null">
+                action,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="platform_type!= null">
+                platform_type,
+            </if>
+            <if test="store_id != null">
+                store_id,
+            </if>
+            <if test="create_time != null">
+                create_time,
+            </if>
+            <if test="update_time != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="site_id != null">
+                #{site_id,jdbcType=INTEGER},
+            </if>
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="operator_id != null">
+                #{operator_id,jdbcType=INTEGER},
+            </if>
+            <if test="operator != null and operator!=''">
+                #{operator,jdbcType=VARCHAR},
+            </if>
+            <if test="operator_type != null">
+                #{operator_type,jdbcType=INTEGER},
+            </if>
+            <if test="action != null">
+                #{action,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="platform_type != null">
+                #{platform_type,jdbcType=INTEGER},
+            </if>
+            <if test="store_id != null">
+                #{store_id,jdbcType=INTEGER},
+            </if>
+            <if test="create_time != null">
+                #{create_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="update_time != null">
+                #{update_time,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <select id="selectStoreLog" resultType="Map">
+        select logs.operator,logs.action,logs.remark,logs.create_time from b_app_logs logs where 1=1
+        <if test="site_id!=null">
+            and site_id=#{site_id}
+        </if>
+        <if test="store_id!=null">
+            and store_id=#{store_id}
+        </if>
+        <if test="operator!=null and operator!=''">
+            and operator like CONCAT('%',#{operator},'%')
+        </if>
+        <if test="action != '' and action!=null">
+            and logs.action like CONCAT('%',#{action},'%')
+        </if>
+        <if test="content != '' and content!=null">
+            and logs.remark like CONCAT('%',#{content},'%')
+        </if>
+        <if test="startTime != '' and startTime!=null">
+            and create_time &gt;= str_to_date(concat(#{startTime},' 00:00:00'),'%Y-%m-%d %H:%i:%s')
+        </if>
+        <if test="endTime != '' and endTime!=null">
+            and create_time &lt;= str_to_date(concat(#{endTime},' 23:59:59'),'%Y-%m-%d %H:%i:%s')
+        </if>
+        ORDER BY logs.create_time desc
+        limit #{num},#{size}
+    </select>
+    <select id="selectStoreLogCount" resultType="java.lang.Integer">
+        select count(*) from b_app_logs logs where operator <![CDATA[ <> ]]> ''
+        <if test="site_id!=null">
+            and site_id=#{site_id}
+        </if>
+        <if test="store_id!=null">
+            and store_id=#{store_id}
+        </if>
+        <if test="operator!=null and operator!=''">
+            and operator like CONCAT('%',#{operator},'%')
+        </if>
+        <if test="action != '' and action!=null">
+            and logs.action like CONCAT('%',#{action},'%')
+        </if>
+        <if test="content != '' and content!=null">
+            and logs.remark like CONCAT('%',#{content},'%')
+        </if>
+        <if test="startTime != '' and startTime!=null">
+            and create_time &gt;= str_to_date(concat(#{startTime},' 00:00:00'),'%Y-%m-%d %H:%i:%s')
+        </if>
+        <if test="endTime != '' and endTime!=null">
+            and create_time &lt;= str_to_date(concat(#{endTime},' 23:59:59'),'%Y-%m-%d %H:%i:%s')
+        </if>
+    </select>
+    <select id="selectMerchantLog" resultType="java.util.Map">
+        SELECT
+        l.operator,l.action,l.remark,l.create_time,m.realname
+        FROM
+        b_app_logs l
+        LEFT JOIN b_manager m ON l.site_id = m.site_id
+        AND l.operator_id = m.id
+        where l.operator <![CDATA[ <> ]]> ''
+        <if test="site_id!=null">
+            and l.site_id=#{site_id}
+        </if>
+        <if test="operator!=null and operator!=''">
+            and l.operator like CONCAT('%',#{operator},'%')
+        </if>
+        <if test="action != '' and action!=null">
+            and l.action like CONCAT('%',#{action},'%')
+        </if>
+        <if test="content != '' and content!=null">
+            and l.remark like CONCAT('%',#{content},'%')
+        </if>
+        <if test="startTime != '' and startTime!=null">
+            and l.create_time &gt;= str_to_date(concat(#{startTime},' 00:00:00'),'%Y-%m-%d %H:%i:%s')
+        </if>
+        <if test="endTime != '' and endTime!=null">
+            and l.create_time &lt;= str_to_date(concat(#{endTime},' 23:59:59'),'%Y-%m-%d %H:%i:%s')
+        </if>
+        and l.store_id=0
+        ORDER BY l.create_time desc
+        limit #{num},#{size}
+    </select>
+    <select id="selectMerchantCount" resultType="java.lang.Integer">
+        SELECT
+        count(*) as num
+        FROM
+        b_app_logs l
+        LEFT JOIN b_manager m ON l.site_id = m.site_id
+        AND l.operator_id = m.id
+        where l.operator <![CDATA[ <> ]]> ''
+        <if test="site_id!=null">
+            and l.site_id=#{site_id}
+        </if>
+        <if test="operator!=null and operator!=''">
+            and l.operator like CONCAT('%',#{operator},'%')
+        </if>
+        <if test="action != '' and action!=null">
+            and l.action like CONCAT('%',#{action},'%')
+        </if>
+        <if test="content != '' and content!=null">
+            and l.remark like CONCAT('%',#{content},'%')
+        </if>
+        <if test="startTime != '' and startTime!=null">
+            and l.create_time &gt;= str_to_date(concat(#{startTime},' 00:00:00'),'%Y-%m-%d %H:%i:%s')
+        </if>
+        <if test="endTime != '' and endTime!=null">
+            and l.create_time &lt;= str_to_date(concat(#{endTime},' 23:59:59'),'%Y-%m-%d %H:%i:%s')
+        </if>
+        and l.store_id=0
+        ORDER BY l.create_time desc
+    </select>
+</mapper>

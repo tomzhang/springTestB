@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.coupon.mapper.CouponMapper">
+
+    <select id="getOldCouponBySiteId" resultType="com.jk51.model.coupon.Coupon">
+        SELECT * FROM b_shop_${siteId}.b_coupon
+    </select>
+    <select id="getOldCouponBySiteIdAndCouponId" resultType="com.jk51.model.coupon.Coupon">
+        SELECT * FROM b_shop_${siteId}.b_coupon where coupon_id = #{couponId}
+    </select>
+
+    <select id="getCateGoodsIds" resultType="map">
+        SELECT GROUP_CONCAT(goods_id) as goodsIds FROM b_shop_${siteId}.b_goods WHERE user_cateid = #{cateId}
+    </select>
+
+    <insert id="insert" keyProperty="ruleId" useGeneratedKeys="true" parameterType="com.jk51.model.coupon.CouponRule">
+        INSERT INTO `b_coupon_rule` (
+            `site_id`, `rule_name`, `marked_words`, `coupon_type`,
+            `amount`, `time_rule`, `limit_rule`, `limit_state`,
+            `limit_remark`, `aim_at`, `start_time`, `end_time`,
+            `status`, `order_rule`, `area_rule`, `goods_rule`,
+            `total`, `send_num`, `use_amount`, `share_num`,
+            `order_price`, `goods_num`, `receive_num`, `create_time`,`old_coupon_id`
+        ) VALUE (
+            #{siteId},
+            #{ruleName},
+            #{markedWords},
+            #{couponType},
+            #{amount},
+            #{timeRule},
+            #{limitRule},
+            #{limitState},
+            #{limitRemark},
+            #{aimAt},
+            #{startTime},
+            #{endTime},
+            #{status},
+            #{orderRule},
+            #{areaRule},
+            #{goodsRule},
+            #{total},
+            #{sendNum},
+            #{useAmount},
+            #{shareNum},
+            #{orderPrice},
+            #{goodsNum},
+            #{receiveNum},
+            #{createTime},
+            #{oldCouponId}
+        )
+    </insert>
+    <insert id="insertDetails" parameterType="list">
+        INSERT INTO `b_coupon_detail` (
+            `site_id`, `coupon_no`, `order_id`, `status`, `source`,
+            `manager_id`, `create_time`, `update_time`, `is_copy`, `is_share`,
+            `share_num`, `share_url`, `rule_id`, `user_id`, `money`, `version`,
+            `store_id`, `send_order_id`
+        ) VALUES
+        <foreach collection="list" item="couponDetail" open="(" separator="),("  close=")">
+            #{couponDetail.siteId},
+            #{couponDetail.couponNo},
+            #{couponDetail.orderId},
+            #{couponDetail.status},
+            #{couponDetail.source},
+            #{couponDetail.managerId},
+            #{couponDetail.createTime},
+            #{couponDetail.updateTime},
+            #{couponDetail.isCopy},
+            #{couponDetail.isShare},
+            #{couponDetail.shareNum},
+            #{couponDetail.shareUrl},
+            #{couponDetail.ruleId},
+            #{couponDetail.userId},
+            #{couponDetail.money},
+            #{couponDetail.version},
+            #{couponDetail.storeId},
+            #{couponDetail.sendOrderId}
+        </foreach>
+    </insert>
+
+    <select id="getUserCoupon" resultType="com.jk51.model.coupon.UserCoupon">
+        SELECT * FROM b_shop_${siteId}.b_user_coupon WHERE coupon_id = #{couponId}  limit #{pageNum}, #{pageNum}
+    </select>
+
+    <select id="getUserCouponCount" resultType="integer">
+        SELECT count(1) FROM b_shop_${siteId}.b_user_coupon WHERE coupon_id = #{couponId};
+    </select>
+
+    <select id="getMember" resultType="map" useCache="false">
+        select site_id siteId,member_id memberId,buyer_id buyerId
+        from b_member where site_id=#{siteId} and buyer_id=#{buyerId}
+    </select>
+
+    <select id="getCouponRule" resultType="map" useCache="false">
+        select
+           site_id,
+           rule_id,
+           rule_name,
+           marked_words,
+           coupon_type,
+           coupon_mode_id,
+           amount,
+           time_rule,
+           limit_rule,
+           limit_state,
+           limit_remark,
+           aim_at,
+           start_time,
+           end_time,
+           create_time,
+           update_time,
+           status,
+           order_rule,
+           area_rule,
+           goods_rule,
+           version,
+           total,
+           send_num,
+           use_amount,
+           share_num,
+           order_price,
+           goods_num,
+           receive_num,
+           old_coupon_id
+        from `b_coupon_rule` where site_id=#{siteId} and old_coupon_id=#{oldCouponId}
+    </select>
+</mapper>

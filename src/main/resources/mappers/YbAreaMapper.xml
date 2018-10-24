@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.appInterface.mapper.YbAreaMapper">
+    <select id="queryAreaByAreaId" resultType="Map">
+        SELECT * FROM yb_area WHERE areaid=#{cityId} limit 1
+    </select>
+    <select id="queryAreaByParentId" resultType="Map">
+        SELECT * FROM yb_area WHERE 1=1
+        <if test="parentId != null">
+            AND parent_id=#{parentId}
+        </if>
+        <if test="type != null">
+            AND type=#{type}
+        </if>
+        ORDER by areaid asc
+    </select>
+    <select id="queryAreaIdByName" resultType="Map">
+        select * from yb_area where 1=1
+        <if test="type!=null">
+            and type=#{type}
+        </if>
+        <if test="name!=null and name!=''">
+            and name=#{name}
+        </if>
+        <if test="parentId != null">
+            AND parent_id=#{parentId}
+        </if>
+    </select>
+    <select id="getcitys" resultType="Map">
+       SELECT areaid as id,name as value FROM yb_area WHERE 1=1 AND parent_id=1
+    </select>
+    <select id="getParentId" resultType="java.lang.Integer">
+        select parent_id from yb_area where type=#{type} and areaid=#{areaId};
+    </select>
+
+    <select id="queryAreaByTree" resultType="map">
+        SELECT
+           a.name text,b.name ptext
+        FROM
+            yb_area a
+        left JOIN yb_area b ON a.parent_id = b.areaid
+        WHERE
+            a.areaid IN <foreach collection="areaIds" item="id" separator="," open="(" close=")">
+              #{id}
+            </foreach>
+        group BY text
+    </select>
+
+    <select id="queryCommonArea" resultType="Map">
+        select areaid as value ,name as label from yb_area where parent_id = #{pid} order by areaid asc
+    </select>
+</mapper>

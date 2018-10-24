@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.pandian.mapper.BPandianOrderStatusMapper" >
+    <resultMap id="BaseResultMap" type="com.jk51.model.BPandianOrderStatus" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="pandian_num" property="pandianNum" jdbcType="VARCHAR" />
+        <result column="plan_id" property="planId" jdbcType="INTEGER" />
+        <result column="status" property="status" jdbcType="VARCHAR" />
+        <result column="store_id" property="storeId" jdbcType="INTEGER" />
+        <result column="site_id" property="siteId" jdbcType="INTEGER" />
+        <result column="confirm_checker" property="confirmChecker" jdbcType="VARCHAR" />
+        <result column="confirm_operate_type" property="confirmOperateType" jdbcType="INTEGER" />
+        <result column="audit_checker" property="auditChecker" jdbcType="VARCHAR" />
+        <result column="audit_operate_type" property="auditOperateType" jdbcType="INTEGER" />
+        <result column="start_checker" property="startChecker" jdbcType="VARCHAR" />
+        <result column="start_operate_type" property="startOperateType" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="order_id" property="orderId" jdbcType="INTEGER" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        id, pandian_num, plan_id, status, store_id, site_id, confirm_checker, confirm_operate_type,
+        audit_checker, audit_operate_type, start_checker, start_operate_type, create_time,
+        update_time, order_id
+    </sql>
+    <insert id="insertSelective" parameterType="com.jk51.model.BPandianOrderStatus" >
+        insert into b_pandian_order_status
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="pandianNum != null" >
+                pandian_num,
+            </if>
+            <if test="planId != null" >
+                plan_id,
+            </if>
+            <if test="status != null" >
+                status,
+            </if>
+            <if test="storeId != null" >
+                store_id,
+            </if>
+            <if test="siteId != null" >
+                site_id,
+            </if>
+            <if test="confirmChecker != null" >
+                confirm_checker,
+            </if>
+            <if test="confirmOperateType != null" >
+                confirm_operate_type,
+            </if>
+            <if test="auditChecker != null" >
+                audit_checker,
+            </if>
+            <if test="auditOperateType != null" >
+                audit_operate_type,
+            </if>
+            <if test="startChecker != null" >
+                start_checker,
+            </if>
+            <if test="startOperateType != null" >
+                start_operate_type,
+            </if>
+            <if test="createTime != null" >
+                create_time,
+            </if>
+            <if test="updateTime != null" >
+                update_time,
+            </if>
+            <if test="orderId != null" >
+                order_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="pandianNum != null" >
+                #{pandianNum,jdbcType=VARCHAR},
+            </if>
+            <if test="planId != null" >
+                #{planId,jdbcType=INTEGER},
+            </if>
+            <if test="status != null" >
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="storeId != null" >
+                #{storeId,jdbcType=INTEGER},
+            </if>
+            <if test="siteId != null" >
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="confirmChecker != null" >
+                #{confirmChecker,jdbcType=VARCHAR},
+            </if>
+            <if test="confirmOperateType != null" >
+                #{confirmOperateType,jdbcType=INTEGER},
+            </if>
+            <if test="auditChecker != null" >
+                #{auditChecker,jdbcType=VARCHAR},
+            </if>
+            <if test="auditOperateType != null" >
+                #{auditOperateType,jdbcType=INTEGER},
+            </if>
+            <if test="startChecker != null" >
+                #{startChecker,jdbcType=VARCHAR},
+            </if>
+            <if test="startOperateType != null" >
+                #{startOperateType,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null" >
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null" >
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="orderId != null" >
+                #{orderId,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateStatusByAdd" >
+        UPDATE b_pandian_order_status SET `status` = #{status}
+        WHERE site_id = #{siteId} AND order_id = #{orderId}
+        <if test="storeId != null" >
+            AND store_id = #{storeId}
+        </if>
+    </update>
+
+    <insert id="insertByList" >
+        insert into b_pandian_order_status (site_id, plan_id, store_id, order_id, pandian_num)
+        values
+        <foreach collection="list" item="item" index="index" separator="," >
+            (#{item.siteId}, #{item.planId}, #{item.storeId}, #{item.orderId}, #{item.pandianNum})
+        </foreach>
+    </insert>
+
+    <select id="getCanUpStoreNumList" resultType="java.util.Map">
+        SELECT store.id, store.stores_number storeNum
+        FROM b_pandian_order_status orderSta LEFT JOIN b_stores store ON orderSta.site_id=store.site_id AND orderSta.store_id=store.id
+        WHERE orderSta.site_id = #{siteId} AND orderSta.order_id = #{orderId} AND orderSta.`status` IN(0,100)
+        <if test="storeId != null" >
+            AND orderSta.store_id = #{storeId}
+        </if>
+    </select>
+
+
+
+
+
+
+
+    <select id="getStatus" parameterType="com.jk51.modules.pandian.param.StatusParam" resultType="java.lang.Integer">
+        SELECT `status`
+        FROM b_pandian_order_status
+        WHERE
+        pandian_num = #{pandian_num}
+        and store_id = #{storeId}
+        and site_id = #{siteId}
+    </select>
+    <update id="updateStatus2AuditByAdmin">
+        UPDATE b_pandian_order_status
+        set status = #{toStatus},audit_operate_type = 1,audit_checker= "admin"
+        WHERE
+        pandian_num = #{pandian_num}
+        and store_id = #{storeId}
+    </update>
+    <update id="updateStatus2AuditByManager">
+        UPDATE b_pandian_order_status
+        set status = #{toStatus},audit_operate_type = 2 , audit_checker =#{storeAdminId}
+        WHERE
+        pandian_num = #{pandian_num}
+        and store_id = #{storeId}
+    </update>
+    <update id="updateStatus2AuditByStoreAdmin">
+        UPDATE b_pandian_order_status
+        set status = #{toStatus},audit_operate_type = 3 , audit_checker =#{storeAdminId}
+        WHERE
+        pandian_num = #{pandian_num}
+        and store_id = #{storeId}
+    </update>
+    <update id="updateStatus2ConfirmByAdmin">
+        UPDATE b_pandian_order_status
+        set status = #{toStatus},confirm_operate_type = 1,confirm_checker = "admin"
+        WHERE
+        pandian_num = #{pandian_num}
+        and store_id = #{storeId}
+    </update>
+    <update id="updateStatus2ConfirmByManager">
+        UPDATE b_pandian_order_status
+        set status = #{toStatus},confirm_operate_type = 2,confirm_checker = #{storeAdminId}
+        WHERE
+        pandian_num = #{pandian_num}
+        and store_id = #{storeId}
+    </update>
+    <update id="updateStatus2ConfirmByStoreAdmin">
+        UPDATE b_pandian_order_status
+        set status = #{toStatus},confirm_operate_type = 3,confirm_checker = #{storeAdminId}
+        WHERE
+        pandian_num = #{pandian_num}
+        and store_id = #{storeId}
+    </update>
+    <update id="updateStatus2StartByAdmin">
+        UPDATE b_pandian_order_status
+        set status = #{toStatus},start_operate_type = 1,start_checker= "admin"
+        WHERE
+        pandian_num = #{pandian_num}
+        and store_id = #{storeId}
+    </update>
+    <update id="updateStatus2StartByManager">
+        UPDATE b_pandian_order_status
+        set status = #{toStatus},start_operate_type = 2,start_checker =#{storeAdminId}
+        WHERE
+        pandian_num = #{pandian_num}
+        and store_id = #{storeId}
+    </update>
+    <update id="updateStatus2StartByStoreAdmin">
+        UPDATE b_pandian_order_status
+        set status = #{toStatus},start_operate_type = 3,start_checker =#{storeAdminId}
+        WHERE
+        pandian_num = #{pandian_num}
+        and store_id = #{storeId}
+    </update>
+    <update id="updateStatus2Repeat">
+        UPDATE b_pandian_order_status
+        set status = #{toStatus}
+        WHERE
+        pandian_num = #{pandian_num}
+        and store_id = #{storeId}
+    </update>
+
+
+
+    <select id="getPDAllStoreStatus" resultType="com.jk51.modules.pandian.param.StoreOrderStatus" >
+        SELECT e.store_id storeId, s.stores_number storesNumber, o.`status`
+        FROM b_pandian_plan_executor e
+        LEFT JOIN b_pandian_order_status o ON e.site_id=o.site_id AND e.plan_id=o.plan_id AND e.store_id=o.store_id
+        LEFT JOIN b_stores s ON e.site_id=s.site_id AND e.store_id=s.id
+        WHERE e.site_id = #{siteId} AND e.plan_id = #{planId} AND o.order_id = #{orderId}
+    </select>
+
+    <select id="getPDStoreStatus" resultType="com.jk51.modules.pandian.param.StoreOrderStatus" >
+        SELECT e.store_id storeId, s.stores_number storesNumber, o.`status`
+        FROM b_pandian_plan_executor e
+        LEFT JOIN b_pandian_order_status o ON e.site_id=o.site_id AND e.plan_id=o.plan_id AND e.store_id=o.store_id
+        LEFT JOIN b_stores s ON e.site_id=s.site_id AND e.store_id=s.id
+        WHERE e.site_id = #{siteId} AND e.plan_id = #{planId} AND e.store_id = #{storeId} AND o.order_id = #{orderId}
+    </select>
+
+    <update id="updateStatusByStoreIdList" >
+        UPDATE b_pandian_order_status SET `status` = #{status} WHERE site_id = #{siteId} AND order_id = #{orderId} AND store_id IN
+        <foreach item="id" index="index" collection="list" open="(" separator="," close=")"> #{id} </foreach>
+    </update>
+
+    <update id="updateBillidStatusByStoreId" >
+        UPDATE b_pandian_order_status SET `status` = #{status}, billid = #{billid} WHERE site_id = #{siteId} AND order_id = #{orderId} AND store_id = #{storeId}
+    </update>
+</mapper>

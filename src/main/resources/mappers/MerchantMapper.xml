@@ -1,0 +1,692 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.merchant.mapper.YbMerchantMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.merchant.YbMerchant">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="merchant_id" jdbcType="INTEGER" property="merchant_id"/>
+        <result column="merchant_name" jdbcType="VARCHAR" property="merchant_name"/>
+        <result column="seller_nick" jdbcType="VARCHAR" property="seller_nick"/>
+        <result column="seller_pwd" jdbcType="VARCHAR" property="seller_pwd"/>
+        <result column="company_name" jdbcType="VARCHAR" property="company_name"/>
+        <result column="legal_name" jdbcType="VARCHAR" property="legal_name"/>
+        <result column="shop_title" jdbcType="VARCHAR" property="shop_title"/>
+        <result column="shop_url" jdbcType="VARCHAR" property="shop_url"/>
+        <result column="shop_logurl" jdbcType="VARCHAR" property="shop_logurl"/>
+        <result column="shop_area" jdbcType="INTEGER" property="shop_area"/>
+        <result column="shop_address" jdbcType="VARCHAR" property="shop_address"/>
+        <result column="service_phone" jdbcType="VARCHAR" property="service_phone"/>
+        <result column="service_mobile" jdbcType="VARCHAR" property="service_mobile"/>
+        <result column="company_email" jdbcType="VARCHAR" property="company_email"/>
+        <result column="short_message_sign" jdbcType="VARCHAR" property="short_message_sign"/>
+        <result column="shop_qq" jdbcType="VARCHAR" property="shop_qq"/>
+        <result column="shop_weixin" jdbcType="VARCHAR" property="shop_weixin"/>
+        <result column="shopwx_url" jdbcType="VARCHAR" property="shopwx_url"/>
+        <result column="shop_desc" jdbcType="VARCHAR" property="shop_desc"/>
+        <result column="invoice_is" jdbcType="INTEGER" property="invoice_is"/>
+        <result column="role_id" jdbcType="INTEGER" property="role_id"/>
+        <result column="company_qualurl" jdbcType="VARCHAR" property="company_qualurl"/>
+        <result column="last_login" jdbcType="TIMESTAMP" property="last_login"/>
+        <result column="last_ipaddr" jdbcType="VARCHAR" property="last_ipaddr"/>
+        <result column="is_frozen" jdbcType="INTEGER" property="is_frozen"/>
+        <result column="frozen_resion" jdbcType="VARCHAR" property="frozen_resion"/>
+        <result column="site_record" jdbcType="VARCHAR" property="site_record"/>
+        <result column="integral_proportion" jdbcType="DECIMAL" property="integral_proportion"/>
+        <result column="qrcode_tips" jdbcType="VARCHAR" property="qrcode_tips"/>
+        <result column="legal_mobile" jdbcType="VARCHAR" property="legal_mobile"/>
+        <result column="payee_name" jdbcType="VARCHAR" property="payee_name"/>
+        <result column="shop_watermark" jdbcType="VARCHAR" property="shop_watermark"/>
+        <result column="site_status" jdbcType="INTEGER" property="site_status"/>
+        <result column="wx_site_status" jdbcType="INTEGER" property="wx_site_status"/>
+        <result column="shop_back1" jdbcType="VARCHAR" property="shop_back1"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="create_time"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="update_time"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    id, merchant_id, merchant_name, seller_nick, seller_pwd, company_name, legal_name, 
+    shop_title, shop_url, shop_logurl, shop_area, shop_address, service_phone, service_mobile, 
+    company_email, short_message_sign, shop_qq, shop_weixin, shopwx_url, shop_desc, invoice_is, 
+    role_id, company_qualurl, last_login, last_ipaddr, is_frozen, frozen_resion, site_record, 
+    integral_proportion, qrcode_tips, legal_mobile, payee_name, shop_watermark, site_status, 
+    wx_site_status, shop_back1, create_time, update_time
+  </sql>
+
+    <select id="getMerchants" resultMap="BaseResultMap">
+        select * from yb_merchant where merchant_id = #{merchantId,jdbcType=INTEGER} and seller_nick = #{username,jdbcType=VARCHAR} and seller_pwd = #{password,jdbcType=VARCHAR}
+    </select>
+
+    <select id="getMerchant" resultMap="BaseResultMap">
+        SELECT * FROM yb_merchant WHERE merchant_id=#{merchant_id}
+    </select>
+
+    <select id="selectStatus" resultType="java.lang.Integer">
+        select is_frozen from yb_merchant where merchant_id=#{siteId}
+    </select>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from yb_merchant
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="selectBySiteId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from yb_merchant
+        where merchant_id = #{merchantId,jdbcType=INTEGER}
+    </select>
+    <select id="selectSeletive" resultType="com.jk51.model.treat.MerchantVO">
+        select
+        mer.id,mer.merchant_id merchantId ,mer.merchant_name merchantName, mer.company_name companyName,mer.shop_logurl
+        logUrl,
+        mer.shop_url shopUrl,mer.create_time createTime,mer.site_status siteStatus,
+        ysc.set_value setValue,ysc.pay_day_value payDayValue,ysc.set_type setType,ysc.thelast_time thelastTime
+        from yb_merchant mer LEFT JOIN yb_merchant_ext ext ON mer.merchant_id=ext.merchant_id
+        LEFT JOIN yb_settlementday_config ysc ON mer.merchant_id=ysc.site_id
+        <where>
+            <if test="name!=null and name!=''">
+                and mer.merchant_name like concat('%',#{name,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="merchantId!=null">
+                and mer.merchant_id=#{merchantId,jdbcType=INTEGER}
+            </if>
+            <if test="status!=null and status!=''">
+                and mer.site_status = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="from!=null">
+                and mer.create_time &gt;=#{from,jdbcType=TIMESTAMP}
+            </if>
+            <if test="to!=null">
+                and mer.create_time &lt;=#{to,jdbcType=TIMESTAMP}
+            </if>
+            <if test="type!=null">
+                AND ysc.set_type=#{type,jdbcType=INTEGER}
+            </if>
+            <if test="lastTime!=null">
+                and ysc.thelast_time BETWEEN #{lastTime,jdbcType=TIMESTAMP} AND
+                date_add(timestamp(#{lastTime,jdbcType=TIMESTAMP}), interval 1 day)
+            </if>
+            <if test="valuea!=null">
+                AND ysc.set_value BETWEEN #{valuea,jdbcType=INTEGER} AND #{valueb,jdbcType=INTEGER}
+            </if>
+        </where>
+        ORDER BY mer.id DESC
+    </select>
+    <select id="selectMerchantId" resultType="java.lang.Integer">
+    select MAX(merchant_id) from yb_merchant
+  </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from yb_merchant
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.jk51.model.merchant.YbMerchant">
+    insert into yb_merchant (id, merchant_id, merchant_name, 
+      seller_nick, seller_pwd, company_name, 
+      legal_name, shop_title, shop_url, 
+      shop_logurl, shop_area, shop_address, 
+      service_phone, service_mobile, company_email, 
+      short_message_sign, shop_qq, shop_weixin, 
+      shopwx_url, shop_desc, invoice_is, 
+      role_id, company_qualurl, last_login, 
+      last_ipaddr, is_frozen, frozen_resion, 
+      site_record, integral_proportion, qrcode_tips, 
+      legal_mobile, payee_name, shop_watermark, 
+      site_status, wx_site_status, shop_back1, 
+      create_time, update_time)
+    values (#{id,jdbcType=INTEGER}, #{merchant_id,jdbcType=INTEGER}, #{merchant_name,jdbcType=VARCHAR}, 
+      #{seller_nick,jdbcType=VARCHAR}, #{seller_pwd,jdbcType=VARCHAR}, #{company_name,jdbcType=VARCHAR}, 
+      #{legal_name,jdbcType=VARCHAR}, #{shop_title,jdbcType=VARCHAR}, #{shop_url,jdbcType=VARCHAR}, 
+      #{shop_logurl,jdbcType=VARCHAR}, #{shop_area,jdbcType=INTEGER}, #{shop_address,jdbcType=VARCHAR}, 
+      #{service_phone,jdbcType=VARCHAR}, #{service_mobile,jdbcType=VARCHAR}, #{company_email,jdbcType=VARCHAR}, 
+      #{short_message_sign,jdbcType=VARCHAR}, #{shop_qq,jdbcType=VARCHAR}, #{shop_weixin,jdbcType=VARCHAR}, 
+      #{shopwx_url,jdbcType=VARCHAR}, #{shop_desc,jdbcType=VARCHAR}, #{invoice_is,jdbcType=INTEGER}, 
+      #{role_id,jdbcType=INTEGER}, #{company_qualurl,jdbcType=VARCHAR}, #{last_login,jdbcType=TIMESTAMP}, 
+      #{last_ipaddr,jdbcType=VARCHAR}, #{is_frozen,jdbcType=INTEGER}, #{frozen_resion,jdbcType=VARCHAR}, 
+      #{site_record,jdbcType=VARCHAR}, #{integral_proportion,jdbcType=DECIMAL}, #{qrcode_tips,jdbcType=VARCHAR}, 
+      #{legal_mobile,jdbcType=VARCHAR}, #{payee_name,jdbcType=VARCHAR}, #{shop_watermark,jdbcType=VARCHAR},
+      #{site_status,jdbcType=INTEGER}, #{wx_site_status,jdbcType=INTEGER}, #{shop_back1,jdbcType=VARCHAR}, 
+      #{create_time,jdbcType=TIMESTAMP}, #{update_time,jdbcType=TIMESTAMP})
+  </insert>
+    <insert id="insertSelective" parameterType="com.jk51.model.merchant.YbMerchant" useGeneratedKeys="true"
+            keyProperty="id"
+            keyColumn="id">
+        insert into yb_merchant
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="merchant_id != null">
+                merchant_id,
+            </if>
+            <if test="merchant_name != null">
+                merchant_name,
+            </if>
+            <if test="seller_nick != null">
+                seller_nick,
+            </if>
+            <if test="seller_pwd != null">
+                seller_pwd,
+            </if>
+            <if test="company_name != null">
+                company_name,
+            </if>
+            <if test="legal_name != null">
+                legal_name,
+            </if>
+            <if test="shop_title != null">
+                shop_title,
+            </if>
+            <if test="shop_url != null">
+                shop_url,
+            </if>
+            <if test="shop_logurl != null">
+                shop_logurl,
+            </if>
+            <if test="shop_area != null">
+                shop_area,
+            </if>
+            <if test="shop_address != null">
+                shop_address,
+            </if>
+            <if test="service_phone != null">
+                service_phone,
+            </if>
+            <if test="service_mobile != null">
+                service_mobile,
+            </if>
+            <if test="company_email != null">
+                company_email,
+            </if>
+            <if test="short_message_sign != null">
+                short_message_sign,
+            </if>
+            <if test="shop_qq != null">
+                shop_qq,
+            </if>
+            <if test="shop_weixin != null">
+                shop_weixin,
+            </if>
+            <if test="shopwx_url != null">
+                shopwx_url,
+            </if>
+            <if test="shop_desc != null">
+                shop_desc,
+            </if>
+            <if test="invoice_is != null">
+                invoice_is,
+            </if>
+            <if test="role_id != null">
+                role_id,
+            </if>
+            <if test="company_qualurl != null">
+                company_qualurl,
+            </if>
+            <if test="last_login != null">
+                last_login,
+            </if>
+            <if test="last_ipaddr != null">
+                last_ipaddr,
+            </if>
+            <if test="is_frozen != null">
+                is_frozen,
+            </if>
+            <if test="frozen_resion != null">
+                frozen_resion,
+            </if>
+            <if test="site_record != null">
+                site_record,
+            </if>
+            <if test="integral_proportion != null">
+                integral_proportion,
+            </if>
+            <if test="qrcode_tips != null">
+                qrcode_tips,
+            </if>
+            <if test="legal_mobile != null">
+                legal_mobile,
+            </if>
+            <if test="payee_name != null">
+                payee_name,
+            </if>
+            <if test="shop_watermark != null">
+                shop_watermark,
+            </if>
+            <if test="site_status != null">
+                site_status,
+            </if>
+            <if test="wx_site_status != null">
+                wx_site_status,
+            </if>
+            <if test="shop_back1 != null">
+                shop_back1,
+            </if>
+            <if test="create_time != null">
+                create_time,
+            </if>
+            <if test="update_time != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="merchant_id != null">
+                #{merchant_id,jdbcType=INTEGER},
+            </if>
+            <if test="merchant_name != null">
+                #{merchant_name,jdbcType=VARCHAR},
+            </if>
+            <if test="seller_nick != null">
+                #{seller_nick,jdbcType=VARCHAR},
+            </if>
+            <if test="seller_pwd != null">
+                #{seller_pwd,jdbcType=VARCHAR},
+            </if>
+            <if test="company_name != null">
+                #{company_name,jdbcType=VARCHAR},
+            </if>
+            <if test="legal_name != null">
+                #{legal_name,jdbcType=VARCHAR},
+            </if>
+            <if test="shop_title != null">
+                #{shop_title,jdbcType=VARCHAR},
+            </if>
+            <if test="shop_url != null">
+                #{shop_url,jdbcType=VARCHAR},
+            </if>
+            <if test="shop_logurl != null">
+                #{shop_logurl,jdbcType=VARCHAR},
+            </if>
+            <if test="shop_area != null">
+                #{shop_area,jdbcType=INTEGER},
+            </if>
+            <if test="shop_address != null">
+                #{shop_address,jdbcType=VARCHAR},
+            </if>
+            <if test="service_phone != null">
+                #{service_phone,jdbcType=VARCHAR},
+            </if>
+            <if test="service_mobile != null">
+                #{service_mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="company_email != null">
+                #{company_email,jdbcType=VARCHAR},
+            </if>
+            <if test="short_message_sign != null">
+                #{short_message_sign,jdbcType=VARCHAR},
+            </if>
+            <if test="shop_qq != null">
+                #{shop_qq,jdbcType=VARCHAR},
+            </if>
+            <if test="shop_weixin != null">
+                #{shop_weixin,jdbcType=VARCHAR},
+            </if>
+            <if test="shopwx_url != null">
+                #{shopwx_url,jdbcType=VARCHAR},
+            </if>
+            <if test="shop_desc != null">
+                #{shop_desc,jdbcType=VARCHAR},
+            </if>
+            <if test="invoice_is != null">
+                #{invoice_is,jdbcType=INTEGER},
+            </if>
+            <if test="role_id != null">
+                #{role_id,jdbcType=INTEGER},
+            </if>
+            <if test="company_qualurl != null">
+                #{company_qualurl,jdbcType=VARCHAR},
+            </if>
+            <if test="last_login != null">
+                #{last_login,jdbcType=TIMESTAMP},
+            </if>
+            <if test="last_ipaddr != null">
+                #{last_ipaddr,jdbcType=VARCHAR},
+            </if>
+            <if test="is_frozen != null">
+                #{is_frozen,jdbcType=INTEGER},
+            </if>
+            <if test="frozen_resion != null">
+                #{frozen_resion,jdbcType=VARCHAR},
+            </if>
+            <if test="site_record != null">
+                #{site_record,jdbcType=VARCHAR},
+            </if>
+            <if test="integral_proportion != null">
+                #{integral_proportion,jdbcType=DECIMAL},
+            </if>
+            <if test="qrcode_tips != null">
+                #{qrcode_tips,jdbcType=VARCHAR},
+            </if>
+            <if test="legal_mobile != null">
+                #{legal_mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="payee_name != null">
+                #{payee_name,jdbcType=VARCHAR},
+            </if>
+            <if test="shop_watermark != null">
+                #{shop_watermark,jdbcType=VARCHAR},
+            </if>
+            <if test="site_status != null">
+                #{site_status,jdbcType=INTEGER},
+            </if>
+            <if test="wx_site_status != null">
+                #{wx_site_status,jdbcType=INTEGER},
+            </if>
+            <if test="shop_back1 != null">
+                #{shop_back1,jdbcType=VARCHAR},
+            </if>
+            <if test="create_time != null">
+                #{create_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="update_time != null">
+                #{update_time,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.merchant.YbMerchant">
+        update yb_merchant
+        <set>
+            <if test="merchant_id != null">
+                merchant_id = #{merchant_id,jdbcType=INTEGER},
+            </if>
+            <if test="merchant_name != null">
+                merchant_name = #{merchant_name,jdbcType=VARCHAR},
+            </if>
+            <if test="seller_nick != null">
+                seller_nick = #{seller_nick,jdbcType=VARCHAR},
+            </if>
+            <if test="seller_pwd != null">
+                seller_pwd = #{seller_pwd,jdbcType=VARCHAR},
+            </if>
+            <if test="company_name != null">
+                company_name = #{company_name,jdbcType=VARCHAR},
+            </if>
+            <if test="legal_name != null">
+                legal_name = #{legal_name,jdbcType=VARCHAR},
+            </if>
+            <if test="shop_title != null">
+                shop_title = #{shop_title,jdbcType=VARCHAR},
+            </if>
+            <if test="shop_url != null">
+                shop_url = #{shop_url,jdbcType=VARCHAR},
+            </if>
+            <if test="shop_logurl != null">
+                shop_logurl = #{shop_logurl,jdbcType=VARCHAR},
+            </if>
+            <if test="shop_area != null">
+                shop_area = #{shop_area,jdbcType=INTEGER},
+            </if>
+            <if test="shop_address != null">
+                shop_address = #{shop_address,jdbcType=VARCHAR},
+            </if>
+            <if test="service_phone != null">
+                service_phone = #{service_phone,jdbcType=VARCHAR},
+            </if>
+            <if test="service_mobile != null">
+                service_mobile = #{service_mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="company_email != null">
+                company_email = #{company_email,jdbcType=VARCHAR},
+            </if>
+            <if test="short_message_sign != null">
+                short_message_sign = #{short_message_sign,jdbcType=VARCHAR},
+            </if>
+            <if test="shop_qq != null">
+                shop_qq = #{shop_qq,jdbcType=VARCHAR},
+            </if>
+            <if test="shop_weixin != null">
+                shop_weixin = #{shop_weixin,jdbcType=VARCHAR},
+            </if>
+            <if test="shopwx_url != null">
+                shopwx_url = #{shopwx_url,jdbcType=VARCHAR},
+            </if>
+            <if test="shop_desc != null">
+                shop_desc = #{shop_desc,jdbcType=VARCHAR},
+            </if>
+            <if test="invoice_is != null">
+                invoice_is = #{invoice_is,jdbcType=INTEGER},
+            </if>
+            <if test="role_id != null">
+                role_id = #{role_id,jdbcType=INTEGER},
+            </if>
+            <if test="company_qualurl != null">
+                company_qualurl = #{company_qualurl,jdbcType=VARCHAR},
+            </if>
+            <if test="last_login != null">
+                last_login = #{last_login,jdbcType=TIMESTAMP},
+            </if>
+            <if test="last_ipaddr != null">
+                last_ipaddr = #{last_ipaddr,jdbcType=VARCHAR},
+            </if>
+            <if test="is_frozen != null">
+                is_frozen = #{is_frozen,jdbcType=INTEGER},
+            </if>
+            <if test="frozen_resion != null">
+                frozen_resion = #{frozen_resion,jdbcType=VARCHAR},
+            </if>
+            <if test="site_record != null">
+                site_record = #{site_record,jdbcType=VARCHAR},
+            </if>
+            <if test="integral_proportion != null">
+                integral_proportion = #{integral_proportion,jdbcType=DECIMAL},
+            </if>
+            <if test="qrcode_tips != null">
+                qrcode_tips = #{qrcode_tips,jdbcType=VARCHAR},
+            </if>
+            <if test="legal_mobile != null">
+                legal_mobile = #{legal_mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="payee_name != null">
+                payee_name = #{payee_name,jdbcType=VARCHAR},
+            </if>
+            <if test="shop_watermark != null">
+                shop_watermark = #{shop_watermark,jdbcType=VARCHAR},
+            </if>
+            <if test="site_status != null">
+                site_status = #{site_status,jdbcType=INTEGER},
+            </if>
+            <if test="wx_site_status != null">
+                wx_site_status = #{wx_site_status,jdbcType=INTEGER},
+            </if>
+            <if test="shop_back1 != null">
+                shop_back1 = #{shop_back1,jdbcType=VARCHAR},
+            </if>
+            <if test="create_time != null">
+                create_time = #{create_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="update_time != null">
+                update_time = #{update_time,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.jk51.model.merchant.YbMerchant">
+    update yb_merchant
+    set merchant_id = #{merchant_id,jdbcType=INTEGER},
+      merchant_name = #{merchant_name,jdbcType=VARCHAR},
+      seller_nick = #{seller_nick,jdbcType=VARCHAR},
+      seller_pwd = #{seller_pwd,jdbcType=VARCHAR},
+      company_name = #{company_name,jdbcType=VARCHAR},
+      legal_name = #{legal_name,jdbcType=VARCHAR},
+      shop_title = #{shop_title,jdbcType=VARCHAR},
+      shop_url = #{shop_url,jdbcType=VARCHAR},
+      shop_logurl = #{shop_logurl,jdbcType=VARCHAR},
+      shop_area = #{shop_area,jdbcType=INTEGER},
+      shop_address = #{shop_address,jdbcType=VARCHAR},
+      service_phone = #{service_phone,jdbcType=VARCHAR},
+      service_mobile = #{service_mobile,jdbcType=VARCHAR},
+      company_email = #{company_email,jdbcType=VARCHAR},
+      short_message_sign = #{short_message_sign,jdbcType=VARCHAR},
+      shop_qq = #{shop_qq,jdbcType=VARCHAR},
+      shop_weixin = #{shop_weixin,jdbcType=VARCHAR},
+      shopwx_url = #{shopwx_url,jdbcType=VARCHAR},
+      shop_desc = #{shop_desc,jdbcType=VARCHAR},
+      invoice_is = #{invoice_is,jdbcType=INTEGER},
+      role_id = #{role_id,jdbcType=INTEGER},
+      company_qualurl = #{company_qualurl,jdbcType=VARCHAR},
+      last_login = #{last_login,jdbcType=TIMESTAMP},
+      last_ipaddr = #{last_ipaddr,jdbcType=VARCHAR},
+      is_frozen = #{is_frozen,jdbcType=INTEGER},
+      frozen_resion = #{frozen_resion,jdbcType=VARCHAR},
+      site_record = #{site_record,jdbcType=VARCHAR},
+      integral_proportion = #{integral_proportion,jdbcType=DECIMAL},
+      qrcode_tips = #{qrcode_tips,jdbcType=VARCHAR},
+      legal_mobile = #{legal_mobile,jdbcType=VARCHAR},
+      payee_name = #{payee_name,jdbcType=VARCHAR},
+      shop_watermark = #{shop_watermark,jdbcType=VARCHAR},
+      site_status = #{site_status,jdbcType=INTEGER},
+      wx_site_status = #{wx_site_status,jdbcType=INTEGER},
+      shop_back1 = #{shop_back1,jdbcType=VARCHAR},
+      create_time = #{create_time,jdbcType=TIMESTAMP},
+      update_time = #{update_time,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+    <!--修改密码 start-->
+    <select id="selectByMerchantId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM yb_merchant
+        WHERE merchant_id = #{merchant_id,jdbcType=INTEGER}
+    </select>
+
+    <update id="updateByMerchantId" parameterType="com.jk51.model.merchant.YbMerchant">
+        UPDATE yb_merchant
+        <set>
+            <if test="seller_pwd != null">
+                seller_pwd = #{seller_pwd,jdbcType=VARCHAR}
+            </if>
+        </set>
+        WHERE merchant_id = #{merchant_id,jdbcType=INTEGER}
+    </update>
+
+    <update id="updatePassword">
+        update yb_merchant
+        <set>
+            <if test="password != null">
+                seller_pwd = #{password,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where merchant_id = #{merchantId,jdbcType=INTEGER} and id=#{id,jdbcType=INTEGER}
+    </update>
+
+    <!--修改密码 end-->
+    <update id="updateInvoice">
+        update yb_merchant
+        <set>
+            <if test="invoice_is!=null">invoice_is = #{invoice_is,jdbcType=INTEGER},</if>
+        </set>
+        where merchant_id = #{merchant_id,jdbcType=INTEGER}
+    </update>
+
+    <!--商家结算信息-->
+    <update id="updateSeller" parameterType="Map">
+        update yb_seller_beneficiary
+        <set>
+            <if test="beneficiaryParty != null">
+                beneficiary_party= #{beneficiaryParty},
+            </if>
+            <if test="bankId != null">
+                bank_id = #{bankId},
+            </if>
+            <if test="bankName != null">
+                bank_name = #{bankName},
+            </if>
+            <if test="sellerName != null">
+                seller_name = #{sellerName},
+            </if>
+            <if test="taxpayer_number != null">
+                taxpayer_number = #{taxpayer_number},
+            </if>
+            <if test="shop_address != null">
+                shop_address = #{shop_address},
+            </if>
+            <if test="service_phone != null">
+                service_phone = #{service_phone},
+            </if>
+            change_num = change_num + 1
+        </set>
+        where seller_id = #{sellerId}
+    </update>
+    <insert id="insSeller" parameterType="Map">
+        insert into yb_seller_beneficiary (seller_name, bank_id, bank_name, seller_id, beneficiary_party)
+            values (#{sellerName}, #{bankId}, #{bankName}, #{sellerId}, #{beneficiaryParty})
+    </insert>
+    <select id="querySeller" parameterType="Map" resultType="Map" useCache="false">
+        select beneficiary_party, taxpayer_number, shop_address, service_phone, bank_id, bank_name, change_num, seller_name from yb_seller_beneficiary where seller_id = #{sellerId}
+    </select>
+    
+    <select id="selectAreaByAreaId" parameterType="java.lang.Integer" resultType="Map">
+        SELECT a.name 'sheng', b.name 'shi',c.NAME 'qu'
+        FROM yb_area a
+        left join yb_area b   on a.areaid=b.parent_id
+        left JOIN yb_area c  on b.areaid=c.parent_id
+        WHERE   c.areaid = #{areaId}
+    </select>
+
+    <select id="queryByUrl" resultType="Map" useCache="false" parameterType="java.lang.String">
+        select m.*,e.store_url from yb_merchant m
+        left JOIN  yb_merchant_ext e on m.merchant_id=e.merchant_id
+         where m.shop_url LIKE concat('%',#{url,jdbcType=VARCHAR},'%') OR e.store_url LIKE concat('%',#{url,jdbcType=VARCHAR},'%') OR  m.shopwx_url LIKE concat('%',#{url,jdbcType=VARCHAR},'%')
+         limit 1
+    </select>
+    <select id="selectSiteids" resultType="java.lang.Integer">
+        select merchant_id from yb_merchant
+    </select>
+
+    <select id="queryAliPayInfo" resultType="Map">
+        select alipay_flag,alipay_privatekey,alipay_publickey,alipay_appid,merchant_id,publickey from yb_merchant where merchant_id = #{siteId}
+    </select>
+
+    <select id="queryAliPayInfoByAppId" resultType="Map">
+        select alipay_flag,alipay_privatekey,alipay_publickey,alipay_appid,merchant_id,publickey from yb_merchant where alipay_appid = #{appId} limit 1
+    </select>
+
+    <select id="queryDefaulto2o" resultType="Map">
+        select meta_val,meta_status from yb_meta where site_id = #{siteId} and meta_key = 'site_o2o_carriage_default_config' and meta_status = 1 limit 1
+    </select>
+    
+    <insert id="insertDefaulto2o">
+        insert into yb_meta (site_id,meta_key,meta_val,meta_status) values (#{siteId},'site_o2o_carriage_default_config',#{metaVal},1)
+    </insert>
+
+    <update id="updateDefaulto2o">
+        update yb_meta set meta_val = #{metaVal} where site_id = #{siteId} and meta_key = 'site_o2o_carriage_default_config'
+    </update>
+
+    <select id="getUntreatedApplyList" resultType="com.jk51.model.merchant.MerchantApplyDto" >
+        select ym.merchant_id,ym.approval_status,ym.company_name,ym.legal_name,ym.legal_mobile,yma.business_category,yma.agent_code,yma.create_time
+        from yb_merchant ym , yb_merchant_apply yma where ym.merchant_id = yma.merchant_id and ym.approval_status = 1
+    </select>
+
+    <select id="getAllApplyList" resultType="com.jk51.model.merchant.MerchantApplyDto" >
+        select ym.merchant_id,ym.approval_status,ym.company_name,ym.legal_name,ym.legal_mobile,yma.business_category,yma.agent_code,yma.create_time
+        from yb_merchant ym , yb_merchant_apply yma where ym.merchant_id = yma.merchant_id
+    </select>
+
+    <select id="selectApplys" resultType="com.jk51.model.merchant.MerchantApplyDto">
+        select ym.merchant_id,ym.approval_status,ym.company_name,ym.legal_name,ym.legal_mobile,yma.business_category,yma.agent_code,yma.create_time
+        from yb_merchant ym , yb_merchant_apply yma where ym.merchant_id = yma.merchant_id
+        <if test="company_name != null and company_name != ''">
+            and ym.company_name like concat('%',#{company_name},'%')
+        </if>
+        <if test="legal_name != null and legal_name != ''">
+            and ym.legal_name like concat('%',#{legal_name},'%')
+        </if>
+        <if test="legal_mobile != null and legal_mobile != ''">
+            and ym.legal_mobile like concat('%',#{legal_mobile},'%')
+        </if>
+        <if test="approval_status != null and approval_status != ''">
+            and ym.approval_status = #{approval_status}
+        </if>
+    </select>
+
+    <update id="approvalAllow" >
+        update yb_merchant set approval_status = #{approval_status} ,seller_pwd = #{seller_pwd},site_status = #{site_status} where merchant_id = #{merchant_id}
+    </update>
+
+    <update id="signContract" >
+        update yb_merchant set is_sign = #{is_sign},sign_contract = #{sign_contract} where merchant_id = #{merchant_id}
+    </update>
+</mapper>

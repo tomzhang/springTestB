@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.integral.mapper.OffIntegralLogMapper">
+
+    <insert id="insertSelect">
+        insert into b_offline_integrallog (site_id,mobile,trades_id,total_consum_integral,offline_consum_integral,online_consum_integral,
+        offline_total_integral,online_total_integral,create_time,consum_desc)VALUES (#{siteId},#{mobile},#{tradesId},
+       #{ total_consum_integral},#{offline_consum_integral},#{online_consum_integral},
+        #{offline_total_integral},#{online_total_integral},#{create_time},#{consum_desc});
+    </insert>
+    <select id="select" resultType="java.util.Map">
+        select mobile,trades_id,total_consum_integral,offline_consum_integral,online_consum_integral,
+        offline_total_integral,online_total_integral,create_time,consum_desc from b_offline_integrallog
+        where site_id=#{siteId} and mobile=#{mobile}
+    </select>
+    <select id="selectTradeBytradeId" resultType="java.util.Map">
+         select mobile,trades_id,total_consum_integral,offline_consum_integral,online_consum_integral,
+        offline_total_integral,online_total_integral,create_time,consum_desc from b_offline_integrallog
+        where site_id=#{siteId} and trades_id=#{tradesId} limit 1;
+    </select>
+    <!--将线下用户使用线上积分的记录下来-->
+    <insert id="insertOffIntegral">
+        insert into b_offline_integrallog
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="tradesId != null">
+                trades_id,
+            </if>
+            <if test="sumScore != null">
+                total_consum_integral,
+            </if>
+            <if test="off_costScore != null">
+                offline_consum_integral,
+            </if>
+            <if test="on_costScore != null">
+                online_consum_integral,
+            </if>
+            <if test="off_integral != null">
+                offline_total_integral,
+            </if>
+            <if test="on_integral != null">
+                online_total_integral,
+            </if>
+            <if test="create_time != null">
+                create_time,
+            </if>
+            <if test="desc != null">
+                consum_desc,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId},
+            </if>
+            <if test="mobile != null">
+                #{mobile},
+            </if>
+            <if test="tradesId != null">
+                #{tradesId},
+            </if>
+            <if test="sumScore != null">
+                #{sumScore},
+            </if>
+            <if test="off_costScore != null">
+                #{off_costScore},
+            </if>
+            <if test="on_costScore != null">
+                #{on_costScore},
+            </if>
+            <if test="off_integral != null">
+                #{off_integral},
+            </if>
+            <if test="on_integral != null">
+                #{on_integral},
+            </if>
+            <if test="create_time != null">
+                #{create_time},
+            </if>
+            <if test="desc != null">
+                #{desc},
+            </if>
+        </trim>
+    </insert>
+</mapper>

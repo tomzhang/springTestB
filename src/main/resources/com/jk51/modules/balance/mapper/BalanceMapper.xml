@@ -1,0 +1,1774 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.balance.mapper.BalanceMapper">
+    <select id="getBalanceBySiteId" resultType="com.jk51.model.balance.Balance">
+        SELECT
+        bb.site_id siteId,
+        bb.id,
+        bb.balance,
+        bb.balance_warning balanceWarning,
+        bb.credit,
+        bb.is_valid isValid,
+        bb.msg_fee msgFee,
+        bb.msg_num msgNum,
+        bb.msg_total_num msgTotalNum,
+        bb.duty_phone dutyPhone,
+        bb.record_time recordTime,
+        msg_switch msgSwitch,
+        ybm.legal_mobile sitePhone
+        FROM b_balance bb
+        LEFT JOIN yb_merchant ybm ON bb.site_id=ybm.merchant_id
+        WHERE bb.site_id=#{siteId}
+    </select>
+    <select id="getBalanceCountBySiteId" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM b_balance
+        WHERE site_id=#{siteId}
+    </select>
+    <insert id="insertBalanceBySiteId" parameterType="com.jk51.model.balance.Balance">
+        insert into b_balance
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="balance != null">
+                balance,
+            </if>
+            <if test="balanceWarning != null">
+                balance_warning,
+            </if>
+            <if test="credit != null">
+                credit,
+            </if>
+            <if test="isValid != null">
+                is_valid,
+            </if>
+            <if test="dutyPhone != null">
+                duty_phone,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="balance != null">
+                #{balance,jdbcType=INTEGER},
+            </if>
+            <if test="balanceWarning != null">
+                #{balanceWarning,jdbcType=INTEGER},
+            </if>
+            <if test="credit != null">
+                #{credit,jdbcType=INTEGER},
+            </if>
+            <if test="isValid != null">
+                #{isValid,jdbcType=INTEGER},
+            </if>
+            <if test="dutyPhone != null">
+                #{dutyPhone,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateBalanceBySiteId" parameterType="com.jk51.model.balance.Balance">
+        update b_balance
+        <set>
+            <if test="balance != null">
+                balance = #{balance,jdbcType=INTEGER},
+            </if>
+            <if test="balanceWarning != null">
+                balance_warning = #{balanceWarning,jdbcType=INTEGER},
+            </if>
+            <if test="credit != null">
+                credit = #{credit,jdbcType=INTEGER},
+            </if>
+            <if test="isValid != null">
+                is_valid = #{isValid,jdbcType=INTEGER},
+            </if>
+            <if test="msgNum != null">
+                msg_num = #{msgNum,jdbcType=INTEGER},
+            </if>
+            <if test="msgTotalNum != null">
+                msg_total_num = #{msgTotalNum,jdbcType=INTEGER},
+            </if>
+            <if test="dutyPhone != null">
+                duty_phone = #{dutyPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="msgSwitch != null">
+                msg_switch = #{msgSwitch,jdbcType=INTEGER},
+            </if>
+            <if test="recordTime != null">
+                record_time = #{recordTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        WHERE site_id=#{siteId,jdbcType=INTEGER}
+    </update>
+    <select id="getBalancePayForSiteId" resultType="java.lang.Integer">
+        SELECT balance
+        FROM b_balance
+        WHERE site_id=#{siteId,jdbcType=INTEGER}
+    </select>
+    <insert id="insertBalanceDetail" parameterType="com.jk51.model.balance.BalanceDetail">
+        insert into b_balance_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="balance != null">
+                balance,
+            </if>
+            <if test="payChange != null">
+                pay_change,
+            </if>
+            <if test="applyStatus != null">
+                apply_status,
+            </if>
+            <if test="payStatus != null">
+                pay_status,
+            </if>
+            <if test="auditStatus != null">
+                audit_status,
+            </if>
+            <if test="tradesId != null">
+                trades_id,
+            </if>
+            <if test="serialNum != null">
+                serial_num,
+            </if>
+            <if test="storeId != null">
+                store_id,
+            </if>
+            <if test="storeadminId != null">
+                storeadmin_id,
+            </if>
+            <if test="payTime != null">
+                pay_time,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="balanceStatus != null">
+                balance_status,
+            </if>
+            <if test="msgStatus != null">
+                msg_status,
+            </if>
+            <if test="phone != null">
+                phone,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="balance != null">
+                #{balance,jdbcType=INTEGER},
+            </if>
+            <if test="payChange != null">
+                #{payChange,jdbcType=INTEGER},
+            </if>
+            <if test="applyStatus != null">
+                #{applyStatus,jdbcType=INTEGER},
+            </if>
+            <if test="payStatus != null">
+                #{payStatus,jdbcType=INTEGER},
+            </if>
+            <if test="auditStatus != null">
+                #{auditStatus,jdbcType=INTEGER},
+            </if>
+            <if test="tradesId != null">
+                #{tradesId,jdbcType=INTEGER},
+            </if>
+            <if test="serialNum != null">
+                #{serialNum,jdbcType=VARCHAR},
+            </if>
+            <if test="storeId != null">
+                #{storeId,jdbcType=INTEGER},
+            </if>
+            <if test="storeadminId != null">
+                #{storeadminId,jdbcType=INTEGER},
+            </if>
+            <if test="payTime != null">
+                #{payTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="description != null">
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="balanceStatus != null">
+                #{balanceStatus,jdbcType=INTEGER},
+            </if>
+            <if test="msgStatus != null">
+                #{msgStatus,jdbcType=INTEGER},
+            </if>
+            <if test="phone != null">
+                #{phone,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <select id="getMechantNameBySiteId" resultType="java.util.Map">
+        SELECT merchant_name,legal_mobile service_mobile
+        FROM yb_merchant
+        WHERE merchant_id=#{siteId,jdbcType=INTEGER}
+    </select>
+    <select id="getBalanceBySiteIdForBool" resultType="com.jk51.model.balance.Balance">
+        SELECT site_id siteId,id,balance,balance_warning balanceWarning,credit,is_valid isValid,msg_fee msgFee,msg_num msgNum,msg_total_num msgTotalNum,duty_phone dutyPhone
+        FROM b_balance
+        WHERE site_id=#{siteId}
+        AND is_valid = 0
+    </select>
+    <select id="getBalanceDetail" resultType="map" parameterType="map">
+        SELECT id,balance_status balanceStatus,
+        format(pay_change/100,2) payChange,
+        format(balance/100,2) balance,
+        CASE
+        WHEN apply_status=0 THEN '线下充值'
+        WHEN apply_status=1 THEN '退还佣金'
+        WHEN apply_status=2 THEN '佣金'
+        WHEN apply_status=5 THEN '运费'
+        WHEN apply_status=6 THEN '退还运费'
+        WHEN apply_status=7 THEN '微信充值'
+        WHEN apply_status=8 THEN '支付宝充值'
+        WHEN apply_status=4 THEN '短信费用'
+
+--         WHEN msg_status=100 THEN '短信费用（登录验证码）'
+--         WHEN msg_status=110 THEN '短信费用（修改密码验证码）'
+--         WHEN msg_status=120 THEN '短信费用（店员app会员注册验证码）'
+--         WHEN msg_status=130 THEN '短信费用（店员app找回密码验证码）'
+--         WHEN msg_status=140 THEN '短信费用（语音验证码）'
+--         WHEN msg_status=150 THEN '短信费用（网站登录验证码）'
+--         WHEN msg_status=160 THEN '短信费用（网站找回密码验证码）'
+--         WHEN msg_status=170 THEN '短信费用（分销app验证码）'
+--         WHEN msg_status=200 THEN '短信费用（商家发货后提醒顾客按照提货码去提货）'
+--         WHEN msg_status=300 THEN '短信费用（商家发货后提醒顾客提货地址）'
+--         WHEN msg_status=400 THEN '短信费用（邀请分销商加盟时的邀请码）'
+--         WHEN msg_status=500 THEN '短信费用（短信提醒顾客有新订单）'
+--         WHEN msg_status=600 THEN '短信费用（短信通知顾客付款）'
+--         WHEN msg_status=700 THEN '短信费用（发送给顾客的营销短信）'
+--         WHEN msg_status=800 THEN '短信费用（有新订单时提醒【商家总部】）'
+--         WHEN msg_status=810 THEN '短信费用（有新订单时提醒【门店店员】）'
+--         WHEN msg_status=820 THEN '短信费用（电话提醒，有新订单时提醒【门店店员】）'
+--         WHEN msg_status=900 THEN '短信费用（预警值提醒商家充值）'
+        ELSE '---'
+        END msg_status,
+        apply_status applyStatus,
+        account_time,
+        description description,
+        trades_id tradesId,
+        pay_time payTime,
+        create_time createTime,
+        serial_num serialNum,
+        clearing_status clearingStatus
+        FROM b_balance_detail
+        WHERE site_id=#{siteId} and audit_status=0
+        <if test="apply_status != null">
+            <if test="apply_status == 4">
+                AND apply_status IN (-2,4)
+            </if>
+            <if test="apply_status != 4">
+                AND apply_status = #{apply_status}
+            </if>
+        </if>
+        <if test="balance_status != null">
+            AND balance_status = #{balance_status}
+        </if>
+        <if test="start_time != null and end_time != null">
+            AND create_time BETWEEN #{start_time} AND #{end_time}
+        </if>
+        <if test="account_start_time != null and account_end_time != null">
+            AND account_time BETWEEN #{account_start_time} AND #{account_end_time}
+        </if>
+        <if test="clearing_status != null ">
+            AND clearing_status = #{clearing_status}
+        </if>
+        ORDER BY id DESC
+    </select>
+    <select id="getAllBalanceObj" resultType="map">
+        SELECT site_id siteId,balance,balance_warning balanceWarning FROM b_balance WHERE is_valid = 0
+    </select>
+    <select id="getWarning" resultType="com.jk51.model.balance.Balance">
+        SELECT balance,balance_warning balanceWarning,credit,is_valid isValid
+        FROM b_balance
+        WHERE site_id=#{siteId}
+    </select>
+    <select id="getAccountDetailReport" resultType="map" parameterType="map">
+        SELECT serial_num '流水号',
+        (CASE
+        WHEN apply_status=0 THEN '线下充值'
+        WHEN apply_status=1 THEN '退还佣金'
+        WHEN apply_status=2 THEN '佣金'
+        WHEN apply_status=5 THEN '运费'
+        WHEN apply_status=6 THEN '退还运费'
+        WHEN apply_status=7 THEN '微信充值'
+        WHEN apply_status=8 THEN '支付宝充值'
+
+        WHEN msg_status=100 THEN '短信费用（登录验证码）'
+        WHEN msg_status=110 THEN '短信费用（修改密码验证码）'
+        WHEN msg_status=120 THEN '短信费用（店员app会员注册验证码）'
+        WHEN msg_status=130 THEN '短信费用（店员app找回密码验证码）'
+        WHEN msg_status=140 THEN '短信费用（语音验证码）'
+        WHEN msg_status=150 THEN '短信费用（网站登录验证码）'
+        WHEN msg_status=160 THEN '短信费用（网站找回密码验证码）'
+        WHEN msg_status=170 THEN '短信费用（分销app验证码）'
+        WHEN msg_status=200 THEN '短信费用（商家发货后提醒顾客按照提货码去提货）'
+        WHEN msg_status=300 THEN '短信费用（商家发货后提醒顾客提货地址）'
+        WHEN msg_status=400 THEN '短信费用（邀请分销商加盟时的邀请码）'
+        WHEN msg_status=500 THEN '短信费用（短信提醒顾客有新订单）'
+        WHEN msg_status=600 THEN '短信费用（短信通知顾客付款）'
+        WHEN msg_status=700 THEN '短信费用（发送给顾客的营销短信）'
+        WHEN msg_status=800 THEN '短信费用（有新订单时提醒【商家总部】）'
+        WHEN msg_status=810 THEN '短信费用（有新订单时提醒【门店店员】）'
+        WHEN msg_status=820 THEN '短信费用（电话提醒，有新订单时提醒【门店店员】）'
+        WHEN msg_status=900 THEN '短信费用（预警值提醒商家充值）'
+        ELSE '---'
+        END
+        ) '业务类型',
+        case when trades_id=0 then phone else trades_id end '业务单号',
+        (CASE balance_status
+        WHEN 0 THEN '收入'
+        WHEN 1 THEN '支出'
+        ELSE '' END
+        ) '收/支',
+        (CASE balance_status
+        WHEN 0 THEN format(pay_change/100,2)
+        WHEN 1 THEN format(-pay_change/100,2)
+        ELSE 0 END
+        ) '金额(元)',
+        format(balance/100,2) '余额(元)',
+        date_format(create_time,'%Y-%m-%d %H:%i:%S') '交易时间'
+        FROM b_balance_detail
+        WHERE site_id=#{siteId} and audit_status=0
+        <if test="apply_status != null">
+            AND apply_status = #{apply_status}
+        </if>
+        <if test="balance_status != null">
+            AND balance_status = #{balance_status}
+        </if>
+        <if test="start_time != null and end_time != null">
+            AND create_time BETWEEN #{start_time} AND #{end_time}
+        </if>
+        <if test="account_start_time != null and account_end_time != null">
+            AND account_time BETWEEN #{account_start_time} AND #{account_end_time}
+        </if>
+        <if test="clearing_status != null ">
+            AND clearing_status = #{clearing_status}
+        </if>
+        ORDER BY id DESC
+    </select>
+    <select id="getSiteIdList" resultType="Integer">
+        SELECT DISTINCT site_id
+        FROM b_balance
+    </select>
+    <select id="getYestodayDate" resultType="com.jk51.model.balance.BalanceAccount">
+        select sum(case when id = (select max(id) from b_balance_detail where site_id = #{siteId} and create_time between #{startTimeBefore} and #{endTimeBefore} AND audit_status=0) then balance else 0 end) as lastBalance
+                , sum(case when create_time between #{startTime} and #{endTime} and apply_status IN (0,7,8) and audit_status=0 then pay_change else 0 end) as upBalance
+                , sum(case when create_time between #{startTime} and #{endTime} and apply_status in (1,3) then pay_change else 0 end) as nowIncome
+                , sum(case when create_time between #{startTime} and #{endTime} and apply_status in (2,4,5) then pay_change else 0 end) as nowExpend
+                , sum(case when id = (select max(id) from b_balance_detail where site_id = #{siteId} AND audit_status=0 and create_time between #{startTimeBefore} and #{endTime}) then balance else 0 end) as nowBalance
+        from b_balance_detail
+        where site_id = #{siteId}
+        group by site_id
+    </select>
+    <insert id="insertBalanceAccountBySiteId" parameterType="com.jk51.model.balance.BalanceAccount">
+        insert into b_balance_account
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="lastBalance != null">
+                last_balance,
+            </if>
+            <if test="nowBalance != null">
+                now_balance,
+            </if>
+            <if test="upBalance != null">
+                up_balance,
+            </if>
+            <if test="nowIncome != null">
+                now_income,
+            </if>
+            <if test="nowExpend != null">
+                now_expend,
+            </if>
+            <if test="invoiceMoney != null">
+                invoice_money,
+            </if>
+            <if test="invoiceStatus != null">
+                invoice_status,
+            </if>
+            <if test="accountTime != null">
+                account_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="lastBalance != null">
+                #{lastBalance,jdbcType=INTEGER},
+            </if>
+            <if test="nowBalance != null">
+                #{nowBalance,jdbcType=INTEGER},
+            </if>
+            <if test="upBalance != null">
+                #{upBalance,jdbcType=INTEGER},
+            </if>
+            <if test="nowIncome != null">
+                #{nowIncome,jdbcType=INTEGER},
+            </if>
+            <if test="nowExpend != null">
+                #{nowExpend,jdbcType=INTEGER},
+            </if>
+            <if test="invoiceMoney != null">
+                #{invoiceMoney,jdbcType=INTEGER},
+            </if>
+            <if test="invoiceStatus != null">
+                #{invoiceStatus,jdbcType=INTEGER},
+            </if>
+            <if test="accountTime != null">
+                #{accountTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <select id="getBalanceAccountBySiteId" resultType="map" parameterType="map">
+        SELECT id,
+        format(last_balance/100,2) lastBalance,
+        format(now_balance/100,2) nowBalance,
+        format(up_balance/100,2) upBalance,
+        format(now_income/100,2) nowIncome,
+        format(now_expend/100,2) nowExpend,
+        format(invoice_money/100,2) invoiceMoney,
+        invoice_status invoiceStatus,
+        account_time accountTime
+        FROM b_balance_account
+        WHERE site_id=#{siteId}
+        <if test="invoice_status != null ">
+            AND invoice_status = #{invoice_status}
+        </if>
+        <if test="start_time != null and end_time != null">
+            AND account_time BETWEEN #{start_time} AND #{end_time}
+        </if>
+        ORDER BY account_time DESC
+    </select>
+    <select id="boolIExist"  resultType="Integer">
+        SELECT COUNT(*)
+        FROM b_balance_detail
+        WHERE site_id=#{siteId}
+        AND trades_id=#{tradesId}
+        AND apply_status = #{applyStatus}
+    </select>
+    <select id="getAccountBillReport"  resultType="map" parameterType="map">
+        SELECT
+        ifnull(date_format(account_time,'%Y-%m-%d'),'0000-00-00') '结算日期',
+        format(last_balance/100,2) '上期余额',
+        format(up_balance/100,2) '充值金额',
+        format(now_income/100,2) '本期收入',
+        format(-now_expend/100,2) '本期支出',
+        format(now_balance/100,2) '本期余额'
+        FROM b_balance_account
+        WHERE site_id=#{siteId}
+        <if test="start_time != null and end_time != null">
+            AND account_time BETWEEN #{start_time} AND #{end_time}
+        </if>
+    </select>
+    <select id="getBeforeYestodayTime"  resultType="Integer">
+        SELECT balance FROM b_balance_detail
+        WHERE site_id = #{siteId}
+        AND create_time between between #{startTimeBefore} and #{startTimeBefore1}
+        AND audit_status=0
+        ORDER BY id DESC
+        LIMIT 1
+    </select>
+    <select id="getMsgStatus"  resultType="String">
+        SELECT code
+        FROM b_sms_fee_set
+        WHERE site_id = #{siteId}
+    </select>
+    <select id="getMsgRole"  resultType="map">
+        SELECT fee,sml_num,big_num
+        FROM b_sms_fee_rule
+        WHERE site_id=#{siteId}
+        AND is_del=1
+    </select>
+    <select id="getAccountBalance"  resultType="map">
+        select bb.site_id
+        ,ybm.merchant_name
+        ,ifnull(format(a.now_balance/100,2),0.00) as lastBalance
+        ,format(sum(case when bbd.create_time BETWEEN #{startTime} and #{endTime} and bbd.apply_status IN (0,7,8) then bbd.pay_change else 0 end)/100,2) as upBalance
+        ,format(sum(case when bbd.create_time BETWEEN #{startTime} and #{endTime} and bbd.apply_status in (1,3) then bbd.pay_change else 0 end)/100,2) as nowIncome
+        ,format(-sum(case when bbd.create_time BETWEEN #{startTime} and #{endTime} and bbd.apply_status in (2,4,5) then bbd.pay_change else 0 end)/100,2) as nowExpend
+        ,format(bb.balance/100,2) as nowBalance
+        ,format(bb.balance_warning/100,2) balance_warning
+        ,format(bb.balance/100,2) balance
+        ,format(bb.credit/100,2) credit
+        ,bb.is_valid
+        ,bb.create_time
+        from b_balance bb
+        LEFT JOIN b_balance_detail bbd ON bb.site_id=bbd.site_id AND bbd.audit_status=0
+        LEFT JOIN yb_merchant ybm ON ybm.merchant_id=bb.site_id
+        left join ( select site_id,now_balance from b_balance_account where account_time BETWEEN #{startTimeBefore} and #{endTimeBefore} ) a on bb.site_id = a.site_id
+
+        WHERE 1=1
+        <if test="site_id != null ">
+            AND bb.site_id= #{site_id}
+        </if>
+        <if test="merchant_name != null ">
+            AND ybm.merchant_name like CONCAT('%',#{merchant_name},'%')
+        </if>
+        <if test="balance_min != null and balance_max != null">
+            AND bb.balance BETWEEN #{balance_min} AND #{balance_max}
+        </if>
+        <if test="credit_status == 0">
+            AND bb.balance > bb.balance_warning
+        </if>
+        <if test="credit_status == 1">
+            AND bb.balance_warning >= bb.balance
+        </if>
+        <if test="credit_status == 2">
+            AND (0 > bb.balance + bb.credit)
+        </if>
+        <if test="credit_status == 2">
+            AND (0 > bb.balance + bb.credit)
+        </if>
+        <if test="is_valid != null">
+            AND bb.is_valid=#{is_valid}
+        </if>
+        <if test="credit_min != null and credit_max != null">
+            AND bb.credit BETWEEN #{credit_min} AND #{credit_max}
+        </if>
+        group by bb.site_id, bb.is_valid,bb.update_time
+    </select>
+    <select id="getAccountBalanceSiteDetail"  resultType="map">
+        SELECT bbd.site_id,bbd.id,bbd.balance_status balanceStatus,
+        format(bbd.pay_change/100,2) payChange,
+        format(bbd.balance/100,2) balance,
+        bbd.apply_status applyStatus,
+        bbd.trades_id tradesId,
+        bbd.pay_time payTime,
+        bbd.serial_num serialNum,
+        bbd.clearing_status clearingStatus,
+        ybm.merchant_name,
+        bbd.create_time createTime,
+        bbd.description description,
+        bbd.hq_remark
+        FROM b_balance_detail bbd
+        LEFT JOIN yb_merchant ybm ON bbd.site_id=ybm.merchant_id
+        WHERE 1=1 AND bbd.audit_status=0
+        <if test="site_id != null ">
+            AND bbd.site_id= #{site_id}
+        </if>
+        <if test="merchant_name != null ">
+            AND ybm.merchant_name like CONCAT('%',#{merchant_name},'%')
+        </if>
+        <if test="apply_status != null">
+            <if test="apply_status == 4">
+                AND apply_status IN (-2,4)
+            </if>
+            <if test="apply_status != 4">
+                AND apply_status = #{apply_status}
+            </if>
+        </if>
+        <if test="balance_status != null">
+            AND balance_status = #{balance_status}
+        </if>
+        <if test="start_time != null and end_time != null">
+            AND bbd.create_time BETWEEN #{start_time} AND #{end_time}
+        </if>
+        <if test="clearing_status != null ">
+            AND clearing_status = #{clearing_status}
+        </if>
+        ORDER BY bbd.id DESC
+    </select>
+
+    <select id="getBalanceSMSLst"  resultType="map">
+        SELECT b.id,b.site_id,b.description,b.serial_num,b.store_id,b.pay_change,b.create_time,yb.merchant_name,
+        CASE b.msg_status
+        WHEN '100' THEN '登录验证码'
+        WHEN '110' THEN '修改密码验证码'
+        WHEN '120' THEN '店员app会员注册验证码'
+        WHEN '130' THEN '店员app找回密码验证码'
+        WHEN '140' THEN '语音验证码'
+        WHEN '150' THEN '网站登录验证码'
+        WHEN '160' THEN '网站找回密码验证码'
+        WHEN '170' THEN '分销app验证码'
+
+        WHEN '200' THEN '商家发货后提醒顾客按照提货码去提货'
+        WHEN '300' THEN '商家发货后提醒顾客提货地址'
+        WHEN '400' THEN '邀请分销商加盟时的邀请码'
+        WHEN '500' THEN '短信提醒顾客有新订单'
+        WHEN '600' THEN '短信通知顾客付款'
+        WHEN '700' THEN '发送给顾客的营销短信'
+        WHEN '800' THEN '有新订单时提醒【商家总部】'
+        WHEN '810' THEN '有新订单时提醒【门店店员】'
+        WHEN '820' THEN '电话提醒，有新订单时提醒【门店店员】'
+
+        WHEN '900' THEN '预警值提醒商家充值'
+        ELSE '---'
+        END type
+        FROM b_balance_detail b
+        LEFT JOIN yb_merchant yb ON b.site_id=yb.merchant_id
+        <where>
+            audit_status = 0
+            <if test="site_id != null ">
+                AND b.site_id= #{site_id}
+            </if>
+            <if test="merchant_name != null ">
+                AND yb.merchant_name LIKE concat('%',#{merchant_name},'%')
+            </if>
+            <if test="pay_change == 0 ">
+                AND b.pay_change != 0
+            </if>
+            <if test="pay_change == 1 ">
+                AND b.pay_change = 0
+            </if>
+            <if test="start_time != null ">
+                AND b.create_time &gt;= str_to_date(concat(#{start_time},' 00:00:00'),'%Y-%m-%d %H:%i:%s')
+            </if>
+            <if test="end_time != null ">
+                AND b.create_time &lt;= str_to_date(concat(#{start_time},' 23:59:59'),'%Y-%m-%d %H:%i:%s')
+            </if>
+            <if test="1==1">
+                AND b.apply_status in(-2,4)
+            </if>
+        </where>
+        ORDER BY b.create_time DESC
+    </select>
+
+    <update id="updateHqRemark" parameterType="map">
+        update b_balance_detail
+        <set>
+            <if test="hq_remark != null">
+                hq_remark = #{hq_remark},
+            </if>
+            <if test="site_remark != null">
+                site_remark = #{site_remark},
+            </if>
+        </set>
+        WHERE id=#{id}
+    </update>
+    <select id="getUpBalanceById"  resultType="map">
+        SELECT serial_num,pay_change,create_time,description,apply_status,msg_status
+        FROM b_balance_detail
+        WHERE id=#{id}
+    </select>
+    <select id="getBalanceAccountForSite" resultType="map" parameterType="map">
+        SELECT bba.site_id,bba.id,
+        format(bba.last_balance/100,2) lastBalance,
+        format(bba.now_balance/100,2) nowBalance,
+        format(bba.up_balance/100,2) upBalance,
+        format(bba.now_income/100,2) nowIncome,
+        format(-bba.now_expend/100,2) nowExpend,
+        format(bba.invoice_money/100,2) invoiceMoney,
+        bba.invoice_status invoiceStatus,bba.account_time accountTime,ybm.merchant_name,bba.invoice_num,bba.make_invoice,bba.express_firm,
+        bba.express_num,bba.operator,bba.finance_mark,bba.site_mark
+        FROM b_balance_account bba
+        LEFT JOIN yb_merchant ybm ON bba.site_id=ybm.merchant_id
+        WHERE 1=1
+        <if test="site_id != null ">
+            AND bba.site_id = #{site_id}
+        </if>
+        <if test="invoice_status != null ">
+            AND bba.invoice_status = #{invoice_status}
+        </if>
+        <if test="start_time != null and end_time != null">
+            AND bba.account_time BETWEEN #{start_time} AND #{end_time}
+        </if>
+        <if test="merchant_name != null ">
+            AND ybm.merchant_name like CONCAT('%',#{merchant_name},'%')
+        </if>
+        ORDER BY bba.account_time DESC
+    </select>
+    <select id="getAccountInfo" resultType="map" parameterType="map">
+        SELECT bba.*,
+        ybs.seller_name,ybs.beneficiary_party,ybs.invoice_title,ybs.bank_id,ybs.bank_name
+        ,ybs.change_num,ybs.taxpayer_number,ybs.shop_address,ybs.service_phone,bba.audit_mark
+        FROM b_balance_account_month bba
+        LEFT JOIN yb_seller_beneficiary ybs ON bba.site_id=ybs.seller_id
+        WHERE bba.site_id=#{siteId} AND bba.id=#{id}
+    </select>
+    <update id="updateAccountInfo" parameterType="map">
+        update b_balance_account_month
+        <set>
+            <if test="invoice_num != null">
+                invoice_num = #{invoice_num},
+            </if>
+            <if test="make_invoice_time != null">
+                make_invoice_time = #{make_invoice_time},
+            </if>
+            <if test="invoice_money != null">
+                invoice_money = #{invoice_money},
+            </if>
+            <if test="express_firm != null">
+                express_firm = #{express_firm},
+            </if>
+            <if test="express_num != null">
+                express_num = #{express_num},
+            </if>
+            <if test="finance_mark != null">
+                finance_mark = #{finance_mark},
+            </if>
+            <if test="site_mark != null">
+                site_mark = #{site_mark},
+            </if>
+            <if test="operator != null">
+                operator = #{operator},
+            </if>
+            <if test="audit_mark != null">
+                audit_mark = #{audit_mark},
+            </if>
+            <if test="audit_status != null">
+                audit_status = #{audit_status},
+            </if>
+            invoice_status=1
+        </set>
+        WHERE id=#{id}
+        AND site_id=#{siteId}
+    </update>
+    <select id="getAccountBillAllReport"  resultType="map">
+        SELECT
+        account_time '结算日期',
+        bba.site_id '商家id',
+        ybm.merchant_name '商家名称',
+        format(last_balance/100,2) '上期余额',
+        format(up_balance/100,2) '收入（充值）',
+        format(income_present/100,2) '收入（赠送）',
+        format(income_return_brokerage/100,2) '收入（退佣金）',
+        format(income_return_post_fee/100,2) '收入（退运费）',
+        format(-expend_brokerage/100,2) '支出（佣金）',
+        format(-expend_post_fee/100,2) '支出（运费）',
+        format(-expend_msg_fee/100,2) '支出（短信费）',
+        format(now_balance/100,2) '本期余额',
+        (CASE bba.audit_status
+        WHEN 0 THEN '待审核'
+        WHEN 1 THEN '重新核对'
+        WHEN 2 THEN '商家已确认'
+        WHEN 3 THEN '审核通过'
+        WHEN 4 THEN '不通过'
+        ELSE '' END
+        ) '核对状态',
+        format((now_expend-now_income)/100,2) '应开票金额',
+        format(invoice_money/100,2) '实际开票金额',
+        (CASE invoice_status
+        WHEN 0 THEN '未开票'
+        WHEN 1 THEN '已开票'
+        ELSE '' END
+        ) '开票状态',
+        ifnull(date_format(make_invoice_time,'%Y-%m-%d'),'0000-00-00') '开票日期',
+        invoice_num '发票号码',
+        express_num '快递单号',
+        express_firm '快递公司',
+        operator '操作人',
+        finance_mark '财务备注'
+        FROM b_balance_account_month bba
+        LEFT JOIN yb_merchant ybm ON bba.site_id=ybm.merchant_id
+        WHERE 1=1
+        <if test="site_id != null ">
+            AND bba.site_id= #{site_id}
+        </if>
+        <if test="merchant_name != null ">
+            AND ybm.merchant_name like CONCAT('%',#{merchant_name},'%')
+        </if>
+        <if test="start_time != null and end_time != null">
+            AND bba.account_time BETWEEN #{start_time} AND #{end_time}
+        </if>
+        <if test="invoice_status != null ">
+            AND bba.invoice_status= #{invoice_status}
+        </if>
+        <if test="audit_status != null ">
+            AND bba.audit_status= #{audit_status}
+        </if>
+        ORDER BY bba.create_time DESC
+    </select>
+    <update id="updateBalanceDetialByTime" parameterType="map">
+        update b_balance_detail
+        <set>
+            clearing_status = 1
+        </set>
+        WHERE site_id=#{siteId}
+        AND create_time BETWEEN #{startTime} AND #{endTime}
+    </update>
+    <select id="getTradesBrokerage" resultType="map" parameterType="map">
+      SELECT b.site_id,ybm.merchant_name,b.trades_id,
+        b.pay_number,
+        b.create_time,
+        b.pay_time,
+        b.end_time,
+        b.real_pay real_pay,
+        b.trades_split,
+        b.is_refund,
+        b.refund_fee,
+        bbd.bill_num,
+        CASE b.pay_style
+            WHEN 'wx' THEN '微信'
+            WHEN 'cash' THEN'现金'
+            WHEN 'ali' THEN '支付宝'
+            WHEN 'health_insurance' THEN'医保'
+            WHEN 'unionPay' THEN '银联'
+            WHEN 'bil' THEN '快钱'
+            ELSE '---'
+        END pay_style_intro,
+        CASE b.trades_status
+            WHEN '110' THEN '等待买家付款'
+            WHEN '120' THEN '等待卖家发货'
+            WHEN '130' THEN '等待买家确认收货'
+            WHEN '140' THEN '已签收'
+            WHEN '150' THEN '交易成功'
+            WHEN '160' THEN '用户未付款主动关闭'
+            WHEN '170' THEN '超时关闭'
+            WHEN '180' THEN '商家关闭订单'
+            WHEN '200' THEN '待自提'
+            WHEN '210' THEN '已取货'
+            WHEN '900' THEN '已退款'
+            WHEN '220' THEN '用户确认收货'
+            WHEN '230' THEN '门店确认收货'
+            WHEN '800' THEN '系统确认收货'
+            WHEN '240' THEN '已取消'
+            ELSE '---'
+        END tradesstatus,
+        CASE b.deal_finish_status
+            WHEN '0' THEN '交易进行中'
+            WHEN '1' THEN '交易结束'
+            ELSE '---'
+        END dealfinishstatus,
+        CASE bbd.clearing_status
+        WHEN '0' THEN '未结算'
+        WHEN '1' THEN '已结算'
+        ELSE '---' END clearing_status,
+        b.settlement_type
+        FROM b_trades b
+        LEFT JOIN b_balance_detail bbd ON b.site_id=bbd.site_id AND b.trades_id=bbd.trades_id
+        LEFT JOIN yb_merchant ybm ON b.site_id=ybm.merchant_id
+        WHERE b.is_service_order=1
+        <if test="site_id != null ">
+            AND b.site_id = #{site_id}
+        </if>
+        <if test="merchant_name != null ">
+            AND ybm.merchant_name like CONCAT('%',#{merchant_name},'%')
+        </if>
+        <if test="pay_style != null ">
+            AND b.pay_style =#{pay_style}
+        </if>
+        <if test="accountStatus != null ">
+            AND bbd.clearing_status =#{accountStatus}
+        </if>
+        <if test="finance_no != null ">
+            AND bbd.bill_num =#{finance_no}
+        </if>
+        <if test="trades_id != null ">
+            AND b.trades_id =#{trades_id}
+        </if>
+        <if test="pay_number != null ">
+            AND bbd.serial_num =#{pay_number}
+        </if>
+        <if test="start_time != null and end_time != null">
+            AND b.end_time BETWEEN #{start_time} AND #{end_time}
+        </if>
+        <if test="pay_start_time != null and pay_end_time != null">
+            AND b.pay_time BETWEEN #{pay_start_time} AND #{pay_end_time}
+        </if>
+        ORDER BY b.create_time DESC
+    </select>
+    <select id="getOtherDetail" resultType="map" parameterType="map">
+        SELECT bbd.id,bbd.serial_num,bbd.site_id,ybm.merchant_name,bbd.balance_status,format(bbd.pay_change/100,2) pay_change,bbd.apply_status,
+        bbd.trades_id
+        FROM b_balance_detail bbd
+        LEFT JOIN yb_merchant ybm ON bbd.site_id=ybm.merchant_id
+        WHERE bbd.apply_status IN (0,1,3) AND audit_status=0
+        <if test="site_id != null ">
+            AND bbd.site_id= #{site_id}
+        </if>
+        <if test="merchant_name != null ">
+            AND ybm.merchant_name like CONCAT('%',#{merchant_name},'%')
+        </if>
+        <if test="apply_status != null">
+            AND bbd.apply_status = #{apply_status}
+        </if>
+        <if test="balance_status != null">
+            AND bbd.balance_status = #{balance_status}
+        </if>
+        <if test="start_time != null and end_time != null">
+            AND bbd.pay_time BETWEEN #{start_time} AND #{end_time}
+        </if>
+        ORDER BY bbd.id DESC
+    </select>
+    <select id="getTodayData" resultType="map">
+        select sum(case when bbd.id = (select max(id) from b_balance_detail where site_id = #{siteId} and audit_status=0 and create_time between #{startTimeBefore} and #{endTimeBefore}) then bbd.balance else 0 end) as lastBalance ,
+        sum(case when bbd.create_time between #{startTime} and #{endTime} and bbd.apply_status in (0,7,8) and bbd.audit_status=0 then bbd.pay_change else 0 end) as upBalance ,
+        sum(case when bbd.create_time between #{startTime} and #{endTime} and bbd.apply_status in (1,3) then bbd.pay_change else 0 end) as nowIncome ,
+        sum(case when bbd.create_time between #{startTime} and #{endTime} and bbd.apply_status in (2,4,5) then bbd.pay_change else 0 end) as nowExpend ,
+        bb.balance nowBalance,
+        bb.balance_warning invoiceMoney
+        FROM b_balance_detail bbd
+        LEFT JOIN b_balance bb ON bbd.site_id=bb.site_id
+        where bbd.site_id = #{siteId}
+    </select>
+    <update id="updateOutbillStatus">
+        update b_balance_detail
+        <set>
+            clearing_status = 1,
+            account_time=#{newDate}
+        </set>
+        WHERE site_id=#{siteId}
+        AND create_time BETWEEN #{startTime} AND #{endTime}
+    </update>
+    <select id="findDetails" resultType="java.util.Map">
+        SELECT
+        a.*, b.*, c.`name` AS storeName,d.`name` AS cuxiaoyuan,
+        ifnull(date_format(a.create_time,'%Y-%m-%d %H:%i:%S'),'0000-00-00 00:00:00') AS xiadanshijian,
+        ifnull(date_format(a.consign_time,'%Y-%m-%d %H:%i:%S'),'0000-00-00 00:00:00') AS fahuoshijian,
+        ifnull(date_format(a.pay_time,'%Y-%m-%d %H:%i:%S'),'0000-00-00 00:00:00') AS jiaoyichenggong,
+        ifnull(date_format(a.confirm_goods_time,'%Y-%m-%d %H:%i:%S'),'0000-00-00 00:00:00') AS jiaoyichenggongs,
+        ifnull(date_format(a.end_time,'%Y-%m-%d %H:%i:%S'),'0000-00-00 00:00:00') AS jiaoyijieshu,
+        CASE a.trades_status
+        WHEN '110'THEN '等侍买家付款'
+        WHEN '120'THEN '等待卖家发货'
+        WHEN '130'THEN '等侍买家确认收货'
+        WHEN '140'THEN '买家已签收，货到付款专用'
+        WHEN '150'THEN '交易成功'
+        WHEN '160'THEN '用户未付款主动关闭'
+        WHEN '170'THEN '超时未付款，系统关闭'
+        WHEN '180'THEN '商家关闭订单'
+        WHEN '200'THEN '待取货|待自提，直购和自提专用'
+        WHEN '210'THEN '已取货|已自提 直购和自提专用'
+        WHEN '900'THEN '已退款'
+        WHEN '220'THEN '用户确认收货'
+        WHEN '230'THEN '门店确认收货'
+        WHEN '800'THEN '系统确认收货'
+        WHEN '240'THEN '已取消'
+        ELSE '其他' end jiaoyizhuangtai,
+        case  a.pay_style
+        WHEN 'wx' THEN '微信'
+        when 'cash' then '现金'
+        when 'ali' then '支付宝'
+        when 'health_insurance' then '医保'
+        when  'unionPay' then '银联'
+        else '其他' end zhifufangshi,
+        case when format(a.real_pay/100,2) is null then '0.00' else format(a.real_pay/100,2) end AS zhifujine,
+        e.refund_serial_no AS tuikuanliushuihao,
+        case when format(e.real_refund_money/100,2) is null then '0.00' else format(e.real_refund_money/100,2) end AS tuikuanjine,
+        ifnull(date_format(e.refund_time,'%Y-%m-%d %H:%i:%S'),'0000-00-00 00:00:00') AS tuikuanshijian,
+        format(IFNULL(bbd.pay_change,0)/100,2) pay_change,
+
+        CASE
+        WHEN bbd.clearing_status = 0  THEN '未结算'
+        WHEN bbd.clearing_status = 1  THEN '已结算'
+        ELSE '其他'
+        END clearing_status,
+        case when
+        case  a.pay_style
+        WHEN 'wx' THEN   format(a.real_pay/100,2)
+        when 'ali' then  format(a.real_pay/100,2)
+        when  'unionPay' then format(a.real_pay/100,2)
+        end is null then '0.00' else
+        case  a.pay_style
+        WHEN 'wx' THEN   format(a.real_pay/100,2)
+        when 'ali' then  format(a.real_pay/100,2)
+        when  'unionPay' then format(a.real_pay/100,2)
+        end end	pingtaidaishou,
+
+        case when
+        case  a.pay_style
+        WHEN 'wx' THEN   format(e.real_refund_money/100,2)
+        when 'ali' then  format(e.real_refund_money/100,2)
+        when  'unionPay' then format(e.real_refund_money/100,2)
+        end is null then '0.00' else
+        case  a.pay_style
+        WHEN 'wx' THEN   format(e.real_refund_money/100,2)
+        when 'ali' then  format(e.real_refund_money/100,2)
+        when  'unionPay' then format(e.real_refund_money/100,2)
+        end end  pingtaidaitui,
+        IFNULL(m.create_time,'0000-00-00 00:00:00') transfer_time,
+        date_format(bbd.account_time,'%Y-%m-%d') account_time,
+        bbd.apply_status
+
+        FROM
+        b_trades a
+        LEFT JOIN `yb_settlement_detail` b ON (a.trades_id = b.trades_id)
+        LEFT JOIN b_stores c ON (a.trades_store = c.id AND a.site_id = c.site_id)
+        LEFT JOIN b_store_adminext d ON (a.store_user_id = d.id AND a.site_id = d.site_id)
+        LEFT JOIN b_refund e on (a.trades_id = e.trade_id and e.status=120)
+        LEFT JOIN b_migrate m ON a.site_id=m.site_id
+        LEFT JOIN b_balance_detail bbd ON a.site_id=bbd.site_id AND a.trades_id = bbd.trades_id
+        WHERE a.trades_id = #{tradesId} AND a.site_id = #{siteId}
+        AND bbd.apply_status=#{apply_status}
+    </select>
+
+    <select id="getMoneyByTradesId" resultType="java.lang.Integer">
+        SELECT pay_change FROM b_balance_detail WHERE trades_id = #{tradesId} AND apply_status=2
+    </select>
+    <select id="getStoreName"  resultType="map">
+        SELECT t.trades_source trades_source,IFNULL(bs.name,'') invitationName,IFNULL(bs1.name,'') sourceName
+        FROM b_trades t
+        LEFT JOIN b_store_adminext bsa ON t.site_id=bsa.site_id AND t.clerk_invitation_code=bsa.clerk_invitation_code
+        LEFT JOIN b_stores bs ON t.site_id=bs.site_id AND bsa.store_id=bs.id
+        LEFT JOIN b_stores bs1 ON t.site_id=bs1.site_id AND t.trades_store=bs1.id
+        WHERE t.site_id = #{siteId}
+        AND t.trades_id = #{tradesId}
+    </select>
+    <select id="getPayTime"  resultType="java.util.Date">
+        SELECT pay_time
+        FROM b_trades
+        WHERE site_id=#{siteId}
+        AND trades_id=#{tradesId}
+    </select>
+    <select id="getMsgContent"  resultType="map">
+        SELECT id,description
+        FROM b_balance_detail
+        WHERE site_id=#{siteId}
+        AND audit_status=0
+    </select>
+    <update id="updateHomologousData" parameterType="map">
+        update b_balance_detail
+        <set>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
+            <if test="trades_id != null">
+                trades_id = #{trades_id},
+            </if>
+            <if test="date != null">
+                pay_time = #{date},
+            </if>
+        </set>
+        WHERE id=#{id}
+    </update>
+    <select id="getBalanceDetailByTradesIdAndApplyStatus"  resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM b_balance_detail
+        WHERE trades_id=#{tradesId} AND apply_status=#{applyStatus}
+    </select>
+    <select id="getLogisticsNameByTradesId"  resultType="map">
+        SELECT logistics_name,create_time
+        FROM b_logistics_order
+        WHERE order_number=#{tradesId}
+    </select>
+    <select id="boolYunfei"  resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM b_logistics_order
+        WHERE order_number=#{tradesId} AND status=5
+    </select>
+    <insert id="insertBalanceDetail2" parameterType="com.jk51.model.balance.BalanceDetail">
+        insert into b_balance_detail_bak
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="balance != null">
+                balance,
+            </if>
+            <if test="payChange != null">
+                pay_change,
+            </if>
+            <if test="applyStatus != null">
+                apply_status,
+            </if>
+            <if test="payStatus != null">
+                pay_status,
+            </if>
+            <if test="auditStatus != null">
+                audit_status,
+            </if>
+            <if test="tradesId != null">
+                trades_id,
+            </if>
+            <if test="serialNum != null">
+                serial_num,
+            </if>
+            <if test="storeId != null">
+                store_id,
+            </if>
+            <if test="storeadminId != null">
+                storeadmin_id,
+            </if>
+            <if test="payTime != null">
+                pay_time,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="balanceStatus != null">
+                balance_status,
+            </if>
+            <if test="msgStatus != null">
+                msg_status,
+            </if>
+            <if test="phone != null">
+                phone,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="balance != null">
+                #{balance,jdbcType=INTEGER},
+            </if>
+            <if test="payChange != null">
+                #{payChange,jdbcType=INTEGER},
+            </if>
+            <if test="applyStatus != null">
+                #{applyStatus,jdbcType=INTEGER},
+            </if>
+            <if test="payStatus != null">
+                #{payStatus,jdbcType=INTEGER},
+            </if>
+            <if test="auditStatus != null">
+                #{auditStatus,jdbcType=INTEGER},
+            </if>
+            <if test="tradesId != null">
+                #{tradesId,jdbcType=INTEGER},
+            </if>
+            <if test="serialNum != null">
+                #{serialNum,jdbcType=VARCHAR},
+            </if>
+            <if test="storeId != null">
+                #{storeId,jdbcType=INTEGER},
+            </if>
+            <if test="storeadminId != null">
+                #{storeadminId,jdbcType=INTEGER},
+            </if>
+            <if test="payTime != null">
+                #{payTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="description != null">
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="balanceStatus != null">
+                #{balanceStatus,jdbcType=INTEGER},
+            </if>
+            <if test="msgStatus != null">
+                #{msgStatus,jdbcType=INTEGER},
+            </if>
+            <if test="phone != null">
+                #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+        </trim>
+    </insert>
+    <select id="getYestodayDateMonth" resultType="com.jk51.model.balance.BalanceAccountMonth">
+        select sum(case when id = (select max(id) from b_balance_detail where site_id = #{siteId} and audit_status=0 and create_time between #{startTimeBefore} and #{endTimeBefore}) then balance else 0 end) as lastBalance
+        , sum(case when create_time between #{startTime} and #{endTime} and apply_status IN (0,7,8) and audit_status=0 then pay_change else 0 end) as upBalance
+        , sum(case when create_time between #{startTime} and #{endTime} and apply_status in (1,3) then pay_change else 0 end) as nowIncome
+        , sum(case when create_time between #{startTime} and #{endTime} and apply_status in (2,4,5) then pay_change else 0 end) as nowExpend
+        , sum(case when create_time between #{startTime} and #{endTime} and apply_status =1 then pay_change else 0 end) as incomeReturnBrokerage
+        , sum(case when create_time between #{startTime} and #{endTime} and apply_status =2 then pay_change else 0 end) as expendBrokerage
+        , sum(case when create_time between #{startTime} and #{endTime} and apply_status =4 then pay_change else 0 end) as expendMsgFee
+        , sum(case when create_time between #{startTime} and #{endTime} and apply_status =5 then pay_change else 0 end) as expendPostFee
+        , sum(case when create_time between #{startTime} and #{endTime} and apply_status =6 then pay_change else 0 end) as incomeReturnPostFee
+        , sum(case when id = (select max(id) from b_balance_detail where site_id = #{siteId} AND audit_status=0 and create_time between #{startTimeBefore} and #{endTime}) then balance else 0 end) as nowBalance
+        from b_balance_detail
+        where site_id = #{siteId}
+        group by site_id
+    </select>
+    <insert id="insertBalanceAccountMonthBySiteId" parameterType="com.jk51.model.balance.BalanceAccountMonth">
+        insert into b_balance_account_month
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="lastBalance != null">
+                last_balance,
+            </if>
+            <if test="nowBalance != null">
+                now_balance,
+            </if>
+            <if test="upBalance != null">
+                up_balance,
+            </if>
+            <if test="nowIncome != null">
+                now_income,
+            </if>
+            <if test="nowExpend != null">
+                now_expend,
+            </if>
+            <if test="invoiceMoney != null">
+                invoice_money,
+            </if>
+            <if test="invoiceStatus != null">
+                invoice_status,
+            </if>
+            <if test="accountTime != null">
+                account_time,
+            </if>
+            <if test="incomePresent != null">
+                income_present,
+            </if>
+            <if test="incomeReturnBrokerage != null">
+                income_return_brokerage,
+            </if>
+            <if test="incomeReturnPostFee != null">
+                income_return_post_fee,
+            </if>
+            <if test="expendBrokerage != null">
+                expend_brokerage,
+            </if>
+            <if test="expendPostFee != null">
+                expend_post_fee,
+            </if>
+            <if test="expendMsgFee != null">
+                expend_msg_fee,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="lastBalance != null">
+                #{lastBalance,jdbcType=INTEGER},
+            </if>
+            <if test="nowBalance != null">
+                #{nowBalance,jdbcType=INTEGER},
+            </if>
+            <if test="upBalance != null">
+                #{upBalance,jdbcType=INTEGER},
+            </if>
+            <if test="nowIncome != null">
+                #{nowIncome,jdbcType=INTEGER},
+            </if>
+            <if test="nowExpend != null">
+                #{nowExpend,jdbcType=INTEGER},
+            </if>
+            <if test="invoiceMoney != null">
+                #{invoiceMoney,jdbcType=INTEGER},
+            </if>
+            <if test="invoiceStatus != null">
+                #{invoiceStatus,jdbcType=INTEGER},
+            </if>
+            <if test="accountTime != null">
+                #{accountTime,jdbcType=VARCHAR},
+            </if>
+            <if test="incomePresent != null">
+                #{incomePresent,jdbcType=INTEGER},
+            </if>
+            <if test="incomeReturnBrokerage != null">
+                #{incomeReturnBrokerage,jdbcType=INTEGER},
+            </if>
+            <if test="incomeReturnPostFee != null">
+                #{incomeReturnPostFee,jdbcType=INTEGER},
+            </if>
+            <if test="expendBrokerage != null">
+                #{expendBrokerage,jdbcType=INTEGER},
+            </if>
+            <if test="expendPostFee != null">
+                #{expendPostFee,jdbcType=INTEGER},
+            </if>
+            <if test="expendMsgFee != null">
+                #{expendMsgFee,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="getBalanceAccountForSiteMoth" resultType="map" parameterType="map">
+        SELECT bba.site_id,bba.id,
+        bba.last_balance lastBalance,
+        bba.now_balance nowBalance,
+        bba.up_balance upBalance,
+
+        bba.income_present incomePresent,
+        bba.income_return_brokerage incomeReturnBrokerage,
+        bba.income_return_post_fee incomeReturnPostFee,
+        -bba.expend_brokerage expendBrokerage,
+        -bba.expend_post_fee expendPostFee,
+        -bba.expend_msg_fee expendMsgFee,
+
+        bba.invoice_money invoiceMoney,
+        bba.invoice_status invoiceStatus
+        ,bba.account_time accountTime
+        ,ybm.merchant_name
+        ,bba.invoice_num
+        ,bba.make_invoice_time
+        ,bba.express_firm
+        ,bba.express_num
+        ,bba.operator
+        ,bba.finance_mark
+        ,bba.site_mark
+        ,bba.audit_mark
+        ,bba.audit_status
+        ,bba.now_expend-bba.now_income ying_invoice
+        FROM b_balance_account_month bba
+        LEFT JOIN yb_merchant ybm ON bba.site_id=ybm.merchant_id
+        WHERE 1=1
+        <if test="site_id != null ">
+            AND bba.site_id = #{site_id}
+        </if>
+        <if test="invoice_status != null ">
+            AND bba.invoice_status = #{invoice_status}
+        </if>
+        <if test="start_time != null and end_time != null">
+            AND bba.account_time BETWEEN #{start_time} AND #{end_time}
+        </if>
+        <if test="merchant_name != null ">
+            AND ybm.merchant_name like CONCAT('%',#{merchant_name},'%')
+        </if>
+        <if test="audit_status != null ">
+            AND bba.audit_status =#{audit_status}
+        </if>
+        ORDER BY bba.create_time DESC
+    </select>
+    <update id="updateAuditStatus" parameterType="map">
+        update b_balance_account_month
+        <set>
+            audit_status = #{audit_status}
+        </set>
+        WHERE site_id=#{siteId}
+        AND id=#{id}
+    </update>
+    <select id="getAccountBillAllDayReport"  resultType="map">
+        SELECT
+        ifnull(date_format(account_time,'%Y-%m-%d'),'0000-00-00') '结算日期',
+        bba.site_id '商家id',
+        ybm.merchant_name '商家名称',
+        format(up_balance/100,2) '充值金额',
+        format(last_balance/100,2) '上期余额',
+        format(now_income/100,2) '本期收入',
+        format(-now_expend/100,2) '本期支出',
+        format(now_balance/100,2) '本期余额'
+        FROM b_balance_account bba
+        LEFT JOIN yb_merchant ybm ON bba.site_id=ybm.merchant_id
+        WHERE 1=1
+        <if test="site_id != null ">
+            AND bba.site_id= #{site_id}
+        </if>
+        <if test="merchant_name != null ">
+            AND ybm.merchant_name like CONCAT('%',#{merchant_name},'%')
+        </if>
+        <if test="start_time != null and end_time != null">
+            AND bba.account_time BETWEEN #{start_time} AND #{end_time}
+        </if>
+        <if test="invoice_status != null ">
+            AND bba.invoice_status= #{invoice_status}
+        </if>
+    </select>
+
+    <select id="getBalanceDetailOrder" resultType="map" parameterType="map">
+        SELECT t1.real_pay, t1.trades_status, t1.refund_fee,t1.post_style, date_format(t1.pay_time,'%Y-%m-%d %H:%i:%S') pay_time,date_format(t1.create_time,'%Y-%m-%d %H:%i:%S') create_time,CONCAT(b1.trades_id,'') trades_id,
+        t1.deal_finish_status,t1.stockup_status,t1.is_refund, b1.apply_status,
+        MAX(CASE WHEN b1.apply_status=1 THEN b1.pay_change ELSE 0 END) 'returnCommission',
+        MAX(CASE WHEN b1.apply_status=2 THEN b1.pay_change ELSE 0 END) 'commission',
+        MAX(CASE WHEN b1.apply_status=5 THEN b1.pay_change ELSE 0 END) 'freight',
+        MAX(CASE WHEN b1.apply_status=6 THEN b1.pay_change ELSE 0 END) 'returnFreight'
+        ,IFNULL(bs.name,'总部') store_name
+        FROM b_balance_detail b1
+        LEFT JOIN b_trades t1 ON  t1.trades_id = b1.trades_id
+        LEFT JOIN b_stores bs ON  bs.id=t1.assigned_stores AND bs.site_id=t1.site_id
+        <where>
+            <if test="true">
+                AND b1.trades_id != 0 AND b1.site_id=#{siteId} AND b1.apply_status!=0 AND b1.apply_status!=4 AND b1.apply_status!=3
+            </if>
+            <if test="orderNum != null">
+                AND b1.trades_id = #{orderNum}
+            </if>
+            <if test="startTime != null">
+                AND t1.create_time &gt;= str_to_date(concat(#{startTime},' 00:00:00'),'%Y-%m-%d %H:%i:%s')
+            </if>
+            <if test="endTime != null">
+                AND t1.create_time &lt;= str_to_date(concat(#{endTime},' 23:59:59'),'%Y-%m-%d %H:%i:%s')
+            </if>
+        </where>
+        GROUP BY b1.trades_id ORDER BY t1.create_time DESC
+
+    </select>
+
+    <select id="getBalanceAccountBySiteIdMonth" resultType="map" parameterType="map">
+        SELECT bba.site_id,bba.id,
+        format(bba.last_balance/100,2) lastBalance,
+        format(bba.now_balance/100,2) nowBalance,
+        format(bba.up_balance/100,2) upBalance,
+        format(bba.now_income/100,2) nowIncome,
+        format(bba.now_expend/100,2) nowExpend,
+        format(bba.invoice_money/100,2) invoiceMoney,
+        bba.invoice_status invoiceStatus,
+        bba.audit_status,
+        bba.audit_mark,
+        bba.account_time
+        FROM b_balance_account_month bba
+        WHERE audit_status in (1,2,3)
+        <if test="siteId != null ">
+            AND bba.site_id = #{siteId}
+        </if>
+        <if test="invoice_status != null ">
+            AND bba.invoice_status = #{invoice_status}
+        </if>
+        <if test="audit_status != null ">
+            AND bba.audit_status = #{audit_status}
+        </if>
+        <if test="start_time != null and end_time != null">
+            AND SUBSTRING(bba.account_time,1,10) BETWEEN #{start_time} AND #{end_time}
+        </if>
+        ORDER BY bba.id DESC
+    </select>
+    <update id="updateAuditStatusMonth" parameterType="map">
+        update b_balance_account_month
+        <set>
+            <if test="audit_status != null ">
+                audit_status = #{audit_status},
+            </if>
+            <if test="audit_mark != null ">
+                audit_mark = #{audit_mark},
+            </if>
+        </set>
+        WHERE site_id=#{siteId}
+        AND id=#{id}
+    </update>
+    <select id="getAccountBillMonthReport"  resultType="map" parameterType="map">
+        SELECT
+        account_time '结算周期',
+        format(last_balance/100,2) '上期余额',
+        format(up_balance/100,2) '充值金额',
+        format(now_income/100,2) '本期收入',
+        format(-now_expend/100,2) '本期支出',
+        format(now_balance/100,2) '本期余额',
+        format((now_expend-now_income)/100,2) '应开票金额',
+        format(invoice_money/100,2) '实际开票金额',
+        (CASE invoice_status
+        WHEN 0 THEN '未开票'
+        WHEN 1 THEN '已开票'
+        ELSE '' END
+        ) '开票状态',
+        (CASE audit_status
+        WHEN 0 THEN '待审核'
+        WHEN 1 THEN '重新核对'
+        WHEN 2 THEN '已确认'
+        WHEN 3 THEN '待确认'
+        WHEN 4 THEN '不通过'
+        ELSE '' END
+        ) '核对状态'
+        FROM b_balance_account_month bba
+        WHERE audit_status in (1,2,3)
+        <if test="siteId != null ">
+            AND bba.site_id = #{siteId}
+        </if>
+        <if test="invoice_status != null ">
+            AND bba.invoice_status = #{invoice_status}
+        </if>
+        <if test="audit_status != null ">
+            AND bba.audit_status = #{audit_status}
+        </if>
+        <if test="start_time != null and end_time != null">
+            AND SUBSTRING(bba.account_time,1,10) BETWEEN #{start_time} AND #{end_time}
+        </if>
+        ORDER BY bba.id DESC
+    </select>
+    <select id="getAuditStatusById"  resultType="java.lang.Integer" parameterType="map">
+        SELECT audit_status
+        FROM b_balance_account_month
+        WHERE id=#{id}
+    </select>
+
+    <select id="getYunfeiMap"  resultType="map">
+        SELECT site_id,pay_change,balance,apply_status,trades_id,id
+        FROM b_balance_detail
+        WHERE site_id=#{siteId}
+        AND audit_status=0
+        ORDER BY id ASC
+    </select>
+    <update id="updateBalancePayChange">
+        update b_balance_detail
+        <set>
+            <if test="pay_change != null">
+                pay_change = #{pay_change},
+            </if>
+            <if test="balance != null">
+                balance = #{balance},
+            </if>
+        </set>
+        WHERE id=#{id}
+    </update>
+    <select id="getTradesBrokerageReport" resultType="map" parameterType="map">
+        SELECT b.site_id '商家编号'
+        ,ybm.merchant_name '商家名称'
+        ,b.trades_id '订单号'
+        ,b.settlement_type '订单类型'
+        ,CASE b.pay_style
+        WHEN 'wx' THEN '微信'
+        WHEN 'cash' THEN'现金'
+        WHEN 'ali' THEN '支付宝'
+        WHEN 'health_insurance' THEN'医保'
+        WHEN 'unionPay' THEN '银联'
+        WHEN 'bil' THEN '快钱'
+        ELSE '---'
+        END '支付方式'
+        ,b.create_time '下单时间'
+        ,b.pay_time '付款时间'
+        ,br.refund_time '退款时间'
+        ,b.end_time '交易结束时间'
+        ,FORMAT(b.real_pay/100,2) '买家支付金额'
+        ,FORMAT(b.refund_fee/100,2) '买家退款金额'
+        ,CASE b.settlement_type
+        WHEN 0 THEN FORMAT(b.trades_split/100,2)
+        ELSE 0
+        END '直销佣金'
+        ,CASE b.settlement_type
+        WHEN 1 THEN FORMAT(b.trades_split/100,2)
+        ELSE 0
+        END '分销佣金'
+        ,CASE b.settlement_type
+        WHEN 0 THEN CONCAT('-',FORMAT(b.trades_split/100,2))
+        WHEN 1 THEN CONCAT('-',FORMAT(b.trades_split/100,2))
+        ELSE 0
+        END '应付小计'
+        ,CASE b.trades_status
+        WHEN '110' THEN '等待买家付款'
+        WHEN '120' THEN '等待卖家发货'
+        WHEN '130' THEN '等待买家确认收货'
+        WHEN '140' THEN '已签收'
+        WHEN '150' THEN '交易成功'
+        WHEN '160' THEN '用户未付款主动关闭'
+        WHEN '170' THEN '超时关闭'
+        WHEN '180' THEN '商家关闭订单'
+        WHEN '200' THEN '待自提'
+        WHEN '210' THEN '已取货'
+        WHEN '900' THEN '已退款'
+        WHEN '220' THEN '用户确认收货'
+        WHEN '230' THEN '门店确认收货'
+        WHEN '800' THEN '系统确认收货'
+        WHEN '240' THEN '已取消'
+        ELSE '---'
+        END '订单状态'
+        ,CASE b.deal_finish_status
+        WHEN '0' THEN '交易进行中'
+        WHEN '1' THEN '交易结束'
+        ELSE '---'
+        END '交易结束状态'
+        ,CASE bbd.clearing_status
+        WHEN '0' THEN '未结算'
+        WHEN '1' THEN '已结算'
+        ELSE '---' END '出账状态'
+        FROM b_trades b
+        LEFT JOIN b_balance_detail bbd ON b.site_id=bbd.site_id AND b.trades_id=bbd.trades_id AND audit_status=0
+        LEFT JOIN yb_merchant ybm ON b.site_id=ybm.merchant_id
+        LEFT JOIN b_refund br ON b.trades_id=br.trade_id
+
+        WHERE b.is_service_order=1
+        <if test="site_id != null ">
+            AND b.site_id = #{site_id}
+        </if>
+        <if test="merchant_name != null ">
+            AND ybm.merchant_name like CONCAT('%',#{merchant_name},'%')
+        </if>
+        <if test="pay_style != null ">
+            AND b.pay_style =#{pay_style}
+        </if>
+        <if test="accountStatus != null ">
+            AND bbd.clearing_status =#{accountStatus}
+        </if>
+        <if test="finance_no != null ">
+            AND bbd.bill_num =#{finance_no}
+        </if>
+        <if test="trades_id != null ">
+            AND b.trades_id =#{trades_id}
+        </if>
+        <if test="pay_number != null ">
+            AND bbd.serial_num =#{pay_number}
+        </if>
+        <if test="start_time != null and end_time != null">
+            AND b.end_time BETWEEN #{start_time} AND #{end_time}
+        </if>
+        <if test="pay_start_time != null and pay_end_time != null">
+            AND b.pay_time BETWEEN #{pay_start_time} AND #{pay_end_time}
+        </if>
+        ORDER BY b.create_time DESC
+    </select>
+    <insert id="insertBalnceLog" parameterType="map">
+        insert into b_balance_detail_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="applyStatus != null">
+                apply_status,
+            </if>
+            <if test="payChangePay != null">
+                pay_change,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="tradesId != null">
+                trades_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId},
+            </if>
+            <if test="applyStatus != null">
+                #{applyStatus},
+            </if>
+            <if test="payChangePay != null">
+                #{payChangePay},
+            </if>
+            <if test="description != null">
+                #{description},
+            </if>
+            <if test="tradesId != null">
+                #{tradesId},
+            </if>
+        </trim>
+    </insert>
+    <select id="getFiveMap" resultType="map">
+        SELECT description,balance
+        FROM b_balance_detail
+        WHERE site_id=#{siteId}
+        AND apply_status=4
+        AND msg_status in(100,110,120,130,140,300,500,600,800,810)
+        ORDER BY create_time DESC
+        LIMIT 5
+    </select>
+    <select id="getIODetailReport"  resultType="map">
+        SELECT bbd.site_id '商家编号'
+        ,ybm.merchant_name '商家名称'
+        ,bbd.serial_num '流水号'
+        ,case apply_status
+        when 0 then '线下充值'
+        when 1 then '退还佣金'
+        when 2 then '交易佣金'
+        when 4 then '短信费用'
+        when 5 then '运费'
+        when 6 then '退还运费'
+        else ''
+        end '业务名称'
+        ,case balance_status
+        when 0 then '收入'
+        when 1 then '支出'
+        else ''
+        end '收/支'
+        ,CASE WHEN balance_status=0 THEN format(bbd.pay_change/100,2) ELSE -format(bbd.pay_change/100,2) END '金额(元)'
+        ,format(bbd.balance/100,2) '余额(元)'
+        ,date_format(bbd.create_time,'%Y-%m-%d %H:%i:%S') '交易时间'
+        /*,bbd.create_time '交易时间'*/
+        ,CASE bbd.trades_id WHEN 0 THEN bbd.phone ELSE bbd.trades_id END '业务单号'
+        ,case clearing_status
+        when 0 then '未出账'
+        when 1 then '已出账'
+        else ''
+        end '结算状态'
+        FROM b_balance_detail bbd
+        LEFT JOIN yb_merchant ybm ON bbd.site_id=ybm.merchant_id
+        WHERE bbd.audit_status = 0
+        <if test="site_id != null ">
+            AND bbd.site_id= #{site_id}
+        </if>
+        <if test="merchant_name != null ">
+            AND ybm.merchant_name like CONCAT('%',#{merchant_name},'%')
+        </if>
+        <if test="balance_status != null">
+            AND balance_status = #{balance_status}
+        </if>
+        <if test="start_time != null and end_time != null">
+            AND bbd.create_time BETWEEN #{start_time} AND #{end_time}
+        </if>
+        <if test="clearing_status != null ">
+            AND clearing_status = #{clearing_status}
+        </if>
+        <if test="apply_status != null ">
+            AND apply_status = #{apply_status}
+        </if>
+        ORDER BY bbd.id DESC
+    </select>
+    <select id="getDingshiLou" resultType="map">
+        SELECT round(b.real_pay*0.01,0) realPay
+        ,bbd.pay_change
+        ,b.create_time
+        ,b.trades_id
+        ,bbd.trades_id
+        ,bbd.apply_status
+        ,b.id
+        ,b.site_id
+        FROM b_trades b
+        LEFT JOIN b_balance_detail bbd ON bbd.site_id=b.site_id AND b.trades_id=bbd.trades_id AND bbd.apply_status=2 AND audit_status=0
+        WHERE b.is_payment=1
+        AND b.is_service_order=1
+        AND b.pay_time BETWEEN #{startTime} AND #{endTime}
+        AND b.trades_source NOT IN (130,140)
+        AND bbd.trades_id IS NULL
+        AND b.site_id NOT IN (100205,100235,100224)
+        AND b.is_refund != 120
+        HAVING realPay > 0
+        ORDER BY b.pay_time desc
+    </select>
+    <select id="getId" resultType="java.lang.Integer">
+        SELECT id FROM b_balance
+        WHERE site_id=#{siteId}
+    </select>
+    <select id="getBalanceBySiteId2" resultType="com.jk51.model.balance.Balance">
+        SELECT
+        bb.site_id siteId,
+        bb.id,
+        bb.balance,
+        bb.balance_warning balanceWarning,
+        bb.credit,
+        bb.is_valid isValid,
+        bb.msg_fee msgFee,
+        bb.msg_num msgNum,
+        bb.msg_total_num msgTotalNum,
+        bb.duty_phone dutyPhone,
+        bb.record_time recordTime,
+        msg_switch msgSwitch,
+        ybm.legal_mobile sitePhone
+        FROM b_balance bb
+        LEFT JOIN yb_merchant ybm ON bb.site_id=ybm.merchant_id
+        WHERE bb.id=#{id}
+        FOR UPDATE
+    </select>
+    <select id="getBillMap" resultType="map">
+        SELECT
+        last_balance
+        ,now_balance
+        ,up_balance
+        ,now_expend-now_income now_expend
+        ,site_mark
+        ,expend_brokerage
+        ,income_return_brokerage
+        ,expend_post_fee
+        ,income_return_post_fee
+        ,expend_msg_fee
+        ,account_time
+        ,CASE WHEN invoice_status=1 THEN '已开票' ELSE '未开票' END invoice_status
+        ,create_time
+        FROM b_balance_account_month
+        WHERE id=#{id} AND site_id=#{siteId}
+    </select>
+    <select id="getAccountMap" resultType="map">
+        SELECT
+        IFNULL(seller_name,'无') seller_name
+        ,IFNULL(beneficiary_party,'无') beneficiary_party
+        ,IFNULL(bank_name,'无') bank_name
+        ,IFNULL(bank_id,'无') bank_id
+        ,IFNULL(taxpayer_number,'无') taxpayer_number
+        ,IFNULL(shop_address,'无') shop_address
+        ,IFNULL(service_phone,'无') service_phone
+        FROM yb_seller_beneficiary
+        WHERE seller_id=#{siteId}
+    </select>
+    <update id="updateTradesStatusBySuccess">
+        update b_trades SET settlement_status=250 WHERE trades_id=#{tradesId}
+    </update>
+    <select id="getBalanceDetailBySerialnum" resultType="com.jk51.model.balance.BalanceDetail">
+        SELECT site_id siteId,id,pay_change payChange,balance,audit_status auditStatus,serial_num serialNum FROM b_balance_detail
+        WHERE site_id=#{siteId} and serial_num=#{serialNum}
+    </select>
+
+    <select id="getTopupRecord" resultType="Map">
+        SELECT site_id siteId,id,pay_change total,apply_status type, create_time createTime FROM b_balance_detail
+        WHERE site_id=#{siteId} and audit_status=0 AND apply_status in (0,7,8) order by create_time desc
+    </select>
+
+    <update id="updBalanceDetail" parameterType="com.jk51.model.balance.BalanceDetail">
+        UPDATE b_balance_detail
+        <set>
+            <if test="auditStatus != null">
+                audit_status = #{auditStatus},
+            </if>
+            <if test="balance != null">
+                balance = #{balance},
+            </if>
+            <if test="thirdSerialNum != null">
+                third_serial_num = #{thirdSerialNum},
+            </if>
+        </set>
+        where site_id=#{siteId} and serial_num=#{serialNum}
+    </update>
+</mapper>

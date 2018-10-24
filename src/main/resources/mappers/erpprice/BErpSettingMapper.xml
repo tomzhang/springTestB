@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.erpprice.mapper.BErpSettingMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.erpprice.BErpSetting">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="type" jdbcType="TINYINT" property="type"/>
+        <result column="is_joint" jdbcType="TINYINT" property="isJoint"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Update_By_Example_Where_Clause">
+        <where>
+            <foreach collection="example.oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Base_Column_List">
+    id, site_id, type, is_joint, create_time, update_time
+  </sql>
+    <select id="selectByExample" parameterType="com.jk51.model.erpprice.BErpSettingExample" resultMap="BaseResultMap">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List"/>
+        from b_erp_setting
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+        <if test="limit != null">
+            <if test="offset != null">
+                limit ${offset}, ${limit}
+            </if>
+            <if test="offset == null">
+                limit ${limit}
+            </if>
+        </if>
+    </select>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from b_erp_setting
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from b_erp_setting
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <delete id="deleteByExample" parameterType="com.jk51.model.erpprice.BErpSettingExample">
+        delete from b_erp_setting
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </delete>
+    <insert id="insert" parameterType="com.jk51.model.erpprice.BErpSetting">
+    insert into b_erp_setting (id, site_id, type,
+      is_joint, create_time, update_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{siteId,jdbcType=INTEGER}, #{type,jdbcType=TINYINT},
+      #{isJoint,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.jk51.model.erpprice.BErpSetting">
+        insert into b_erp_setting
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="isJoint != null">
+                is_joint,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=TINYINT},
+            </if>
+            <if test="isJoint != null">
+                #{isJoint,jdbcType=TINYINT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <select id="countByExample" parameterType="com.jk51.model.erpprice.BErpSettingExample" resultType="java.lang.Long">
+        select count(*) from b_erp_setting
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
+        update b_erp_setting
+        <set>
+            <if test="record.id != null">
+                id = #{record.id,jdbcType=INTEGER},
+            </if>
+            <if test="record.siteId != null">
+                site_id = #{record.siteId,jdbcType=INTEGER},
+            </if>
+            <if test="record.type != null">
+                type = #{record.type,jdbcType=TINYINT},
+            </if>
+            <if test="record.isJoint != null">
+                is_joint = #{record.isJoint,jdbcType=TINYINT},
+            </if>
+            <if test="record.createTime != null">
+                create_time = #{record.createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="record.updateTime != null">
+                update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByExample" parameterType="map">
+        update b_erp_setting
+        set id = #{record.id,jdbcType=INTEGER},
+        site_id = #{record.siteId,jdbcType=INTEGER},
+        type = #{record.type,jdbcType=TINYINT},
+        is_joint = #{record.isJoint,jdbcType=TINYINT},
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.erpprice.BErpSetting">
+        update b_erp_setting
+        <set>
+            <if test="siteId != null">
+                site_id = #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=TINYINT},
+            </if>
+            <if test="isJoint != null">
+                is_joint = #{isJoint,jdbcType=TINYINT},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.jk51.model.erpprice.BErpSetting">
+    update b_erp_setting
+    set site_id = #{siteId,jdbcType=INTEGER},
+      type = #{type,jdbcType=TINYINT},
+      is_joint = #{isJoint,jdbcType=TINYINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    <resultMap id="ErpStoreResult" type="com.jk51.modules.erpprice.domain.pojo.ErpStorePO">
+        <id column="type" javaType="Byte" jdbcType="TINYINT" property="type"/>
+        <id column="site_id" javaType="integer" jdbcType="INTEGER" property="siteId"/>
+        <id column="is_joint" javaType="Byte" jdbcType="TINYINT" property="isJoint"/>
+        <collection ofType="com.jk51.modules.erpprice.domain.pojo.ErpSettingPO" property="erpSettings">
+            <result column="store_id" javaType="integer" jdbcType="INTEGER" property="storeId"/>
+            <result column="area_code" javaType="integer" jdbcType="INTEGER" property="areaCode"/>
+            <result column="priority" javaType="integer" jdbcType="INTEGER" property="priority"/>
+            <result column="stores_status" javaType="byte" jdbcType="TINYINT" property="storesStatus"/>
+        </collection>
+    </resultMap>
+    <select id="selectErpStore" resultMap="ErpStoreResult">
+    SELECT
+      t1.site_id, t1.type, t1.is_joint ,t2.store_id, t2.area_code, t2.priority, t3.stores_status
+    FROM
+    b_erp_setting AS t1
+    LEFT JOIN erp_price_setting AS t2 ON (
+      t1.site_id = t2.site_id
+      AND t1.type = t2.type
+      AND t2.status = 10
+    )
+    LEFT JOIN b_stores AS t3 ON (
+      t2.store_id = t3.id
+      AND t2.site_id = t3.site_id
+    )
+    WHERE
+      t1.site_id = #{siteId}
+    ORDER BY t2.area_code,t2.priority DESC
+  </select>
+    <select id="getErpStoresNumbers" resultType="java.lang.String">
+        SELECT
+         GROUP_CONCAT(t3.stores_number)
+        FROM
+        b_erp_setting AS t1
+        LEFT JOIN erp_price_setting AS t2 ON (
+        t1.site_id = t2.site_id
+        AND t1.type = t2.type
+        AND t2.status = 10
+        )
+        LEFT JOIN b_stores AS t3 ON (
+        t2.store_id = t3.id
+        AND t2.site_id = t3.site_id
+        )
+        WHERE
+        t1.site_id = #{siteId}
+        ORDER BY t2.area_code,t2.priority DESC
+    </select>
+    <insert id="insertOrUpdate" parameterType="com.jk51.model.erpprice.BErpSetting">
+    insert into b_erp_setting (site_id,type,is_joint) value (#{siteId,jdbcType=INTEGER},#{type,jdbcType=TINYINT},#{isJoint,jdbcType=TINYINT})
+    ON DUPLICATE KEY UPDATE type=#{type,jdbcType=TINYINT},is_joint=#{isJoint,jdbcType=TINYINT}
+  </insert>
+    <select id="selectBySiteId" resultType="com.jk51.model.erpprice.BErpSetting">
+        select
+        <include refid="Base_Column_List"/>
+        from b_erp_setting
+        where site_id = #{siteId,jdbcType=INTEGER}
+    </select>
+    <update id="updateType">
+        UPDATE b_erp_setting set type=#{type} WHERE site_id=#{siteId};
+    </update>
+</mapper>

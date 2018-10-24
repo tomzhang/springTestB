@@ -1,0 +1,2300 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.trades.mapper.TradesMapper">
+    <resultMap id="tradesMap" type="com.jk51.model.order.Trades">
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="trades_id" property="tradesId"/>
+        <result column="seller_id" property="sellerId"/>
+        <result column="buyer_id" property="buyerId"/>
+        <result column="seller_nick" property="sellerNick"/>
+        <result column="buyer_nick" property="buyerNick"/>
+        <result column="goods_id" property="goodsId"/>
+        <result column="pay_time" property="payTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="consign_time" property="consignTime"/>
+        <result column="receiver_phone" property="receiverPhone"/>
+        <result column="recevier_mobile" property="recevierMobile"/>
+        <result column="recevier_name" property="recevierName"/>
+        <result column="receiver_city" property="receiverCity"/>
+        <result column="receiver_address" property="receiverAddress"/>
+        <result column="receiver_zip" property="receiverZip"/>
+        <result column="seller_pay_no" property="sellerPayNo"/>
+        <result column="seller_phone" property="sellerPhone"/>
+        <result column="seller_mobile" property="sellerMobile"/>
+        <result column="seller_name" property="sellerName"/>
+        <result column="trades_status" property="tradesStatus"/>
+        <result column="is_refund" property="isRefund"/>
+        <result column="closed_resion" property="closedResion"/>
+        <result column="total_fee" property="totalFee"/>
+        <result column="post_fee" property="postFee"/>
+        <result column="real_pay" property="realPay"/>
+        <result column="trades_split" property="tradesSplit"/>
+        <result column="plat_split" property="platSplit"/>
+        <result column="O2O_freight" property="O2OFreight"/>
+        <result column="post_style" property="postStyle"/>
+        <result column="delivery_name" property="deliveryName"/>
+        <result column="post_id" property="postId"/>
+        <result column="post_name" property="postName"/>
+        <result column="post_number" property="postNumber"/>
+        <result column="buyer_message" property="buyerMessage"/>
+        <result column="seller_memo" property="sellerMemo"/>
+        <result column="buyer_flag" property="buyerFlag"/>
+        <result column="seller_flag" property="sellerFlag"/>
+        <result column="delv_time" property="delvTime"/>
+        <result column="delv_desc" property="delvDesc"/>
+        <result column="confirm_goods_time" property="confirmGoodsTime"/>
+        <result column="buyer_pay_no" property="buyerPayNo"/>
+        <result column="pay_style" property="payStyle"/>
+        <result column="pay_number" property="payNumber"/>
+        <result column="trades_source" property="tradesSource"/>
+        <result column="trades_invoice" property="tradesInvoice"/>
+        <result column="invoice_title" property="invoiceTitle"/>
+        <result column="trades_store" property="tradesStore"/>
+        <result column="self_taken_store" property="selfTakenStore"/>
+        <result column="self_taken_code" property="selfTakenCode"/>
+        <result column="self_taken_code_start" property="selfTakenCodeStart"/>
+        <result column="self_taken_code_expires" property="selfTakenCodeExpires"/>
+        <result column="self_taken_code_checktime" property="selfTakenCodeChecktime"/>
+        <result column="assigned_stores" property="assignedStores"/>
+        <result column="stockup_status" property="stockupStatus"/>
+        <result column="shipping_status" property="shippingStatus"/>
+        <result column="prescription_orders" property="prescriptionOrders"/>
+        <result column="store_user_id" property="storeUserId"/>
+        <result column="store_shipping_clerk_id" property="storeShippingClerkId"/>
+        <result column="recommend_user_id" property="recommendUserId"/>
+        <result column="cashier_id" property="cashierId"/>
+        <result column="stockup_user_id" property="stockupUserId"/>
+        <result column="user_paying" property="userPaying"/>
+        <result column="trades_del" property="tradesDel"/>
+        <result column="trades_rank" property="tradesRank"/>
+        <result column="trades_rank_time" property="tradesRankTime"/>
+        <result column="settlement_status" property="settlementStatus"/>
+        <result column="settlement_statusA" property="settlementStatusA"/>
+        <result column="settlement_final_time" property="settlementFinalTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="settlement_type" property="settlementType"/>
+        <result column="create_order_assigned_stores" property="createOrderAssignedStores"/>
+        <result column="is_payment" property="isPayment"/>
+        <result column="account_checking_status" property="accountCheckingStatus"/>
+        <result column="integral_used" property="integralUsed"/>
+        <result column="deal_finish_status" property="dealFinishStatus"/>
+        <result column="servce_type" property="servceTpye"/>
+        <result column="use_detail_id" property="useDetailId"/>
+        <result column="use_count" property="useCount"/>
+        <result column="amount" property="amount"/>
+        <result column="serve_status" property="serveStatus"/>
+        <result column="schedule_person_id" property="schedulePersonId"/>
+        <result column="diagnose_status" property="diagnoseStatus"/>
+        <result column="disease_info" property="diseaseInfo"/>
+        <result column="start_time" property="templateStartTime"/>
+        <result column="t_end_time" property="templateEndTime"/>
+        <result column="goods_title" property="goodsTitle"/>
+        <result column="distributor_id" jdbcType="INTEGER" property="distributorId"/>
+        <result column="pay_day" property="payDay"/>
+        <result column="pay_day" property="payDay"/>
+        <result column="finance_no" property="financeNo"/>
+        <result column="refund_fee" property="refundFee"/>
+        <result column="is_up_price" property="isUpPrice"/>
+        <result column="clerk_invitation_code" property="clerkInvitationCode"/>
+        <result column="freight_commission" property="freightCommission"/>
+        <result column="is_service_order" property="isServiceOrder"/>
+        <result column="trade_type_pay_line" property="tradeTypePayLine"/>
+        <result column="employee_number" property="employee_number"/>
+    </resultMap>
+    <resultMap id="storesMap" type="com.jk51.model.order.Store">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <id column="site_id" property="siteId" jdbcType="INTEGER"/>
+        <result column="stores_number" property="storesNumber" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="is_qjd" property="isQjd" jdbcType="BIT"/>
+        <result column="type" property="type" jdbcType="BIT"/>
+        <result column="city_id" property="cityId" jdbcType="INTEGER"/>
+        <result column="region_id" property="regionId" jdbcType="INTEGER"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="baidu_lat" property="baiduLat" jdbcType="VARCHAR"/>
+        <result column="baidu_lng" property="baiduLng" jdbcType="VARCHAR"/>
+        <result column="gaode_lng" property="gaodeLng" jdbcType="VARCHAR"/>
+        <result column="gaode_lat" property="gaodeLat" jdbcType="VARCHAR"/>
+        <result column="map_flag" property="mapFlag" jdbcType="BIT"/>
+        <result column="tel" property="tel" jdbcType="VARCHAR"/>
+        <result column="business_time" property="businessTime" jdbcType="VARCHAR"/>
+        <result column="feature" property="feature" jdbcType="VARCHAR"/>
+        <result column="summary" property="summary" jdbcType="VARCHAR"/>
+        <result column="qr_code_img" property="qrCodeImg" jdbcType="VARCHAR"/>
+        <result column="qr_code_type" property="qrCodeType" jdbcType="BIT"/>
+        <result column="stores_status" property="storesStatus" jdbcType="BIT"/>
+        <result column="is_del" property="isDel" jdbcType="BIT"/>
+        <result column="province" property="province" jdbcType="VARCHAR"/>
+        <result column="city" property="city" jdbcType="VARCHAR"/>
+        <result column="service_support" property="serviceSupport" jdbcType="VARCHAR"/>
+        <result column="self_token_time" property="selfTokenTime" jdbcType="VARCHAR"/>
+        <result column="delivery_time" property="deliveryTime" jdbcType="VARCHAR"/>
+        <result column="remind_mobile" property="remindMobile" jdbcType="VARCHAR"/>
+        <result column="country" property="country" jdbcType="VARCHAR"/>
+        <result column="own_pricing_type" property="ownPricingType" jdbcType="TINYINT"/>
+        <result column="own_promotion_type" property="ownPromotionType" jdbcType="TINYINT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="is_up_price" property="isUpPrice" jdbcType="TINYINT"/>
+    </resultMap>
+    <select id="getPayMoney" resultType="int" parameterType="int">
+        SELECT coalesce (SUM(real_pay),0) FROM b_trades WHERE buyer_id=#{buyer_id} AND  distributor_id > 0 AND trades_status=150 limit 1
+    </select>
+
+    <select id="getTradesByTradesId" resultMap="tradesMap" useCache="false">
+        select * from b_trades where trades_id=#{trades_id}
+    </select>
+
+
+    <select id="getClosestTrades" parameterType="com.jk51.model.clerkvisit.BClerkVisit" resultMap="tradesMap"
+            useCache="false">
+        SELECT
+		bt.*
+		FROM
+		b_trades bt
+		LEFT JOIN b_orders bo ON bo.trades_id = bt.trades_id
+		AND bo.site_id = bt.site_id
+		WHERE
+		bo.goods_id = #{goodsId}
+		AND bo.site_id = #{siteId}
+		AND bt.buyer_id=#{buyerId}
+		AND bt.trades_status in (150,210,220,230,800,900)
+		AND bt.post_style in(150,160,170)
+		ORDER BY bt.pay_time DESC
+		LIMIT 1
+    </select>
+
+    <select id="getTradesByPostStyle" resultMap="tradesMap" useCache="false">
+        select * from b_trades where trades_id=#{0} and post_style=#{1}
+    </select>
+
+    <!--用户未付款 取消订单-->
+    <update id="updateUseToCLoseTrades" parameterType="com.jk51.model.order.Trades">
+        update b_trades set end_time=CURRENT_TIMESTAMP() ,closed_resion=#{closedResion} , trades_status=#{tradesStatus} ,update_time=CURRENT_TIMESTAMP(),deal_finish_status=1 where trades_id=#{tradesId}
+    </update>
+
+    <!--更新直购状态-->
+    <update id="updateToDirectPurchaseStatus" parameterType="com.jk51.model.order.Trades">
+
+        update b_trades set pay_time=CURRENT_TIMESTAMP(), confirm_goods_time=CURRENT_TIMESTAMP() ,trades_status=#{tradesStatus} ,shipping_status=#{shippingStatus},is_payment=#{isPayment},settlement_status=#{settlementStatus},update_time=CURRENT_TIMESTAMP(),pay_number=#{payNumber},pay_style=#{payStyle},cashier_id=#{cashierId},plat_split=#{platSplit},trade_type_pay_line=#{tradeTypePayLine},real_pay=#{realPay} where trades_id=#{tradesId}
+    </update>
+    <!--更新退款状态 2018/05/14 地主：退款不收商家的配送费-->
+    <update id="updateRefundStatus">
+        update b_trades set end_time=CURRENT_TIMESTAMP() , trades_status=#{tradesStatus},is_refund=#{isRefund} , settlement_status=#{settlementStatus} , update_time=CURRENT_TIMESTAMP(),deal_finish_status=1,refund_fee=#{refundFee},O2O_freight= 0 where trades_id=#{tradesId}
+    </update>
+    <update id="updateRefuseRefundStatus">
+
+        update b_trades set is_refund=#{1} where trades_id=#{0}
+    </update>
+    <!--送货上门 更新到待备货 将资金结算状态改为待结算-->
+    <update id="updateStatusToStock" parameterType="com.jk51.model.order.Trades">
+        update b_trades set pay_time=CURRENT_TIMESTAMP() , trades_status=#{tradesStatus} ,stockup_status=#{stockupStatus} ,shipping_status=#{shippingStatus} ,settlement_status=#{settlementStatus} , is_payment=#{isPayment} ,update_time=CURRENT_TIMESTAMP(),pay_number=#{payNumber},pay_style=#{payStyle},cashier_id=#{cashierId},trade_type_pay_line=#{tradeTypePayLine}  where trades_id=#{tradesId}
+    </update>
+    <!--送货上门 更新到已备货-->
+    <update id="updateStatusAlreadyStock" parameterType="com.jk51.model.order.Trades">
+        update b_trades set trades_status=#{tradesStatus}, stockup_status=#{stockupStatus},update_time=CURRENT_TIMESTAMP(),real_pay=#{realPay}  where trades_id=#{tradesId}
+    </update>
+    <!--送货上门 更新已发货状态-->
+    <update id="updateStatusToSend" parameterType="com.jk51.model.order.Trades">
+        update b_trades set trades_status=#{tradesStatus} , consign_time=CURRENT_TIMESTAMP(), shipping_status=#{shippingStatus} , update_time=CURRENT_TIMESTAMP()  where trades_id=#{tradesId}
+    </update>
+
+    <!--送货上门 门店或用户确认收货-->
+    <update id="updateConfirmStatus" parameterType="com.jk51.model.order.Trades">
+        update b_trades set trades_status=#{tradesStatus} , confirm_goods_time=CURRENT_TIMESTAMP(), shipping_status=#{shippingStatus}, update_time=CURRENT_TIMESTAMP()  where trades_id=#{tradesId}
+    </update>
+    <!--门店自提 更新为已付款 待备货状态 将资金结算状态改为待结算-->
+    <update id="updateGetToStoreForPayStatus" parameterType="com.jk51.model.order.Trades">
+        update b_trades set pay_time=CURRENT_TIMESTAMP(), trades_status=#{tradesStatus},self_taken_code=#{selfTakenCode}
+        ,is_payment=#{isPayment},
+        settlement_status=#{settlementStatus}
+        ,update_time=CURRENT_TIMESTAMP(),pay_number=#{payNumber},pay_style=#{payStyle},cashier_id=#{cashierId},trade_type_pay_line=#{tradeTypePayLine},real_pay=#{realPay},
+        <choose>
+            <when test="selfTakenCodeStart == null">
+                self_taken_code_start=CURRENT_TIMESTAMP() ,
+            </when>
+            <otherwise>
+                self_taken_code_start=#{selfTakenCodeStart},
+            </otherwise>
+        </choose>
+        <choose>
+            <when test="selfTakenCodeExpires == null">
+                self_taken_code_expires=date_add(CURRENT_TIMESTAMP(), interval 30 day) ,
+            </when>
+            <otherwise>
+                self_taken_code_expires=#{selfTakenCodeExpires},
+            </otherwise>
+        </choose>
+        self_taken_code=#{selfTakenCode}
+        where trades_id=#{tradesId}
+    </update>
+    <!--门店自提 更新为已备货 待自提 -->
+    <update id="updateWaitExtract" parameterType="com.jk51.model.order.Trades">
+        update b_trades
+        <set>
+            trades_status=#{tradesStatus} ,stockup_status=#{stockupStatus},
+            <choose>
+                <when test="selfTakenCodeStart == null">
+                    self_taken_code_start=CURRENT_TIMESTAMP() ,
+                </when>
+                <otherwise>
+                    self_taken_code_start=#{selfTakenCodeStart},
+                </otherwise>
+            </choose>
+            <choose>
+                <when test="selfTakenCodeExpires == null">
+                    self_taken_code_expires=date_add(CURRENT_TIMESTAMP(), interval 7 day) ,
+                </when>
+                <otherwise>
+                    self_taken_code_expires=#{selfTakenCodeExpires},
+                </otherwise>
+            </choose>
+            self_taken_code=#{selfTakenCode},
+            update_time=CURRENT_TIMESTAMP()
+        </set>
+
+        where trades_id=#{tradesId}
+    </update>
+    <!--门店自提  更新为已自提-->
+    <update id="updateAlreadyExtract" parameterType="com.jk51.model.order.Trades">
+        update b_trades set trades_status=#{tradesStatus} , confirm_goods_time=CURRENT_TIMESTAMP() , self_taken_code_checktime=CURRENT_TIMESTAMP(),shipping_status=#{shippingStatus} ,update_time=CURRENT_TIMESTAMP(), stockup_status=120  where trades_id=#{tradesId}
+    </update>
+
+    <!--申请退款时  更新is_refund-->
+    <update id="updateIsRefund">
+        update b_trades set is_refund=#{isRefund},update_time=CURRENT_TIMESTAMP()  where trades_id=#{tradesId}
+    </update>
+    <!--验证提货码是否过期-->
+    <select id="selectBarCode" resultMap="tradesMap" useCache="false">
+        select * from b_trades where site_id=#{0} and self_taken_code=#{1} and self_taken_code_expires <![CDATA[ >= ]]> CURRENT_TIMESTAMP() and trades_status IN (120,200) and post_style=160
+    </select>
+
+    <!--验证提货码是否生成-->
+    <select id="selectBarCode2" resultMap="tradesMap" useCache="false">
+        select * from b_trades where site_id=#{0} and
+        self_taken_code=#{1} <!-- and self_taken_code_expires <![CDATA[ >= ]]> CURRENT_TIMESTAMP() --> and trades_status
+        IN (120,200) and post_style=160
+    </select>
+
+    <!--查询超时未付款的订单-->
+    <select id="selectTimeoutBySystemCanel" resultType="int" parameterType="int" useCache="false">
+        select count(1) from b_trades where CURRENT_TIMESTAMP()>date_add(create_time, interval #{systemCanel} day) and trades_status=110
+    </select>
+    <!--超时未付款 系统取消-->
+    <!--<update id="updateTimeoutBySystemCanel" parameterType="map">
+        update b_trades set end_time=CURRENT_TIMESTAMP(),trades_status=#{tradesStatus} , update_time=CURRENT_TIMESTAMP(),deal_finish_status=1  where CURRENT_TIMESTAMP()>date_add(create_time, interval #{systemCanel} day) and trades_status=110 and create_time >= date_add(CURRENT_TIMESTAMP(), interval #{tradesEnd} day) and site_id=#{siteId}
+    </update>-->
+    <update id="updateTimeoutBySystemCanel" parameterType="map">
+        update b_trades set end_time=CURRENT_TIMESTAMP(),trades_status=170,update_time=CURRENT_TIMESTAMP(),deal_finish_status=1
+        where  site_id=#{siteId} AND trades_status=110 AND CURRENT_TIMESTAMP()<![CDATA[ > ]]>date_add(create_time, interval #{systemCanel} day)
+    </update>
+
+    <!--查询 超时 门店自提确认收货 　订单-->
+    <select id="selectTimeoutBySystemConfirm" resultType="int" parameterType="int" useCache="false">
+        select count(1) from b_trades where CURRENT_TIMESTAMP()>date_add(update_time, interval #{systemConfirm} day)and trades_status=130 and post_style=#{postStyle}
+    </select>
+    <!-- 门店自提　系统确认收货-->
+    <update id="updateTimeoutBySystemConfirm" parameterType="map">
+        update b_trades set confirm_goods_time=CURRENT_TIMESTAMP(), trades_status=#{tradesStatus},settlement_status=#{settlementStatus}, update_time=CURRENT_TIMESTAMP()  where CURRENT_TIMESTAMP()>date_add(update_time, interval #{systemConfirm} day) and trades_status=130 and post_style=#{postStyle} and create_time >= date_add(CURRENT_TIMESTAMP(), interval -15 day) and site_id=#{siteId}
+    </update>
+    <!--查询 超时 送货上门确认收货 　订单-->
+    <select id="selectTimeoutBySystemDelivery" resultType="int" parameterType="int" useCache="false">
+        select count(1) from b_trades where CURRENT_TIMESTAMP()>date_add(consign_time, interval #{systemDelivery} day)and trades_status=130 and post_style=#{postStyle}
+    </select>
+    <!-- 送货上门　系统确认收货 -->
+    <update id="updateTimeoutBySystemDelivery" parameterType="map">
+        update b_trades set confirm_goods_time=CURRENT_TIMESTAMP(),
+        trades_status=#{tradesStatus},settlement_status=#{settlementStatus},shipping_status=9999,
+        update_time=CURRENT_TIMESTAMP() where 1 = 1
+        <if test="tradesIds != null">
+            and trades_id in
+            <foreach collection="tradesIds" item="tradesId" separator="," open="(" close=")">
+                #{tradesId}
+            </foreach>
+        </if>
+
+    </update>
+    <select id="queryTradesEndList" resultMap="tradesMap">
+       SELECT * FROM b_trades
+        where site_id=#{siteId} AND trades_status IN (210,220,230,800,240) AND confirm_goods_time <![CDATA[ < ]]> DATE_SUB(CURRENT_TIMESTAMP(),INTERVAL #{metaKeyFinish} DAY)
+        AND deal_finish_status = 1 AND is_refund<![CDATA[ <> ]]>100
+        AND distributor_id <![CDATA[ > ]]> 0
+    </select>
+    <!--<update id="tradesEnd" parameterType="map">
+        update b_trades set end_time=CURRENT_TIMESTAMP(),settlement_status=#{settlementStatus},
+        update_time=CURRENT_TIMESTAMP(),deal_finish_status=1
+        where CURRENT_TIMESTAMP()>date_add(update_time, interval #{metaKeyFinish} day)
+        and trades_status in(210,220,230,240,800) and create_time >= date_add(CURRENT_TIMESTAMP(), interval #{tradesEnd} day)
+        and site_id=#{siteId}
+        and settlement_status &lt;&gt;250
+    </update>-->
+    <update id="tradesEnd" parameterType="map">
+        update b_trades set end_time=CURRENT_TIMESTAMP(),settlement_status=#{settlementStatus},update_time=CURRENT_TIMESTAMP(),deal_finish_status=1
+        where site_id=#{siteId} AND trades_status IN (210,220,230,800,240) AND CURRENT_TIMESTAMP()<![CDATA[ > ]]>date_add(confirm_goods_time, interval #{metaKeyFinish} day) AND deal_finish_status<![CDATA[ <> ]]>1 AND is_refund<![CDATA[ <> ]]>100
+    </update>
+
+    <select id="getTradesListByAccountCheckingStatus" resultMap="tradesMap" useCache="false">
+        SELECT  a.site_id,a.id,a.trades_id,a.seller_id,a.buyer_id,a.seller_nick,a.buyer_nick,
+                a.goods_id,a.pay_time,a.end_time,a.consign_time,a.receiver_phone,a.recevier_mobile,a.recevier_name,
+                a.receiver_city,a.receiver_address,a.receiver_zip,a.seller_pay_no,a.seller_phone,a.seller_mobile,a.seller_name,
+                a.trades_status,a.is_refund,a.closed_resion,a.total_fee,a.post_fee,a.real_pay,a.trades_split,a.plat_split,a.O2O_freight,
+                a.post_style,a.delivery_name,a.post_id,a.post_name,a.post_number,a.buyer_message,a.seller_memo,a.buyer_flag,a.seller_flag,
+                a.delv_time,a.delv_desc,a.confirm_goods_time,a.buyer_pay_no,a.pay_style,a.pay_number,a.trades_source,a.trades_invoice,a.invoice_title,
+                a.trades_store,a.self_taken_store,a.self_taken_code,a.self_taken_code_start,a.self_taken_code_expires,a.self_taken_code_checktime,a.assigned_stores,
+                a.stockup_status,a.shipping_status,a.prescription_orders,a.lng,a.lat,a.store_user_id,a.store_shipping_clerk_id,a.recommend_user_id,
+                a.cashier_id,a.stockup_user_id,a.user_paying,a.trades_del,a.trades_rank,a.trades_rank_time,a.settlement_status,a.settlement_final_time,
+                a.create_time,a.update_time,a.settlement_type,a.create_order_assigned_stores,a.budgetdate,a.is_payment,a.account_checking_status,
+                a.servce_type,a.deal_finish_status,a.refund_fee,a.finance_no
+        FROM b_trades a
+        LEFT JOIN b_migrate b ON a.site_id=b.site_id
+        WHERE a.account_checking_status=0
+          AND a.is_payment=1
+          <if test="siteId!=null">
+              AND a.site_id=#{siteId}
+          </if>
+--           AND a.is_service_order = 0
+          AND a.is_service_order = 1
+          AND pay_style!='integral'
+          AND a.create_time>IFNULL(b.create_time,'0000-00-00 00:00:00')  ORDER BY a.id DESC;
+
+
+    </select>
+    <select id="getMerchantInfo" resultType="com.jk51.model.order.Merchant" useCache="false">
+        select yb.merchant_id merchantId from yb_merchant yb
+    </select>
+    <!--修改订单对账状态-->
+    <update id="updateAccountStatus">
+        update b_trades set account_checking_status=1,update_time=CURRENT_TIMESTAMP()  where trades_id=#{trade_id}
+    </update>
+    <update id="updateSettlementStatusByTradesId">
+        UPDATE  b_trades SET settlement_status=250,update_time=CURRENT_TIMESTAMP()
+        WHERE trades_id=#{trades_id}
+    </update>
+    <update id="updateTradeRank" parameterType="java.util.Map">
+        update b_trades set trades_rank=#{rank}  where trades_id=#{trade_id}
+    </update>
+
+    <update id="updateTradePayStyle">
+        update b_trades set pay_style=#{payStyle}  where trades_id=#{tradesId}
+    </update>
+
+
+    <select id="getStoreOrderQuantityList" resultType="java.util.Map">
+        SELECT site_id, trades_store AS store_id, quantity FROM (SELECT site_id, trades_store, COUNT(*) AS quantity FROM `b_trades` WHERE trades_status='150' AND DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= DATE(create_time) GROUP BY site_id, trades_store) AS t ORDER BY t.quantity DESC
+    </select>
+
+    <select id="findStoreAdminCloseIndex" resultType="com.jk51.model.packageEntity.StoreAdminCloseIndex">
+
+        SELECT adminext.storeadmin_id as storeadmin_id,adminext.site_id as site_id,CONCAT("helper_",adminext.site_id,"_",adminext.storeadmin_id) as storeadmin_user_name,CONCAT("wechat_",trades.buyer_id) as customer_user_name
+        from
+        b_trades as trades
+        left join b_store_adminext as adminext on trades.recommend_user_id =  adminext.storeadmin_id and trades.site_id = adminext.site_id
+        WHERE
+        trades.create_time BETWEEN #{before} and #{now}
+        AND
+        (trades.trades_source = 120 or  trades.trades_source = 130)
+        and
+        trades.store_user_id != '0'
+        and adminext.storeadmin_id != null
+
+    </select>
+
+    <select id="getStoreTradesReport" fetchSize="2000" resultType="java.util.Map"
+            parameterType="com.jk51.model.order.QueryOrdersReq">
+        <![CDATA[
+        select b_trades.trades_id 订单编号,
+                b_member.mobile 会员手机,
+                IF(b_trades.recevier_name<>'null',b_trades.recevier_name,'') 收货人,
+                IF(b_trades.recevier_mobile<>'null',b_trades.recevier_mobile,'') 联系电话,
+                IF(b_trades.receiver_address<>'null',b_trades.receiver_address,'') 收货地址,
+                /*IF(b_store_admin1.user_name<>'null',b_store_admin1.user_name,'') 邀请员,*/
+                CASE b_trades.assigned_stores WHEN 0 THEN '总部' ELSE b_stores.name END 服务门店,
+                IF(b_store_adminext3.name<>'null',b_store_adminext3.name,'') 邀请店员,
+                IF(b_store_adminext1.name<>'null',b_store_adminext1.name,'') 送货员,
+                IF(b_store_adminext2.name<>'null',b_store_adminext2.name,'') 促销员,
+                CASE b_trades.total_fee WHEN 0 THEN 0 ELSE round(b_trades.total_fee/100,2) END 商品总价（元）,
+                CASE b_trades.post_fee WHEN 0 THEN 0 ELSE round(b_trades.post_fee/100,2) END 运费（元）,
+                CASE ( CAST(b_trades.total_fee AS signed) + CAST(b_trades.post_fee AS signed) - CAST(b_trades.real_pay AS signed)/ 100 )
+                  WHEN 0 THEN 0
+                  ELSE round( ( CAST(b_trades.total_fee AS signed) + CAST(b_trades.post_fee AS signed) - CAST(b_trades.real_pay AS signed) ) / 100, 2 )
+                  END 优惠（元）,
+                CASE b_trades.real_pay WHEN 0 THEN 0 ELSE round(b_trades.real_pay/100,2) END 实付款（元）,
+                CASE b_trades.post_style WHEN 150 THEN '送货上门' WHEN 160 THEN '门店自提' WHEN 170 THEN '门店直销' ELSE '其他' END 配送方式,
+                CASE b_trades.pay_style
+                    WHEN 'wx' THEN '微信'
+                    WHEN 'ali'THEN '支付宝'
+                    WHEN 'unionPay' THEN '银联'
+                    WHEN 'health_insurance' THEN '医保'
+                    WHEN 'bil' THEN '快钱'
+                    WHEN 'cash' THEN '现金'
+                    WHEN 'integral' THEN '积分'
+                    ELSE '无'
+                    END 支付方式,
+                CASE b_trades.trades_source WHEN 110 THEN '网站' WHEN 120 THEN '微信' WHEN 130 THEN 'app' WHEN 140 THEN '店员帮用户下单' ELSE '其他' END 订单来源,
+                date_format(b_trades.create_time, '%Y-%m-%d %T') 下单时间,
+                /*date_format(b_trades.consign_time, '%Y-%m-%d %T') 发货时间,*/
+                /*date_format(b_trades.self_taken_code_checktime, '%Y-%m-%d %T') 提货时间,*/
+                date_format(b_trades.pay_time, '%Y-%m-%d %T') 付款时间,
+                date_format(b_trades.end_time, '%Y-%m-%d %T') 交易结束时间,
+                CASE b_trades.trades_status WHEN 110 THEN
+                    '等侍买家付款'
+                WHEN 120 THEN
+                    '等待卖家发货'
+                WHEN 130 THEN
+                    '等侍买家确认收货'
+                WHEN 140 THEN
+                    '买家已签收，货到付款专用'
+                WHEN 150 THEN
+                    '交易成功'
+                WHEN 160 THEN
+                    '用户未付款主动关闭'
+                WHEN 170 THEN
+                    '超时未付款，系统关闭'
+                WHEN 180 THEN
+                    '商家关闭订单'
+                WHEN 200 THEN
+                    '待取货|待自提，直购和自提专用'
+                WHEN 210 THEN
+                    '已取货|已自提 直购和自提专用'
+                WHEN 900 THEN
+                    '已退款'
+                WHEN 220 THEN
+                    '用户确认收货'
+                WHEN 230 THEN
+                    '门店确认收货'
+                WHEN 800 THEN
+                    '系统确认收货'
+                WHEN 240 THEN
+                    '已取消【门店自提待自提后可取消订单】'
+                ELSE
+                    '其他'
+                END 交易状态,
+                CASE b_trades.settlement_status WHEN 100 THEN '不结算' WHEN 150 THEN '待结算' WHEN 200 THEN '待结算' WHEN 250 THEN '已结算' ELSE '其他' END 结算状态,
+                date_format(f.pay_day, '%Y-%m-%d ') 出账日,
+               IFNULL(f.finance_no,'---')  账单编号,
+               date_format(b_stockup.shipping_time, '%Y-%m-%d %T') 发货时间,
+                date_format(b_stockup.stockup_time, '%Y-%m-%d %T') 提货时间,
+                b_trades.create_time createTime,
+                ROUND(b_trades.postage_discount/100, 2) postageDiscount
+                ,CASE WHEN b_trades.is_service_order=1 THEN '是' ELSE '否' END '商家收款'
+                ,MAX(CASE WHEN bbd.apply_status = 2 THEN ROUND(bbd.pay_change/100,2) ELSE 0 END)  '佣金'
+                ,MAX(CASE WHEN bbd.apply_status = 1 THEN ROUND(bbd.pay_change/100,2) ELSE 0 END)  '退佣金'
+                ,MAX(CASE WHEN bbd.apply_status = 5 THEN ROUND(bbd.pay_change/100,2) ELSE 0 END)  '第三方配送费'
+                ,MAX(CASE WHEN bbd.apply_status = 6 THEN ROUND(bbd.pay_change/100,2) ELSE 0 END)  '退第三方配送费'
+        from b_trades left join b_member on(b_member.buyer_id = b_trades.buyer_id AND  b_trades.site_id = b_member.site_id)
+        left join b_store_admin b_store_admin1 on(b_store_admin1.id=b_trades.recommend_user_id and b_trades.site_id=b_store_admin1.site_id)
+        left join b_store_adminext b_store_adminext1 on(b_trades.store_shipping_clerk_id != 0 and b_store_adminext1.storeadmin_id=b_trades.store_shipping_clerk_id and b_trades.site_id=b_store_adminext1.site_id)
+        left join b_store_adminext b_store_adminext2 on (b_trades.store_user_id != 0 and b_store_adminext2.storeadmin_id=b_trades.store_user_id and b_trades.site_id=b_store_adminext2.site_id)
+        left join b_stores ON (b_trades.assigned_stores=b_stores.id and b_trades.site_id=b_stores.site_id)
+        left join b_member_info on(b_member_info.site_id = b_trades.site_id AND b_member_info.member_id = b_trades.buyer_id)
+        left join b_store_adminext b_store_adminext3 on(b_member_info.invite_code!='' AND b_member_info.invite_code IS NOT NULL AND b_store_adminext3.storeadmin_id != 0 and b_trades.site_id = b_store_adminext3.site_id AND right(b_store_adminext3.clerk_invitation_code,5) = right(b_member_info.invite_code,5) and b_store_adminext3.is_del=0)
+        left join yb_finances f on b_trades.finance_no= f.finance_no
+        left join b_stockup b_stockup on b_stockup.trades_id= b_trades.trades_id
+        LEFT JOIN b_balance_detail bbd ON b_trades.trades_id=bbd.trades_id
+        ]]>
+        <if test="(goodsCode!='' and goodsCode!=null) or (goodsTitle!='' and goodsTitle!=null)">
+            LEFT JOIN b_orders ON (b_trades.trades_id = b_orders.trades_id AND b_trades.site_id = b_orders.site_id)
+        </if>
+        WHERE 1=1
+        <if test="distributorId == -1">
+            AND b_trades.distributor_id > 0
+        </if>
+        <if test="distributorId > 0">
+            AND b_trades.distributor_id = #{distributorId}
+        </if>
+        <if test="integralUsed == 1">
+            AND b_trades.trades_id in (SELECT substring(b_integrallog.mark,10,27) from b_integrallog where
+            site_id=#{siteId} and b_integrallog.type=70)
+        </if>
+
+        <if test="selfTakenCode!=null and selfTakenCode!=''">
+            AND b_trades.self_taken_code = #{selfTakenCode}
+        </if>
+        <if test="selfTakenTime!=null">
+            AND b_trades.self_taken_code_start <![CDATA[ >= ]]> #{selfTakenTime}
+            AND b_trades.self_taken_code_expires <![CDATA[ < ]]> #{selfTakenTime}
+        </if>
+        <if test="siteId!=null">
+            AND b_trades.site_id=#{siteId}
+        </if>
+        <if test="payTimeStart!=null">
+            and b_trades.pay_time <![CDATA[ >= ]]> #{payTimeStart}
+        </if>
+        <if test="payTimeEnd!=null">
+            and b_trades.pay_time <![CDATA[ < ]]> #{payTimeEnd}
+        </if>
+        <if test="buyerId !='' and buyerId!=null">
+            and b_trades.buyer_id = #{buyerId}
+        </if>
+
+        <if test="tradesId !='' and tradesId!=null">
+            and b_trades.trades_id = #{tradesId}
+        </if>
+
+        <if test="mobile!='' and mobile!=null">
+            and b_member.mobile = #{mobile}
+        </if>
+
+        <if test="postStyle!='' and postStyle!=null">
+            and b_trades.post_style= #{postStyle}
+        </if>
+
+        <if test="logisticsStatus!='' and logisticsStatus!=null">
+            and b_trades.trades_id in (select order_number from b_logistics_order where site_id=#{siteId} and
+            status=#{logisticsStatus})
+        </if>
+
+        <if test="clerkInvitationCode != null and clerkInvitationCode!=''">
+            and (
+            b_trades.store_user_id in (select id from b_store_admin s where s.id =(select storeadmin_id from
+            b_store_adminext
+            where site_id=#{siteId}
+            and clerk_invitation_code like concat('%',#{clerkInvitationCode},'%')) and s.site_id=#{siteId})
+            OR
+            b_trades.store_shipping_clerk_id in
+            (select id from b_store_admin s where s.id =(select storeadmin_id from
+            b_store_adminext
+            where site_id=#{siteId}
+            and clerk_invitation_code like concat('%',#{clerkInvitationCode},'%')) and s.site_id=#{siteId})
+            )
+        </if>
+
+        <if test="orderTimeStart!='' and orderTimeStart!=null">
+            and b_trades.create_time <![CDATA[ >= ]]> #{orderTimeStart}
+        </if>
+
+        <if test="orderTimeEnd!='' and orderTimeEnd!=null">
+            and b_trades.create_time <![CDATA[ <= ]]> #{orderTimeEnd}
+        </if>
+        <if test="goodsTitle !='' and goodsTitle != null">
+            and b_orders.goods_title=#{goodsTitle}
+        </if>
+
+        <if test="tradesStartTime!='' and tradesStartTime!=null">
+            and b_trades.end_time <![CDATA[ >= ]]> #{tradesStartTime}
+        </if>
+        <if test="tradesEndTime!='' and tradesEndTime!=null">
+            and b_trades.end_time <![CDATA[ <= ]]> #{tradesEndTime}
+        </if>
+
+        <if test="commentRank!='' and commentRank!=null">
+            and b_trades.trades_rank = #{commentRank}
+        </if>
+        <if test="payStyle!='' and payStyle!=null">
+            and b_trades.pay_style = #{payStyle}
+        </if>
+        <if test="goodsCode !='' and goodsCode != null">
+            and b_orders.goods_code=#{goodsCode}
+        </if>
+
+        <if test="tradesStatus!=null and tradesStatus!='' and !'0'.equals(tradesStatus)">
+            and b_trades.trades_status in
+            <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+
+        <if test="isRefund!=null and isRefund!='' and !'0'.equals(isRefund)">
+            and FIND_IN_SET(b_trades.is_refund,#{isRefund})
+        </if>
+
+        <!--门店后台查询调单记录-->
+        <if test="storesId!='' and storesId!=null and (assignStoreFlag == null or assignStoreFlag == '')">
+            and b_trades.assigned_stores = #{storesId}
+        </if>
+        <if test="tradesSource!=''and tradesSource!=null">
+            and b_trades.trades_source = #{tradesSource}
+        </if>
+        <if test="isApp!=''and isApp!=null">
+            and b_trades.trades_source &lt;&gt; 130
+        </if>
+        <if test="stockupStatus!=''and stockupStatus!=null">
+            and b_trades.stockup_status = #{stockupStatus}
+        </if>
+        <if test="shippingStatus!=''and shippingStatus!=null">
+            and b_trades.shipping_status = #{shippingStatus}
+        </if>
+        <if test="storeShippingClerkId!=''and storeShippingClerkId!=null">
+            and b_trades.store_shipping_clerk_id = #{storeShippingClerkId}
+        </if>
+        <if test="isPayment!=''and isPayment!=null">
+            and b_trades.is_payment = #{isPayment}
+        </if>
+        <!--显示提货码-->
+        <if test="isSelfTakenCode!=''and isSelfTakenCode!=null">
+            and b_trades.is_payment = 1 and b_trades.is_refund &lt;&gt; 120 and b_trades.post_style=160 and
+            b_trades.trades_status &lt;&gt; 210 and b_trades.deal_finish_status &lt;&gt; 1
+        </if>
+        <if test="'beihuo'.equals(tradesFlag)">
+            and b_trades.trades_status =120 and b_trades.stockup_status=110
+        </if>
+        <if test="'fahuo'.equals(tradesFlag)">
+            and b_trades.trades_status in(120,130) and b_trades.stockup_status=120 and b_trades.post_style=150
+        </if>
+        <if test="'ziti'.equals(tradesFlag)">
+            and b_trades.trades_status = 200 and b_trades.stockup_status=120 and b_trades.post_style=160
+        </if>
+        <if test="'zhigou'.equals(tradesFlag)">
+            and b_trades.trades_status = 110 and b_trades.post_style=170
+        </if>
+        <if test="settlementStatus=='100' ">
+            AND b_trades.settlement_status = #{settlementStatus}
+        </if>
+        <if test="settlementStatus=='150' ">
+            AND (b_trades.settlement_status = #{settlementStatus} OR b_trades.settlement_status = '200'
+            or(b_trades.settlement_status = '250' AND (f.STATUS &lt;= 100 OR f.STATUS IS NULL)))
+        </if>
+        <if test="settlementStatus=='250' ">
+            AND b_trades.settlement_status = #{settlementStatus} AND f.STATUS > 100
+        </if>
+
+        <if test="isAppNotpay != null and isAppNotpay!=''">
+            and (
+            (b_trades.store_user_id =#{isAppNotpay}and b_trades.trades_source = 130)
+            OR (b_trades.assigned_stores = #{storesIdcope}) and b_trades.post_style= 170)
+        </if>
+        <!--新订单状态订单状态如下（10种）：
+ 1-待付款(110)
+ 2-已取消(160，170，180)
+ 3-待备货(120+110)
+ 4-待发货(120+120)
+ 5-已发货（130）
+ 6-待自提（200）
+ 7-交易成功（210,220,230,800）
+ 8-退款中（is_refund：100）
+ 9-拒绝退款（is_refund：120）
+ 10-退款成功（900）
+ 11-其他
+ 12-待评价
+ 13-已评价
+ 14-所有退款状态
+ 15-待收货
+ -->
+        <if test="newTradesStatus!=null">
+            <if test="newTradesStatus==1">
+                and b_trades.trades_status = 110
+            </if>
+            <if test="newTradesStatus==2">
+                and b_trades.trades_status in (160,170,180)
+            </if>
+            <if test="newTradesStatus==3">
+                and b_trades.trades_status = 120 and b_trades.stockup_status = 110 and (b_trades.is_refund = 0 or
+                b_trades.is_refund = 110 )
+            </if>
+            <if test="newTradesStatus==4">
+                and b_trades.trades_status = 120 and b_trades.stockup_status = 120 and (b_trades.is_refund = 0 or
+                b_trades.is_refund = 110 )
+            </if>
+            <if test="newTradesStatus==5">
+                and b_trades.trades_status = 130 and (b_trades.is_refund = 0 or b_trades.is_refund = 110 )
+            </if>
+            <if test="newTradesStatus==6">
+                and b_trades.trades_status = 200 and (b_trades.is_refund = 0 or b_trades.is_refund = 110 )
+            </if>
+            <if test="newTradesStatus==7">
+                and b_trades.trades_status in (210,220,230,800)
+            </if>
+            <if test="newTradesStatus==8">
+                and b_trades.is_refund =100
+            </if>
+            <if test="newTradesStatus==9">
+                and b_trades.is_refund = 110
+            </if>
+            <if test="newTradesStatus==10">
+                and b_trades.trades_status = 900
+            </if>
+            <if test="newTradesStatus==11">
+                and b_trades.trades_status in (160,170,180,210,220,230,800,900)
+            </if>
+            <if test="newTradesStatus==12">
+                and b_trades.trades_status in (210,220,230,800) and b_trades.trades_rank = 0
+            </if>
+            <if test="newTradesStatus==13">
+                and b_trades.trades_status in (210,220,230,800) and b_trades.trades_rank <![CDATA[ <> ]]> 0
+            </if>
+            <if test="newTradesStatus==14">
+                and b_trades.is_refund  <![CDATA[ <> ]]> 0
+            </if>
+            <if test="newTradesStatus==15">
+                and (b_trades.trades_status = 120 or b_trades.trades_status = 130 or b_trades.trades_status = 200)
+                and (b_trades.is_refund = 0 or b_trades.is_refund = 110 )
+            </if>
+        </if>
+    <if test="count!=true and (assignFlag ==null or assignFlag =='')">
+        GROUP BY b_trades.trades_id
+        ORDER BY b_trades.create_time desc
+    </if>
+
+    <if test="count!=true and assignFlag !=null and assignFlag !=''">
+        ORDER BY b_trades.create_time desc,b_trades_assign_log.order_number,b_trades_assign_log.create_time desc
+    </if>
+
+    <if test="startRow!=null and pageSize!=null">
+        limit #{startRow},#{pageSize}
+    </if>
+    </select>
+
+    <select id="getStoreTrades" resultMap="tradesMap" parameterType="com.jk51.model.order.QueryOrdersReq">
+        select DISTINCT<include refid="trades_List"/>,b_stores.name storeName,b_store_adminext.name
+        storeUserName,sae.name
+        storeShippingName,b_member.mobile memberMobile,b_refund.real_refund_money realRefundMoney,
+        b_member.integrate memberIntegrate,b_trades_ext.integral_used integralUsed,b_trades_ext.integral_final_award
+        integralFinalAward,
+        b_logistics_order.logistics_name logisticsName,b_logistics_order.status logisticsStatus,b_stockup.stockup_id
+        stockupId,
+        b_servce_order.use_detail_id,b_servce_order.use_count,b_servce_order.amount,b_servce_order.serve_status,b_servce_order.schedule_person_id,
+        b_servce_order.diagnose_status,b_servce_order.disease_info
+        from b_trades
+        left join b_stores ON (b_trades.trades_store=b_stores.id and b_trades.site_id=b_stores.site_id)
+        left join b_store_adminext on(b_trades.store_user_id=b_store_adminext.storeadmin_id and
+        b_trades.site_id=b_store_adminext.site_id)
+        left join b_store_admin on (b_trades.store_shipping_clerk_id=b_store_admin.id and
+        b_trades.site_id=b_store_admin.site_id)
+        LEFT JOIN b_store_adminext sae ON (b_store_admin.site_id=sae.site_id AND b_store_admin.id=sae.storeadmin_id)
+        left join b_member on (b_trades.buyer_id=b_member.buyer_id and b_trades.site_id=b_member.site_id)
+        left join b_refund on (b_trades.trades_id=b_refund.trade_id and b_trades.site_id=b_refund.site_id and
+        b_refund.real_refund_money>0)
+        left join b_trades_ext on (b_trades.trades_id=b_trades_ext.trades_id and b_trades.site_id=b_trades_ext.site_id)
+        left join b_logistics_order on (b_trades.trades_id=b_logistics_order.order_number and
+        b_trades.site_id=b_logistics_order.site_id)
+        left join b_orders on (b_trades.trades_id=b_orders.trades_id and b_trades.site_id=b_orders.site_id)
+        left join b_stockup on (b_trades.trades_id=b_stockup.trades_id and b_trades.site_id=b_stockup.site_id)
+        left join b_servce_order on b_trades.trades_id = b_servce_order.trades_id
+        left join yb_finances f on b_trades.finance_no= f.finance_no
+        <include refid="tradesCondition"/>
+    </select>
+
+    <select id="selectTradesByFinanceNo" parameterType="string" resultMap="tradesMap">
+        SELECT trades_id
+        FROM
+        yb_settlement_detail
+        WHERE
+        finance_no =#{finance_no}
+    </select>
+
+    <sql id="trades_List">
+        b_trades.site_id,b_trades.id,b_trades.trades_id,b_trades.seller_id,b_trades.buyer_id,b_trades.seller_nick,b_trades.buyer_nick,
+        b_trades.goods_id,b_trades.pay_time,b_trades.end_time,b_trades.consign_time,b_trades.receiver_phone,b_trades.recevier_mobile,b_trades.recevier_name,
+        b_trades.receiver_city,b_trades.receiver_address,b_trades.receiver_zip,b_trades.seller_pay_no,b_trades.seller_phone,b_trades.seller_mobile,b_trades.seller_name,
+        b_trades.trades_status,b_trades.is_refund,b_trades.closed_resion,b_trades.total_fee,b_trades.post_fee,b_trades.real_pay,b_trades.trades_split,b_trades.plat_split,b_trades.O2O_freight,
+        b_trades.post_style,b_trades.delivery_name,b_trades.post_id,b_trades.post_name,b_trades.post_number,b_trades.buyer_message,b_trades.seller_memo,b_trades.buyer_flag,b_trades.seller_flag,
+        b_trades.delv_time,b_trades.delv_desc,b_trades.confirm_goods_time,b_trades.buyer_pay_no,b_trades.pay_style,b_trades.pay_number,b_trades.trades_source,b_trades.trades_invoice,b_trades.invoice_title,
+        b_trades.trades_store,b_trades.self_taken_store,b_trades.self_taken_code,b_trades.self_taken_code_start,b_trades.self_taken_code_expires,b_trades.self_taken_code_checktime,b_trades.assigned_stores,
+        b_trades.stockup_status,b_trades.shipping_status,b_trades.prescription_orders,b_trades.lng,b_trades.lat,b_trades.store_user_id,b_trades.store_shipping_clerk_id,b_trades.recommend_user_id,
+        b_trades.cashier_id,b_trades.stockup_user_id,b_trades.user_paying,b_trades.trades_del,b_trades.trades_rank,b_trades.trades_rank_time,b_trades.settlement_status,b_trades.settlement_final_time,
+        b_trades.create_time,b_trades.update_time,b_trades.settlement_type,b_trades.create_order_assigned_stores,b_trades.budgetdate,b_trades.is_payment,b_trades.account_checking_status
+        ,b_trades.servce_type,b_trades.deal_finish_status,b_trades.is_up_price,b_trades.clerk_invitation_code,b_trades.distributor_id,b_trades.is_service_order
+    </sql>
+    <sql id="tradesCondition">
+        <where>
+
+            <if test="distributorId == -1">
+                b_trades.distributor_id > 0
+            </if>
+            <if test="distributorId > 0">
+                AND b_trades.distributor_id = #{distributorId}
+            </if>
+            <if test="integralUsed == 1">
+                AND b_trades.trades_id in (SELECT substring(b_integrallog.mark,10,27) from b_integrallog where
+                site_id=#{siteId} and b_integrallog.type=70)
+            </if>
+
+            <if test="selfTakenCode!=null and selfTakenCode!=''">
+                AND b_trades.self_taken_code = #{selfTakenCode}
+            </if>
+            <if test="selfTakenTime!=null">
+                AND b_trades.self_taken_code_start <![CDATA[ >= ]]> #{selfTakenTime}
+                AND b_trades.self_taken_code_expires <![CDATA[ < ]]> #{selfTakenTime}
+            </if>
+            <if test="siteId!=null">
+                AND b_trades.site_id=#{siteId}
+            </if>
+            <if test="payTimeStart!=null">
+                and b_trades.pay_time <![CDATA[ >= ]]> #{payTimeStart}
+            </if>
+            <if test="payTimeEnd!=null">
+                and b_trades.pay_time <![CDATA[ < ]]> #{payTimeEnd}
+            </if>
+            <if test="buyerId !='' and buyerId!=null">
+                and b_trades.buyer_id = #{buyerId}
+            </if>
+
+            <if test="tradesId !='' and tradesId!=null">
+                and b_trades.trades_id = #{tradesId}
+            </if>
+
+            <if test="mobile!='' and mobile!=null">
+                and b_member.mobile = #{mobile}
+            </if>
+
+            <if test="postStyle!='' and postStyle!=null">
+                and b_trades.post_style= #{postStyle}
+            </if>
+
+            <if test="logisticsStatus!='' and logisticsStatus!=null">
+                and b_trades.trades_id in (select order_number from b_logistics_order where site_id=#{siteId} and
+                status=#{logisticsStatus})
+            </if>
+
+            <if test="clerkInvitationCode != null and clerkInvitationCode!=''">
+                and (
+                b_trades.store_user_id in (select id from b_store_admin s where s.id =(select storeadmin_id from
+                b_store_adminext
+                where site_id=#{siteId}
+                and clerk_invitation_code like concat('%',#{clerkInvitationCode},'%')) and s.site_id=#{siteId})
+                OR
+                b_trades.store_shipping_clerk_id in
+                (select id from b_store_admin s where s.id =(select storeadmin_id from
+                b_store_adminext
+                where site_id=#{siteId}
+                and clerk_invitation_code like concat('%',#{clerkInvitationCode},'%')) and s.site_id=#{siteId})
+                )
+            </if>
+
+            <if test="orderTimeStart!='' and orderTimeStart!=null">
+                and b_trades.create_time <![CDATA[ >= ]]> #{orderTimeStart}
+            </if>
+
+            <if test="orderTimeEnd!='' and orderTimeEnd!=null">
+                and b_trades.create_time <![CDATA[ <= ]]> #{orderTimeEnd}
+            </if>
+            <if test="goodsTitle !='' and goodsTitle != null">
+                and b_orders.goods_title=#{goodsTitle}
+            </if>
+
+            <if test="tradesStartTime!='' and tradesStartTime!=null">
+                and b_trades.end_time <![CDATA[ >= ]]> #{tradesStartTime}
+            </if>
+            <if test="tradesEndTime!='' and tradesEndTime!=null">
+                and b_trades.end_time <![CDATA[ <= ]]> #{tradesEndTime}
+            </if>
+
+            <if test="commentRank!='' and commentRank!=null">
+                and b_trades.trades_rank = #{commentRank}
+            </if>
+            <if test="payStyle!='' and payStyle!=null">
+                and b_trades.pay_style = #{payStyle}
+            </if>
+            <if test="goodsCode !='' and goodsCode != null">
+                and b_orders.goods_code=#{goodsCode}
+            </if>
+
+            <if test="tradesStatus!=null and tradesStatus!='' and !'0'.equals(tradesStatus)">
+                and b_trades.trades_status in
+                <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+
+            <if test="isRefund!=null and isRefund!='' and !'0'.equals(isRefund)">
+                and FIND_IN_SET(b_trades.is_refund,#{isRefund})
+            </if>
+
+            <!--门店后台查询调单记录-->
+            <if test="storesId!='' and storesId!=null and (assignStoreFlag == null or assignStoreFlag == '')">
+                and b_trades.assigned_stores = #{storesId}
+            </if>
+            <if test="tradesSource!=''and tradesSource!=null">
+                and b_trades.trades_source = #{tradesSource}
+            </if>
+            <if test="isApp!=''and isApp!=null">
+                and b_trades.trades_source &lt;&gt; 130
+            </if>
+            <if test="stockupStatus!=''and stockupStatus!=null">
+                and b_trades.stockup_status = #{stockupStatus}
+            </if>
+            <if test="shippingStatus!=''and shippingStatus!=null">
+                and b_trades.shipping_status = #{shippingStatus}
+            </if>
+            <if test="storeShippingClerkId!=''and storeShippingClerkId!=null">
+                and b_trades.store_shipping_clerk_id = #{storeShippingClerkId}
+            </if>
+            <if test="isPayment!=''and isPayment!=null">
+                and b_trades.is_payment = #{isPayment}
+            </if>
+            <!--显示提货码-->
+            <if test="isSelfTakenCode!=''and isSelfTakenCode!=null">
+                and b_trades.is_payment = 1 and b_trades.is_refund &lt;&gt; 120 and b_trades.post_style=160 and
+                b_trades.trades_status &lt;&gt; 210 and b_trades.deal_finish_status &lt;&gt; 1
+            </if>
+            <if test="'beihuo'.equals(tradesFlag)">
+                and b_trades.trades_status =120 and b_trades.stockup_status=110
+            </if>
+            <if test="'fahuo'.equals(tradesFlag)">
+                and b_trades.trades_status in(120,130) and b_trades.stockup_status=120 and b_trades.post_style=150
+            </if>
+            <if test="'ziti'.equals(tradesFlag)">
+                and b_trades.trades_status = 200 and b_trades.stockup_status=120 and b_trades.post_style=160
+            </if>
+            <if test="'zhigou'.equals(tradesFlag)">
+                and b_trades.trades_status = 110 and b_trades.post_style=170
+            </if>
+            <if test="settlementStatus=='100' ">
+                AND b_trades.settlement_status = #{settlementStatus}
+            </if>
+            <if test="settlementStatus=='150' ">
+                AND (b_trades.settlement_status = #{settlementStatus} OR b_trades.settlement_status = '200'
+                or(b_trades.settlement_status = '250' AND (f.STATUS &lt;= 100 OR f.STATUS IS NULL)))
+            </if>
+            <if test="settlementStatus=='250' ">
+                AND b_trades.settlement_status = #{settlementStatus} AND f.STATUS > 100
+            </if>
+
+            <if test="isAppNotpay != null and isAppNotpay!=''">
+                and (
+                (b_trades.store_user_id =#{isAppNotpay}and b_trades.trades_source = 130)
+                OR (b_trades.assigned_stores = #{storesIdcope}) and b_trades.post_style= 170)
+            </if>
+            <!--新订单状态订单状态如下（10种）：
+     1-待付款(110)
+     2-已取消(160，170，180)
+     3-待备货(120+110)
+     4-待发货(120+120)
+     5-已发货（130）
+     6-待自提（200）
+     7-交易成功（210,220,230,800）
+     8-退款中（is_refund：100）
+     9-拒绝退款（is_refund：120）
+     10-退款成功（900）
+     11-其他
+     12-待评价
+     13-已评价
+     14-所有退款状态
+     15-待收货
+     -->
+            <if test="newTradesStatus!=null">
+                <if test="newTradesStatus==1">
+                    and b_trades.trades_status = 110
+                </if>
+                <if test="newTradesStatus==2">
+                    and b_trades.trades_status in (160,170,180)
+                </if>
+                <if test="newTradesStatus==3">
+                    and b_trades.trades_status = 120 and b_trades.stockup_status = 110 and (b_trades.is_refund = 0 or
+                    b_trades.is_refund = 110 )
+                </if>
+                <if test="newTradesStatus==4">
+                    and b_trades.trades_status = 120 and b_trades.stockup_status = 120 and (b_trades.is_refund = 0 or
+                    b_trades.is_refund = 110 )
+                </if>
+                <if test="newTradesStatus==5">
+                    and b_trades.trades_status = 130 and (b_trades.is_refund = 0 or b_trades.is_refund = 110 )
+                </if>
+                <if test="newTradesStatus==6">
+                    and b_trades.trades_status = 200 and (b_trades.is_refund = 0 or b_trades.is_refund = 110 )
+                </if>
+                <if test="newTradesStatus==7">
+                    and b_trades.trades_status in (210,220,230,800)
+                </if>
+                <if test="newTradesStatus==8">
+                    and b_trades.is_refund =100
+                </if>
+                <if test="newTradesStatus==9">
+                    and b_trades.is_refund = 110
+                </if>
+                <if test="newTradesStatus==10">
+                    and b_trades.trades_status = 900
+                </if>
+                <if test="newTradesStatus==11">
+                    and b_trades.trades_status in (160,170,180,210,220,230,800,900)
+                </if>
+                <if test="newTradesStatus==12">
+                    and b_trades.trades_status in (210,220,230,800) and b_trades.trades_rank = 0
+                </if>
+                <if test="newTradesStatus==13">
+                    and b_trades.trades_status in (210,220,230,800) and b_trades.trades_rank <![CDATA[ <> ]]> 0
+                </if>
+                <if test="newTradesStatus==14">
+                    and b_trades.is_refund  <![CDATA[ <> ]]> 0
+                </if>
+                <if test="newTradesStatus==15">
+                    and (b_trades.trades_status = 120 or b_trades.trades_status = 130 or b_trades.trades_status = 200)
+                    and (b_trades.is_refund = 0 or b_trades.is_refund = 110 )
+                </if>
+            </if>
+
+        </where>
+        <if test="count!=true and (assignFlag ==null or assignFlag =='')">
+            ORDER BY b_trades.create_time desc
+        </if>
+
+        <if test="count!=true and assignFlag !=null and assignFlag !=''">
+            ORDER BY b_trades.create_time desc,b_trades_assign_log.order_number,b_trades_assign_log.create_time desc
+        </if>
+
+        <if test="startRow!=null and pageSize!=null">
+            limit #{startRow},#{pageSize}
+        </if>
+    </sql>
+    <update id="updateBarcode" parameterType="com.jk51.model.order.Trades">
+        update b_trades set self_taken_code=#{selfTakenCode}, update_time=CURRENT_TIMESTAMP() where trades_id=#{tradesId}
+    </update>
+    <!--查询订单详情-->
+    <select id="getTradesDetails" resultMap="tradesMap">
+        select DISTINCT t.*,m.mobile memberMobile,f.pay_day,ym.shop_weixin shop_weixin,s.stockup_id stockupId,e.cash_payment_pay cashPaymentPay,e.medical_insurance_card_pay medicalInsuranceCardPay,e.line_breaks_pay lineBreaksPay,e.integral_used integralUsed,
+        bso.use_detail_id,bso.use_count,bso.amount,bso.serve_status,bso.schedule_person_id,
+        bso.goods_id,bso.diagnose_status,bso.disease_info,bst.start_time as templateStartTime,t.end_time as templateEndTime,bg.goods_title,bcp.`name`,bcp.mobile,
+        b_store_adminext.name storeUserName, sae.name storeShippingName, SUBSTRING_INDEX(b_store_adminext.clerk_invitation_code, '_', -1) clerkInvitationCode,t.is_up_price,
+        b_store_adminext.employee_number employee_number,
+        CASE
+        WHEN t.settlement_status = '100' THEN 100
+        WHEN t.settlement_status = '150' OR t.settlement_status = '200' THEN 200
+        WHEN t.settlement_status = '250' and f.STATUS > 100 THEN 250
+        WHEN t.settlement_status = '250' and (f.STATUS &lt;= 100 OR f.STATUS IS NULL ) THEN 200
+        ELSE 0 END settlement_statusA
+        from b_trades t
+        left join yb_merchant ym on t.site_id=ym.merchant_id
+        LEFT JOIN b_trades_ext e on (t.trades_id = e.trades_id and t.site_id = e.site_id)
+        left join b_member m on (t.buyer_id=m.buyer_id and t.site_id=m.site_id)
+        left join b_stockup s on (t.trades_id=s.trades_id and t.site_id=s.site_id)
+        left join b_servce_order bso on t.trades_id = bso.trades_id
+        left join b_servce_use_detail bsud on bso.use_detail_id = bsud.id
+        left join b_servce_template bst on (bst.template_no = bsud.template_no and bst.id = bsud.mine_classes_id)
+        left join b_goods bg on bso.goods_id = bg.goods_id
+        LEFT JOIN	b_contact_person bcp on bso.schedule_person_id=bcp.id and bso.site_id = bcp.site_id
+        left join b_store_adminext on(t.store_user_id=b_store_adminext.storeadmin_id and t.site_id=b_store_adminext.site_id AND b_store_adminext.storeadmin_id &gt; 0)
+        LEFT JOIN b_store_adminext sae ON (t.store_shipping_clerk_id=sae.storeadmin_id and t.site_id=sae.site_id AND sae.storeadmin_id &gt; 0)
+        LEFT JOIN yb_settlement_detail g on t.trades_id = g.trades_id
+        LEFT JOIN yb_finances f on t.finance_no = f.finance_no
+        where t.trades_id=#{tradesId}
+    </select>
+    <!--判断授权码-->
+    <select id="selectMeta" resultType="int">
+        select count(1) from b_meta where site_id=#{0} and meta_val=#{1} and meta_type='store_auth_code' and meta_key=#{2};
+    </select>
+
+    <select id="selectTradesByActivityCreateTime" resultType="int">
+        select count(1) from b_trades where site_id=#{siteId} and buyer_id=#{userId} and pay_time <![CDATA[ >= ]]> #{createTime}
+    </select>
+    <!--更新优惠券-->
+    <update id="updateCoupon">
+        update b_coupon_detail set `status`=1 where site_id=#{0} and order_id=#{1};
+    </update>
+    <select id="queryUserFirstOrder" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT count(0) FROM b_trades WHERE site_id=#{0} and buyer_id=#{1} and (is_payment=1 or trades_status = 110)
+    </select>
+    <select id="queryUserCouponFirstOrder" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT count(0) FROM b_trades WHERE site_id=#{0} and buyer_id=#{1} and (is_payment=1 or trades_status = 110)
+    </select>
+    <select id="queryUserPromotionsIsRefundOrder" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT count(0) FROM b_trades WHERE site_id=#{0} and buyer_id=#{1} and is_refund>0;
+    </select>
+    <select id="queryUserPromotionsFirstOrder" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT count(0) FROM b_trades WHERE site_id=#{0} and buyer_id=#{1} and  (is_payment=1 or trades_status = 110);
+    </select>
+    <update id="updatePayCommission">
+        UPDATE b_trades SET plat_split=#{platSplit} WHERE site_id=#{siteId} AND trades_id=#{tradesId}
+    </update>
+    <update id="updateO2OCommission">
+        UPDATE b_trades SET O2O_freight=#{O2OFreight} WHERE site_id=#{siteId} AND trades_id=#{tradesId}
+    </update>
+    <select id="selectStoreInfo" resultMap="storesMap">
+        select * from b_stores where site_id=#{0} and id=#{1}
+    </select>
+    <select id="selectStoreInfoList" resultMap="storesMap">
+        select * from b_stores
+        WHERE site_id=#{siteId} AND id IN
+        <foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <!--送货上门 店员送货-->
+    <update id="clerkToSend">
+        update b_trades set O2O_freight=0 , trades_status=130 , consign_time=CURRENT_TIMESTAMP(), shipping_status=120 ,store_shipping_clerk_id=#{1}, update_time=CURRENT_TIMESTAMP()  where trades_id=#{0}
+    </update>
+    <!--送货上门 物流送货-->
+    <update id="logisticsToSend">
+        update b_trades set O2O_freight=0 , trades_status=130 , consign_time=CURRENT_TIMESTAMP(), shipping_status=120 ,post_name=#{1},post_number=#{2} ,update_time=CURRENT_TIMESTAMP()  where trades_id=#{0}
+    </update>
+    <!--更新服务形式和服务门店-->
+    <update id="updateAssignStoreAndPostStyle" parameterType="com.jk51.model.order.Trades">
+        update b_trades set post_style = #{postStyle},assigned_stores = #{assignedStores},update_time=CURRENT_TIMESTAMP()  where trades_id=#{tradesId}
+    </update>
+    <!--更新商家标志和商家备注-->
+    <update id="updateSellerFlagAndMemo" parameterType="com.jk51.model.order.Trades">
+        update b_trades set seller_flag = #{sellerFlag},seller_memo = #{sellerMemo},update_time=CURRENT_TIMESTAMP()  where trades_id=#{tradesId}
+    </update>
+    <select id="selectTradesCount" resultType="int">/*订单统计*/
+        select count(1) from b_trades where site_id=#{siteId} and buyer_id=#{buyerId} and trades_source &lt;&gt; 130
+        <if test="'120'.equals(tradesStatus)">
+            and trades_status =110 and post_style in (150,160)
+        </if>
+        <if test="'130'.equals(tradesStatus)">
+            and trades_status =130 and post_style=150
+        </if>
+        <if test="'200'.equals(tradesStatus)">
+            and trades_status =200 and post_style=160
+        </if>
+        <if test="'210,220,230,240,800'.equals(tradesStatus)">
+            and trades_status in (150,210,220,230,800,900) and post_style in (150,160)
+        </if>
+    </select>
+    <select id="selectIsRefundByTradesId">
+        select is_refund from b_trades where trades_id=#{0}
+    </select>
+    <insert id="insertSelective" parameterType="com.jk51.model.order.Trades">
+        insert into b_trades
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="tradesId != null">
+                trades_id,
+            </if>
+            <if test="sellerId != null">
+                seller_id,
+            </if>
+            <if test="buyerId != null">
+                buyer_id,
+            </if>
+            <if test="sellerNick != null">
+                seller_nick,
+            </if>
+            <if test="buyerNick != null">
+                buyer_nick,
+            </if>
+            <if test="goodsId != null">
+                goods_id,
+            </if>
+            <if test="payTime != null">
+                pay_time,
+            </if>
+            <if test="endTime != null">
+                end_time,
+            </if>
+            <if test="consignTime != null">
+                consign_time,
+            </if>
+            <if test="receiverPhone != null">
+                receiver_phone,
+            </if>
+            <if test="recevierMobile != null">
+                recevier_mobile,
+            </if>
+            <if test="recevierName != null">
+                recevier_name,
+            </if>
+            <if test="receiverCity != null">
+                receiver_city,
+            </if>
+            <if test="receiverAddress != null">
+                receiver_address,
+            </if>
+            <if test="receiverZip != null">
+                receiver_zip,
+            </if>
+            <if test="sellerPayNo != null">
+                seller_pay_no,
+            </if>
+            <if test="sellerPhone != null">
+                seller_phone,
+            </if>
+            <if test="sellerMobile != null">
+                seller_mobile,
+            </if>
+            <if test="sellerName != null">
+                seller_name,
+            </if>
+            <if test="tradesStatus != null">
+                trades_status,
+            </if>
+            <if test="isRefund != null">
+                is_refund,
+            </if>
+            <if test="closedResion != null">
+                closed_resion,
+            </if>
+            <if test="totalFee != null">
+                total_fee,
+            </if>
+            <if test="postFee != null">
+                post_fee,
+            </if>
+            <if test="realPay != null">
+                real_pay,
+            </if>
+            <if test="tradesSplit != null">
+                trades_split,
+            </if>
+            <if test="platSplit != null">
+                plat_split,
+            </if>
+            <if test="postStyle != null">
+                post_style,
+            </if>
+            <if test="deliveryName != null">
+                delivery_name,
+            </if>
+            <if test="postId != null">
+                post_id,
+            </if>
+            <if test="postName != null">
+                post_name,
+            </if>
+            <if test="postNumber != null">
+                post_number,
+            </if>
+            <if test="buyerMessage != null">
+                buyer_message,
+            </if>
+            <if test="sellerMemo != null">
+                seller_memo,
+            </if>
+            <if test="buyerFlag != null">
+                buyer_flag,
+            </if>
+            <if test="sellerFlag != null">
+                seller_flag,
+            </if>
+            <if test="delvTime != null">
+                delv_time,
+            </if>
+            <if test="delvDesc != null">
+                delv_desc,
+            </if>
+            <if test="confirmGoodsTime != null">
+                confirm_goods_time,
+            </if>
+            <if test="buyerPayNo != null">
+                buyer_pay_no,
+            </if>
+            <if test="payStyle != null">
+                pay_style,
+            </if>
+            <if test="payNumber != null">
+                pay_number,
+            </if>
+            <if test="tradesSource != null">
+                trades_source,
+            </if>
+            <if test="tradesInvoice != null">
+                trades_invoice,
+            </if>
+            <if test="invoiceTitle != null">
+                invoice_title,
+            </if>
+            <if test="tradesStore != null">
+                trades_store,
+            </if>
+            <if test="selfTakenStore != null">
+                self_taken_store,
+            </if>
+            <if test="selfTakenCode != null">
+                self_taken_code,
+            </if>
+            <if test="selfTakenCodeStart != null">
+                self_taken_code_start,
+            </if>
+            <if test="selfTakenCodeExpires != null">
+                self_taken_code_expires,
+            </if>
+            <if test="selfTakenCodeChecktime != null">
+                self_taken_code_checktime,
+            </if>
+            <if test="assignedStores != null">
+                assigned_stores,
+            </if>
+            <if test="stockupStatus != null">
+                stockup_status,
+            </if>
+            <if test="shippingStatus != null">
+                shipping_status,
+            </if>
+            <if test="prescriptionOrders != null">
+                prescription_orders,
+            </if>
+            <if test="lng != null">
+                lng,
+            </if>
+            <if test="lat != null">
+                lat,
+            </if>
+            <if test="storeUserId != null">
+                store_user_id,
+            </if>
+            <if test="storeShippingClerkId != null">
+                store_shipping_clerk_id,
+            </if>
+            <if test="recommendUserId != null">
+                recommend_user_id,
+            </if>
+            <if test="cashierId != null">
+                cashier_id,
+            </if>
+            <if test="stockupUserId != null">
+                stockup_user_id,
+            </if>
+            <if test="userPaying != null">
+                user_paying,
+            </if>
+            <if test="tradesDel != null">
+                trades_del,
+            </if>
+            <if test="tradesRank != null">
+                trades_rank,
+            </if>
+            <if test="tradesRankTime != null">
+                trades_rank_time,
+            </if>
+            <if test="settlementStatus != null">
+                settlement_status,
+            </if>
+            <if test="settlementFinalTime != null">
+                settlement_final_time,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="settlementType != null">
+                settlement_type,
+            </if>
+            <if test="createOrderAssignedStores != null">
+                create_order_assigned_stores,
+            </if>
+            <if test="budgetdate != null">
+                budgetdate,
+            </if>
+            <if test="isPayment != null">
+                is_payment,
+            </if>
+            <if test="accountCheckingStatus != null">
+                account_checking_status,
+            </if>
+            <if test="servceTpye != null">
+                servce_type,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="tradesId != null">
+                #{tradesId,jdbcType=BIGINT},
+            </if>
+            <if test="sellerId != null">
+                #{sellerId,jdbcType=INTEGER},
+            </if>
+            <if test="buyerId != null">
+                #{buyerId,jdbcType=INTEGER},
+            </if>
+            <if test="sellerNick != null">
+                #{sellerNick,jdbcType=VARCHAR},
+            </if>
+            <if test="buyerNick != null">
+                #{buyerNick,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsId != null">
+                #{goodsId,jdbcType=INTEGER},
+            </if>
+            <if test="payTime != null">
+                #{payTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+                #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="consignTime != null">
+                #{consignTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="receiverPhone != null">
+                #{receiverPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="recevierMobile != null">
+                #{recevierMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="recevierName != null">
+                #{recevierName,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverCity != null">
+                #{receiverCity,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverAddress != null">
+                #{receiverAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="receiverZip != null">
+                #{receiverZip,jdbcType=VARCHAR},
+            </if>
+            <if test="sellerPayNo != null">
+                #{sellerPayNo,jdbcType=VARCHAR},
+            </if>
+            <if test="sellerPhone != null">
+                #{sellerPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="sellerMobile != null">
+                #{sellerMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="sellerName != null">
+                #{sellerName,jdbcType=VARCHAR},
+            </if>
+            <if test="tradesStatus != null">
+                #{tradesStatus,jdbcType=INTEGER},
+            </if>
+            <if test="isRefund != null">
+                #{isRefund,jdbcType=SMALLINT},
+            </if>
+            <if test="closedResion != null">
+                #{closedResion,jdbcType=INTEGER},
+            </if>
+            <if test="totalFee != null">
+                #{totalFee,jdbcType=INTEGER},
+            </if>
+            <if test="postFee != null">
+                #{postFee,jdbcType=INTEGER},
+            </if>
+            <if test="realPay != null">
+                #{realPay,jdbcType=INTEGER},
+            </if>
+            <if test="tradesSplit != null">
+                #{tradesSplit,jdbcType=INTEGER},
+            </if>
+            <if test="platSplit != null">
+                #{platSplit,jdbcType=INTEGER},
+            </if>
+            <if test="postStyle != null">
+                #{postStyle,jdbcType=INTEGER},
+            </if>
+            <if test="deliveryName != null">
+                #{deliveryName,jdbcType=VARCHAR},
+            </if>
+            <if test="postId != null">
+                #{postId,jdbcType=INTEGER},
+            </if>
+            <if test="postName != null">
+                #{postName,jdbcType=VARCHAR},
+            </if>
+            <if test="postNumber != null">
+                #{postNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="buyerMessage != null">
+                #{buyerMessage,jdbcType=VARCHAR},
+            </if>
+            <if test="sellerMemo != null">
+                #{sellerMemo,jdbcType=VARCHAR},
+            </if>
+            <if test="buyerFlag != null">
+                #{buyerFlag,jdbcType=INTEGER},
+            </if>
+            <if test="sellerFlag != null">
+                #{sellerFlag,jdbcType=INTEGER},
+            </if>
+            <if test="delvTime != null">
+                #{delvTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="delvDesc != null">
+                #{delvDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="confirmGoodsTime != null">
+                #{confirmGoodsTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="buyerPayNo != null">
+                #{buyerPayNo,jdbcType=VARCHAR},
+            </if>
+            <if test="payStyle != null">
+                #{payStyle,jdbcType=VARCHAR},
+            </if>
+            <if test="payNumber != null">
+                #{payNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="tradesSource != null">
+                #{tradesSource,jdbcType=INTEGER},
+            </if>
+            <if test="tradesInvoice != null">
+                #{tradesInvoice,jdbcType=INTEGER},
+            </if>
+            <if test="invoiceTitle != null">
+                #{invoiceTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="tradesStore != null">
+                #{tradesStore,jdbcType=INTEGER},
+            </if>
+            <if test="selfTakenStore != null">
+                #{selfTakenStore,jdbcType=INTEGER},
+            </if>
+            <if test="selfTakenCode != null">
+                #{selfTakenCode,jdbcType=CHAR},
+            </if>
+            <if test="selfTakenCodeStart != null">
+                #{selfTakenCodeStart,jdbcType=TIMESTAMP},
+            </if>
+            <if test="selfTakenCodeExpires != null">
+                #{selfTakenCodeExpires,jdbcType=TIMESTAMP},
+            </if>
+            <if test="selfTakenCodeChecktime != null">
+                #{selfTakenCodeChecktime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="assignedStores != null">
+                #{assignedStores,jdbcType=INTEGER},
+            </if>
+            <if test="stockupStatus != null">
+                #{stockupStatus,jdbcType=INTEGER},
+            </if>
+            <if test="shippingStatus != null">
+                #{shippingStatus,jdbcType=INTEGER},
+            </if>
+            <if test="prescriptionOrders != null">
+                #{prescriptionOrders,jdbcType=BIT},
+            </if>
+            <if test="lng != null">
+                #{lng,jdbcType=DOUBLE},
+            </if>
+            <if test="lat != null">
+                #{lat,jdbcType=DOUBLE},
+            </if>
+            <if test="storeUserId != null">
+                #{storeUserId,jdbcType=INTEGER},
+            </if>
+            <if test="storeShippingClerkId != null">
+                #{storeShippingClerkId,jdbcType=INTEGER},
+            </if>
+            <if test="recommendUserId != null">
+                #{recommendUserId,jdbcType=INTEGER},
+            </if>
+            <if test="cashierId != null">
+                #{cashierId,jdbcType=INTEGER},
+            </if>
+            <if test="stockupUserId != null">
+                #{stockupUserId,jdbcType=INTEGER},
+            </if>
+            <if test="userPaying != null">
+                #{userPaying,jdbcType=TINYINT},
+            </if>
+            <if test="tradesDel != null">
+                #{tradesDel,jdbcType=INTEGER},
+            </if>
+            <if test="tradesRank != null">
+                #{tradesRank,jdbcType=TINYINT},
+            </if>
+            <if test="tradesRankTime != null">
+                #{tradesRankTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="settlementStatus != null">
+                #{settlementStatus,jdbcType=SMALLINT},
+            </if>
+            <if test="settlementFinalTime != null">
+                #{settlementFinalTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="settlementType != null">
+                #{settlementType,jdbcType=TINYINT},
+            </if>
+            <if test="createOrderAssignedStores != null">
+                #{createOrderAssignedStores,jdbcType=INTEGER},
+            </if>
+            <if test="budgetdate != null">
+                #{budgetdate,jdbcType=VARCHAR},
+            </if>
+            <if test="isPayment != null">
+                #{isPayment,jdbcType=BIT},
+            </if>
+            <if test="accountCheckingStatus != null">
+                #{accountCheckingStatus,jdbcType=BIT},
+            </if>
+            <if test="servceTpye != null">
+                #{servceTpye},
+            </if>
+        </trim>
+    </insert>
+    <select id="getDocetorServceTrades" parameterType="com.jk51.model.order.Trades" resultMap="tradesMap">
+        SELECT
+        <include refid="trades_List"/>
+        from b_trades where servce_type = #{servceTpye};
+    </select>
+
+    <!--<select id="selectBySystemDelivery" resultMap="tradesMap">
+        select
+        <include refid="trades_List"/>
+        from b_trades
+        where CURRENT_TIMESTAMP() > date_add(consign_time, interval #{systemDelivery} day) and trades_status=130 and
+        post_style=150 and create_time >= date_add(CURRENT_TIMESTAMP(), interval #{tradesEnd} day) and site_id=#{siteId}
+    </select>-->
+    <select id="selectBySystemDelivery" resultMap="tradesMap">
+        select
+        <include refid="trades_List"/>
+        from b_trades
+        WHERE site_id=#{siteId} AND post_style=150 AND trades_status=130 AND CURRENT_TIMESTAMP()<![CDATA[ > ]]>
+        date_add(consign_time, interval #{systemDelivery} day)
+    </select>
+
+    <select id="selectByBuyerId" resultMap="tradesMap">
+        SELECT
+        <include refid="trades_List"/>
+        FROM
+        b_trades
+        where site_id = #{siteId}
+        and buyer_id = #{buyerId}
+        and is_refund = 0
+        and trades_status in(120,130,140,150,160,180,200,210,220,230,800)
+
+    </select>
+
+    <!-- 自己count查询 -->
+    <select id="getTradesList" resultMap="tradesMap" parameterType="com.jk51.model.order.QueryOrdersReq">
+        select<include refid="trades_List"/>,
+        <!-- b_stores.`name` storeName, -->
+        b_member.mobile memberMobile,
+        b_member.integrate memberIntegrate,
+        b_trades_ext.integral_used integralUsed,
+        b_trades_ext.integral_final_award integralFinalAward
+        <if test="assignFlag !=null and assignFlag !='' ">
+            ,b_trades_assign_log.before_post_style as assign_post_style,
+            b_trades_assign_log.post_style as assign_post_style_curr,
+            (select name from b_stores where site_id = #{siteId} and id=b_trades_assign_log.before_store) as
+            assign_store,
+            (select name from b_stores where site_id = #{siteId} and id=b_trades_assign_log.store)as assign_store_curr
+        </if>
+        from b_trades
+        <if test="assignFlag !=null and assignFlag !='' and (assignStoreFlag ==null or assignStoreFlag =='')">
+            right join b_trades_assign_log on (b_trades.trades_id=b_trades_assign_log.order_number and
+            b_trades.site_id=b_trades_assign_log.site_id)
+        </if>
+        <if test="assignStoreFlag !=null and assignStoreFlag !='' ">
+            right join (select
+            b.before_post_style,b.post_style,b.before_store,b.store,b.site_id,b.order_number,b.create_time
+            from b_trades_assign_log b where b.order_number in (select c.order_number from b_trades_assign_log c where
+            c.store = #{storesId} or c.before_store = #{storesId})
+            )as b_trades_assign_log
+            on (b_trades.site_id = b_trades_assign_log.site_id and b_trades.trades_id =
+            b_trades_assign_log.order_number)
+        </if>
+        left join b_trades_ext on (b_trades.trades_id=b_trades_ext.trades_id and b_trades.site_id=b_trades_ext.site_id)
+        left join b_member on (b_trades.buyer_id=b_member.buyer_id and b_trades.site_id=b_member.site_id)
+        <if test="(goodsCode!='' and goodsCode!=null) or (goodsTitle!='' and goodsTitle!=null)">
+            LEFT JOIN b_orders ON (b_trades.trades_id = b_orders.trades_id AND b_trades.site_id = b_orders.site_id)
+        </if>
+        <if test="settlementStatus!='' and settlementStatus!=null">
+            left join yb_finances f on b_trades.finance_no= f.finance_no
+        </if>
+        <include refid="tradesCondition"/>
+    </select>
+    <select id="getTradesListCount" resultType="java.lang.Long" parameterType="com.jk51.model.order.QueryOrdersReq">
+        select COUNT(*)
+        from b_trades
+        <if test="assignFlag !=null and assignFlag !='' and (assignStoreFlag ==null or assignStoreFlag =='')">
+            right join b_trades_assign_log on (b_trades.trades_id=b_trades_assign_log.order_number and
+            b_trades.site_id=b_trades_assign_log.site_id)
+        </if>
+        <if test="assignStoreFlag !=null and assignStoreFlag !='' ">
+            right join (select
+            b.before_post_style,b.post_style,b.before_store,b.store,b.site_id,b.order_number,b.create_time
+            from b_trades_assign_log b where b.order_number in (select c.order_number from b_trades_assign_log c where
+            c.store = #{storesId} or c.before_store = #{storesId})
+            )as b_trades_assign_log
+            on (b_trades.site_id = b_trades_assign_log.site_id and b_trades.trades_id =
+            b_trades_assign_log.order_number)
+        </if>
+        <if test="mobile!='' and mobile!=null">
+            left join b_member on (b_trades.buyer_id=b_member.buyer_id and b_trades.site_id=b_member.site_id)
+        </if>
+        <if test="(goodsCode!='' and goodsCode!=null) or (goodsTitle!='' and goodsTitle!=null)">
+            LEFT JOIN b_orders ON (b_trades.trades_id = b_orders.trades_id AND b_trades.site_id = b_orders.site_id)
+        </if>
+        <if test="settlementStatus!='' and settlementStatus!=null">
+            left join yb_finances f on b_trades.finance_no= f.finance_no
+        </if>
+        <include refid="tradesCondition"/>
+    </select>
+
+    <update id="updateDistributorId">
+        update b_trades set distributor_id=#{id} where trades_id=#{tradesId};
+    </update>
+
+    <select id="isFirstDistributorOrder" resultType="java.util.Map">
+        SELECT
+        *
+        FROM
+        b_trades
+        where trades_id=#{tradesId}
+        and distributor_id in (2147483646,2147483647)
+
+    </select>
+
+    <select id="getOtherOrderListMap" resultType="java.util.Map">
+        select
+        recevier_mobile AS recevierMobile, trades_id AS tradesId, case when real_pay is null then 0
+        else real_pay end  AS realPay, date_format(create_time,'%Y-%m-%d %H:%i:%s') AS createTime,
+        receiver_address AS receiverAddress, case when post_style is null then 130 else post_style end AS postStyle, case when trades_status is null then 110 else trades_status end AS tradesStatus
+        from b_trades
+        where site_id = #{siteId} AND assigned_stores = #{storeId} AND post_style = '170' AND trades_status=110 ORDER BY create_time DESC
+    </select>
+
+    <select id="getOrderListMap" resultType="java.util.Map">
+        select
+        recevier_mobile AS recevierMobile, trades_id AS tradesId, case when real_pay is null then 0 else real_pay end  AS realPay, date_format(create_time,'%Y-%m-%d %H:%i:%s') AS createTime,
+        receiver_address AS receiverAddress, case when post_style is null then 130 else post_style end AS postStyle, case when trades_status is null then 110 else trades_status end AS tradesStatus
+        from b_trades
+        where site_id = #{siteId} AND assigned_stores = #{storeId} AND store_shipping_clerk_id = #{storeShippingClerkId}
+        AND post_style=150 AND trades_status=130
+    </select><!--AND post_style IN (150, 180) AND trades_status IN (110, 120, 130)-->
+
+    <select id="getTradesInformationMap" resultType="java.util.Map">
+        SELECT bt.recevier_name AS recevierName, bt.store_user_id AS storeUserId, bt.trades_id AS tradesId,
+        bt.recevier_mobile AS recevierMobile, date_format(bt.create_time,'%Y-%m-%d %H:%i:%s') AS createTime,
+        bt.receiver_address AS receiverAddress,
+        bt.post_style AS postStyle, bt.trades_status AS tradesStatus, bt.real_pay AS realPay, bte.integral_price AS
+        integralPrice, bte.reduce_reduction_amount AS reduceReductionAmount,
+        bte.user_coupon_id AS userCouponId, bte.user_coupon_amount AS userCouponAmount, bt.post_fee AS postFee,
+        bt.is_refund AS isRefund, bt.self_taken_store AS selfTakenStoreName,
+        bt.assigned_stores AS assignedStoresName, bt.pay_style AS payStyle, bt.recommend_user_id AS storeSalerCode
+        FROM b_trades bt LEFT JOIN b_trades_ext bte ON bt.trades_id=bte.trades_id AND bt.site_id=bte.site_id WHERE
+        bt.trades_id = #{tradesId} AND
+        bt.site_id = #{siteId}
+        <if test="storeId != null and storeId != ''">
+            AND bt.trades_store = #{storeId}
+        </if>
+    </select>
+
+    <select id="getOrderDetailByDeliveryCodeMap" resultType="java.util.Map">
+        SELECT bt.recevier_name AS recevierName, bt.store_user_id AS storeUserId, bt.trades_id AS tradesId,
+        bt.recevier_mobile AS recevierMobile, date_format(bt.create_time,'%Y-%m-%d %H:%i:%s') AS createTime,
+        bt.receiver_address AS receiverAddress,
+        bt.post_style AS postStyle, bt.trades_status AS tradesStatus, bt.real_pay AS realPay, bte.integral_price AS
+        integralPrice, bte.reduce_reduction_amount AS reduceReductionAmount,
+        bte.user_coupon_id AS userCouponId, bte.user_coupon_amount AS userCouponAmount, bt.post_fee AS postFee,
+        bt.is_refund AS isRefund, bt.self_taken_store AS selfTakenStoreName,
+        bt.assigned_stores AS assignedStoresName, bt.pay_style AS payStyle, bt.recommend_user_id AS storeSalerCode
+        FROM b_trades bt LEFT JOIN b_trades_ext bte ON bt.trades_id=bte.trades_id AND bt.site_id=bte.site_id WHERE
+        bt.self_taken_code = #{deliveryCode} AND bt.site_id = #{siteId}
+        <if test="storeId != null and storeId != ''">
+            AND bt.assigned_stores = #{storeId}
+        </if>
+    </select>
+
+    <select id="getBuyerTradesInformationMap" resultType="java.util.Map">
+        SELECT bt.recevier_name AS recevierName, bt.store_user_id AS storeUserId, bt.trades_id AS tradesId,
+        bt.recevier_mobile AS recevierMobile, date_format(bt.create_time,'%Y-%m-%d %H:%i:%s') AS createTime,
+        bt.receiver_address AS receiverAddress,
+        bt.post_style AS postStyle, bt.trades_status AS tradesStatus, bt.real_pay AS realPay, bte.integral_price AS
+        integralPrice, bte.reduce_reduction_amount AS reduceReductionAmount,
+        bte.user_coupon_id AS userCouponId, bte.user_coupon_amount AS userCouponAmount, bt.post_fee AS postFee,
+        bt.is_refund AS isRefund, bt.self_taken_store AS selfTakenStoreName,
+        bt.assigned_stores AS assignedStoresName, bt.pay_style AS payStyle, bt.recommend_user_id AS storeSalerCode
+        FROM b_trades bt LEFT JOIN b_trades_ext bte ON bt.trades_id=bte.trades_id AND bt.site_id=bte.site_id WHERE
+        bt.buyer_id = #{memberId} AND
+        bt.site_id = #{siteId} AND bt.is_payment=1
+        <if test="storeId != null and storeId != ''">
+            AND bt.trades_store = #{storeId}
+        </if>
+        ORDER BY bt.create_time DESC
+    </select>
+    <select id="selectTradesListfromERP" resultType="java.util.Map">
+        SELECT
+        bt.trades_id tId,
+        bt.recevier_mobile mobile,
+        bt.recevier_name receiverName,
+        bt.receiver_address receicerAddress,
+        bt.total_fee totalFee,
+        bt.post_fee postFee,
+        bt.real_pay realPay,
+        bt.is_payment payment,
+        bt.is_refund refund,
+        bt.pay_style paystyle,
+        bt.post_style poststyle,
+        bt.buyer_message message,
+        date_format(bt.create_time,'%Y-%m-%d %H:%i:%s') AS createTime,
+        bs.stores_number uid,
+        bm.mobile memberMobile
+        FROM
+        b_trades bt
+        LEFT JOIN b_member bm ON bt.buyer_id = bm.buyer_id
+        AND bt.site_id = bm.site_id
+        LEFT JOIN b_stores bs ON bt.assigned_stores = bs.id
+        AND bt.site_id = bs.site_id
+        WHERE
+        bt.site_id = #{site_id}
+        and bt.is_payment =1
+        <if test="start_time!=null and start_time!=''">
+            and bt.create_time <![CDATA[ >= ]]> #{start_time}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and bt.create_time <![CDATA[ <= ]]> #{endTime}
+        </if>
+        <if test="status==0">
+            and bt.is_refund =120
+        </if>
+        ORDER BY
+        bt.create_time DESC
+    </select>
+    <select id="selectTradesListfromERP2" resultType="java.util.Map">
+        SELECT
+        bt.trades_id tId,
+        bt.recevier_mobile mobile,
+        bt.recevier_name receiverName,
+        bt.receiver_address receicerAddress,
+        bt.total_fee totalFee,
+        bt.post_fee postFee,
+        bt.real_pay realPay,
+        bt.is_payment payment,
+        bt.is_refund refund,
+        bt.pay_style paystyle,
+        bt.post_style poststyle,
+        bt.buyer_message message,
+        date_format(bt.create_time,'%Y-%m-%d %H:%i:%s') AS createTime,
+        bs.stores_number uid,
+        bm.mobile memberMobile,
+        IFNULL(bsat.employee_number,'') employee_number
+        FROM
+        b_trades bt
+        LEFT JOIN b_member bm ON bt.buyer_id = bm.buyer_id
+        AND bt.site_id = bm.site_id
+        LEFT JOIN b_stores bs ON bt.assigned_stores = bs.id
+        AND bt.site_id = bs.site_id
+        LEFT JOIN  b_store_adminext bsat on bt.site_id=bsat.site_id
+        AND  bt.store_user_id=bsat.storeadmin_id
+        WHERE
+        bt.site_id = #{site_id}
+        and bt.is_payment =1
+        <if test="start_time!=null and start_time!=''">
+            and bt.create_time <![CDATA[ >= ]]> #{start_time}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and bt.create_time <![CDATA[ <= ]]> #{endTime}
+        </if>
+        <if test="status==1">
+            and bt.is_refund =120
+        </if>
+        ORDER BY
+        bt.create_time DESC
+    </select>
+    <select id="selectTradesListfromERPtoJZ" resultType="java.util.Map">
+        SELECT
+        bt.trades_id tId,
+        bt.recevier_mobile mobile,
+        bt.recevier_name receiverName,
+        bt.receiver_address receicerAddress,
+        bt.total_fee totalFee,
+        bt.post_fee postFee,
+        bt.real_pay realPay,
+        bt.is_payment payment,
+        bt.is_refund refund,
+        bt.pay_style paystyle,
+        bt.post_style poststyle,
+        bt.buyer_message message,
+        date_format(bt.create_time,'%Y-%m-%d %H:%i:%s') AS createTime,
+        bs.stores_number uid,
+        bm.mobile memberMobile
+        FROM
+        b_trades bt
+        LEFT JOIN b_member bm ON bt.buyer_id = bm.buyer_id
+        AND bt.site_id = bm.site_id
+        LEFT JOIN b_stores bs ON bt.assigned_stores = bs.id
+        AND bt.site_id = bs.site_id
+        WHERE
+        bt.site_id = #{site_id}
+        and bt.trades_id=#{trades_id}
+        and bt.is_payment=1
+    </select>
+
+    <select id="selectTradesListfromERP_new" resultType="java.util.Map">
+        SELECT
+        bt.trades_id tId,
+        bt.recevier_mobile mobile,
+        bt.recevier_name receiverName,
+        bt.receiver_address receicerAddress,
+        bt.total_fee totalFee,
+        bt.post_fee postFee,
+        bt.real_pay realPay,
+        bt.postage_discount postageDiscount,
+        bt.is_payment payment,
+        bt.is_refund refund,
+        bt.pay_style paystyle,
+        bt.post_style poststyle,
+        bt.buyer_message message,
+        date_format(bt.create_time,'%Y-%m-%d %H:%i:%s') AS createTime,
+        bs.stores_number uid,
+        bm.mobile memberMobile,
+  	    IFNULL(cr.rule_name, '0') coupon_name,
+	    IFNULL(cd.coupon_no, '0') couponNo
+        FROM
+        b_trades bt
+        LEFT JOIN b_member bm ON bt.buyer_id = bm.buyer_id
+        AND bt.site_id = bm.site_id
+        LEFT JOIN b_stores bs ON bt.assigned_stores = bs.id
+        AND bt.site_id = bs.site_id
+        LEFT JOIN b_coupon_detail cd ON cd.site_id = bt.site_id
+        AND cd.order_id = bt.trades_id
+        LEFT JOIN b_coupon_rule cr ON cd.site_id = cr.site_id
+        AND cr.rule_id = cd.rule_id
+        WHERE
+        bt.site_id = #{site_id}
+        and bt.trades_id=#{trades_id}
+        and bt.is_payment=1
+    </select>
+    <update id="updateFinancesNoByTradesId">
+        UPDATE  b_trades SET finance_no= #{financesNo },finance_no_refund= #{financesNo },settlement_status=250,update_time=CURRENT_TIMESTAMP() where trades_id= #{tradesId}
+    </update>
+
+
+    <select id="selectTradesMoneyBydates" resultType="java.util.Map">
+        select date(pay_time) AS query_time, convert(sum(real_pay)/100,DECIMAL(10,2)) as value from b_trades where
+        site_id=#{siteId}
+        <if test="isPayment!=null">
+            and is_payment=#{isPayment}
+        </if>
+        <if test="postStyle!=null">
+            and post_style=#{postStyle}
+        </if>
+        and pay_time between #{startTime} and #{endTime} group by query_time
+    </select>
+    <select id="getPaymentMoney" resultType="java.util.Map">
+        SELECT convert(SUM((o.goods_price*o.goods_num)/100),decimal(10,2)) AS pay_count ,o.goods_title drug_name ,o.specif_cation standard,u.hash url,SUM(o.goods_num) num
+        FROM b_orders o
+        LEFT JOIN b_images_attr u ON u.goods_id=o.goods_id AND u.site_id=#{siteId} AND u.is_default=1 AND u.flag = 0
+        LEFT JOIN b_trades b ON b.site_id=#{siteId} AND b.trades_id=o.trades_id
+        WHERE o.site_id=#{siteId}
+        AND b.is_payment=1
+        AND to_days(b.pay_time) = to_days(#{nowDay})
+        GROUP BY drug_name,standard,url
+        ORDER BY pay_count desc LIMIT 0,10
+    </select>
+
+    <select id="get_trades_list" parameterType="com.jk51.model.order.Trades" resultType="map">
+        SELECT
+        site_id,trades_id,
+        date_format(create_time,'%Y-%m-%d %H:%i:%s') create_time,
+        date_format(pay_time,'%Y-%m-%d %H:%i:%s') pay_time,
+        deal_finish_status,
+        date_format(end_time,'%Y-%m-%d %H:%i:%s') end_time,
+        trades_status,
+        IFNULL(pay_style,'---') pay_style,
+        ROUND(real_pay / 100, 2) real_pay,
+        ROUND(plat_split / 100, 2) plat_split,
+        ROUND(trades_split / 100, 2) trades_split,
+        IFNULL(ROUND(O2O_freight / 100, 2),'---') O2O_freight,
+        settlement_status,
+        IFNULL(finance_no,'---') finance_no,
+        is_refund,
+        IFNULL(settlement_type,'---')settlement_type,
+        IFNULL(post_style,'---') post_style
+        FROM
+        b_trades
+        WHERE
+        1=1
+        <if test="siteId!=null and siteId!=''">
+            and site_id =#{siteId}
+        </if>
+        <if test="sTime!=null and sTime!=''">
+            and end_time <![CDATA[ >= ]]> #{sTime}
+        </if>
+        <if test="eTime!=null and eTime!=''">
+            and end_time <![CDATA[ <= ]]> #{eTime}
+        </if>
+
+        <if test="payStyle!=null and payStyle!=''">
+            and pay_style =#{payStyle}
+        </if>
+        <if test="settlementStatus!=null and settlementStatus!='' ">
+            and settlement_status =#{settlementStatus}
+        </if>
+
+        <if test="dealFinishStatus!=null">
+            and deal_finish_status=#{dealFinishStatus}
+        </if>
+        <if test="financeNo!=null and financeNo!='' ">
+            and finance_no=#{financeNo}
+        </if>
+        <if test="tradesId!=null">
+            and trades_id=#{tradesId}
+        </if>
+        <if test="isPayment!=null">
+            and is_payment=#{isPayment}
+        </if>
+    </select>
+    <select id="getFinanceNoByTradesId" resultType="string" parameterType="string">
+        select a.finance_no
+        from b_trades a LEFT JOIN yb_settlement_detail b ON a.trades_id=b.trades_id
+        where a.trades_id=#{tradesId}
+    </select>
+
+    <select id="getTradesIdByPayNum" resultType="string" parameterType="string">
+        select a.trades_id
+        from b_trades a LEFT JOIN yb_settlement_detail b ON a.trades_id=b.trades_id
+        where a.pay_number=#{payNum}
+    </select>
+
+    <select id="getclerkIdByEnergy" resultType="Integer">
+        select recommend_user_id from b_trades where site_id=#{siteId} and
+        create_time between #{start} and #{end} group by recommend_user_id
+    </select>
+
+    <!--送货上门 o2o送货-->
+    <update id="o2oToSend" parameterType="com.jk51.model.order.Trades">
+        update b_trades set trades_status=#{tradesStatus}, consign_time=CURRENT_TIMESTAMP(), shipping_status=#{shippingStatus}, update_time=CURRENT_TIMESTAMP()  where trades_id=#{tradesId}
+    </update>
+    <!--送货上门 o2o送货 取消发货-->
+    <update id="cancelShipping" parameterType="com.jk51.model.order.Trades">
+        update b_trades set trades_status=#{tradesStatus}, consign_time='0000-00-00 00:00:00', shipping_status=#{shippingStatus}, update_time=CURRENT_TIMESTAMP()  where trades_id=#{tradesId}
+    </update>
+
+    <select id="selectTradesCountBydates" resultType="Map">
+        select date(create_time) AS query_time, count(*) as value from b_trades where
+        site_id=#{siteId}
+        <if test="isPayment!=null">
+            and is_payment=#{isPayment}
+        </if>
+        <if test="postStyle!=null">
+            and post_style=#{postStyle}
+        </if>
+        and create_time between #{startTime} and #{endTime} group by query_time
+    </select>
+
+    <select id="selectunitPriceByDates" resultType="Map">
+        SELECT
+        date(create_time) AS query_time,
+        CONVERT (
+        CONVERT (
+        sum(real_pay) / 100,
+        DECIMAL (10, 2)
+        ) / count(*),
+        DECIMAL (10, 2)
+        ) AS
+        value
+        FROM
+        b_trades
+        WHERE
+        site_id = #{siteId}
+        AND is_payment = 1
+        <if test="postStyle!=null">
+            and post_style=#{postStyle}
+        </if>
+        AND create_time between #{startTime} and #{endTime} group by query_time
+    </select>
+    <select id="selectPayMemberNum" resultType="java.util.Map">
+        select date(create_time) query_time,count(DISTINCT buyer_id) value from b_trades where site_id=#{siteId}
+        <if test="isPayment!=null">
+            and is_payment=#{isPayment}
+        </if>
+        <if test="postStyle!=null">
+            and post_style=#{postStyle}
+        </if>
+        and create_time BETWEEN #{startTime} and #{endTime} GROUP BY query_time
+    </select>
+    <select id="selectStoreUserNum" resultType="java.util.Map">
+        select date(create_time) query_time,count(DISTINCT store_user_id) value from b_trades where site_id=#{siteId} and is_payment=1 and post_style=#{postStyle} and create_time BETWEEN #{startTime} and #{endTime} GROUP BY query_time
+    </select>
+    <!--商城支付漏斗下单人数统计-->
+    <select id="funnelPaymemberCount" resultType="java.util.Map">
+        select date(create_time) query_time,count(DISTINCT buyer_id) value from b_trades where site_id=#{siteId}
+        <if test="isPayment!=null">
+            and is_payment=#{isPayment}
+        </if>
+        and post_style IN
+        <foreach collection="poststyles" index="index" item="postStyle" open="(" separator="," close=")">
+            #{postStyle}
+        </foreach>
+        and create_time BETWEEN #{startTime} and #{endTime} GROUP BY query_time
+    </select>
+    <!--商城支付漏斗下单金额统计-->
+    <select id="funnelPayBefoCount" resultType="java.util.Map">
+        select date(create_time) AS query_time, convert(sum(real_pay)/100,DECIMAL(10,2)) as value from b_trades where
+        site_id=#{siteId}
+        <if test="isPayment!=null">
+            and is_payment=#{isPayment}
+        </if>
+        and post_style IN
+        <foreach collection="poststyles" index="index" item="postStyle" open="(" separator="," close=")">
+            #{postStyle}
+        </foreach>
+        and create_time between #{startTime} and #{endTime} group by query_time
+    </select>
+    <!--商城支付漏斗客单价统计-->
+    <select id="funnelUnitPay" resultType="java.util.Map">
+        SELECT
+        date(create_time) AS query_time,
+        CONVERT (
+        CONVERT (
+        sum(real_pay) / 100,
+        DECIMAL (10, 2)
+        ) / count(*),
+        DECIMAL (10, 2)
+        ) AS
+        value
+        FROM
+        b_trades
+        WHERE
+        site_id = #{siteId}
+        <if test="isPayment!=null">
+            and is_payment=#{isPayment}
+        </if>
+        and post_style IN
+        <foreach collection="poststyles" index="index" item="postStyle" open="(" separator="," close=")">
+            #{postStyle}
+        </foreach>
+        AND create_time between #{startTime} and #{endTime} group by query_time
+    </select>
+    <!--门店支付排行榜-->
+    <select id="getStorePay" resultType="java.util.Map">
+        SELECT convert(SUM(t.real_pay/100),decimal(10,2)) AS pay_count ,s.name name
+        FROM b_trades t
+        LEFT JOIN b_stores s ON s.id=t.assigned_stores AND s.site_id=#{siteId}
+        WHERE t.site_id=#{siteId} AND t.create_time BETWEEN #{sTime} AND #{eTime}  AND t.is_payment=1 GROUP BY s.name ORDER BY pay_count DESC LIMIT 0,10
+    </select>
+    <!--区域支付排行榜：门店配送 & 门店自提-->
+    <select id="getAeraPayDistribution" resultType="java.util.Map">
+        SELECT convert(SUM(t.real_pay/100),decimal(10,2)) AS pay_count,t.receiver_address addr
+        FROM b_trades t
+        WHERE t.site_id=#{siteId} AND t.create_time BETWEEN #{sTime} AND #{eTime} AND t.is_payment=1 AND t.receiver_address !=''  AND post_style=150
+        GROUP BY addr
+        ORDER BY pay_count DESC LIMIT 0,10
+    </select>
+    <select id="getAeraPayPackUp" resultType="java.util.Map">
+        SELECT convert(SUM(t.real_pay/100),decimal(10,2)) AS pay_count,ya.name addr
+        FROM b_trades t
+        LEFT JOIN b_stores s ON (s.id=t.self_taken_store OR s.id=t.trades_store) AND s.site_id=#{siteId}
+        LEFT JOIN yb_area ya ON s.region_id=ya.areaid
+        WHERE t.site_id=#{siteId} AND t.create_time BETWEEN #{sTime} AND #{eTime} AND t.is_payment=1  AND t.receiver_address =''  AND (t.post_style=160 OR t.post_style=170)
+        GROUP BY addr
+        ORDER BY pay_count DESC LIMIT 0,10
+    </select>
+
+    <select id="selectTradesByType" resultMap="tradesMap" useCache="false">
+        select * from b_trades a LEFT JOIN b_migrate b on a.seller_id=b.site_id
+        where a.create_time >b.create_time and a.settlement_type is null
+    </select>
+
+    <select id="selectTradesByMigrate" resultMap="tradesMap">
+        select a.*,c.order_number,c.status peisongstatus from b_trades a LEFT JOIN b_migrate b on a.seller_id=b.site_id
+        LEFT JOIN  b_logistics_order c on a.trades_id=c.order_number
+        where a.create_time >b.create_time
+    </select>
+    <select id="getFinancesRecalculate" resultType="com.jk51.model.account.models.Finances" parameterType="string">
+        SELECT pay_style,SUM(CASE WHEN pay_style='health_insurance' OR pay_style='cash' THEN 0 ELSE real_pay END) total_pay,
+        SUM(CASE WHEN pay_style='health_insurance' OR pay_style='cash' THEN 0 ELSE refund_fee END) refund_total,
+        SUM(plat_split) platform_total,SUM(trades_split) commission_total,SUM(O2O_freight)post_total
+        FROM b_trades WHERE finance_no=#{financesNo}
+    </select>
+    <!--更新订单表的划账状态-->
+    <update id="updateRemitAccountStatus">
+        update b_trades set remit_account_status=1,update_time=CURRENT_TIMESTAMP() where trades_id=#{trade_id}
+    </update>
+
+    <select id="getTradesListByRemitAccountStatus" resultType="com.jk51.model.order.Trades">
+        select site_id as siteId ,trades_id as tradesId ,real_pay as realPay ,trades_status as tradesStatus,pay_style as payStyle
+        from b_trades where remit_account_status = 0 and is_payment=1 ORDER BY id DESC
+    </select>
+
+    <update id="cancelStockup">
+        UPDATE b_trades SET trades_status=120, stockup_status=110 WHERE trades_id=#{tradesId} AND (trades_status=200 OR (trades_status=120 AND stockup_status=120))
+    </update>
+
+
+    <update id="updateRealPay">
+        UPDATE  b_trades t SET t.real_pay=#{price} WHERE t.site_id=#{siteId} AND t.trades_id=#{tradesId}
+    </update>
+    <update id="updateIsUpPrice">
+        UPDATE b_trades t SET t.is_up_price=t.real_pay WHERE t.site_id=#{siteId} AND t.trades_id=#{tradesId} AND t.is_up_price=-1
+    </update>
+
+    <select id="selectCommissionRate" resultType="java.util.Map">
+        SELECT * from yb_accout_commission_rate where site_id=#{0}
+    </select>
+
+    <update id="updateTradesSplit">
+        update b_trades set trades_split=#{purchase_rate} where trades_id=#{tradesId}
+    </update>
+    <update id="updateTradesForFinances" parameterType="com.jk51.model.order.Trades">
+        UPDATE b_trades SET
+        <if test="settlementStatus!=null ">
+            settlement_status = #{settlementStatus},
+        </if>
+        <if test="financeNo!=null and financeNo!='' ">
+            finance_no = #{financeNo},
+        </if>
+        <if test="financeNoRefund!=null and financeNoRefund!='' ">
+            finance_no_refund = #{financeNoRefund},
+        </if>
+        update_time=CURRENT_TIMESTAMP()
+        where trades_id= #{tradesId}
+    </update>
+    <select id="selectTimeoutBySystemCanelNew" resultType="java.util.Map">
+        select t.trades_id,o.goods_title,m.open_id,m.ali_user_id,t.create_time,t.post_style,t.real_pay,t.trades_status
+        from b_trades t
+        LEFT JOIN (select group_concat(a.goods_title separator ',') goods_title,a.trades_id from b_orders a where a.site_id=#{siteId} GROUP BY a.trades_id) o on o.trades_id=t.trades_id
+        LEFT JOIN b_member m on t.buyer_id=m.buyer_id and t.site_id=m.site_id
+        where t.site_id=#{siteId} AND t.trades_status=110 AND CURRENT_TIMESTAMP()<![CDATA[ > ]]>date_add(t.create_time, interval #{systemCanel} day)
+
+    </select>
+    <select id="getUserByTrade" resultType="java.util.Map">
+        select t.trades_id,o.goods_title,m.open_id,m.ali_user_id,t.create_time,t.post_style,t.real_pay,t.trades_status,s.name store_name ,s.address store_address ,s.self_token_time ,s.delivery_time,s.tel
+        from b_trades t
+        LEFT JOIN (select group_concat(a.goods_title separator ',') goods_title,a.trades_id from b_orders a where a.trades_id=#{tradesId}  GROUP BY a.trades_id) o on o.trades_id=t.trades_id
+        LEFT JOIN b_member m on t.buyer_id=m.buyer_id and t.site_id=m.site_id
+        LEFT JOIN b_stores s on t.assigned_stores=s.id and t.site_id=s.site_id
+        where t.trades_id=#{tradesId}
+
+    </select>
+
+    <insert id="insertTradesAssignLog" parameterType="Map">
+        insert into b_trades_assign_log (site_id,order_number,before_store,before_post_style,store,post_style,user)
+        values (#{site_id},#{order_number},#{before_store},#{before_post_style},#{store},#{post_style},#{user})
+    </insert>
+    <select id="selectTradesIdbyPostStyle" resultType="string">
+        select assigned_stores from b_trades where site_id=#{siteId} AND buyer_id = #{buyerId} and post_style = #{postStyle} ORDER BY id DESC LIMIT 1;
+    </select>
+
+    <insert id="insertSelfTakenLog" parameterType="Map">
+        insert into b_self_taken_log (site_id,store_id,clerk_id,code) values (#{site_id},#{store_id},#{clerk_id},#{code})
+    </insert>
+
+    <insert id="insertExceptionLog" parameterType="Map">
+        insert into b_trades_exception_logs (trades_id,site_id,old_trades_status,pay_style,pay_number) values (#{trades_id},#{site_id},#{old_trades_status},#{pay_style},#{pay_number})
+    </insert>
+
+    <select id="getGoodsInfoReport" resultType="java.util.Map">
+        SELECT o.trades_id 订单编号, o.goods_code 商品编码, o.goods_title 商品名称, o.specif_cation 商品规格, o.approval_number 批准文号,
+        c.cate_name 商品分类, g.goods_company 生产厂家,
+        o.goods_num 购买数量,  <!-- ROUND(o.goods_price/100, 2) 商品原价,-->  ROUND((o.goods_final_price * o.goods_num) / 100,
+        2) 商品现价
+        FROM b_orders o LEFT JOIN b_goods g ON o.site_id=g.site_id AND o.goods_id=g.goods_id
+        LEFT JOIN b_category c ON c.site_id=g.site_id AND c.cate_code=g.user_cateid AND c.del_tag!=1
+        WHERE o.site_id = #{siteId} AND o.trades_id IN
+        <foreach item="id" index="index" collection="tradesIdArray" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <insert id="insertOrderPayLog" parameterType="Map">
+        insert into b_order_pay_log (order_number,site_id,mobile,order_mobile) values (#{order_number},#{site_id},#{mobile},#{order_mobile})
+    </insert>
+    <select id="selectOrderPayLog" parameterType="Map" resultType="int">
+        SELECT count(1) from b_order_pay_log where site_id=#{site_id} and order_number=#{order_number} and mobile=#{mobile}
+    </select>
+    <select id="getTradesListBySiteId" resultMap="tradesMap" useCache="false">
+        SELECT *
+        FROM b_trades
+        WHERE is_payment=1
+        AND site_id=#{siteId}
+        AND is_service_order=1
+        AND create_time BETWEEN #{startTime} AND #{endTime}
+        AND post_style != 170
+    </select>
+    <select id="getYonjinAndPost" resultType="map" >
+        SELECT
+        IFNULL(MAX(CASE WHEN apply_status=2 THEN round(pay_change/100,2) ELSE 0 END),0)-IFNULL(MAX(CASE WHEN apply_status=1 THEN round(pay_change/100,2) ELSE 0 END),0) 'balanceYongjin',
+        IFNULL(MAX(CASE WHEN apply_status=5 THEN round(pay_change/100,2) ELSE 0 END),0)-IFNULL(MAX(CASE WHEN apply_status=6 THEN round(pay_change/100,2) ELSE 0 END),0) 'balanceYunfei'
+        FROM b_balance_detail
+        WHERE trades_id=#{tradesId}
+    </select>
+    <select id="getAccountResult" resultType="Integer" >
+        SELECT COUNT(*)
+        FROM b_balance_detail
+        WHERE trades_id=#{tradesId}
+        AND apply_status IN (2,5)
+    </select>
+</mapper>

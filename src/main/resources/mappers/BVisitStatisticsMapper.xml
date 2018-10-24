@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.clerkvisit.mapper.BVisitStatisticsMapper">
+
+  <resultMap id="BaseResultMap" type="com.jk51.model.clerkvisit.BVisitStatistics">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="site_id" jdbcType="INTEGER" property="siteId" />
+    <result column="activity_id" jdbcType="INTEGER" property="activityId" />
+    <result column="activity_name" jdbcType="VARCHAR" property="activityName" />
+    <result column="member_num" jdbcType="INTEGER" property="memberNum" />
+    <result column="real_member_num" jdbcType="INTEGER" property="realMemberNum" />
+    <result column="store_num" jdbcType="INTEGER" property="storeNum" />
+    <result column="clerk_num" jdbcType="INTEGER" property="clerkNum" />
+    <result column="trade_num" jdbcType="INTEGER" property="tradeNum" />
+    <result column="send_num" jdbcType="INTEGER" property="sendNum" />
+    <result column="send_used_num" jdbcType="INTEGER" property="sendUsedNum" />
+    <result column="sms_num" jdbcType="INTEGER" property="smsNum" />
+    <result column="page_open_num" jdbcType="INTEGER" property="pageOpenNum" />
+    <result column="goods_num" jdbcType="INTEGER" property="goodsNum" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, site_id, activity_id, activity_name, member_num, real_member_num, store_num, 
+    clerk_num, trade_num, send_num, send_used_num, sms_num, page_open_num, goods_num, 
+    create_time, update_time
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from b_visit_statistics
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <insert id="insert" parameterType="com.jk51.model.clerkvisit.BVisitStatistics">
+    insert into b_visit_statistics (id, site_id, activity_id, 
+      activity_name, member_num, real_member_num, 
+      store_num, clerk_num, trade_num, 
+      send_num, send_used_num, sms_num, 
+      page_open_num, goods_num, create_time, 
+      update_time)
+    values (#{id,jdbcType=INTEGER}, #{siteId,jdbcType=INTEGER}, #{activityId,jdbcType=INTEGER}, 
+      #{activityName,jdbcType=VARCHAR}, #{memberNum,jdbcType=INTEGER}, #{realMemberNum,jdbcType=INTEGER}, 
+      #{storeNum,jdbcType=INTEGER}, #{clerkNum,jdbcType=INTEGER}, #{tradeNum,jdbcType=INTEGER}, 
+      #{sendNum,jdbcType=INTEGER}, #{sendUsedNum,jdbcType=INTEGER}, #{smsNum,jdbcType=INTEGER}, 
+      #{pageOpenNum,jdbcType=INTEGER}, #{goodsNum,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jk51.model.clerkvisit.BVisitStatistics">
+    insert into b_visit_statistics
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="siteId != null">
+        site_id,
+      </if>
+      <if test="activityId != null">
+        activity_id,
+      </if>
+      <if test="activityName != null">
+        activity_name,
+      </if>
+      <if test="memberNum != null">
+        member_num,
+      </if>
+      <if test="realMemberNum != null">
+        real_member_num,
+      </if>
+      <if test="storeNum != null">
+        store_num,
+      </if>
+      <if test="clerkNum != null">
+        clerk_num,
+      </if>
+      <if test="tradeNum != null">
+        trade_num,
+      </if>
+      <if test="sendNum != null">
+        send_num,
+      </if>
+      <if test="sendUsedNum != null">
+        send_used_num,
+      </if>
+      <if test="smsNum != null">
+        sms_num,
+      </if>
+      <if test="pageOpenNum != null">
+        page_open_num,
+      </if>
+      <if test="goodsNum != null">
+        goods_num,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="siteId != null">
+        #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="activityId != null">
+        #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="activityName != null">
+        #{activityName,jdbcType=VARCHAR},
+      </if>
+      <if test="memberNum != null">
+        #{memberNum,jdbcType=INTEGER},
+      </if>
+      <if test="realMemberNum != null">
+        #{realMemberNum,jdbcType=INTEGER},
+      </if>
+      <if test="storeNum != null">
+        #{storeNum,jdbcType=INTEGER},
+      </if>
+      <if test="clerkNum != null">
+        #{clerkNum,jdbcType=INTEGER},
+      </if>
+      <if test="tradeNum != null">
+        #{tradeNum,jdbcType=INTEGER},
+      </if>
+      <if test="sendNum != null">
+        #{sendNum,jdbcType=INTEGER},
+      </if>
+      <if test="sendUsedNum != null">
+        #{sendUsedNum,jdbcType=INTEGER},
+      </if>
+      <if test="smsNum != null">
+        #{smsNum,jdbcType=INTEGER},
+      </if>
+      <if test="pageOpenNum != null">
+        #{pageOpenNum,jdbcType=INTEGER},
+      </if>
+      <if test="goodsNum != null">
+        #{goodsNum,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.clerkvisit.BVisitStatistics">
+    update b_visit_statistics
+    <set>
+      <if test="siteId != null">
+        site_id = #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="activityId != null">
+        activity_id = #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="activityName != null">
+        activity_name = #{activityName,jdbcType=VARCHAR},
+      </if>
+      <if test="memberNum != null">
+        member_num = #{memberNum,jdbcType=INTEGER},
+      </if>
+      <if test="realMemberNum != null">
+        real_member_num = #{realMemberNum,jdbcType=INTEGER},
+      </if>
+      <if test="storeNum != null">
+        store_num = #{storeNum,jdbcType=INTEGER},
+      </if>
+      <if test="clerkNum != null">
+        clerk_num = #{clerkNum,jdbcType=INTEGER},
+      </if>
+      <if test="tradeNum != null">
+        trade_num = #{tradeNum,jdbcType=INTEGER},
+      </if>
+      <if test="sendNum != null">
+        send_num = #{sendNum,jdbcType=INTEGER},
+      </if>
+      <if test="sendUsedNum != null">
+        send_used_num = #{sendUsedNum,jdbcType=INTEGER},
+      </if>
+      <if test="smsNum != null">
+        sms_num = #{smsNum,jdbcType=INTEGER},
+      </if>
+      <if test="pageOpenNum != null">
+        page_open_num = #{pageOpenNum,jdbcType=INTEGER},
+      </if>
+      <if test="goodsNum != null">
+        goods_num = #{goodsNum,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jk51.model.clerkvisit.BVisitStatistics">
+    update b_visit_statistics
+    set site_id = #{siteId,jdbcType=INTEGER},
+      activity_id = #{activityId,jdbcType=INTEGER},
+      activity_name = #{activityName,jdbcType=VARCHAR},
+      member_num = #{memberNum,jdbcType=INTEGER},
+      real_member_num = #{realMemberNum,jdbcType=INTEGER},
+      store_num = #{storeNum,jdbcType=INTEGER},
+      clerk_num = #{clerkNum,jdbcType=INTEGER},
+      trade_num = #{tradeNum,jdbcType=INTEGER},
+      send_num = #{sendNum,jdbcType=INTEGER},
+      send_used_num = #{sendUsedNum,jdbcType=INTEGER},
+      sms_num = #{smsNum,jdbcType=INTEGER},
+      page_open_num = #{pageOpenNum,jdbcType=INTEGER},
+      goods_num = #{goodsNum,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateSmsnum" >
+    update b_visit_statistics
+    set
+    sms_num = sms_num+1
+    where site_id = #{siteId}
+    AND  id=#{bvsId}
+  </update>
+
+  <update id="updateRealMemberNum" parameterType="java.util.Map">
+    UPDATE b_visit_statistics SET real_member_num = real_member_num+1 WHERE site_id = #{siteId}
+      AND id= #{bvsId}
+
+  </update>
+</mapper>

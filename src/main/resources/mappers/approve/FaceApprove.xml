@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.member.mapper.FaceApproveMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.approve.FaceApprove">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="member_id" jdbcType="INTEGER" property="memberId"/>
+        <result column="image_id" jdbcType="VARCHAR" property="imageId"/>
+        <result column="img" jdbcType="VARCHAR" property="img"/>
+        <result column="gender" jdbcType="VARCHAR" property="gender"/>
+        <result column="age" jdbcType="INTEGER" property="age"/>
+        <result column="beauty" jdbcType="VARCHAR" property="beauty"/>
+        <result column="glass" jdbcType="VARCHAR" property="glass"/>
+        <result column="emotion" jdbcType="VARCHAR" property="emotion"/>
+        <result column="ethnicity" jdbcType="VARCHAR" property="ethnicity"/>
+        <result column="mouthstatus" jdbcType="VARCHAR" property="mouthstatus"/>
+        <result column="skinstatus" jdbcType="VARCHAR" property="skinstatus"/>
+        <result column="left_eye" jdbcType="VARCHAR" property="leftEye"/>
+        <result column="right_eye" jdbcType="VARCHAR" property="rightEye"/>
+        <result column="smile" jdbcType="VARCHAR" property="smile"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+
+    <sql id="base_column_list">
+        id, site_id, member_id, image_id, img, gender, age, beauty, glass, emotion, ethnicity, mouthstatus, skinstatus, left_eye, right_eye, smile, create_time, update_time
+    </sql>
+
+    <insert id="add" parameterType="com.jk51.model.approve.FaceApprove" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO b_member_face_approve (site_id, member_id, image_id, img, gender, age, beauty, glass, emotion, ethnicity, mouthstatus, skinstatus, left_eye, right_eye, smile, create_time, update_time)
+        VALUES (#{siteId}, #{memberId}, #{imageId}, #{img}, #{gender}, #{age}, #{beauty}, #{glass}, #{emotion}, #{ethnicity}, #{mouthstatus}, #{skinstatus}, #{leftEye}, #{rightEye},#{smile}, now(), now())
+    </insert>
+
+    <select id="getBySiteIdAndMemberId" parameterType="int" resultMap="BaseResultMap">
+        SELECT <include refid="base_column_list"/> FROM b_member_face_approve WHERE site_id=#{siteId} AND member_id=#{memberId} ORDER BY create_time DESC
+        <choose>
+            <when test="type==1">
+                limit 1
+            </when>
+            <otherwise>
+                limit 3
+            </otherwise>
+        </choose>
+
+    </select>
+
+
+</mapper>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.pc.mapper.HomePageMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.pc.HomePage">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="goods_ids" jdbcType="VARCHAR" property="goodsIds"/>
+        <result column="line" jdbcType="INTEGER" property="line"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+
+    <sql id="base_column_list">
+        id, site_id, goods_ids, line, create_time, update_time
+    </sql>
+
+    <select id="getLst" parameterType="int" resultMap="BaseResultMap">
+        SELECT <include refid="base_column_list"/> FROM pc_home_page WHERE site_id=#{siteId}
+        <if test="bfrom==0">
+            AND goods_ids != '' AND goods_ids IS NOT NULL
+        </if>
+    </select>
+
+    <insert id="add" parameterType="com.jk51.model.pc.HomePage" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO pc_home_page (site_id, goods_ids, line, create_time, update_time)
+        VALUES (#{siteId}, #{goodsIds}, #{line}, now(), now())
+    </insert>
+
+    <update id="upd" parameterType="com.jk51.model.pc.HomePage">
+        UPDATE pc_home_page SET goods_ids=#{goodsIds} WHERE site_id=#{siteId} AND id=#{id}
+    </update>
+
+</mapper>

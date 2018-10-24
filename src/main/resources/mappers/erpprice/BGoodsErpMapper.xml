@@ -1,0 +1,538 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.erpprice.mapper.BGoodsErpMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.erpprice.BGoodsErp">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="goods_id" jdbcType="INTEGER" property="goodsId"/>
+        <result column="goods_code" jdbcType="VARCHAR" property="goodsCode"/>
+        <result column="price" jdbcType="INTEGER" property="price"/>
+        <result column="store_id" jdbcType="INTEGER" property="storeId"/>
+        <result column="store_number" jdbcType="VARCHAR" property="storeNumber"/>
+        <result column="store_name" jdbcType="VARCHAR" property="storeName"/>
+        <result column="province" jdbcType="VARCHAR" property="province"/>
+        <result column="city" jdbcType="VARCHAR" property="city"/>
+        <result column="country" jdbcType="VARCHAR" property="country"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Update_By_Example_Where_Clause">
+        <where>
+            <foreach collection="example.oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Base_Column_List">
+    id, site_id, goods_id, goods_code, price, store_id, store_number, store_name, province, 
+    city, country, status, create_time, update_time
+  </sql>
+    <select id="selectByExample" parameterType="com.jk51.model.erpprice.BGoodsErpExample" resultMap="BaseResultMap">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List"/>
+        from b_goods_erp
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+        <if test="limit != null">
+            <if test="offset != null">
+                limit ${offset}, ${limit}
+            </if>
+            <if test="offset == null">
+                limit ${limit}
+            </if>
+        </if>
+    </select>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from b_goods_erp
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from b_goods_erp
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <delete id="deleteByExample" parameterType="com.jk51.model.erpprice.BGoodsErpExample">
+        delete from b_goods_erp
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </delete>
+    <insert id="insert" parameterType="com.jk51.model.erpprice.BGoodsErp">
+    insert into b_goods_erp (site_id, goods_id,
+      goods_code, price, store_id, 
+      store_number, store_name, province, 
+      city, country, status)
+    values (#{siteId,jdbcType=INTEGER}, #{goodsId,jdbcType=INTEGER},
+      #{goodsCode,jdbcType=VARCHAR}, #{price,jdbcType=INTEGER}, #{storeId,jdbcType=INTEGER}, 
+      #{storeNumber,jdbcType=VARCHAR},'', '',
+      '', '', 10)
+  </insert>
+    <insert id="insertSelective" parameterType="com.jk51.model.erpprice.BGoodsErp">
+        insert into b_goods_erp
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="goodsId != null">
+                goods_id,
+            </if>
+            <if test="goodsCode != null">
+                goods_code,
+            </if>
+            <if test="price != null">
+                price,
+            </if>
+            <if test="storeId != null">
+                store_id,
+            </if>
+            <if test="storeNumber != null">
+                store_number,
+            </if>
+            <if test="storeName != null">
+                store_name,
+            </if>
+            <if test="province != null">
+                province,
+            </if>
+            <if test="city != null">
+                city,
+            </if>
+            <if test="country != null">
+                country,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="goodsId != null">
+                #{goodsId,jdbcType=INTEGER},
+            </if>
+            <if test="goodsCode != null">
+                #{goodsCode,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                #{price,jdbcType=INTEGER},
+            </if>
+            <if test="storeId != null">
+                #{storeId,jdbcType=INTEGER},
+            </if>
+            <if test="storeNumber != null">
+                #{storeNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="storeName != null">
+                #{storeName,jdbcType=VARCHAR},
+            </if>
+            <if test="province != null">
+                #{province,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null">
+                #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="country != null">
+                #{country,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <select id="countByExample" parameterType="com.jk51.model.erpprice.BGoodsErpExample" resultType="java.lang.Long">
+        select count(*) from b_goods_erp
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
+        update b_goods_erp
+        <set>
+            <if test="record.id != null">
+                id = #{record.id,jdbcType=INTEGER},
+            </if>
+            <if test="record.siteId != null">
+                site_id = #{record.siteId,jdbcType=INTEGER},
+            </if>
+            <if test="record.goodsId != null">
+                goods_id = #{record.goodsId,jdbcType=INTEGER},
+            </if>
+            <if test="record.goodsCode != null">
+                goods_code = #{record.goodsCode,jdbcType=VARCHAR},
+            </if>
+            <if test="record.price != null">
+                price = #{record.price,jdbcType=INTEGER},
+            </if>
+            <if test="record.storeId != null">
+                store_id = #{record.storeId,jdbcType=INTEGER},
+            </if>
+            <if test="record.storeNumber != null">
+                store_number = #{record.storeNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="record.storeName != null">
+                store_name = #{record.storeName,jdbcType=VARCHAR},
+            </if>
+            <if test="record.province != null">
+                province = #{record.province,jdbcType=VARCHAR},
+            </if>
+            <if test="record.city != null">
+                city = #{record.city,jdbcType=VARCHAR},
+            </if>
+            <if test="record.country != null">
+                country = #{record.country,jdbcType=VARCHAR},
+            </if>
+            <if test="record.status != null">
+                status = #{record.status,jdbcType=TINYINT},
+            </if>
+            <if test="record.createTime != null">
+                create_time = #{record.createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="record.updateTime != null">
+                update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByExample" parameterType="map">
+        update b_goods_erp
+        set id = #{record.id,jdbcType=INTEGER},
+        site_id = #{record.siteId,jdbcType=INTEGER},
+        goods_id = #{record.goodsId,jdbcType=INTEGER},
+        goods_code = #{record.goodsCode,jdbcType=VARCHAR},
+        price = #{record.price,jdbcType=INTEGER},
+        store_id = #{record.storeId,jdbcType=INTEGER},
+        store_number = #{record.storeNumber,jdbcType=VARCHAR},
+        store_name = #{record.storeName,jdbcType=VARCHAR},
+        province = #{record.province,jdbcType=VARCHAR},
+        city = #{record.city,jdbcType=VARCHAR},
+        country = #{record.country,jdbcType=VARCHAR},
+        status = #{record.status,jdbcType=TINYINT},
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.erpprice.BGoodsErp">
+        update b_goods_erp
+        <set>
+            <if test="siteId != null">
+                site_id = #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="goodsId != null">
+                goods_id = #{goodsId,jdbcType=INTEGER},
+            </if>
+            <if test="goodsCode != null">
+                goods_code = #{goodsCode,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                price = #{price,jdbcType=INTEGER},
+            </if>
+            <if test="storeId != null">
+                store_id = #{storeId,jdbcType=INTEGER},
+            </if>
+            <if test="storeNumber != null">
+                store_number = #{storeNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="storeName != null">
+                store_name = #{storeName,jdbcType=VARCHAR},
+            </if>
+            <if test="province != null">
+                province = #{province,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null">
+                city = #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="country != null">
+                country = #{country,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.jk51.model.erpprice.BGoodsErp">
+    update b_goods_erp
+    set site_id = #{siteId,jdbcType=INTEGER},
+      goods_id = #{goodsId,jdbcType=INTEGER},
+      goods_code = #{goodsCode,jdbcType=VARCHAR},
+      price = #{price,jdbcType=INTEGER},
+      store_id = #{storeId,jdbcType=INTEGER},
+      store_number = #{storeNumber,jdbcType=VARCHAR},
+      store_name = #{storeName,jdbcType=VARCHAR},
+      province = #{province,jdbcType=VARCHAR},
+      city = #{city,jdbcType=VARCHAR},
+      country = #{country,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    <insert id="insertERPPrice">
+        INSERT INTO
+        b_goods_erp ( site_id,goods_code, price, store_id, store_number, store_name, province, city, country
+        <if test="goodsId != null">
+            ,goods_id
+        </if>)
+        SELECT
+        site_id, #{goodsCode}, #{goodsPrice}, id, stores_number, `name`, province, city, country
+        <if test="goodsId != null">
+            ,#{goodsId}
+        </if>
+        FROM
+        b_stores
+        WHERE site_id = #{siteId} and id = #{storeId} and stores_status=1 and stores_number=#{storeNumber}
+    </insert>
+
+    <!--<update id="updateERPPrice">
+    UPDATE
+      b_goods_erp AS t1
+      INNER JOIN b_stores AS t2 ON t1.store_id = t2.id
+    SET t1.store_name = t2.NAME,
+      t1.province = t2.province,
+      t1.city = t2.city,
+      t1.country = t2.country,
+      t1.store_number = t2.stores_number,
+      t1.price = #{goodsPrice},
+      t1.status = 10
+    where
+      t1.goods_code = #{goodsCode}
+      AND t1.site_id = #{siteId}
+      AND t1.store_id = #{storeId} and t1.store_number=#{storeNumber}
+  </update>-->
+    <update id="updateERPPrice">
+        UPDATE
+        b_goods_erp AS t1
+        SET
+        t1.price = #{goodsPrice},
+        t1.status = 10
+        where
+        t1.goods_code = #{goodsCode}
+        AND t1.site_id = #{siteId}
+        AND t1.store_id = #{storeId} and t1.store_number=#{storeNumber}
+    </update>
+
+    <update id="abateERPPrice">
+    UPDATE b_goods_erp
+    SET status = 20
+    where
+      goods_code = #{goodsCode}
+      AND site_id = #{siteId}
+      AND store_id = #{storeId}
+  </update>
+
+    <select id="erpPriceList" resultType="java.util.Map">
+        SELECT E.id,G.drug_name,G.specif_cation,G.goods_id,E.goods_code,S.city,S.country,S.id
+        store_id,S.name store_name,E.store_number,E.price
+        FROM b_goods_erp AS E
+        LEFT JOIN b_goods AS G ON E.goods_id=G.goods_id AND E.site_id=G.`site_id`
+        left join b_stores AS S ON S.site_id=E.site_id AND S.stores_number =E.store_number and S.stores_status=1
+        WHERE E.site_id=#{siteId} AND E.status=10 and G.goods_status &lt;&gt; 4 and G.app_goods_status &lt;&gt; 4
+        <if test="storeId!=null">
+            AND E.store_id=#{storeId}
+        </if>
+        <if test="drugName != null and drugName != ''">
+            AND G.drug_name like concat(#{drugName}, '%')
+        </if>
+        <if test="goodsCode != null">
+            AND E.goods_code = #{goodsCode}
+        </if>
+        <if test="storeName != null">
+            AND S.name = #{storeName}
+        </if>
+        <if test="storeNumber != null">
+            AND E.store_number = #{storeNumber}
+        </if>
+        <if test="city != null">
+            AND S.city = #{city}
+        </if>
+        <if test="country != null">
+            AND S.country = #{country}
+        </if>
+        <if test="priceLow != null">
+            AND E.price <![CDATA[ >= ]]> #{priceLow}
+        </if>
+        <if test="priceHigh != null">
+            AND E.price  <![CDATA[ <= ]]> #{priceHigh}
+        </if>
+        ORDER BY E.id DESC
+    </select>
+
+    <select id="erpPriceList2" resultType="java.util.Map">
+        SELECT E.id,E.goods_id,E.goods_code,E.store_id,E.store_number,E.price
+        FROM b_goods_erp AS E
+        WHERE E.site_id=#{siteId} AND E.status=10
+        <if test="storeId!=null">
+            AND E.store_id=#{storeId}
+        </if>
+        <if test="goodCodes!=null">
+            and E.goods_code in
+            <foreach item="gcode" index="index" collection="goodCodes" open="(" separator="," close=")"> #{gcode} </foreach>
+        </if>
+        ORDER BY E.id DESC
+    </select>
+
+    <!-- 批量改价-->
+    <update id="batchChangePrice">
+        UPDATE b_goods_erp SET price=#{price},update_time=CURRENT_TIMESTAMP()
+        WHERE id IN
+        <foreach close=")" collection="ids" index="index" item="id" open="(" separator=",">
+            #{id}
+        </foreach>
+    </update>
+    <!-- 查询商品信息-->
+    <select id="selectChangePriceInfos" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM b_goods_erp
+        WHERE id IN
+        <foreach close=")" collection="ids" index="index" item="id" open="(" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+    <!-- 单个修改价格-->
+    <update id="ChangePrice">
+    UPDATE b_goods_erp SET price=#{price},update_time=CURRENT_TIMESTAMP()
+    WHERE id =#{id}
+  </update>
+
+    <!-- 根据storeid和goodid确定唯一一条数据-->
+    <select id="selectByStroeidAndGoodsid" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from b_goods_erp
+        WHERE site_id=#{siteId}
+        AND store_id=#{storeId}
+        AND goods_Id=#{goodsId}
+    </select>
+
+    <!-- 门店修改erp价格-->
+    <update id="updateByStroeidAndGoodsid">
+    UPDATE b_goods_erp SET price=#{erpPrice},update_time=CURRENT_TIMESTAMP()
+    WHERE site_id=#{siteId}
+    AND store_id=#{storeId}
+    AND  goods_Id=#{goodsId}
+  </update>
+    <!--查询指定类型的价格-->
+    <select id="selectErpPriceList" resultType="Map">
+        select id,CONCAT_WS("_",goods_code,store_number) as gs from b_goods_erp where
+        site_id=#{siteId}
+        AND
+        <foreach collection="goodlist" item="item" separator="or">
+            goods_code=#{item.goods_code} and store_number=#{item.store_number}
+        </foreach>
+    </select>
+    <!--查询指定类型的价格-->
+    <select id="selectErpPriceListBysiteId" resultType="Map">
+        select id,CONCAT_WS("_",goods_code,store_number) as gs from b_goods_erp where site_id=#{siteId}
+    </select>
+    <!--批量插入门店多价格数据-->
+    <insert id="batchInsertErpPrice" parameterType="java.util.List">
+        insert into
+        b_goods_erp (site_id, goods_id, goods_code, price, store_id, store_number, store_name, province, city, country,
+        status) VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.siteId,jdbcType=INTEGER}, #{item.goodsId,jdbcType=INTEGER}, #{item.goodsCode,jdbcType=VARCHAR},
+            #{item.price,jdbcType=INTEGER}, #{item.storeId,jdbcType=INTEGER}, #{item.storeNumber,jdbcType=VARCHAR},'',
+            '','', '', 10)
+        </foreach>
+    </insert>
+    <!--批量更新门店多价格数据-->
+    <update id="batchUpdateErpPrice">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            update b_goods_erp SET
+            price=#{item.shop_price},status = 10 where id=#{item.id}
+        </foreach>
+    </update>
+</mapper>

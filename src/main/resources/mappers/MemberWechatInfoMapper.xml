@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.userScenarios.mapper.MemberWechatInfoMapper">
+
+    <select id="findInfo" resultType="com.jk51.modules.im.service.wechatUtil.WechatInfo">
+        SELECT * from b_member_wechat_info where member_id = #{member_id}
+    </select>
+    <insert id="insertInfo" parameterType="java.util.Map">
+        INSERT into b_member_wechat_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="buyerId!=null">
+                member_id,
+            </if>
+            <if test="nickname!=null">
+                nick_name,
+            </if>
+            <if test="sex!=null">
+                sex,
+            </if>
+            <if test="city!=null">
+                city,
+            </if>
+            <if test="province!=null">
+                province,
+            </if>
+            <if test="headimgurl!=null">
+                headimgurl,
+            </if>
+            <if test="openid!=null">
+                openid,
+            </if>
+            create_time,
+            update_time
+        </trim>
+        <trim prefix=" values(" suffix=")" suffixOverrides=",">
+            <if test="buyerId!=null">
+                #{buyerId},
+            </if>
+            <if test="nickname!=null">
+                #{nickname},
+            </if>
+            <if test="sex!=null">
+                #{sex},
+            </if>
+            <if test="city!=null">
+                #{city},
+            </if>
+            <if test="province!=null">
+                #{province},
+            </if>
+            <if test="headimgurl!=null">
+                #{headimgurl},
+            </if>
+            <if test="openid!=null">
+                #{openid},
+            </if>
+            CURRENT_TIMESTAMP() ,
+            CURRENT_TIMESTAMP()
+        </trim>
+    </insert>
+
+    <update id="updateInfo" parameterType="java.util.Map">
+        UPDATE b_member_wechat_info
+        <set>
+            <if test="nickname!=null">
+                nick_name = #{nickname},
+            </if>
+            <if test="sex!=null">
+                sex = #{sex},
+            </if>
+            <if test="city!=null">
+                city = #{city},
+            </if>
+            <if test="province!=null">
+                province = #{province},
+            </if>
+            <if test="headimgurl!=null">
+                headimgurl = #{headimgurl},
+            </if>
+            <if test="openid!=null">
+                openid =#{openid},
+            </if>
+            update_time = CURRENT_TIMESTAMP()
+        </set>
+        <where>
+            member_id = #{buyerId}
+        </where>
+    </update>
+
+</mapper>

@@ -1,0 +1,827 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.persistence.mapper.SStoreAdminextMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.order.SStoreAdminext">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="site_id"/>
+        <result column="store_id" jdbcType="INTEGER" property="store_id"/>
+        <result column="storeadmin_id" jdbcType="INTEGER" property="storeadmin_id"/>
+        <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="sex" jdbcType="INTEGER" property="sex"/>
+        <result column="idcard_number" jdbcType="VARCHAR" property="idcard_number"/>
+        <result column="birthday" jdbcType="DATE" property="birthday"/>
+        <result column="age" jdbcType="SMALLINT" property="age"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="qq" jdbcType="VARCHAR" property="qq"/>
+        <result column="clerk_job" jdbcType="VARCHAR" property="clerk_job"/>
+        <result column="clerk_invitation_code" jdbcType="VARCHAR" property="clerk_invitation_code"/>
+        <result column="employee_number" jdbcType="VARCHAR" property="employee_number"/>
+        <result column="storeadmin_status" jdbcType="BIT" property="storeadmin_status"/>
+        <result column="is_del" jdbcType="BIT" property="is_del"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="create_time"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="update_time"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.jk51.model.order.SStoreAdminext">
+        <result column="memo" jdbcType="LONGVARCHAR" property="memo"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, site_id, store_id, storeadmin_id, mobile, name, sex, idcard_number, birthday, 
+    age, email, qq, clerk_job, clerk_invitation_code, employee_number, storeadmin_status,
+    is_del, create_time, update_time,memo
+  </sql>
+    <sql id="Blob_Column_List">
+    memo
+  </sql>
+
+
+    <select id="getStoreAdminNameById" resultType="java.lang.String">
+        SELECT `name` FROM b_store_adminext WHERE site_id=#{siteId} AND storeadmin_id=#{storeAdminId} AND is_del=0
+    </select>
+
+    <select id="selectAll" parameterType="java.lang.Integer" resultType="com.jk51.model.order.SStoreAdmin">
+        SELECT
+        <include refid="Blob_Column_List"/>
+        from b_store_adminext
+        where site_id = #{site_id,jdbcType=INTEGER}
+        AND store_id = #{store_id,jdbcType=INTEGER}
+        AND is_del=0
+    </select>
+    <select id="findStoreAdminextList" resultType="com.jk51.model.order.SStoreAdminext">
+        SELECT *
+        from b_store_adminext
+        <where>
+            is_del = 0
+            <if test="site_id != null">
+                AND
+                site_id = #{site_id}
+            </if>
+
+            <if test="mobile != null">
+                AND
+                mobile = #{mobile}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from b_store_adminext
+        where id = #{id,jdbcType=INTEGER}
+        and site_id = #{site_id,jdbcType=INTEGER}
+        AND is_del=0
+    </select>
+
+
+    <select id="getStoreAdminExtById" resultType="com.jk51.model.order.SStoreAdminext">
+    SELECT
+    bsae.*
+    from b_store_adminext bsae JOIN b_store_admin bsa ON bsae.site_id=bsa.site_id AND bsae.storeadmin_id=bsa.id
+    where bsae.site_id=#{siteId} AND  bsae.storeadmin_id=#{storeadminId} AND bsae.is_del=0
+  </select>
+
+
+    <select id="selectByStoreAdminKey" parameterType="java.lang.Integer" resultType="com.jk51.model.order.SStoreAdminext">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from b_store_adminext
+        where site_id=#{site_id,jdbcType=INTEGER}
+        AND storeadmin_id=#{storeadmin_id,jdbcType=INTEGER} AND is_del=0
+    </select>
+    <select id="selectBySiteIdAndStoreAdminId" parameterType="java.lang.Integer"
+            resultType="com.jk51.model.order.SStoreAdminext">
+      SELECT  *
+    from b_store_adminext
+    where site_id=#{siteId,jdbcType=INTEGER}
+    AND  storeadmin_id=#{storeAdminId,jdbcType=INTEGER}
+    AND is_del=0
+  </select>
+    <select id="selectBySiteId" parameterType="java.lang.Integer" resultType="com.jk51.model.order.SStoreAdminext">
+    SELECT  *
+    from b_store_adminext
+    where site_id=#{site_id,jdbcType=INTEGER} AND is_del=0
+  </select>
+    <select id="selectSelectiv" resultType="com.jk51.model.order.SClerkDetail">
+        select ba.id,
+        ba.storeadmin_id,ba.mobile,ba.name clerkName,ba.sex,ba.employee_number,ba.create_time,ba.clerk_job,
+        ba.clerk_invitation_code invocation_code,ba.memo
+        from b_store_adminext ba
+        INNER JOIN b_store_admin b on b.id=ba.storeadmin_id
+        and b.site_id=ba.site_id
+        and b.store_id=ba.store_id
+        and b.is_del=ba.is_del
+        <where>
+            ba.site_id=#{site_id,jdbcType=INTEGER}
+            and b.user_type=2
+            AND ba.store_id=#{store_id,jdbcType=INTEGER}
+            <if test="mobile != null and mobile !=''">
+                and ba.mobile LIKE concat('%',#{mobile,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="start != null">
+                and ba.create_time &gt;=#{start}
+            </if>
+            <if test="end != null">
+                and ba.create_time &lt;=#{end }
+            </if>
+            and ba.is_del=0
+        </where>
+        ORDER BY ba.id desc
+    </select>
+    <select id="selectSelective" resultType="com.jk51.model.order.SStoreAdminext">
+        select
+        *
+        from b_store_adminext
+        <where>
+            site_id=#{site_id,jdbcType=INTEGER}
+            AND store_id=#{store_id,jdbcType=INTEGER}
+            <if test="mobile != null and mobile !=''">
+                and mobile LIKE concat('%',#{mobile,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="start != null">
+                and create_time &gt;=#{start}
+            </if>
+            <if test="end != null">
+                and create_time &lt;=#{end }
+            </if>
+            and is_del=0
+        </where>
+    </select>
+
+    <select id="storeAdminReport" resultType="java.util.Map" parameterType="java.util.Map">
+      SELECT sa.mobile '手机号码', sa.name '姓名', s.name '所属门店', SUBSTRING_INDEX(sa.`clerk_invitation_code`,'_',-1) '邀请码'
+      FROM b_store_adminext AS sa LEFT JOIN b_stores AS s ON sa.`store_id`=s.`id` AND sa.`site_id`=s.`site_id`
+        <where>
+            sa.site_id=#{site_id,jdbcType=INTEGER}
+            <if test="mobile!=null and mobile!=''">
+                and sa.mobile LIKE concat('%',#{mobile,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="name!=null and name!=''">
+                and sa.`name` LIKE concat('%',#{name,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="ivcode!=null and ivcode!=''">
+                and sa.clerk_invitation_code LIKE concat('%',#{ivcode,jdbcType=INTEGER},'%')
+            </if>
+            <if test="store_id!=null and store_id!=''">
+                and sa.store_id=#{store_id,jdbcType=INTEGER}
+            </if>
+            <if test="status!=null and status !=''">
+                AND sa.storeadmin_status =#{status,jdbcType=BIT}
+            </if>
+            AND sa.is_del=0
+            AND s.`name` IS NOT NULL
+        </where>
+      ORDER BY sa.`create_time` DESC
+
+    </select>
+
+    <select id="selectClerkInfo" resultType="com.jk51.model.order.SMerchantClerkInfo">
+        select b_store_adminext.mobile mobile,
+        b_store_adminext.`name` name,
+        b_store_adminext.employee_number employeeNumber,
+        b_store_adminext.clerk_invitation_code ivocode,
+        b_store_adminext.create_time createTime,
+        b_store_adminext.clerk_job clerkJob,
+        b_stores.`name` storeName,
+        b_store_adminext.memo memo,
+        b_store_adminext.storeadmin_status status
+        from b_store_adminext
+        INNER JOIN b_stores
+        ON b_stores.id=b_store_adminext.store_id
+        and b_stores.site_id = b_store_adminext.site_id
+        where b_store_adminext.site_id=#{site_id,jdbcType=INTEGER}
+        <if test="mobile!=null and mobile!=''">
+            and b_store_adminext.mobile LIKE concat('%',#{mobile,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="name!=null and name!=''">
+            and b_store_adminext.`name` LIKE concat('%',#{name,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="ivcode!=null">
+            and b_store_adminext.clerk_invitation_code LIKE concat('%',#{ivcode,jdbcType=INTEGER},'%')
+        </if>
+        <if test="store_id!=null">
+            and b_store_adminext.store_id=#{store_id,jdbcType=INTEGER}
+        </if>
+        <if test="status!=null">
+            AND b_store_adminext.storeadmin_status =#{status,jdbcType=BIT}
+        </if>
+        AND b_store_adminext.is_del=0
+        order by createTime DESC
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from b_store_adminext
+    where id = #{id,jdbcType=INTEGER}
+      and site_id = #{site_id,jdbcType=INTEGER}
+  </delete>
+    <delete id="deleleBySiteIdAndStoreAdminId" parameterType="java.lang.Integer">
+    delete from b_store_adminext
+    where storeadmin_id = #{storeadmin_id,jdbcType=INTEGER}
+    and site_id = #{site_id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.jk51.model.order.SStoreAdminext">
+    insert into b_store_adminext (id, site_id, store_id, 
+      storeadmin_id, mobile, name, 
+      sex, idcard_number, birthday, 
+      age, email, qq, clerk_job, 
+      clerk_invitation_code, employee_number, 
+      storeadmin_status, is_del, create_time, 
+      update_time, memo)
+    values (#{id,jdbcType=INTEGER}, #{site_id,jdbcType=INTEGER}, #{store_id,jdbcType=INTEGER}, 
+      #{storeadmin_id,jdbcType=INTEGER}, #{mobile,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{sex,jdbcType=INTEGER}, #{idcard_number,jdbcType=VARCHAR}, #{birthday,jdbcType=DATE}, 
+      #{age,jdbcType=SMALLINT}, #{email,jdbcType=VARCHAR}, #{qq,jdbcType=VARCHAR}, #{clerk_job,jdbcType=VARCHAR}, 
+      #{clerk_invitation_code,jdbcType=VARCHAR}, #{employee_number,jdbcType=VARCHAR}, 
+      #{storeadmin_status,jdbcType=BIT}, #{is_del,jdbcType=BIT}, #{create_time,jdbcType=TIMESTAMP}, 
+      #{update_time,jdbcType=TIMESTAMP}, #{memo,jdbcType=LONGVARCHAR})
+  </insert>
+    <insert id="insertSelective" parameterType="com.jk51.model.order.SStoreAdminext" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into b_store_adminext
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="site_id != null">
+                site_id,
+            </if>
+            <if test="store_id != null">
+                store_id,
+            </if>
+            <if test="storeadmin_id != null">
+                storeadmin_id,
+            </if>
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="sex != null">
+                sex,
+            </if>
+            <if test="idcard_number != null">
+                idcard_number,
+            </if>
+            <if test="birthday != null">
+                birthday,
+            </if>
+            <if test="age != null">
+                age,
+            </if>
+            <if test="email != null">
+                email,
+            </if>
+            <if test="qq != null">
+                qq,
+            </if>
+            <if test="clerk_job != null">
+                clerk_job,
+            </if>
+            <if test="clerk_invitation_code != null">
+                clerk_invitation_code,
+            </if>
+            <if test="employee_number != null">
+                employee_number,
+            </if>
+            <if test="storeadmin_status != null">
+                storeadmin_status,
+            </if>
+            <if test="is_del != null">
+                is_del,
+            </if>
+            <if test="create_time != null">
+                create_time,
+            </if>
+            <if test="update_time != null">
+                update_time,
+            </if>
+            <if test="memo != null">
+                memo,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="site_id != null">
+                #{site_id,jdbcType=INTEGER},
+            </if>
+            <if test="store_id != null">
+                #{store_id,jdbcType=INTEGER},
+            </if>
+            <if test="storeadmin_id != null">
+                #{storeadmin_id,jdbcType=INTEGER},
+            </if>
+            <if test="mobile != null">
+                #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null">
+                #{sex,jdbcType=INTEGER},
+            </if>
+            <if test="idcard_number != null">
+                #{idcard_number,jdbcType=VARCHAR},
+            </if>
+            <if test="birthday != null">
+                #{birthday,jdbcType=DATE},
+            </if>
+            <if test="age != null">
+                #{age,jdbcType=SMALLINT},
+            </if>
+            <if test="email != null">
+                #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="qq != null">
+                #{qq,jdbcType=VARCHAR},
+            </if>
+            <if test="clerk_job != null">
+                #{clerk_job,jdbcType=VARCHAR},
+            </if>
+            <if test="clerk_invitation_code != null">
+                #{clerk_invitation_code,jdbcType=VARCHAR},
+            </if>
+            <if test="employee_number != null">
+                #{employee_number,jdbcType=VARCHAR},
+            </if>
+            <if test="storeadmin_status != null">
+                #{storeadmin_status,jdbcType=BIT},
+            </if>
+            <if test="is_del != null">
+                #{is_del,jdbcType=BIT},
+            </if>
+            <if test="create_time != null">
+                #{create_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="update_time != null">
+                #{update_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="memo != null">
+                #{memo,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.order.SStoreAdminext">
+        update b_store_adminext
+        <set>
+            <if test="store_id != null">
+                store_id = #{store_id,jdbcType=INTEGER},
+            </if>
+            <if test="storeadmin_id != null">
+                storeadmin_id = #{storeadmin_id,jdbcType=INTEGER},
+            </if>
+            <if test="mobile != null">
+                mobile = #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null">
+                sex = #{sex,jdbcType=INTEGER},
+            </if>
+            <if test="idcard_number != null">
+                idcard_number = #{idcard_number,jdbcType=VARCHAR},
+            </if>
+            <if test="birthday != null">
+                birthday = #{birthday,jdbcType=DATE},
+            </if>
+            <if test="age != null">
+                age = #{age,jdbcType=SMALLINT},
+            </if>
+            <if test="email != null">
+                email = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="qq != null">
+                qq = #{qq,jdbcType=VARCHAR},
+            </if>
+            <if test="clerk_job != null">
+                clerk_job = #{clerk_job,jdbcType=VARCHAR},
+            </if>
+            <if test="clerk_invitation_code != null">
+                clerk_invitation_code = #{clerk_invitation_code,jdbcType=VARCHAR},
+            </if>
+            <if test="employee_number != null">
+                employee_number = #{employee_number,jdbcType=VARCHAR},
+            </if>
+            <if test="storeadmin_status != null">
+                storeadmin_status = #{storeadmin_status,jdbcType=BIT},
+            </if>
+            <if test="is_del != null">
+                is_del = #{is_del,jdbcType=BIT},
+            </if>
+            <if test="create_time != null">
+                create_time = #{create_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="update_time != null">
+                update_time = #{update_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="memo != null">
+                memo = #{memo,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+        and site_id = #{site_id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.jk51.model.order.SStoreAdminext">
+    update b_store_adminext
+    set store_id = #{store_id,jdbcType=INTEGER},
+      storeadmin_id = #{storeadmin_id,jdbcType=INTEGER},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=INTEGER},
+      idcard_number = #{idcard_number,jdbcType=VARCHAR},
+      birthday = #{birthday,jdbcType=DATE},
+      age = #{age,jdbcType=SMALLINT},
+      email = #{email,jdbcType=VARCHAR},
+      qq = #{qq,jdbcType=VARCHAR},
+      clerk_job = #{clerk_job,jdbcType=VARCHAR},
+      clerk_invitation_code = #{clerk_invitation_code,jdbcType=VARCHAR},
+      employee_number = #{employee_number,jdbcType=VARCHAR},
+      storeadmin_status = #{storeadmin_status,jdbcType=BIT},
+      is_del = #{is_del,jdbcType=BIT},
+      create_time = #{create_time,jdbcType=TIMESTAMP},
+      update_time = #{update_time,jdbcType=TIMESTAMP},
+      memo = #{memo,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+      and site_id = #{site_id,jdbcType=INTEGER}
+  </update>
+    <update id="updateByPrimaryKey" parameterType="com.jk51.model.order.SStoreAdminext">
+    update b_store_adminext
+    set store_id = #{store_id,jdbcType=INTEGER},
+      storeadmin_id = #{storeadmin_id,jdbcType=INTEGER},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=INTEGER},
+      idcard_number = #{idcard_number,jdbcType=VARCHAR},
+      birthday = #{birthday,jdbcType=DATE},
+      age = #{age,jdbcType=SMALLINT},
+      email = #{email,jdbcType=VARCHAR},
+      qq = #{qq,jdbcType=VARCHAR},
+      clerk_job = #{clerk_job,jdbcType=VARCHAR},
+      clerk_invitation_code = #{clerk_invitation_code,jdbcType=VARCHAR},
+      employee_number = #{employee_number,jdbcType=VARCHAR},
+      storeadmin_status = #{storeadmin_status,jdbcType=BIT},
+      is_del = #{is_del,jdbcType=BIT},
+      create_time = #{create_time,jdbcType=TIMESTAMP},
+      update_time = #{update_time,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+      and site_id = #{site_id,jdbcType=INTEGER}
+  </update>
+
+    <select id="selectClerkCount" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM b_store_adminext
+        <where>
+            is_del = 0
+            <if test="storeAdminext.site_id != null">
+                AND site_id = #{storeAdminext.site_id,jdbcType=INTEGER}
+            </if>
+            <if test="storeAdminext.store_id != null">
+                AND store_id = #{storeAdminext.store_id,jdbcType=INTEGER}
+            </if>
+            <if test="storeAdminext.storeadmin_id != null">
+                AND storeadmin_id = #{storeAdminext.storeadmin_id,jdbcType=INTEGER}
+            </if>
+            <if test="storeAdminext.mobile != null">
+                AND mobile = #{storeAdminext.mobile,jdbcType=VARCHAR}
+            </if>
+            <if test="storeAdminext.name != null">
+                AND name = #{storeAdminext.name,jdbcType=VARCHAR}
+            </if>
+            <if test="storeAdminext.sex != null">
+                AND sex = #{storeAdminext.sex,jdbcType=INTEGER}
+            </if>
+            <if test="storeAdminext.idcard_number != null">
+                AND idcard_number = #{storeAdminext.idcard_number,jdbcType=VARCHAR}
+            </if>
+            <if test="storeAdminext.birthday != null">
+                AND birthday = #{storeAdminext.birthday,jdbcType=DATE}
+            </if>
+            <if test="storeAdminext.age != null">
+                AND age = #{storeAdminext.age,jdbcType=SMALLINT}
+            </if>
+            <if test="storeAdminext.email != null">
+                AND email = #{storeAdminext.email,jdbcType=VARCHAR}
+            </if>
+            <if test="storeAdminext.qq != null">
+                AND qq = #{storeAdminext.qq,jdbcType=VARCHAR}
+            </if>
+            <if test="storeAdminext.clerk_job != null">
+                AND clerk_job = #{storeAdminext.clerk_job,jdbcType=VARCHAR}
+            </if>
+            <if test="storeAdminext.clerk_invitation_code != null">
+                AND clerk_invitation_code = #{storeAdminext.clerk_invitation_code,jdbcType=VARCHAR}
+            </if>
+            <if test="storeAdminext.employee_number != null">
+                AND employee_number = #{storeAdminext.employee_number,jdbcType=VARCHAR}
+            </if>
+            <if test="storeAdminext.storeadmin_status != null">
+                AND storeadmin_status = #{storeAdminext.storeadmin_status,jdbcType=BIT}
+            </if>
+            <!--<if test="storeAdminext.is_del != null">-->
+                <!--AND is_del = #{storeAdminext.is_del,jdbcType=BIT}-->
+            <!--</if>-->
+            <if test="storeAdminext.create_time != null">
+                AND create_time = #{storeAdminext.create_time,jdbcType=TIMESTAMP}
+            </if>
+            <if test="storeAdminext.update_time != null">
+                AND update_time = #{storeAdminext.update_time,jdbcType=TIMESTAMP}
+            </if>
+            <if test="storeAdminext.memo != null">
+                AND memo = #{storeAdminext.memo,jdbcType=LONGVARCHAR}
+            </if>
+        </where>
+
+    </select>
+
+    <select id="
+" resultType="com.jk51.model.order.SStoreAdminext">
+
+        SELECT * FROM b_store_adminext
+
+        <where>
+            <if test="storeAdminext.site_id != null">
+                AND site_id = #{storeAdminext.site_id,jdbcType=INTEGER}
+            </if>
+            <if test="storeAdminext.store_id != null">
+                AND store_id = #{storeAdminext.store_id,jdbcType=INTEGER}
+            </if>
+            <if test="storeAdminext.storeadmin_id != null">
+                AND storeadmin_id = #{storeAdminext.storeadmin_id,jdbcType=INTEGER}
+            </if>
+            <if test="storeAdminext.mobile != null">
+                AND mobile = #{storeAdminext.mobile,jdbcType=VARCHAR}
+            </if>
+            <if test="storeAdminext.name != null">
+                AND name = #{storeAdminext.name,jdbcType=VARCHAR}
+            </if>
+            <if test="storeAdminext.sex != null">
+                AND sex = #{storeAdminext.sex,jdbcType=INTEGER}
+            </if>
+            <if test="storeAdminext.idcard_number != null">
+                AND idcard_number = #{storeAdminext.idcard_number,jdbcType=VARCHAR}
+            </if>
+            <if test="storeAdminext.birthday != null">
+                AND birthday = #{storeAdminext.birthday,jdbcType=DATE}
+            </if>
+            <if test="storeAdminext.age != null">
+                AND age = #{storeAdminext.age,jdbcType=SMALLINT}
+            </if>
+            <if test="storeAdminext.email != null">
+                AND email = #{storeAdminext.email,jdbcType=VARCHAR}
+            </if>
+            <if test="storeAdminext.qq != null">
+                AND qq = #{storeAdminext.qq,jdbcType=VARCHAR}
+            </if>
+            <if test="storeAdminext.clerk_job != null">
+                AND clerk_job = #{storeAdminext.clerk_job,jdbcType=VARCHAR}
+            </if>
+            <if test="storeAdminext.clerk_invitation_code != null">
+                AND clerk_invitation_code = #{storeAdminext.clerk_invitation_code,jdbcType=VARCHAR}
+            </if>
+            <if test="storeAdminext.employee_number != null">
+                AND employee_number = #{storeAdminext.employee_number,jdbcType=VARCHAR}
+            </if>
+            <if test="storeAdminext.storeadmin_status != null">
+                AND storeadmin_status = #{storeAdminext.storeadmin_status,jdbcType=BIT}
+            </if>
+            <if test="storeAdminext.is_del != null">
+                AND is_del = #{storeAdminext.is_del,jdbcType=BIT}
+            </if>
+            <if test="storeAdminext.create_time != null">
+                AND create_time = #{storeAdminext.create_time,jdbcType=TIMESTAMP}
+            </if>
+            <if test="storeAdminext.update_time != null">
+                AND update_time = #{storeAdminext.update_time,jdbcType=TIMESTAMP}
+            </if>
+            <if test="storeAdminext.memo != null">
+                AND memo = #{storeAdminext.memo,jdbcType=LONGVARCHAR}
+            </if>
+        </where>
+
+        ORDER BY clerk_invitation_code DESC
+
+        <if test="page.rowsIndex != null">
+            LIMIT #{page.rowsIndex},
+            <if test="page.pageSize != null">
+                #{page.pageSize}
+            </if>
+            <if test="page.pageSize == null">
+                15
+            </if>
+        </if>
+    </select>
+
+
+    <select id="selectClerkListByInviteCode" resultType="com.jk51.model.order.SStoreAdminext">
+
+      SELECT * FROM b_store_adminext
+        WHERE site_id = #{siteId,jdbcType=INTEGER}
+        AND clerk_invitation_code = #{inviteCode,jdbcType=VARCHAR}
+        AND is_del=0
+
+  </select>
+
+    <select id="selectClerkListLikeByInviteCode" resultType="com.jk51.model.order.SStoreAdminext">
+
+    SELECT * FROM b_store_adminext
+      WHERE site_id = #{siteId,jdbcType=INTEGER}
+      AND is_del=0
+      AND clerk_invitation_code LIKE CONCAT('%',#{inviteCode,jdbcType=VARCHAR},'%')
+
+  </select>
+    <select id="selectClerkList" resultType="com.jk51.model.order.SStoreAdminext">
+
+        SELECT * FROM b_store_adminext
+
+        <where>
+            is_del=0
+            <if test="storeAdminext.site_id != null">
+                AND site_id = #{storeAdminext.site_id,jdbcType=INTEGER}
+            </if>
+            <if test="storeAdminext.store_id != null">
+                AND store_id = #{storeAdminext.store_id,jdbcType=INTEGER}
+            </if>
+            <if test="storeAdminext.storeadmin_id != null">
+                AND storeadmin_id = #{storeAdminext.storeadmin_id,jdbcType=INTEGER}
+            </if>
+            <if test="storeAdminext.mobile != null">
+                AND mobile = #{storeAdminext.mobile,jdbcType=VARCHAR}
+            </if>
+            <if test="storeAdminext.name != null">
+                AND name = #{storeAdminext.name,jdbcType=VARCHAR}
+            </if>
+            <if test="storeAdminext.sex != null">
+                AND sex = #{storeAdminext.sex,jdbcType=INTEGER}
+            </if>
+            <if test="storeAdminext.idcard_number != null">
+                AND idcard_number = #{storeAdminext.idcard_number,jdbcType=VARCHAR}
+            </if>
+            <if test="storeAdminext.birthday != null">
+                AND birthday = #{storeAdminext.birthday,jdbcType=DATE}
+            </if>
+            <if test="storeAdminext.age != null">
+                AND age = #{storeAdminext.age,jdbcType=SMALLINT}
+            </if>
+            <if test="storeAdminext.email != null">
+                AND email = #{storeAdminext.email,jdbcType=VARCHAR}
+            </if>
+            <if test="storeAdminext.qq != null">
+                AND qq = #{storeAdminext.qq,jdbcType=VARCHAR}
+            </if>
+            <if test="storeAdminext.clerk_job != null">
+                AND clerk_job = #{storeAdminext.clerk_job,jdbcType=VARCHAR}
+            </if>
+            <if test="storeAdminext.clerk_invitation_code != null">
+                AND clerk_invitation_code = #{storeAdminext.clerk_invitation_code,jdbcType=VARCHAR}
+            </if>
+            <if test="storeAdminext.employee_number != null">
+                AND employee_number = #{storeAdminext.employee_number,jdbcType=VARCHAR}
+            </if>
+            <if test="storeAdminext.storeadmin_status != null">
+                AND storeadmin_status = #{storeAdminext.storeadmin_status,jdbcType=BIT}
+            </if>
+
+            <if test="storeAdminext.create_time != null">
+                AND create_time = #{storeAdminext.create_time,jdbcType=TIMESTAMP}
+            </if>
+            <if test="storeAdminext.update_time != null">
+                AND update_time = #{storeAdminext.update_time,jdbcType=TIMESTAMP}
+            </if>
+            <if test="storeAdminext.memo != null">
+                AND memo = #{storeAdminext.memo,jdbcType=LONGVARCHAR}
+            </if>
+
+        </where>
+
+        ORDER BY clerk_invitation_code DESC
+
+        <if test="page.rowsIndex != null">
+            LIMIT #{page.rowsIndex},
+            <if test="page.pageSize != null">
+                #{page.pageSize}
+            </if>
+            <if test="page.pageSize == null">
+                15
+            </if>
+        </if>
+    </select>
+    <select id="selectClerkChat" resultType="com.jk51.model.order.SMerchantClerkInfo">
+        SELECT
+        bsae.storeadmin_id id,
+        bsae.mobile mobile,
+        bsae.`name` NAME,
+        bs.`name` storeName,
+        bsae.storeadmin_status STATUS
+        FROM
+        b_store_adminext bsae
+        LEFT JOIN b_store_admin bsa ON bsae.site_id = bsa.site_id
+        AND bsae.store_id = bsa.store_id
+        AND bsae.storeadmin_id = bsa.id
+        LEFT JOIN b_stores bs ON bsa.site_id = bs.site_id
+        AND bsa.store_id = bs.id
+        where bsae.site_id=#{site_id,jdbcType=INTEGER}
+        and bs.stores_status=1
+        AND bsae.is_del=0
+        <if test="mobile!=null and mobile!=''">
+            and bsae.mobile =#{mobile,jdbcType=VARCHAR}
+        </if>
+        <if test="name!=null and name!=''">
+            and bsae.`name` LIKE concat('%',#{name,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="storeName!=null and storeName!=''">
+            and bs.`name`=#{storeName,jdbcType=VARCHAR}
+        </if>
+        <if test="status!=null">
+            AND bsae.storeadmin_status =#{status,jdbcType=BIT}
+        </if>
+        <if test="chat!=null">
+            and bsa.chat=#{chat,jdbcType=INTEGER}
+        </if>
+    </select>
+    <update id="updateClerkChatType" parameterType="Map">
+        update b_store_admin set
+        chat=#{chat,jdbcType=INTEGER} where site_id=#{siteId,jdbcType=INTEGER}
+        <if test="clerk_ids!=null and clerk_ids.length!=0">
+            AND id
+            IN
+            <foreach collection="clerk_ids" item="item" open="(" close=")" index="index" separator=",">
+                <if test="item!=null and item!=''">
+                    #{item}
+                </if>
+            </foreach>
+        </if>
+    </update>
+    <update id="updateAllclerkChatType">
+        update b_store_admin set chat=#{chat,jdbcType=INTEGER} where site_id=#{siteId,jdbcType=INTEGER}
+    </update>
+
+    <select id="selectInviteCodeMax" resultType="java.lang.String" useCache="false" flushCache="true">
+        SELECT clerk_invitation_code FROM b_store_adminext WHERE site_id = #{siteId}
+    </select>
+    <select id="selectByMobileExt" resultType="com.jk51.model.order.SStoreAdminext" parameterType="java.lang.String">
+        SELECT * FROM b_store_adminext WHERE mobile = #{mobile} AND is_del=0
+    </select>
+    <select id="selectByMobileExtToInsert" resultType="com.jk51.model.order.SStoreAdminext" parameterType="java.lang.String">
+        SELECT * FROM b_store_adminext WHERE mobile = #{mobile}
+    </select>
+    <!--<update id="updateClerkDel" parameterType="java.lang.Integer">
+        update b_store_admin set is_del=1
+        where site_id=#{siteId,jdbcType=INTEGER}
+        AND store_id=#{storeId,jdbcType=INTEGER}
+        AND storeadmin_id=#{id,jdbcType=INTEGER}
+    </update>-->
+
+    <update id="editAvatar">
+        update b_store_adminext set avatar = #{avatar} where site_id=#{siteId} and id = #{id}
+    </update>
+
+    <select id="queryItem" resultType="Map">
+        select * from b_store_adminext where site_id=#{siteId} and id = #{id}
+    </select>
+
+    <update id="forgetPwd">
+        update b_store_admin set user_pwd = #{pwd} where CONCAT(site_id, id) = (select CONCAT(site_id, storeadmin_id) from b_store_adminext where  mobile = #{phone} limit 1)
+    </update>
+
+    <!--查询店员列表-->
+    <select id="getClerksList" parameterType="java.util.Map" resultType="java.util.Map">
+      SELECT bsat.id,bsat.name clerkName,bsat.mobile,bs.name storeName,bsat.storeadmin_id storeadminId FROM b_store_adminext bsat
+      LEFT JOIN b_stores bs ON bs.site_id = bsat.site_id AND bs.id = bsat.store_id
+      <where>
+          bsat.site_id = #{siteId} AND bsat.store_id = #{storeId}
+          AND bsat.is_del = 0 AND bsat.storeadmin_status = 1
+          <if test="clerkName != null and clerkName != ''">
+            AND bsat.name LIKE concat('%',#{clerkName},'%')
+          </if>
+          <if test="clerkMobile != null and clerkMobile != ''">
+              AND bsat.mobile LIKE concat('%',#{clerkMobile},'%')
+          </if>
+      </where>
+    </select>
+
+    <select id="getadminInfo" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT id,store_admin_id storeAdminId,admin_name adminName,goods_ids goodIds,
+        activity_ids activityIds,buyer_id buyerId,buyer_name buyerName, store_id storeId,status FROM b_clerk_visit
+        WHERE id IN
+        <foreach collection="userIds" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <insert id="addChangeClerkLog" parameterType="java.util.Map">
+        INSERT INTO b_visit_deploy (id, site_id, clerk_visit_id, pre_store_id, pre_admin_id, pre_admin_name, store_id, admin_id, admin_name,operator_id, operator_name, create_time, update_time)
+        VALUES (NULL ,#{siteId}, #{cvId}, #{preStoreId}, #{preClerkId}, #{preClerkName},#{nStoreId}, #{clerkId}, #{clerkName}, #{operId}, #{operName}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    </insert>
+    <update id="changeClerk" parameterType="java.util.Map">
+        UPDATE b_clerk_visit SET store_admin_id = #{clerkId}, admin_name = #{clerkName},
+        store_name= #{storeName}
+        WHERE site_id = #{siteId} AND store_id = #{storeId} AND id IN
+        <foreach collection="userIds" index="index" item="id" open="(" separator="," close=")">
+          #{id}
+        </foreach>
+    </update>
+
+</mapper>

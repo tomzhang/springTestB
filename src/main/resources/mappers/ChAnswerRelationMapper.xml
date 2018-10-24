@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.im.mapper.ChAnswerRelationMapper">
+
+    <select id="findUserOpenId" resultType="java.lang.String">
+        SELECT user_openid
+        from ch_answer_relation
+        WHERE
+        pharmacist_userid = #{sender}
+        AND
+        disable = 0
+        ORDER BY create_time desc
+    </select>
+
+    <update id="updateRemark">
+        UPDATE ch_answer_relation
+        set remark = #{remark}
+        WHERE
+          user_openid= #{receiver} and pharmacist_userid= #{sender}
+          disable = 0
+    </update>
+
+    <update id="delete">
+         UPDATE ch_answer_relation
+        set disable = 1,update_time = current_timestamp
+        WHERE
+          user_openid= #{sender}
+          and im_service_id = #{imServiceId}
+    </update>
+    <update id="deleteBySender">
+        UPDATE ch_answer_relation
+        set disable = 1,update_time = current_timestamp
+        WHERE
+        user_openid= #{sender}
+    </update>
+    <update id="update" parameterType="com.jk51.model.ChAnswerRelation">
+      UPDATE ch_answer_relation
+        set remark = #{remark},user_openid=#{user_openid},pharmacist_userid=#{pharmacist_userid},update_time=current_timestamp,
+            disable=#{disable}
+        WHERE
+          id= #{id}
+    </update>
+    <select id="getRemark" parameterType="java.lang.String">
+        SELECT remark
+        from ch_answer_relation
+         WHERE
+          user_openid= #{receiver} and pharmacist_userid= #{sender}
+          and
+          disable = 0
+    </select>
+
+    <select id="findByUserOpenId" resultType="com.jk51.model.ChAnswerRelation">
+        SELECT *
+        from ch_answer_relation
+        WHERE
+          user_openid= #{openId}
+          AND
+          disable = 0
+        limit 1
+    </select>
+
+    <select id="findByUserOpenIdAndharmacistUserid" resultType="com.jk51.model.ChAnswerRelation">
+        SELECT *
+        from ch_answer_relation
+         WHERE
+          user_openid= #{sender} and pharmacist_userid= #{receiver}
+          and disable = 0
+          limit 1
+    </select>
+    <insert id="insert" parameterType="com.jk51.model.ChAnswerRelation">
+        INSERT into ch_answer_relation
+        (user_openid,pharmacist_userid,disable,remark,im_service_id,im_recode_id,create_time,update_time)VALUES (#{user_openid},#{pharmacist_userid},#{disable},#{remark},#{im_service_id},#{im_recode_id},current_timestamp ,current_timestamp )
+    </insert>
+    <select id="getReceiverBySender" resultType="java.lang.String">
+        SELECT pharmacist_userid
+        from ch_answer_relation
+        WHERE
+        user_openid = #{rlToken}
+        AND
+        disable =0;
+    </select>
+
+
+
+
+    <update id="updateBySenderAndRecervice">
+        UPDATE ch_answer_relation
+        set disable = 1,update_time = now()
+        WHERE
+        user_openid= #{sender} AND pharmacist_userid=#{receiver} AND disable = 0
+    </update>
+
+    <select id="findImServiceId" resultType="java.lang.Integer">
+        SELECT im_service_id from ch_answer_relation where user_openid = #{sender} and pharmacist_userid = #{receiver} AND disable = 0 limit 1
+    </select>
+
+</mapper>

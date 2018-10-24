@@ -1,0 +1,777 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.persistence.mapper.DiscountMapper">
+    <select id="getPayAliWx" resultType="map" parameterType="map">
+        SELECT
+        id,wx_app_id,wx_mch_id,wx_notify_url,wx_spbill_create_ip,wx_key,wx_appsecret,wx_cert_path,
+        ali_app_id,ali_seller_id,ali_private_key,public_key,ali_public_key,ali_notify_url,ali_log_path,ali_url,ali_return_url,status,ali_app_auth_token,ali_pid
+        FROM b_aliwx_pay
+        WHERE site_id=#{siteId}
+    </select>
+    <insert id="insertTradesLine">
+        insert into b_trades_line
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="site_id != null">
+                site_id,
+            </if>
+            <if test="openId != null">
+                open_id,
+            </if>
+            <if test="trades_id != null">
+                trades_id,
+            </if>
+            <if test="seller_id != null">
+                seller_id,
+            </if>
+            <if test="buyer_id != null">
+                buyer_id,
+            </if>
+            <if test="pay_time != null">
+                pay_time,
+            </if>
+            <if test="seller_pay_no != null">
+                seller_pay_no,
+            </if>
+            <if test="user_phone != null">
+                user_phone,
+            </if>
+            <if test="is_refund != null">
+                is_refund,
+            </if>
+            <if test="total_fee != null">
+                total_fee,
+            </if>
+            <if test="coupon_fee != null">
+                coupon_fee,
+            </if>
+            <if test="real_pay != null">
+                real_pay,
+            </if>
+            <if test="buyer_pay_no != null">
+                buyer_pay_no,
+            </if>
+            <if test="pay_style != null">
+                pay_style,
+            </if>
+            <if test="pay_number != null">
+                pay_number,
+            </if>
+            <if test="trades_source != null">
+                trades_source,
+            </if>
+            <if test="trades_store != null">
+                trades_store,
+            </if>
+            <if test="store_user_id != null">
+                store_user_id,
+            </if>
+            <if test="trades_del != null">
+                trades_del,
+            </if>
+            <if test="is_payment != null">
+                is_payment,
+            </if>
+            <if test="refund_fee != null">
+                refund_fee,
+            </if>
+            <if test="is_register != null">
+                is_register,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="site_id != null">
+                #{site_id},
+            </if>
+            <if test="openId != null">
+                #{openId},
+            </if>
+            <if test="trades_id != null">
+                #{trades_id},
+            </if>
+            <if test="seller_id != null">
+                #{seller_id},
+            </if>
+            <if test="buyer_id != null">
+                #{buyer_id},
+            </if>
+            <if test="pay_time != null">
+                #{pay_time},
+            </if>
+            <if test="seller_pay_no != null">
+                #{seller_pay_no},
+            </if>
+            <if test="user_phone != null">
+                #{user_phone},
+            </if>
+            <if test="is_refund != null">
+                #{is_refund},
+            </if>
+            <if test="total_fee != null">
+                #{total_fee},
+            </if>
+            <if test="coupon_fee != null">
+                #{coupon_fee},
+            </if>
+            <if test="real_pay != null">
+                #{real_pay},
+            </if>
+            <if test="buyer_pay_no != null">
+                #{buyer_pay_no},
+            </if>
+            <if test="pay_style != null">
+                #{pay_style},
+            </if>
+            <if test="pay_number != null">
+                #{pay_number},
+            </if>
+            <if test="trades_source != null">
+                #{trades_source},
+            </if>
+            <if test="trades_store != null">
+                #{trades_store},
+            </if>
+            <if test="store_user_id != null">
+                #{store_user_id},
+            </if>
+            <if test="trades_del != null">
+                #{trades_del},
+            </if>
+            <if test="is_payment != null">
+                #{is_payment},
+            </if>
+            <if test="refund_fee != null">
+                #{refund_fee},
+            </if>
+            <if test="is_register != null">
+                #{is_register},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateTradesLine" parameterType="map">
+        update b_trades_line
+        <set>
+            <if test="seller_id != null">
+                seller_id = #{seller_id},
+            </if>
+            <if test="buyer_id != null">
+                buyer_id = #{buyer_id},
+            </if>
+            <if test="pay_time != null">
+                pay_time = #{pay_time},
+            </if>
+            <if test="seller_pay_no != null">
+                seller_pay_no = #{seller_pay_no},
+            </if>
+            <if test="user_phone != null">
+                user_phone = #{user_phone},
+            </if>
+            <if test="is_refund != null">
+                is_refund = #{is_refund},
+            </if>
+            <if test="total_fee != null">
+                total_fee = #{total_fee},
+            </if>
+            <if test="coupon_fee != null">
+                coupon_fee = #{coupon_fee},
+            </if>
+            <if test="real_pay != null">
+                real_pay = #{real_pay},
+            </if>
+            <if test="buyer_pay_no != null">
+                buyer_pay_no = #{buyer_pay_no},
+            </if>
+            <if test="pay_style != null">
+                pay_style = #{pay_style},
+            </if>
+            <if test="pay_number != null">
+                pay_number = #{pay_number},
+            </if>
+            <if test="trades_source != null">
+                trades_source = #{trades_source},
+            </if>
+            <if test="trades_store != null">
+                trades_store = #{trades_store},
+            </if>
+            <if test="store_user_id != null">
+                store_user_id = #{store_user_id},
+            </if>
+            <if test="trades_del != null">
+                trades_del = #{trades_del},
+            </if>
+            <if test="is_payment != null">
+                is_payment = #{is_payment},
+            </if>
+            <if test="refund_fee != null">
+                refund_fee = #{refund_fee},
+            </if>
+            <if test="is_register != null">
+                is_register = #{is_register},
+            </if>
+        </set>
+        WHERE site_id=#{site_id}
+        <if test="id != null">
+            AND id = #{id}
+        </if>
+        <if test="trades_id != null">
+            AND trades_id = #{trades_id}
+        </if>
+        <if test="real_pay != null">
+            AND real_pay = #{real_pay}
+        </if>
+    </update>
+    <select id="getTradesLine" resultType="map" parameterType="map">
+        SELECT *
+        FROM b_trades_line
+        WHERE trades_id = #{trades_id}
+        AND trades_del=0
+    </select>
+    <select id="getDiscountRuleLine" resultType="map" parameterType="map">
+        SELECT id,rule_val,discount_type,total_fee,day_total_fee,discount_desc
+        FROM b_discount_rule_line
+        WHERE site_id=#{siteId}
+        AND now() BETWEEN discount_start_time AND discount_end_time
+        AND del=0
+    </select>
+    <select id="getDiscountRuleLineBySiteId" resultType="map" parameterType="map">
+        SELECT id,rule_val,discount_type,total_fee,day_total_fee,discount_desc,discount_start_time,discount_end_time
+        FROM b_discount_rule_line
+        WHERE site_id=#{siteId}
+    </select>
+    <insert id="insertDiscountRuleLine">
+        insert into b_discount_rule_line
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="rule_val != null">
+                rule_val,
+            </if>
+            <if test="discount_type != null">
+                discount_type,
+            </if>
+            <if test="total_fee != null">
+                total_fee,
+            </if>
+            <if test="day_total_fee != null">
+                day_total_fee,
+            </if>
+            <if test="discount_desc != null">
+                discount_desc,
+            </if>
+            <if test="discount_start_time != null">
+                discount_start_time,
+            </if>
+            <if test="discount_end_time != null">
+                discount_end_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId},
+            </if>
+            <if test="rule_val != null">
+                #{rule_val},
+            </if>
+            <if test="discount_type != null">
+                #{discount_type},
+            </if>
+            <if test="total_fee != null">
+                #{total_fee},
+            </if>
+            <if test="day_total_fee != null">
+                #{day_total_fee},
+            </if>
+            <if test="discount_desc != null">
+                #{discount_desc},
+            </if>
+            <if test="discount_start_time != null">
+                #{discount_start_time},
+            </if>
+            <if test="discount_end_time != null">
+                #{discount_end_time},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateDiscountRuleLine" parameterType="map">
+        update b_discount_rule_line
+        <set>
+            <if test="rule_val != null">
+                rule_val = #{rule_val},
+            </if>
+            <if test="discount_type != null">
+                discount_type = #{discount_type},
+            </if>
+            <if test="total_fee != null">
+                total_fee = #{total_fee},
+            </if>
+            <if test="day_total_fee != null">
+                day_total_fee = #{day_total_fee},
+            </if>
+            <if test="discount_desc != null">
+                discount_desc = #{discount_desc},
+            </if>
+            <if test="discount_start_time != null">
+                discount_start_time = #{discount_start_time},
+            </if>
+            <if test="discount_end_time != null">
+                discount_end_time = #{discount_end_time},
+            </if>
+        </set>
+        WHERE site_id=#{siteId}
+    </update>
+    <select id="getTradesLineSum" resultType="java.lang.Integer" parameterType="map">
+        SELECT IfNULL(SUM(brl.redpacket_pay),0)
+        from b_redpacket_line brl
+        LEFT JOIN b_trades b ON b.trades_id=brl.trades_id
+        WHERE brl.site_id = #{siteId}
+        <if test="create_time_end != null">
+            AND brl.create_time BETWEEN #{create_time} AND #{create_time_end}
+        </if>
+        <if test="real_pay_end != null">
+            AND b.real_pay BETWEEN #{real_pay} AND #{real_pay_end}
+        </if>
+    </select>
+    <insert id="insertRedpacketLine">
+        insert into b_redpacket_line
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="memberId != null">
+                member_id,
+            </if>
+            <if test="redpacket_pay != null">
+                redpacket_pay,
+            </if>
+            <if test="tradesId != null">
+                trades_id,
+            </if>
+            <if test="user_phone != null">
+                user_phone,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId},
+            </if>
+            <if test="memberId != null">
+                #{memberId},
+            </if>
+            <if test="redpacket_pay != null">
+                #{redpacket_pay},
+            </if>
+            <if test="tradesId != null">
+                #{tradesId},
+            </if>
+            <if test="user_phone != null">
+                #{user_phone},
+            </if>
+        </trim>
+    </insert>
+    <select id="getRedpacketTotalMoneyByUnused" resultType="java.lang.Integer" parameterType="map">
+        SELECT IFNULL(SUM(redpacket_pay),0) total_money
+        FROM b_redpacket_line
+        WHERE site_id=#{siteId}
+        AND member_id=#{memberId}
+        AND use_type=0
+    </select>
+    <update id="updateRedpacketType" parameterType="map">
+        UPDATE b_redpacket_line
+        SET use_type=1,use_time=CURRENT_TIMESTAMP
+        WHERE site_id=#{siteId}
+        AND member_id=#{memberId}
+        AND use_type=0
+    </update>
+    <select id="getTotalMoneyByActivite" resultType="java.lang.Integer" parameterType="map">
+        SELECT IFNULL(SUM(redpacket_pay),0) total_money
+        FROM b_redpacket_line
+        WHERE site_id=#{siteId}
+        <if test="starttime != null and endtime != null">
+            AND create_time BETWEEN #{starttime} AND #{endtime}
+        </if>
+    </select>
+    <select id="getDiscountOrderList" resultType="map" parameterType="map">
+        SELECT
+        br.create_time create_time
+        ,br.user_phone user_phone
+        ,br.trades_id trades_id
+        ,br.redpacket_pay redpacket_pay
+        ,b.real_pay
+        FROM b_redpacket_line br
+        LEFT JOIN b_trades b ON br.site_id=b.site_id AND br.trades_id=b.trades_id
+        WHERE br.site_id=#{siteId}
+        <if test="user_phone != null">
+            AND br.user_phone=#{user_phone}
+        </if>
+        <if test="start_time != null and end_time != null">
+            AND br.create_time BETWEEN #{start_time} AND #{end_time}
+        </if>
+        ORDER BY br.create_time DESC
+    </select>
+    <select id="boolPhone" resultType="java.lang.Integer" parameterType="map">
+        SELECT COUNT(*) FROM b_member WHERE site_id=#{siteId} AND mobile=#{user_phone}
+    </select>
+    <select id="getMemberId" resultType="java.lang.Integer" parameterType="map">
+        SELECT member_id FROM b_member WHERE site_id=#{siteId} AND buyer_id=#{buyer_id}
+    </select>
+    <select id="getOfflineBySiteId" resultType="map" parameterType="map">
+        SELECT wx_app_id,wx_mch_id,wx_key,wx_appsecret,wx_cert_path,ali_app_id,
+        ali_seller_id,ali_private_key,ali_public_key,public_key,status,
+        ali_app_auth_token,ali_pid
+        FROM b_aliwx_pay
+        WHERE site_id=#{siteId}
+        <if test="type != null">
+            AND status = 0
+        </if>
+    </select>
+    <select id="boolOfflineBySiteId" resultType="java.lang.Integer" parameterType="map">
+        SELECT COUNT(*)
+        FROM b_aliwx_pay
+        WHERE site_id=#{siteId}
+    </select>
+    <insert id="insertOfflineBySiteId">
+        insert into b_aliwx_pay
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="wx_app_id != null">
+                wx_app_id,
+            </if>
+            <if test="wx_mch_id != null">
+                wx_mch_id,
+            </if>
+            <if test="wx_key != null">
+                wx_key,
+            </if>
+            <if test="wx_appsecret != null">
+                wx_appsecret,
+            </if>
+            <if test="wx_cert_path != null">
+                wx_cert_path,
+            </if>
+            <if test="ali_app_id != null">
+                ali_app_id,
+            </if>
+            <if test="ali_seller_id != null">
+                ali_seller_id,
+            </if>
+            <if test="ali_private_key != null">
+                ali_private_key,
+            </if>
+            <if test="ali_public_key != null">
+                ali_public_key,
+            </if>
+            <if test="public_key != null">
+                public_key,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="ali_app_auth_token != null">
+                ali_app_auth_token,
+            </if>
+            <if test="ali_pid != null">
+                ali_pid,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId},
+            </if>
+            <if test="wx_app_id != null">
+                #{wx_app_id},
+            </if>
+            <if test="wx_mch_id != null">
+                #{wx_mch_id},
+            </if>
+            <if test="wx_key != null">
+                #{wx_key},
+            </if>
+            <if test="wx_appsecret != null">
+                #{wx_appsecret},
+            </if>
+            <if test="wx_cert_path != null">
+                #{wx_cert_path},
+            </if>
+            <if test="ali_app_id != null">
+                #{ali_app_id},
+            </if>
+            <if test="ali_seller_id != null">
+                #{ali_seller_id},
+            </if>
+            <if test="ali_private_key != null">
+                #{ali_private_key},
+            </if>
+            <if test="ali_public_key != null">
+                #{ali_public_key},
+            </if>
+            <if test="public_key != null">
+                #{public_key},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <if test="ali_app_auth_token != null">
+                #{ali_app_auth_token},
+            </if>
+            <if test="ali_pid != null">
+                #{ali_pid},
+            </if>
+        </trim>
+    </insert>
+    <update id="editOfflineBySiteId" parameterType="map">
+        update b_aliwx_pay
+        <set>
+            <if test="wx_app_id != null">
+                wx_app_id = #{wx_app_id},
+            </if>
+            <if test="wx_mch_id != null">
+                wx_mch_id = #{wx_mch_id},
+            </if>
+            <if test="wx_key != null">
+                wx_key = #{wx_key},
+            </if>
+            <if test="wx_appsecret != null">
+                wx_appsecret = #{wx_appsecret},
+            </if>
+            <if test="wx_cert_path != null">
+                wx_cert_path = #{wx_cert_path},
+            </if>
+            <if test="ali_app_id != null">
+                ali_app_id = #{ali_app_id},
+            </if>
+            <if test="ali_seller_id != null">
+                ali_seller_id = #{ali_seller_id},
+            </if>
+            <if test="ali_private_key != null">
+                ali_private_key = #{ali_private_key},
+            </if>
+            <if test="ali_public_key != null">
+                ali_public_key = #{ali_public_key},
+            </if>
+            <if test="public_key != null">
+                public_key = #{public_key},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="ali_app_auth_token != null">
+                ali_app_auth_token = #{ali_app_auth_token},
+            </if>
+            <if test="ali_pid != null">
+                ali_pid = #{ali_pid},
+            </if>
+        </set>
+        WHERE site_id=#{siteId}
+    </update>
+    <insert id="insertTicketBlag">
+        insert into b_ticket_blag
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="phone != null">
+                phone,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId},
+            </if>
+            <if test="phone != null">
+                #{phone},
+            </if>
+            <if test="remark != null">
+                #{remark},
+            </if>
+        </trim>
+    </insert>
+    <select id="getTicketBlag" resultType="map" parameterType="map">
+        SELECT id,phone,create_time,handle_status,remark
+        FROM b_ticket_blag
+        WHERE site_id =#{siteId}
+        <if test="handle_status != null">
+            AND handle_status=#{handle_status}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+    <select id="getRedPacket" resultType="map" parameterType="map">
+        SELECT
+        use_time create_time
+        ,ROUND(redpacket_pay/100,2) redpacket_pay
+        ,use_type use_type
+        FROM b_redpacket_line
+        WHERE site_id=#{siteId} AND member_id=#{memberId} AND redpacket_pay > 0
+        ORDER BY use_time DESC
+    </select>
+    <select id="boolMoneyByTradesId" resultType="map" parameterType="map">
+        SELECT redpacket_pay redpacket_pay
+        FROM b_redpacket_line
+        WHERE trades_id=#{tradesId}
+    </select>
+    <select id="getTradesIdByMemberId" resultType="String" parameterType="map">
+        SELECT t.trades_id
+        FROM b_redpacket_line t
+        WHERE t.site_id=#{siteId}
+        AND t.member_id=#{memberId}
+        ORDER BY t.create_time DESC
+        LIMIT 1
+    </select>
+    <select id="boolGetRedBao" resultType="Integer" parameterType="map">
+        SELECT count(bdr.total_fee) num
+        FROM b_discount_rule_line bdr
+        LEFT JOIN b_trades b ON bdr.site_id=b.site_id
+        WHERE bdr.site_id=#{siteId}
+        AND now() BETWEEN bdr.discount_start_time AND bdr.discount_end_time
+        AND b.trades_id=#{tradesId}
+        AND b.create_time BETWEEN bdr.discount_start_time AND bdr.discount_end_time
+        AND b.pay_style != 'cash'
+        AND bdr.del=0
+    </select>
+    <update id="updateStatusById" parameterType="map">
+        update b_ticket_blag SET handle_status = 1 WHERE id=#{id}
+    </update>
+    <select id="getDiscountExtractList" resultType="map" parameterType="map">
+        SELECT user_phone user_phone
+        ,redpacket_pay redpacket_pay
+        ,use_time use_time
+        FROM b_redpacket_line
+        WHERE site_id=#{siteId}
+        <if test="user_phone != null">
+            AND br.user_phone=#{user_phone}
+        </if>
+        <if test="start_time != null and end_time != null">
+            AND br.create_time BETWEEN #{start_time} AND #{end_time}
+        </if>
+        AND use_type =1
+    </select>
+    <select id="getHongbaoByTradesId" resultType="Integer" parameterType="map">
+        SELECT COUNT(*)
+        FROM b_redpacket_line
+        WHERE trades_id=#{tradesId}
+    </select>
+    <select id="getAliUserId" resultType="String" parameterType="map">
+        SELECT ali_user_id
+        FROM b_member
+        WHERE site_id=#{siteId} AND member_id=#{memberId}
+    </select>
+    <select id="getMechantName" resultType="String" parameterType="map">
+        SELECT merchant_name
+        FROM yb_merchant
+        WHERE merchant_id=#{siteId}
+    </select>
+    <select id="getMerchantBack" resultType="Integer" parameterType="map">
+        SELECT merchant_name
+        FROM yb_merchant
+        WHERE merchant_id=#{siteId}
+    </select>
+    <update id="updateMechantExt" parameterType="map">
+        update yb_merchant_ext
+        <set>
+            <if test="wx_app_id != null">
+                wx_appid = #{wx_app_id},
+            </if>
+            <if test="wx_key != null">
+                wx_secret = #{wx_key},
+            </if>
+        </set>
+        WHERE merchant_id=#{siteId}
+    </update>
+    <update id="updateMechant" parameterType="map">
+        update yb_merchant
+        <set>
+            <if test="ali_app_id != null">
+                alipay_appid = #{ali_app_id},
+            </if>
+            <if test="ali_private_key != null">
+                alipay_privatekey = #{ali_private_key},
+            </if>
+            <if test="ali_public_key != null">
+                publickey = #{ali_public_key},
+            </if>
+            <if test="public_key != null">
+                alipay_publickey = #{public_key},
+            </if>
+        </set>
+        WHERE merchant_id=#{siteId}
+    </update>
+    <select id="getOpenId" resultType="String" parameterType="map">
+        SELECT open_id
+        FROM b_member
+        WHERE site_id=#{siteId}
+        AND member_id=#{memberId}
+    </select>
+    <insert id="insertRedpacketLog">
+        insert into b_redpacket_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="member_id != null">
+                member_id,
+            </if>
+            <if test="trades_id != null">
+                trades_id,
+            </if>
+            <if test="money != null">
+                money,
+            </if>
+            <if test="open_id != null">
+                open_id,
+            </if>
+            <if test="return_log != null">
+                return_log,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId},
+            </if>
+            <if test="member_id != null">
+                #{member_id},
+            </if>
+            <if test="trades_id != null">
+                #{trades_id},
+            </if>
+            <if test="money != null">
+                #{money},
+            </if>
+            <if test="open_id != null">
+                #{open_id},
+            </if>
+            <if test="return_log != null">
+                #{return_log},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+        </trim>
+    </insert>
+    <select id="getDeviceNumMap" resultType="map" parameterType="map">
+        SELECT a.device_img_url
+        FROM b_stores a
+        LEFT JOIN b_store_admin b ON a.site_id=b.site_id AND a.id=b.store_id
+        LEFT JOIN yb_merchant_ext c ON a.site_id=c.merchant_id
+        WHERE a.site_id=#{siteId} AND b.user_name=#{loginName} AND c.device_flag=1
+    </select>
+    <select id="getBoolDataIsRepetition" resultType="map" >
+        SELECT COUNT(*) num,ybm.merchant_name merchant_name,bap.site_id site_id
+        FROM b_aliwx_pay bap
+        LEFT JOIN yb_merchant ybm ON ybm.merchant_id=bap.site_id
+        WHERE bap.site_id != #{siteId}
+        AND (
+        bap.wx_app_id=#{data} OR bap.wx_mch_id=#{data}
+        OR bap.wx_key=#{data} OR bap.wx_appsecret=#{data}
+        OR bap.ali_app_id=#{data} OR bap.ali_app_auth_token=#{data}
+        OR bap.ali_seller_id=#{data} OR bap.ali_private_key=#{data}
+        OR bap.ali_public_key=#{data}OR bap.public_key=#{data}
+        )
+    </select>
+</mapper>

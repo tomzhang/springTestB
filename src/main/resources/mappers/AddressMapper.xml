@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.logistics.mapper.AddressMapper">
+    <resultMap id="AddressResultMap" type="com.jk51.model.Address">
+        <id column="address_id" jdbcType="INTEGER" property="addressId"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="buyer_id" jdbcType="INTEGER" property="buyerId"/>
+        <result column="province_code" jdbcType="INTEGER" property="provinceCode"/>
+        <result column="province" jdbcType="VARCHAR" property="province"/>
+        <result column="city" jdbcType="VARCHAR" property="city"/>
+        <result column="country" jdbcType="VARCHAR" property="country"/>
+        <result column="addr" jdbcType="VARCHAR" property="addr"/>
+        <result column="zip_code" jdbcType="VARCHAR" property="zipCode"/>
+        <!--<result column="phone" jdbcType="VARCHAR" property="phone"/>-->
+        <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <!--<result column="del_tag" jdbcType="INTEGER" property="delTag"/>-->
+        <result column="is_default" jdbcType="INTEGER" property="isDefault"/>
+        <!--<result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>-->
+        <result column="addr_lng" jdbcType="VARCHAR" property="addrLng"/>
+        <result column="addr_lat" jdbcType="VARCHAR" property="addrLat"/>
+        <!--<result column="addr_detail" jdbcType="VARCHAR" property="addrDetail"/>-->
+    </resultMap>
+
+    <!--表名-->
+    <sql id="tableName">
+        `b_address`
+    </sql>
+
+    <!--记录有效的条件-->
+    <sql id="validCondition">
+        AND del_tag = 0
+    </sql>
+
+    <!--查询默认地址-->
+    <select id="findDefault" flushCache="true" resultMap="AddressResultMap">
+        select * FROM <include refid="tableName" />
+        <where>
+            site_id = #{siteId} AND
+            <if test="buyerId != null">
+                buyer_id = #{buyerId}
+            </if>
+            AND is_default = 1 <include refid="validCondition"/> limit 1
+        </where>
+    </select>
+    <!--查询对应地址信息-->
+    <select id="findAddressForProRule" resultMap="AddressResultMap">
+        select *  from b_address
+        <where>
+            site_id = #{siteId}
+            AND address_id = #{addressId}
+        </where>
+    </select>
+    <!--根据用户查询-->
+    <select id="findUserAddress" resultMap="AddressResultMap">
+        select address_id,addr,addr_lat,addr_lng,city,country,is_default,mobile,name,province,province_code,zip_code FROM <include refid="tableName" />
+        <where>
+            site_id = #{siteId} AND
+            <if test="buyerId != null">
+                buyer_id = #{buyerId}
+            </if>
+            <include refid="validCondition"/> ORDER by is_default desc, update_time desc
+        </where>
+    </select>
+
+    <select id="findOne" resultMap="AddressResultMap">
+        select * FROM <include refid="tableName" />
+        <where>
+            site_id = #{siteId}
+            <if test="buyerId != null">
+                AND buyer_id = #{buyerId}
+            </if>
+            <if test="addressId != null">
+                AND address_id = #{addressId}
+            </if> limit 1
+        </where>
+    </select>
+
+    <!--增加一条记录-->
+    <insert id="add" keyProperty="addressId" useGeneratedKeys="true" parameterType="com.jk51.model.Address" flushCache="true">
+        insert into <include refid="tableName" />
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            `site_id`,
+            `buyer_id`,
+            <if test="provinceCode != null">
+                `province_code`,
+            </if>
+            <if test="province != null">
+                `province`,
+            </if>
+            <if test="city != null">
+                `city`,
+            </if>
+            <if test="country != null">
+                `country`,
+            </if>
+            <if test="addr != null">
+                `addr`,
+            </if>
+            <if test="zipCode != null">
+                `zip_code`,
+            </if>
+            <!--<if test="phone != null">
+                `phone`,
+            </if>-->
+            <if test="mobile != null">
+                `mobile`,
+            </if>
+            <if test="name != null">
+                `name`,
+            </if>
+            <if test="isDefault != null">
+                `is_default`,
+            </if>
+            <if test="addrLng != null">
+                `addr_lng`,
+            </if>
+            <if test="addrLat != null">
+                `addr_lat`,
+            </if>
+            <!--<if test="addrDetail != null">
+                `addr_detail`,
+            </if>-->
+        </trim>
+        <trim prefix="value (" suffix=")" suffixOverrides=",">
+            #{siteId},
+            #{buyerId},
+            <if test="provinceCode != null">
+                #{provinceCode},
+            </if>
+            <if test="province != null">
+                #{province},
+            </if>
+            <if test="city != null">
+                #{city},
+            </if>
+            <if test="country != null">
+                #{country},
+            </if>
+            <if test="addr != null">
+                #{addr},
+            </if>
+            <if test="zipCode != null">
+                #{zipCode},
+            </if>
+            <!--<if test="phone != null">
+                #{phone},
+            </if>-->
+            <if test="mobile != null">
+                #{mobile},
+            </if>
+            <if test="name != null">
+                #{name},
+            </if>
+            <if test="isDefault != null">
+                #{isDefault},
+            </if>
+            <if test="addrLng != null">
+                #{addrLng},
+            </if>
+            <if test="addrLat != null">
+                #{addrLat},
+            </if>
+            <!--<if test="addrDetail != null">
+                #{addrDetail},
+            </if>-->
+        </trim>
+    </insert>
+
+    <!--查询用户有几条地址信息-->
+    <select id="userCount" resultType="java.lang.Integer">
+        SELECT count(address_id) as total FROM b_address WHERE site_id = ${siteId} AND buyer_id = ${buyerId} <include refid="validCondition"/>
+    </select>
+
+    <!--根据address_id更新-->
+    <update id="update" flushCache="true">
+        update <include refid="tableName" />
+        <trim prefix="set" suffixOverrides=",">
+            <if test="address.provinceCode != null">
+                `province_code` = #{address.provinceCode},
+            </if>
+            <if test="address.province != null">
+                `province` = #{address.province},
+            </if>
+            <if test="address.city != null">
+                `city` = #{address.city},
+            </if>
+            <if test="address.country != null">
+                `country` = #{address.country},
+            </if>
+            <if test="address.addr != null">
+                `addr` = #{address.addr},
+            </if>
+            <if test="address.zipCode != null">
+                `zip_code` = #{address.zipCode},
+            </if>
+            <!--<if test="address.phone != null">
+                `phone` = #{address.phone},
+            </if>-->
+            <if test="address.mobile != null">
+                `mobile` = #{address.mobile},
+            </if>
+            <if test="address.name != null">
+                `name` = #{address.name},
+            </if>
+            <if test="address.isDefault == 0">
+                `is_default` = 0,
+            </if>
+            <if test="address.addrLng != null">
+                `addr_lng` = #{address.addrLng},
+            </if>
+            <if test="address.addrLat != null">
+                `addr_lat` = #{address.addrLat},
+            </if>
+            <!--<if test="address.addrDetail != null">
+                `addr_detail` = #{address.addrDetail}
+            </if>-->
+        </trim>
+        <where>
+            site_id = #{siteId} AND address_id = #{addressId}
+            <!--<if test="address.isDefault == 0">
+                AND `is_default` != 1
+            </if>-->
+        </where>
+    </update>
+
+    <!--取消默认-->
+    <update id="cancelDefault" flushCache="true">
+        UPDATE <include refid="tableName" /> as a,
+        (
+            select address_id as c from <include refid="tableName" />
+            WHERE site_id = #{siteId} and buyer_id = #{buyerId} AND is_default = 1 <include refid="validCondition"/> limit 1
+        ) as b
+        set is_default = 0
+        <where>
+            site_id = #{siteId} AND address_id = b.c
+        </where>
+    </update>
+
+    <!--设置默认地址-->
+    <update id="setDefault" flushCache="true">
+        UPDATE <include refid="tableName" />
+        set is_default = 1
+        <where>
+            site_id = #{siteId} AND address_id = #{addressId}
+        </where>
+    </update>
+
+    <!--删除记录 默认地址不能删-->
+    <update id="deleteNotDefault" flushCache="true">
+        UPDATE <include refid="tableName" />
+        set del_tag = 1
+        <where>
+            site_id = #{siteId} AND address_id = #{addressId} and is_default != 1 <include refid="validCondition"/>
+        </where>
+    </update>
+</mapper>

@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.smallTicket.mapper.SmallTicketMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.TradesInvoice">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <id column="site_id" jdbcType="INTEGER" property="siteId" />
+        <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+        <result column="open_id" jdbcType="VARCHAR" property="openId" />
+        <result column="trades_id" jdbcType="BIGINT" property="tradesId" />
+        <result column="status" jdbcType="TINYINT" property="status" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, site_id, mobile, open_id, trades_id, status, create_time, update_time
+    </sql>
+    <insert id="insertOfTradesInvoice"  keyProperty="id" useGeneratedKeys="true"  parameterType="com.jk51.model.TradesInvoice">
+        insert into b_trades_invoice (site_id, mobile, open_id, trades_id, status, create_time, update_time)
+        value (#{siteId}, #{mobile}, #{openId}, #{tradesId}, #{status}, #{createTime}, #{updateTime})
+    </insert>
+    <update id="updateBrandesInvoiceBySiteIdAndOpenIdOrMobile">
+        UPDATE b_trades_invoice
+        SET `status` = 1
+        WHERE site_id = #{siteId}
+        <if test="ticketIdsList != null">
+            AND id in
+            <foreach collection="ticketIdsList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </update>
+    <select id="getBradesInvoiceBySiteIdAndOpenIdOrMobile" resultType="map">
+        SELECT id, site_id siteId, IFNULL(mobile,'') mobile,
+        IFNULL(open_id,'') openId, IFNULL(trades_id,'') tradesId, status, create_time createTime, update_time updateTime
+        FROM b_trades_invoice
+        WHERE site_id = #{siteId}
+        <if test="mobile != null and mobile != ''">
+            and mobile = #{mobile}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+    <select id="getTradesBySiteIdAndTradesIdOrMobile" resultType="map">
+        SELECT t.site_id siteId ,IFNULL(t.buyer_message,'') remark, t.post_style postStyle, IFNULL(t.recevier_name,'') recevierName,
+        IFNULL(t.receiver_city,'') receiverCity, IFNULL(t.receiver_address,'') receiverAddress, IFNULL(t.seller_name,'') sellerName,
+        IFNULL(t.recevier_mobile,'') recevierMobile, CONCAT(t.trades_id,"") tradesId, t.create_time createTime,  IFNULL(t.pay_style,'') payStyle,
+        t.update_time updateTime, IFNULL(t.total_fee, 0) totalFee, IFNULL(t.real_pay, 0) realPay, IFNULL(t.post_fee, 0) postFee, t.trades_store tradesStore,
+        IFNULL(s.name,'') name, IFNULL(s.province,'') province, IFNULL(s.city,'') city,
+        IFNULL(s.country,'') country, IFNULL(s.address,'') address, IFNULL(s.tel,'') tel, IFNULL(m.shop_address,'') shopAddress, IFNULL(m.service_phone,'') servicePhone,
+        IFNULL(m.shop_title,'') shopTitle
+        FROM b_trades t
+        LEFT JOIN b_stores s ON (t.site_id = s.site_id AND t.trades_store = s.id)
+        LEFT JOIN yb_merchant m ON (t.site_id = m.merchant_id)
+        <if test="mobile != null and mobile != ''">
+            LEFT JOIN b_member bm ON t.site_id = bm.site_id
+        </if>
+        WHERE t.site_id = #{siteId} AND t.trades_id = #{tradesId}
+        <if test="mobile != null and mobile != ''">
+          AND bm.mobile = #{mobile}
+        </if>
+    </select>
+    <select id="getOrdersBySiteIdAndTradesId" resultType="map">
+        SELECT o.goods_id goodsId, IFNULL(o.goods_code,'') goodsCode, IFNULL(o.goods_title,'') goodsTitle,
+        IFNULL(o.specif_cation,'') specifCation, IFNULL(o.goods_price,0) goodsPrice, o.goods_num goodsNum,
+        (o.goods_price * o.goods_num) goodsTotalPrice, IFNULL(g.goods_company,'') goodsCompany
+        FROM b_orders o
+        LEFT JOIN b_goods g ON (o.site_id = g.site_id AND o.goods_id = g.goods_id)
+        WHERE o.site_id = #{siteId} AND o.trades_id = #{tradesId}
+    </select>
+
+    <select id="getStoresBySiteIdAndTradesStore" resultType="map">
+        SELECT IFNULL(name,'') name, IFNULL(province,'') province, IFNULL(city,'') city,
+        IFNULL(country,'') country, IFNULL(address,'') address, IFNULL(tel,'') tel
+        FROM b_stores
+        WHERE site_id = #{siteId} AND id = #{tradesStore}
+    </select>
+    <select id="getYBMerchantBySiteId" resultType="string">
+        SELECT IFNULL(shop_title,'') shopTitle
+        FROM yb_merchant
+        WHERE merchant_id = #{siteId}
+    </select>
+    <select id="getSmallTicketsCountBySiteIdAndOpenIdOrMobile" resultType="integer">
+        SELECT COUNT(id) count
+        FROM b_trades_invoice
+        WHERE site_id = #{siteId} AND `status` = 1
+        <if test="mobile != null and mobile != ''">
+            AND mobile = #{mobile}
+        </if>
+    </select>
+    <select id="getDateOfBradesInvoiceBySiteIdAndOpenIdOrMobile" resultType="string">
+        SELECT DISTINCT DATE_FORMAT(create_time,'%Y-%m-%d %T') date
+        FROM b_trades_invoice
+        WHERE site_id = #{siteId} AND `status` = 1
+        <if test="mobile != null and mobile != ''">
+            and mobile = #{mobile}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+    <select id="getBradesInvoiceFreshBySiteIdAndDateAndOpenIdOrMobile" resultType="map">
+        SELECT id, site_id siteId, IFNULL(mobile,'') mobile, IFNULL(open_id,'') openId,
+        IFNULL(trades_id,'') tradesId, status, create_time createTime, update_time updateTime
+        FROM b_trades_invoice
+        WHERE site_id = #{siteId} and status = 1
+        <if test="mobile != null and mobile != ''">
+            and mobile = #{mobile}
+        </if>
+        and create_time = #{date}
+    </select>
+
+    <select id="getOpenIdOfMemberBySiteIdAndMobile" resultType="string">
+        SELECT open_id openId
+        FROM b_member
+        WHERE site_id = #{siteId} AND mobile = #{mobile}
+    </select>
+
+    <select id="getTradesInvoiceCondition" resultType="map">
+        SELECT id, site_id siteId, mobile, trades_id tradesId, status, create_time createTime, update_time updateTime
+        FROM b_trades_invoice
+        WHERE site_id = #{site_id} AND `status` = 1
+        <if test="mobile != null and mobile != ''">
+            and mobile = #{mobile}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="getSmallTicketsCountSiteIdAndOpenIdOrMobile" resultType="integer">
+        SELECT COUNT(id) count
+        FROM b_trades_invoice
+        WHERE site_id = #{siteId} AND `status` = 1
+        <if test="mobile != null and mobile != ''">
+            AND mobile = #{mobile}
+        </if>
+    </select>
+    <!--商品上架改造  接口-->
+    <update id="updateGoodsInfoBySiteIdAndCodeAndAppStatus">
+        UPDATE b_goods
+        SET app_goods_status = #{appGoodsStatus}
+        WHERE site_id = #{siteId} AND goods_code = #{goodsCode}
+    </update>
+    <update id="updateGoodsInfoBySiteIdAndCodeAndStatus">
+        UPDATE b_goods
+        SET goods_status = #{goodsStatus}
+        WHERE site_id = #{siteId} AND goods_code = #{goodsCode}
+    </update>
+    <select id="getGoodsInfoListBySiteIdAndCode" resultType="hashmap">
+        SELECT DISTINCT bg.goods_id goodsId, bg.goods_code goodsCode, bg.goods_status goodsStatus, bg.app_goods_status appGoodsStatus,
+        IFNULL(bg.drug_name,"") goodsName, IFNULL(bg.goods_title,"") goodsTitle, ia.flag,
+        IFNULL(bg.shop_price,"") shopPrice, IFNULL(bg.specif_cation,"") specifCation, IFNULL(bg.goods_company,"") goodsCompany, IFNULL(ia.is_default, "") image
+        FROM b_goods bg
+        LEFT  JOIN b_images_attr ia ON bg.site_id = ia.site_id and bg.goods_id = ia.goods_id AND ia.is_default = 1 AND ia.flag = 0
+        WHERE bg.site_id = #{siteId}
+        <if test="goodsCodeList != null">
+            AND BINARY bg.goods_code in
+            <foreach collection="goodsCodeList" separator="," item="item" open="(" close=")">
+              #{item}
+            </foreach>
+        </if>
+    </select>
+    <select id="getGoodsInfoBySiteIdAndCode" resultType="java.util.Map">
+        SELECT  bg.goods_id goodsId, bg.goods_code goodsCode, bg.goods_status goodsStatus, bg.app_goods_status appGoodsStatus,
+        IFNULL(bg.drug_name,"") goodsName, IFNULL(bg.goods_title,"") goodsTitle,
+        IFNULL(bg.shop_price,"") shopPrice, IFNULL(bg.specif_cation,"") specifCation, IFNULL(bg.goods_company,"") goodsCompany, IFNULL(ia.is_default, "") image
+        FROM b_goods bg
+        LEFT  JOIN b_images_attr ia ON bg.site_id = ia.site_id and bg.goods_id = ia.goods_id AND ia.is_default = 1
+        WHERE bg.site_id = #{siteId} AND bg.goods_code = #{goodsCode}
+    </select>
+    <select id="getByMerchantId" resultType="string">
+        SELECT IFNULL(has_erp_price, "") hasErpPrice FROM yb_merchant_ext WHERE merchant_id = #{siteId}
+    </select>
+    <update id="updateAppLowerGoodsBySiteIdAndCode">
+        UPDATE b_goods
+        SET app_goods_status = 2
+        WHERE site_id = #{siteId} AND goods_code in
+        <foreach collection="appLowerCodeList" separator="," item="item" open="(" close=")">
+          #{item}
+        </foreach>
+    </update>
+    <update id="updateAppUpperGoodsBySiteIdAndCode">
+        UPDATE b_goods
+        SET app_goods_status = 1
+        WHERE site_id = #{siteId} AND goods_code in
+        <foreach collection="appUpperCodeList" separator="," item="item" open="(" close=")">
+            #{item}
+        </foreach>
+    </update>
+    <update id="updateLowerGoodsBySiteIdAndCode">
+        UPDATE b_goods
+        SET goods_status = 2
+        WHERE site_id = #{siteId} AND goods_code in
+        <foreach collection="lowerCodeList" separator="," item="item" open="(" close=")">
+            #{item}
+        </foreach>
+    </update>
+    <update id="updateUpperGoodsBySiteIdAndCode">
+        UPDATE b_goods
+        SET goods_status = 1
+        WHERE site_id = #{siteId} AND goods_code in
+        <foreach collection="upperCodeList" separator="," item="item" open="(" close=")">
+            #{item}
+        </foreach>
+    </update>
+
+
+    <select id="queryGoodsClassify" resultType="java.util.Map">
+      SELECT
+	    cate_code,cate_name
+      FROM
+  	    b_category
+      WHERE
+        del_tag = 0
+        AND site_id = #{siteId}
+        AND LENGTH(cate_code) > 8
+    </select>
+
+</mapper>

@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.treat.mapper.DeliveryMapper">
+
+    <resultMap id="DeliveryMethodRM" type="com.jk51.model.treat.DeliveryMethodTreat">
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <id column="devl_id" jdbcType="INTEGER" property="devlId"/>
+        <result column="post_style_id" jdbcType="INTEGER" property="postStyleId"/>
+        <result column="delivery_name" jdbcType="VARCHAR" property="deliveryName"/>
+        <result column="valuation" jdbcType="INTEGER" property="valuation"/>
+        <result column="first_weight" jdbcType="INTEGER" property="firstWeight"/>
+        <result column="add_weight" jdbcType="INTEGER" property="addWeight"/>
+        <result column="def_firstprice" jdbcType="INTEGER" property="defFirstprice"/>
+        <result column="def_addprice" jdbcType="INTEGER" property="defAddprice"/>
+        <result column="appoint_firstweight" jdbcType="VARCHAR" property="appointFirstweight"/>
+        <result column="appoint_addweight" jdbcType="VARCHAR" property="appointAddweight"/>
+        <result column="appoint_firstprice" jdbcType="VARCHAR" property="appointFirstprice"/>
+        <result column="appoint_addprice" jdbcType="VARCHAR" property="appointAddprice"/>
+        <result column="appoint_area" jdbcType="VARCHAR" property="appointArea"/>
+        <result column="devl_desc" jdbcType="VARCHAR" property="devlDesc"/>
+        <result column="dev_desc" jdbcType="VARCHAR" property="devDesc"/>
+        <result column="is_activation" jdbcType="INTEGER" property="isActivation"/>
+        <result column="default_flag" jdbcType="INTEGER" property="defaultFlag"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <select id="findDeliveryMethods" parameterType="com.jk51.model.treat.DeliveryMethodTreat" resultMap="DeliveryMethodRM">
+        select * from b_delivery_method where site_id = #{siteId}
+    </select>
+
+    <select id="findDeliveryDetailBySiteId" parameterType="com.jk51.model.treat.DeliveryMethodTreat" resultMap="DeliveryMethodRM">
+        select * from b_delivery_method where site_id = #{siteId} and post_style_id = 130
+    </select>
+
+    <update id="updateDeliveryState" parameterType="com.jk51.model.treat.DeliveryMethodTreat">
+        update b_delivery_method set is_activation = #{isActivation} where site_id = #{siteId} and devl_id = #{devlId}
+    </update>
+
+    <update id="defaltDelivery">
+        update b_delivery_method set default_flag = 1 where site_id = #{siteId} and devl_id = #{devlId}
+    </update>
+
+    <update id="cancledefaltDelivery">
+        update b_delivery_method set default_flag = 0 where site_id = #{siteId} and devl_id != #{devlId}
+    </update>
+
+    <update id="updateDeliveryDetailForTemplate" parameterType="com.jk51.model.treat.DeliveryMethodTreat">
+        update b_devlivertemplate
+        <trim prefix="set" suffixOverrides=",">
+            <if test="firstWeight!=null">first_weight=#{firstWeight},</if>
+            <if test="addWeight!=null">add_weight=#{addWeight},</if>
+            <if test="defFirstprice!=null">def_firstprice=#{defFirstprice},</if>
+            <if test="defAddprice!=null">def_addprice=#{defAddprice},</if>
+            <if test="appointFirstweight!=null">appoint_firstweight=#{appointFirstweight},</if>
+            <if test="appointAddweight!=null">appoint_addweight=#{appointAddweight},</if>
+            <if test="appointFirstprice!=null">appoint_firstprice=#{appointFirstprice},</if>
+            <if test="appointAddprice!=null">appoint_addprice=#{appointAddprice},</if>
+            <if test="appointArea!=null">appoint_area=#{appointArea},</if>
+            <if test="devlDesc!=null">devl_desc=#{devlDesc},</if>
+            <if test="devDesc!=null">dev_desc=#{devDesc},</if>
+        </trim>
+        WHERE site_id=#{siteId}
+    </update>
+
+    <resultMap id="DeliveryTemplateRM" type="com.jk51.model.treat.DeliveryTemplate">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="code" jdbcType="VARCHAR" property="code"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="reg_mail_no" jdbcType="VARCHAR" property="regMailNo"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <select id="queryDeliveryTemplate" parameterType="com.jk51.model.treat.DeliveryTemplate" resultMap="DeliveryTemplateRM">
+        SELECT m.*,n.is_activation from yb_logcompany m,b_devlivertemplate n
+        <where>
+            m.code = n.logistics_code
+            <if test="siteId!=null">and m.site_id =#{siteId}</if>
+        </where>
+    </select>
+    <!-- -->
+    <select id="findO2oList" parameterType="com.jk51.model.treat.O2OMeta" resultType="Map" useCache="false">
+        select meta_val,meta_status,meta_id from yb_meta where site_id =#{siteId} and meta_key ='site_o2o_carriage_config'
+    </select>
+    <select id="findO2oTimeGap"  parameterType="com.jk51.model.treat.O2OMeta" resultType="Map">
+        select meta_val,meta_status,meta_id from yb_meta where site_id =#{siteId} and meta_key ='site_o2o_TimeGap_config' limit 1
+    </select>
+    <insert id="o2oIns" parameterType="com.jk51.model.treat.O2OMeta">
+        insert into yb_meta (site_id,meta_status,meta_val,meta_key,meta_desc) values (#{siteId},#{metaStatus},#{metaVal},'site_o2o_carriage_config','O2O运费')
+    </insert>
+    <insert id="O2oTimeGapIns" parameterType="com.jk51.model.treat.O2OMeta">
+        insert into yb_meta (site_id,meta_val,meta_key,meta_desc) values (#{siteId},#{time_val},'site_o2o_TimeGap_config','O2O物流时间段设置')
+    </insert>
+    <update id="o2oUpdate" parameterType="com.jk51.model.treat.O2OMeta">
+        update yb_meta set meta_status = #{metaStatus},meta_val =#{metaVal} where site_id =#{siteId} and meta_id =#{metaId}
+    </update>
+    <update id="O2oTimeGapUpdate" parameterType="com.jk51.model.treat.O2OMeta">
+        update yb_meta set meta_val =#{time_val} where site_id =#{siteId} and meta_id =#{metaIdforTimeGap}
+    </update>
+    <select id="logisticsList" parameterType="Integer" resultType="Map" useCache="false">
+        select * from b_delivery_method where site_id = #{siteId}
+        <if test="devlId != null and devlId != ''">
+            and devl_id = #{devlId}
+        </if>
+    </select>
+    <select id="queryAreaByArgs" parameterType="Map" resultType="Map" useCache="false">
+        select areaid,name,first_letter,id from yb_area
+        <where>
+            <if test="type !=null and type != ''">
+                and type = #{type}
+            </if>
+            <if test="parentId !=null and parentId != ''">
+                and parent_id = #{parentId}
+            </if>
+            <if test="areaId !=null and areaId != ''">
+                and areaId = #{areaId}
+            </if>
+        </where>
+        order by areaid
+    </select>
+    <!--查询市所在省-->
+    <select id="queryParentCity" parameterType="Map" resultType="Map" useCache="false">
+        select areaid,name,first_letter,id from yb_area where areaId = (select parent_id from yb_area where areaId = #{areaId} and type = 3 ) and type = 2
+    </select>
+    <update id="updateIsActivation" parameterType="com.jk51.model.treat.DeliveryMethodTreat">
+        update b_delivery_method set is_activation = #{isActivation} where site_id = #{siteId}
+        <if test="devlId !=null and devlId !=''">
+            and devl_id =#{devlId}
+        </if>
+    </update>
+    <update id="updateDelivery" parameterType="com.jk51.model.treat.DeliveryMethodTreat">
+        update b_delivery_method
+        <trim prefix="set" suffixOverrides=",">
+            <if test="firstWeight!=null">first_weight=#{firstWeight},</if>
+            <if test="addWeight!=null">add_weight=#{addWeight},</if>
+            <if test="defFirstprice!=null">def_firstprice=#{defFirstprice},</if>
+            <if test="defAddprice!=null">def_addprice=#{defAddprice},</if>
+            <if test="appointFirstweight!=null">appoint_firstweight=#{appointFirstweight},</if>
+            <if test="appointAddweight!=null">appoint_addweight=#{appointAddweight},</if>
+            <if test="appointFirstprice!=null">appoint_firstprice=#{appointFirstprice},</if>
+            <if test="appointAddprice!=null">appoint_addprice=#{appointAddprice},</if>
+            <if test="appointArea!=null">appoint_area=#{appointArea},</if>
+            <if test="devlDesc!=null">devl_desc=#{devlDesc},</if>
+            <if test="devDesc!=null">dev_desc=#{devDesc},</if>
+        </trim>
+        where site_id=#{siteId} and devl_id =#{devlId}
+    </update>
+    <select id="queryCommonData" parameterType="Map" resultType="Map" useCache="false">
+        select id,name from yb_logcompany
+        <where>
+            <if test="siteId ==null or siteId == '' ">
+                site_id = 0
+            </if>
+            <if test="siteId !=null and siteId != '' ">
+                site_id in (0, #{siteId})
+            </if>
+        </where>
+    </select>
+    <select id="findCommonList" parameterType="Map" resultType="Map" useCache="false">
+        select meta_val,meta_status,meta_id from b_meta where site_id =#{siteId} and meta_key ='site_common_logoistics_config'
+    </select>
+    <insert id="commonIns" parameterType="Map">
+        insert into b_meta (site_id,meta_status,meta_val,meta_key,meta_desc,meta_type) values (#{siteId},'1',#{metaVal},'site_common_logoistics_config','常用物流公司设置','common_logistics')
+    </insert>
+    <update id="commonUpdate" parameterType="Map">
+        update b_meta set meta_val =#{metaVal} where site_id =#{siteId} and meta_id =#{metaId}
+    </update>
+    <insert id="commonAdd" parameterType="Map">
+        insert into yb_logcompany (name,code) values (#{name},'')
+    </insert>
+    <insert id="initDelivery" parameterType="Map">
+        insert into b_delivery_method (site_id,delivery_name,post_style_id,appoint_firstweight,appoint_addweight,appoint_firstprice,appoint_addprice,appoint_area,default_flag)
+        values (#{siteId},#{name},#{style},'','','','','',#{defaultFlag})
+    </insert>
+    <!-- -->
+    <update id="cancleUpdateDeliveryIsActivation" parameterType="com.jk51.model.treat.DeliveryMethodTreat">
+        update b_delivery_method set is_activation = #{isActivation} where site_id = #{siteId}
+    </update>
+    <update id="updateO2OState" parameterType="com.jk51.model.treat.O2OMeta">
+        update yb_meta set meta_status = #{metaStatus} where site_id =#{siteId} and meta_id =#{metaId}
+    </update>
+
+    <update id="updateRule" parameterType="com.jk51.model.treat.O2OMeta">
+        update yb_meta set meta_val =#{metaVal} where site_id =#{siteId} and meta_id =#{metaId}
+    </update>
+
+    <select id="queryDeliveryArrivalTime" resultType="String">
+        select devl_desc from b_delivery_method where site_id = #{siteId} and default_flag = 1 and is_activation = 1
+    </select>
+
+    <select id="queryDeliveryBasicFee" resultType="Map">
+        select * from b_delivery_basic_fee where 1=1
+        <if test="type !=null and type !=''">
+            and type = #{type}
+        </if>
+    </select>
+
+</mapper>

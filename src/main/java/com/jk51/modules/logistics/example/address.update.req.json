@@ -1,0 +1,14 @@
+{
+  "address_id": 1584,
+  "site_id": 100043,
+  "buyer_id": 225198,
+  "address": {
+    "province_code": 370303,
+    "province": "370000",
+    "city": "370300",
+    "addr": "山东省 淄博市 张店区 九级小区16一3一401",
+    "mobile": "13054856999",
+    "name": "xiaosj",
+    "is_default": 1
+  }
+}

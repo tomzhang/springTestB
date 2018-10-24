@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.task.mapper.BExamAnswerlogMapper">
+  <resultMap id="BaseResultMap" type="com.jk51.model.task.BExamAnswerlog">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="site_id" jdbcType="INTEGER" property="siteId" />
+    <result column="plan_id" jdbcType="INTEGER" property="planId" />
+    <result column="task_id" jdbcType="INTEGER" property="taskId" />
+    <result column="execute_id" jdbcType="INTEGER" property="executeId" />
+    <result column="exam_id" jdbcType="INTEGER" property="examId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="num" jdbcType="TINYINT" property="num" />
+    <result column="total" jdbcType="TINYINT" property="total" />
+    <result column="store_admin_id" jdbcType="INTEGER" property="storeAdminId" />
+    <result column="store_id" jdbcType="INTEGER" property="storeId" />
+    <result column="store_name" jdbcType="VARCHAR" property="storeName" />
+    <result column="clerk_invitation_code" jdbcType="VARCHAR" property="clerkInvitationCode" />
+    <result column="reward" jdbcType="INTEGER" property="reward" />
+    <result column="reward_type" jdbcType="TINYINT" property="rewardType" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="snapshot" jdbcType="VARCHAR" property="snapshot" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, site_id, plan_id, task_id, execute_id, exam_id, name, num, total, store_admin_id, 
+    store_id, store_name, clerk_invitation_code, reward, reward_type, remark, snapshot, 
+    create_time, update_time
+  </sql>
+  <select id="selectByExample" parameterType="com.jk51.model.task.BExamAnswerlogExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from b_exam_answerlog
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limit != null">
+      <if test="offset != null">
+        limit ${offset}, ${limit}
+      </if>
+      <if test="offset == null">
+        limit ${limit}
+      </if>
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from b_exam_answerlog
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from b_exam_answerlog
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jk51.model.task.BExamAnswerlogExample">
+    delete from b_exam_answerlog
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jk51.model.task.BExamAnswerlog">
+    insert into b_exam_answerlog (id, site_id, plan_id, 
+      task_id, execute_id, exam_id, 
+      name, num, total, store_admin_id, 
+      store_id, store_name, clerk_invitation_code, 
+      reward, reward_type, remark, 
+      snapshot, create_time, update_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{siteId,jdbcType=INTEGER}, #{planId,jdbcType=INTEGER}, 
+      #{taskId,jdbcType=INTEGER}, #{executeId,jdbcType=INTEGER}, #{examId,jdbcType=INTEGER}, 
+      #{name,jdbcType=VARCHAR}, #{num,jdbcType=TINYINT}, #{total,jdbcType=TINYINT}, #{storeAdminId,jdbcType=INTEGER}, 
+      #{storeId,jdbcType=INTEGER}, #{storeName,jdbcType=VARCHAR}, #{clerkInvitationCode,jdbcType=VARCHAR}, 
+      #{reward,jdbcType=INTEGER}, #{rewardType,jdbcType=TINYINT}, #{remark,jdbcType=VARCHAR}, 
+      #{snapshot,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.jk51.model.task.BExamAnswerlog">
+    insert into b_exam_answerlog
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="siteId != null">
+        site_id,
+      </if>
+      <if test="planId != null">
+        plan_id,
+      </if>
+      <if test="taskId != null">
+        task_id,
+      </if>
+      <if test="executeId != null">
+        execute_id,
+      </if>
+      <if test="examId != null">
+        exam_id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="num != null">
+        num,
+      </if>
+      <if test="total != null">
+        total,
+      </if>
+      <if test="storeAdminId != null">
+        store_admin_id,
+      </if>
+      <if test="storeId != null">
+        store_id,
+      </if>
+      <if test="storeName != null">
+        store_name,
+      </if>
+      <if test="clerkInvitationCode != null">
+        clerk_invitation_code,
+      </if>
+      <if test="reward != null">
+        reward,
+      </if>
+      <if test="rewardType != null">
+        reward_type,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="snapshot != null">
+        snapshot,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="siteId != null">
+        #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="planId != null">
+        #{planId,jdbcType=INTEGER},
+      </if>
+      <if test="taskId != null">
+        #{taskId,jdbcType=INTEGER},
+      </if>
+      <if test="executeId != null">
+        #{executeId,jdbcType=INTEGER},
+      </if>
+      <if test="examId != null">
+        #{examId,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="num != null">
+        #{num,jdbcType=TINYINT},
+      </if>
+      <if test="total != null">
+        #{total,jdbcType=TINYINT},
+      </if>
+      <if test="storeAdminId != null">
+        #{storeAdminId,jdbcType=INTEGER},
+      </if>
+      <if test="storeId != null">
+        #{storeId,jdbcType=INTEGER},
+      </if>
+      <if test="storeName != null">
+        #{storeName,jdbcType=VARCHAR},
+      </if>
+      <if test="clerkInvitationCode != null">
+        #{clerkInvitationCode,jdbcType=VARCHAR},
+      </if>
+      <if test="reward != null">
+        #{reward,jdbcType=INTEGER},
+      </if>
+      <if test="rewardType != null">
+        #{rewardType,jdbcType=TINYINT},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="snapshot != null">
+        #{snapshot,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jk51.model.task.BExamAnswerlogExample" resultType="java.lang.Long">
+    select count(*) from b_exam_answerlog
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update b_exam_answerlog
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.siteId != null">
+        site_id = #{record.siteId,jdbcType=INTEGER},
+      </if>
+      <if test="record.planId != null">
+        plan_id = #{record.planId,jdbcType=INTEGER},
+      </if>
+      <if test="record.taskId != null">
+        task_id = #{record.taskId,jdbcType=INTEGER},
+      </if>
+      <if test="record.executeId != null">
+        execute_id = #{record.executeId,jdbcType=INTEGER},
+      </if>
+      <if test="record.examId != null">
+        exam_id = #{record.examId,jdbcType=INTEGER},
+      </if>
+      <if test="record.name != null">
+        name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.num != null">
+        num = #{record.num,jdbcType=TINYINT},
+      </if>
+      <if test="record.total != null">
+        total = #{record.total,jdbcType=TINYINT},
+      </if>
+      <if test="record.storeAdminId != null">
+        store_admin_id = #{record.storeAdminId,jdbcType=INTEGER},
+      </if>
+      <if test="record.storeId != null">
+        store_id = #{record.storeId,jdbcType=INTEGER},
+      </if>
+      <if test="record.storeName != null">
+        store_name = #{record.storeName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.clerkInvitationCode != null">
+        clerk_invitation_code = #{record.clerkInvitationCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.reward != null">
+        reward = #{record.reward,jdbcType=INTEGER},
+      </if>
+      <if test="record.rewardType != null">
+        reward_type = #{record.rewardType,jdbcType=TINYINT},
+      </if>
+      <if test="record.remark != null">
+        remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.snapshot != null">
+        snapshot = #{record.snapshot,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update b_exam_answerlog
+    set id = #{record.id,jdbcType=INTEGER},
+      site_id = #{record.siteId,jdbcType=INTEGER},
+      plan_id = #{record.planId,jdbcType=INTEGER},
+      task_id = #{record.taskId,jdbcType=INTEGER},
+      execute_id = #{record.executeId,jdbcType=INTEGER},
+      exam_id = #{record.examId,jdbcType=INTEGER},
+      name = #{record.name,jdbcType=VARCHAR},
+      num = #{record.num,jdbcType=TINYINT},
+      total = #{record.total,jdbcType=TINYINT},
+      store_admin_id = #{record.storeAdminId,jdbcType=INTEGER},
+      store_id = #{record.storeId,jdbcType=INTEGER},
+      store_name = #{record.storeName,jdbcType=VARCHAR},
+      clerk_invitation_code = #{record.clerkInvitationCode,jdbcType=VARCHAR},
+      reward = #{record.reward,jdbcType=INTEGER},
+      reward_type = #{record.rewardType,jdbcType=TINYINT},
+      remark = #{record.remark,jdbcType=VARCHAR},
+      snapshot = #{record.snapshot,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.task.BExamAnswerlog">
+    update b_exam_answerlog
+    <set>
+      <if test="siteId != null">
+        site_id = #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="planId != null">
+        plan_id = #{planId,jdbcType=INTEGER},
+      </if>
+      <if test="taskId != null">
+        task_id = #{taskId,jdbcType=INTEGER},
+      </if>
+      <if test="executeId != null">
+        execute_id = #{executeId,jdbcType=INTEGER},
+      </if>
+      <if test="examId != null">
+        exam_id = #{examId,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="num != null">
+        num = #{num,jdbcType=TINYINT},
+      </if>
+      <if test="total != null">
+        total = #{total,jdbcType=TINYINT},
+      </if>
+      <if test="storeAdminId != null">
+        store_admin_id = #{storeAdminId,jdbcType=INTEGER},
+      </if>
+      <if test="storeId != null">
+        store_id = #{storeId,jdbcType=INTEGER},
+      </if>
+      <if test="storeName != null">
+        store_name = #{storeName,jdbcType=VARCHAR},
+      </if>
+      <if test="clerkInvitationCode != null">
+        clerk_invitation_code = #{clerkInvitationCode,jdbcType=VARCHAR},
+      </if>
+      <if test="reward != null">
+        reward = #{reward,jdbcType=INTEGER},
+      </if>
+      <if test="rewardType != null">
+        reward_type = #{rewardType,jdbcType=TINYINT},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="snapshot != null">
+        snapshot = #{snapshot,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jk51.model.task.BExamAnswerlog">
+    update b_exam_answerlog
+    set site_id = #{siteId,jdbcType=INTEGER},
+      plan_id = #{planId,jdbcType=INTEGER},
+      task_id = #{taskId,jdbcType=INTEGER},
+      execute_id = #{executeId,jdbcType=INTEGER},
+      exam_id = #{examId,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},
+      num = #{num,jdbcType=TINYINT},
+      total = #{total,jdbcType=TINYINT},
+      store_admin_id = #{storeAdminId,jdbcType=INTEGER},
+      store_id = #{storeId,jdbcType=INTEGER},
+      store_name = #{storeName,jdbcType=VARCHAR},
+      clerk_invitation_code = #{clerkInvitationCode,jdbcType=VARCHAR},
+      reward = #{reward,jdbcType=INTEGER},
+      reward_type = #{rewardType,jdbcType=TINYINT},
+      remark = #{remark,jdbcType=VARCHAR},
+      snapshot = #{snapshot,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="maxTime" resultType="java.util.Date">
+    SELECT MAX(E.create_time) FROM b_exam_answerlog AS E LEFT JOIN b_task_execute AS T
+ON E.`execute_id` = T.`id` WHERE T.`complete` = 1
+ GROUP BY E.execute_id,E.store_admin_id
+  </select>
+  <select id="allMaxTime" resultType="java.util.Date">
+   SELECT MAX(E.create_time) FROM b_exam_answerlog AS E LEFT JOIN b_task_execute AS T
+ON E.`execute_id` = T.`id`
+ GROUP BY E.execute_id,E.store_admin_id
+  </select>
+</mapper>

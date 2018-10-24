@@ -1,0 +1,946 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.coupon.mapper.CouponDetailMapper">
+    <resultMap id="couponResultMap" type="com.jk51.model.coupon.CouponDetail">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="coupon_no" jdbcType="VARCHAR" property="couponNo"/>
+        <result column="order_id" jdbcType="VARCHAR" property="orderId"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="source" jdbcType="VARCHAR" property="source"/>
+        <result column="manager_id" jdbcType="VARCHAR" property="managerId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="is_copy" jdbcType="INTEGER" property="isCopy"/>
+        <result column="is_share" jdbcType="INTEGER" property="isShare"/>
+        <result column="share_num" jdbcType="INTEGER" property="shareNum"/>
+        <result column="share_url" jdbcType="VARCHAR" property="shareUrl"/>
+        <result column="rule_id" jdbcType="INTEGER" property="ruleId"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="money" jdbcType="DECIMAL" property="money"/>
+        <result column="version" jdbcType="INTEGER" property="version"/>
+        <result column="store_id" jdbcType="INTEGER" property="storeId"/>
+        <result column="send_order_id" jdbcType="VARCHAR" property="sendOrderId"/>
+        <result column="recovery_time" jdbcType="TIMESTAMP" property="recoveryTime"/>
+        <result column="recovery_status" jdbcType="INTEGER" property="recoveryStatus"/>
+        <result column="return_status" jdbcType="INTEGER" property="returnStatus"/>
+        <result column="type" jdbcType="INTEGER" property="type"/>
+        <result column="distance_reduce" jdbcType="INTEGER" property="distanceReduce"/>
+        <result column="distance_discount" jdbcType="INTEGER" property="distanceDiscount"/>
+        <result column="discount_amount" jdbcType="INTEGER" property="discountAmount"/>
+    </resultMap>
+
+    <resultMap id="couponDetailWithRuleIn" type="com.jk51.model.coupon.CouponDetail">
+
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="coupon_no" jdbcType="VARCHAR" property="couponNo"/>
+        <result column="order_id" jdbcType="VARCHAR" property="orderId"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="source" jdbcType="VARCHAR" property="source"/>
+        <result column="manager_id" jdbcType="VARCHAR" property="managerId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="is_copy" jdbcType="INTEGER" property="isCopy"/>
+        <result column="is_share" jdbcType="INTEGER" property="isShare"/>
+        <result column="share_num" jdbcType="INTEGER" property="shareNum"/>
+        <result column="share_url" jdbcType="VARCHAR" property="shareUrl"/>
+        <result column="rule_id" jdbcType="INTEGER" property="ruleId"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="money" jdbcType="DECIMAL" property="money"/>
+        <result column="version" jdbcType="INTEGER" property="version"/>
+        <result column="store_id" jdbcType="INTEGER" property="storeId"/>
+        <result column="send_order_id" jdbcType="VARCHAR" property="sendOrderId"/>
+        <result column="recovery_time" jdbcType="TIMESTAMP" property="recoveryTime"/>
+        <result column="recovery_status" jdbcType="INTEGER" property="recoveryStatus"/>
+        <result column="return_status" jdbcType="INTEGER" property="returnStatus"/>
+        <result column="type" jdbcType="INTEGER" property="type"/>
+        <result column="distance_reduce" jdbcType="INTEGER" property="distanceReduce"/>
+        <result column="distance_discount" jdbcType="INTEGER" property="distanceDiscount"/>
+        <result column="discount_amount" jdbcType="INTEGER" property="discountAmount"/>
+        <association property="couponRule"
+                     select="com.jk51.modules.coupon.mapper.CouponRuleMapper.queryByCouponId"
+                     column="{siteId=site_id, ruleId=rule_id}"/>
+    </resultMap>
+
+
+    <sql id="All_Column_Query">
+        id, site_id, coupon_no, order_id, status, source, manager_id, create_time, update_time,
+        is_copy, is_share, share_num, share_url, rule_id, user_id, money, version, store_id,
+        send_order_id, recovery_time, recovery_status, return_status, type, distance_reduce,
+        distance_discount, discount_amount
+    </sql>
+
+    <insert id="insertCouponDetail" keyProperty="id" useGeneratedKeys="true"
+            parameterType="com.jk51.model.coupon.CouponDetail">
+        insert into b_coupon_detail
+        (site_id,coupon_no,order_id,status,source,manager_id,create_time,update_time,is_copy,is_share,share_num,share_url,rule_id,user_id,money,version,store_id,send_order_id,discount_amount
+        <if test="distanceReduce!=null">,distance_reduce</if>
+        <if test="distanceDiscount!=null">,distance_discount</if>)
+        values
+        (#{siteId},#{couponNo},#{orderId},1,#{source},#{managerId},CURRENT_TIMESTAMP,#{updateTime},#{isCopy},#{isShare},#{shareNum},#{shareUrl},#{ruleId},#{userId},#{money},#{version},#{storeId},#{sendOrderId},#{discountAmount}
+        <if test="distanceReduce!=null">,#{distanceReduce}</if>
+        <if test="distanceDiscount!=null">,#{distanceDiscount}</if>)
+    </insert>
+
+    <insert id="insertCouponDetailBatch" parameterType="java.util.List">
+        insert into b_coupon_detail(
+        site_id,
+        coupon_no,
+        order_id,
+        status,
+        source,
+        manager_id,
+        create_time,
+        update_time,
+        is_copy,
+        is_share,
+        share_url,
+        share_num,
+        rule_id,
+        user_id,
+        money,
+        send_order_id,
+        store_id,
+        distance_reduce,
+        distance_discount,
+        discount_amount
+        )
+        values
+        <foreach collection="list" item="item" index="index" open="(" separator="),(" close=")">
+            #{item.siteId},
+            #{item.couponNo},
+            #{item.orderId},
+            #{item.status},
+            #{item.source},
+            #{item.managerId},
+            CURRENT_TIMESTAMP,
+            #{item.updateTime},
+            #{item.isCopy},
+            #{item.isShare},
+            #{item.shareUrl},
+            #{item.shareNum},
+            #{item.ruleId},
+            #{item.userId},
+            #{item.money},
+            #{item.sendOrderId},
+            #{item.storeId},
+            #{item.distanceReduce},
+            #{item.distanceDiscount},
+            #{item.discountAmount}
+        </foreach>
+    </insert>
+
+    <insert id="insertCouponDetailBatchForReissure" parameterType="java.util.List">
+        insert into b_coupon_detail(
+        site_id,
+        coupon_no,
+        order_id,
+        status,
+        source,
+        manager_id,
+        create_time,
+        update_time,
+        is_copy,
+        is_share,
+        share_url,
+        share_num,
+        rule_id,
+        user_id,
+        money,
+        store_id,
+        type,
+        discount_amount)
+        values
+        <foreach collection="list" item="item" index="index" open="(" separator="),(" close=")">
+            #{item.siteId},
+            #{item.couponNo},
+            #{item.orderId},
+            #{item.status},
+            #{item.source},
+            #{item.managerId},
+            CURRENT_TIMESTAMP,
+            #{item.updateTime},
+            #{item.isCopy},
+            #{item.isShare},
+            #{item.shareUrl},
+            #{item.shareNum},
+            #{item.ruleId},
+            #{item.userId},
+            #{item.money},
+            #{item.storeId},
+            #{item.type},
+            #{item.discountAmount}
+        </foreach>
+    </insert>
+
+
+    <select id="getCouponDetailByUserId" resultType="com.jk51.model.coupon.CouponDetail">
+        SELECT rule_id ruleId,source source, distance_reduce distanceReduce,distance_discount distanceDiscount FROM b_coupon_detail WHERE site_id = #{0} and id=#{1}
+    </select>
+    <select id="getCouponDetailByCouponId" resultMap="couponResultMap">
+        SELECT  *  FROM b_coupon_detail WHERE site_id = #{0} and id=#{1}
+    </select>
+
+    <select id="getByRuleIdAndActivityId" resultType="com.jk51.model.coupon.CouponDetail">
+        select * from b_coupon_detail where site_id = #{siteId} and rule_id = #{ruleId} and source = #{activityId} and user_id = #{userId}
+    </select>
+
+    <select id="getRuleBySiteId" resultMap="couponResultMap">
+        select * from b_coupon_detail where site_id = #{siteId} and source = #{activityId} limit #{begin} ,1000
+    </select>
+
+    <select id="findByParam" resultMap="couponResultMap">
+        SELECT d.* FROM b_coupon_detail d
+        <if test="couponRuleStatusList != null">
+            INNER JOIN b_coupon_rule r ON r.site_id = d.site_id AND r.rule_id = d.rule_id
+                AND r.status IN
+                <foreach collection="couponRuleStatusList" item="couponRuleStatus" open="(" close=")" separator=",">
+                    #{couponRuleStatus}
+                </foreach>
+        </if>
+        <where>
+            <if test="siteId != null">
+                AND d.site_id = #{siteId}
+            </if>
+            <if test="status != null">
+                AND d.status = #{status}
+            </if>
+            <if test="memberId != null">
+                AND d.user_id = #{memberId}
+            </if>
+            <if test="tradesId != null">
+                AND d.order_id = #{tradesId}
+            </if>
+        </where>
+    </select>
+
+    <select id="findByParamWithRuleIn" resultMap="couponDetailWithRuleIn">
+        SELECT d.* FROM b_coupon_detail d
+        <if test="couponRuleStatusList != null">
+            INNER JOIN b_coupon_rule r ON r.site_id = d.site_id AND r.rule_id = d.rule_id
+            AND r.status IN
+            <foreach collection="couponRuleStatusList" item="couponRuleStatus" open="(" close=")" separator=",">
+                #{couponRuleStatus}
+            </foreach>
+        </if>
+        <where>
+            <if test="siteId != null">
+                AND d.site_id = #{siteId}
+            </if>
+            <if test="status != null">
+                AND d.status = #{status}
+            </if>
+            <if test="memberId != null">
+                AND d.user_id = #{memberId}
+            </if>
+            <if test="tradesId != null">
+                AND d.order_id = #{tradesId}
+            </if>
+        </where>
+    </select>
+
+    <select id="findCouponList" resultType="java.util.Map">
+        SELECT
+        a.rule_name,
+        a.time_rule,
+        a.limit_rule,
+        a.order_rule,
+        a.area_rule,
+        a.goods_rule,
+        a.marked_words,
+        a.coupon_type,
+        a.limit_state,
+        a.limit_remark,
+        a.aim_at,
+        a.status,
+        b.id,
+        b.rule_id,
+        b.coupon_no,
+        b.create_time,
+        b.distance_reduce,
+        b.distance_discount
+        FROM b_coupon_rule a
+        INNER JOIN b_coupon_detail b
+        ON (a.rule_id = b.rule_id and a.site_id=b.site_id)
+        <where>
+            <if test="siteId != null">
+                AND a.site_id = #{siteId}
+            </if>
+            <if test="userId != null">
+                AND b.user_id = #{userId}
+            </if>
+            <if test="useStatus != null">
+                AND b.status = #{useStatus}
+            </if>
+            <if test="status != null and status !=1">
+                AND a.status = #{status}
+            </if>
+            <if test="status != null and status ==1">
+                AND (a.status = #{status} or (a.status = 0 and b.status=1 and a.time_rule like '%"validity_type":2%'))
+            </if>
+            <if test="nStatus != null">
+                AND a.status != #{nStatus}
+            </if>
+            AND a.status != 4
+        </where>
+        ORDER BY b.create_time DESC
+    </select>
+
+
+    <select id="findCouponListForRelativeTimeRule" resultType="java.util.Map">
+        SELECT
+        a.rule_name,
+        a.time_rule,
+        a.limit_rule,
+        a.order_rule,
+        a.area_rule,
+        a.goods_rule,
+        a.marked_words,
+        a.coupon_type,
+        a.limit_state,
+        a.limit_remark,
+        a.aim_at,
+        a.status,
+        b.id,
+        b.rule_id,
+        b.coupon_no,
+        b.create_time,
+        b.distance_reduce,
+        b.distance_discount
+        FROM b_coupon_rule a
+        INNER JOIN b_coupon_detail b
+        ON (a.rule_id = b.rule_id and a.site_id=b.site_id)
+        <where>
+            <if test="siteId != null">
+                AND a.site_id = #{siteId}
+            </if>
+            <if test="userId != null">
+                AND b.user_id = #{userId}
+            </if>
+            <if test="useStatus != null">
+                AND b.status = #{useStatus}
+            </if>
+            <if test="status != null">
+                AND a.status = #{status}
+            </if>
+            <if test="nStatus != null">
+                AND a.status != #{nStatus}
+            </if>
+            AND a.status != 4
+            AND a.time_rule '%"validity_type":2%'
+        </where>
+        ORDER BY b.create_time DESC
+    </select>
+
+    <select id="findWxCouponDetailById" resultType="java.util.Map">
+        SELECT
+        a.rule_name,
+        a.time_rule,
+        a.limit_rule,
+        a.order_rule,
+        a.area_rule,
+        a.goods_rule,
+        a.marked_words,
+        a.coupon_type,
+        a.limit_state,
+        a.limit_remark,
+        a.aim_at,
+        b.id,
+        b.rule_id,
+        b.coupon_no,
+        b.source,
+        b.create_time,
+        b.distance_reduce,
+        b.distance_discount,
+        b.status as useStatus
+        FROM b_coupon_rule a
+        INNER JOIN b_coupon_detail b
+        ON (a.rule_id = b.rule_id and a.site_id = b.site_id)
+	    WHERE b.id = #{1}  AND b.site_id = #{0}
+    </select>
+
+    <select id="findUserCouponList" resultType="java.util.Map">
+        SELECT a.time_rule,
+        a.limit_rule,
+        a.aim_at,
+        a.order_rule,
+        a.area_rule,
+        a.goods_rule,
+        a.marked_words,
+        a.coupon_type,
+        b.id,
+        b.rule_id,
+        b.create_time
+        FROM b_coupon_rule a
+        INNER JOIN b_coupon_detail b
+        ON (a.rule_id = b.rule_id and a.site_id = b.site_id)
+        <where>
+            <if test="siteId != null">
+                AND a.site_id = #{siteId}
+            </if>
+            <if test="userId != null">
+                AND b.user_id = #{userId}
+            </if>
+            AND a.status = 0
+            AND b.status = 1
+        </where>
+    </select>
+
+    <select id="getUseBuyGoodsNum" resultType="java.lang.Integer">
+        select IFNULL(sum(orders.goods_num),0) from b_orders orders inner join b_trades trades
+        on(orders.trades_id=trades.trades_id)
+        inner join b_trades_ext ext on(trades.trades_id=ext.trades_id) inner join b_tradeslogs log
+        on(trades.trades_id=log.trades_id)
+        inner join b_coupon_detail detail on(ext.user_coupon_id=detail.id) inner join b_coupon_rule rule
+        on(detail.rule_id=rule.rule_id and detail.site_id = rule.site_id)
+        <where>
+            1=1
+            <if test="siteId != null">
+                AND trades.site_id = #{siteId}
+            </if>
+            <if test="userId != null">
+                AND trades.buyer_id= #{userId}
+            </if>
+            <if test="ruleId != null">
+                AND rule.rule_id= #{ruleId}
+            </if>
+            and log.new_trades_status=150
+        </where>
+    </select>
+
+
+    <select id="getUseBuyedGoodsNum" resultType="java.lang.Integer">
+        select IFNULL(sum(orders.goods_num),0) from b_orders orders inner join b_trades trades
+        on(orders.trades_id=trades.trades_id)
+        inner join b_trades_ext ext on(trades.trades_id=ext.trades_id)
+        inner join b_coupon_detail detail on(ext.user_coupon_id=detail.id) inner join b_coupon_rule rule
+        on(detail.rule_id=rule.rule_id and detail.site_id=rule.site_id )
+        <where>
+            1=1
+            <if test="siteId != null">
+                AND trades.site_id = #{siteId}
+            </if>
+            <if test="goodsId != null">
+                AND orders.goods_id = #{goodsId}
+            </if>
+            <if test="userId != null">
+                AND trades.buyer_id= #{userId}
+            </if>
+            <if test="ruleId != null">
+                AND rule.rule_id= #{ruleId}
+            </if>
+            and (trades.is_payment=1 or trades.is_payment=0)
+        </where>
+    </select>
+
+
+    <update id="updateCouponDetail">
+        UPDATE b_coupon_detail
+        SET share_num = share_num - 1,update_time = now()
+        WHERE site_id = #{siteId} AND manager_id = #{managerId} AND rule_id = #{ruleId}
+    </update>
+
+    <select id="getCouponDetail" resultMap="couponResultMap">
+        SELECT site_id,id,coupon_no,order_id,status,source,manager_id,is_copy,is_share,share_num,share_url
+                ,rule_id,create_time,update_time
+        FROM b_coupon_detail
+        WHERE site_id = #{0} AND manager_id = #{1} AND rule_id = #{2}
+    </select>
+
+    <select id="getCouponDetailByRuleId" resultMap="couponResultMap">
+        SELECT site_id,id,coupon_no,create_time,update_time
+        FROM b_coupon_detail
+        WHERE site_id = #{0} AND rule_id = #{1} and user_id = #{2}
+    </select>
+
+    <update id="updateStatusById">
+        UPDATE b_coupon_detail
+        SET status = 0 ,order_id=#{2},update_time = now()
+        WHERE site_id = #{0} AND id = #{1}
+    </update>
+
+    <update id="updateDiscountAmountById">
+        UPDATE b_coupon_detail
+        SET discount_amount = #{discountAmount}
+        WHERE site_id = #{siteId}
+        AND id = #{id}
+    </update>
+
+    <update id="updateStatusByCouponNo">
+        UPDATE b_coupon_detail SET status = #{status},update_time = now()
+        WHERE site_id = #{siteId} and coupon_no IN
+        <foreach collection="list" index="index" item="couponNo" open="(" separator="," close=")">
+            #{couponNo}
+        </foreach>
+    </update>
+
+    <select id="findSendMemberAmount" resultType="java.lang.Integer">
+            SELECT
+                COUNT(distinct user_id)
+            FROM
+                b_coupon_detail
+            WHERE
+                site_id = #{siteId}
+                AND
+                rule_id = #{ruleId}
+                AND
+                source = #{activityId,jdbcType=VARCHAR}
+
+    </select>
+
+    <select id="findSendAmount" resultType="java.lang.Integer">
+        SELECT
+            COUNT(1)
+        FROM
+            b_coupon_detail
+        <where>
+            site_id = #{siteId}
+            AND
+            rule_id = #{ruleId}
+            <if test="activityId != null">
+                AND
+                source = #{activityId}
+
+            </if>
+        </where>
+    </select>
+
+    <select id="findUsedMemberAmount" resultType="java.lang.Integer">
+            SELECT
+                COUNT(DISTINCT user_id)
+            FROM
+                b_coupon_detail
+            WHERE
+                `status` = 0
+                AND
+                site_id = #{siteId}
+                AND
+                rule_id = #{ruleId}
+                AND
+                source = #{activityId,jdbcType=VARCHAR}
+    </select>
+
+    <select id="findUsedAmount" resultType="java.lang.Integer">
+        SELECT
+            COUNT(user_id)
+        FROM
+            b_coupon_detail
+        WHERE
+            `status` = 0
+            AND
+            site_id = #{siteId}
+            AND
+            rule_id = #{ruleId}
+            AND
+            source = #{activityId}
+    </select>
+
+    <select id="findOwnCouponCount" resultType="java.lang.Integer">
+        SELECT
+        COUNT(1)
+        FROM
+        b_coupon_detail
+        WHERE 1=1
+        AND
+        site_id = #{siteId}
+        AND
+        rule_id = #{ruleId}
+        AND
+        source = #{activityId}
+        AND
+        user_id=#{userId}
+    </select>
+
+    <select id="getMAxCouponDetail" resultMap="couponResultMap">
+        select
+        <include refid="All_Column_Query"/>
+        from b_coupon_detail where site_id = #{1}
+        AND rule_id = #{0} and create_time > '2017-05-25' order by id desc limit 1
+    </select>
+
+
+    <select id="findActiveCount" resultType="java.util.Map">
+
+    select  ifnull (result1.count,0) as createCount,ifnull (result2.count,0) as useCount,result1.source source1,result2.source source2
+    from (
+    select count(1) count ,source
+    from b_coupon_detail
+    where 1=1
+    and site_id= #{siteId}
+    GROUP BY source
+    )result1
+    left join
+    (
+    select count(1) count ,source
+    from b_coupon_detail
+    where 1=1
+    and site_id= #{siteId}
+    and status=0
+    GROUP BY source
+    )result2
+    on  result1.source=result2.source
+    </select>
+
+    <select id="findCouponByOrderId" resultType="java.util.Map">
+        SELECT
+            a.return_status,a.status,b.rule_name,b.marked_words,a.create_time,b.time_rule,b.rule_id,a.source
+        FROM
+            b_coupon_detail a LEFT JOIN b_coupon_rule b ON a.rule_id = b.rule_id AND a.site_id= b.site_id
+        WHERE
+            a.order_id = #{0}
+    </select>
+
+    <select id="findCouponBySendOrderId" resultType="java.util.Map">
+        SELECT
+        DISTINCT a.status,a.return_status,a.recovery_status,b.rule_name,b.marked_words
+        FROM
+        b_coupon_detail a LEFT JOIN b_coupon_rule b ON (a.rule_id = b.rule_id and a.site_id=b.site_id)
+        WHERE
+        a.send_order_id = #{0}
+    </select>
+
+    <update id="updateCouponToReturn">
+        UPDATE
+            b_coupon_detail
+        SET
+            status = 1,
+            return_status = 0,
+            update_time = now()
+        WHERE
+            order_id = #{0}
+    </update>
+
+    <select id="findCouponDetailByOrderId" resultMap="couponResultMap">
+        SELECT * FROM b_coupon_detail WHERE order_id=#{0}
+    </select>
+
+    <select id="findCouponDetailBySendOrderId" resultType="com.jk51.model.coupon.CouponDetail">
+        SELECT site_id siteId,id,coupon_no couponNo,order_id orderId,status
+
+         FROM `b_coupon_detail` WHERE send_order_id = #{0};
+    </select>
+
+    <select id="findCouponDetailStatusBySiteIdAndActivityId" resultType="int">
+        SELECT
+          b.status
+        FROM
+          b_coupon_detail b
+        WHERE
+          site_id = #{siteId}
+          AND
+          source = #{activityId}
+    </select>
+
+    <select id="findCouponDetailStatusBySiteIdAndActivityIds" resultType="map">
+        SELECT
+        source,
+        COUNT(status) createNum,
+        sum(status) unUsedNum
+        FROM
+        b_coupon_detail
+        WHERE
+        site_id = #{siteId}
+        AND source IN
+        <foreach collection="activityIds" item="activityId" index="index" open="(" close=")" separator=",">
+            #{activityId}
+        </foreach>
+        GROUP BY
+        source
+    </select>
+
+    <update id="updateCouponToRecovery">
+        UPDATE b_coupon_detail
+        SET recovery_status = 0,
+        status = 0,
+         recovery_time = now()
+        WHERE
+            send_order_id = #{0}
+            and  status = 1
+    </update>
+
+    <select id="findIsReceive" resultMap="couponResultMap">
+        SELECT
+        <include refid="All_Column_Query"/>
+        FROM
+        `b_coupon_detail`
+        WHERE
+        site_id= #{0}
+        AND user_id = #{1}
+        AND source = #{2};
+    </select>
+
+    <select id="findIsReceiveCount" resultType="integer">
+        SELECT
+        count(1)
+        FROM
+            `b_coupon_detail`
+        WHERE
+            site_id= #{0}
+        AND user_id = #{1}
+        AND source = #{2};
+    </select>
+
+    <update id="updateStatusToOffLine">
+        UPDATE b_coupon_detail
+        SET status = 0,
+         update_time = now()
+        WHERE
+            site_id = #{0}
+        AND id = #{1}
+        AND user_id = #{2}
+    </update>
+
+    <update id="updateUseStatus">
+        UPDATE b_coupon_detail
+        SET status = 1,
+         update_time = now()
+        WHERE
+            site_id = #{siteId}
+        AND id = #{id}
+    </update>
+
+    <select id="countActivityTimes" resultType="long">
+        SELECT
+			ifnull(count(1), 0)
+		FROM
+			b_coupon_detail b
+		WHERE
+            b.source = #{activityId}
+        AND b.site_id = #{siteId}
+        AND b.user_id = #{userId}
+    </select>
+
+    <select id="countCouponByUserRuleAndActivity" resultType="integer">
+        SELECT
+            ifnull(count(1), 0)
+		FROM
+			b_coupon_detail b
+		WHERE
+		    b.user_id = #{userId}
+        AND b.rule_id = #{ruleId}
+        AND b.source = #{activityId}
+        AND b.site_id = #{siteId}
+    </select>
+
+    <select id="findConponDetailListForMemberAndActiveNum" resultType="long">
+        SELECT
+        ifnull(count(1), 0)
+        FROM
+        b_coupon_detail b
+        WHERE
+        b.user_id = #{memberId}
+        AND b.source = #{activityId}
+        AND b.site_id = #{siteId}
+    </select>
+    <select id="centerOfOwnCoupon" resultType="java.util.Map"
+            parameterType="com.jk51.modules.coupon.request.OwnCouponParam">
+        select activity.id as activityId,IFNULL(activity.send_limit,0) as sendLimit,rule.*
+        from b_coupon_activity activity
+        INNER JOIN b_coupon_activity_coupon coupon ON (activity.site_id=coupon.site_id and activity.id=coupon.active_id)
+        INNER JOIN b_coupon_rule rule ON (rule.site_id=coupon.site_id and rule.rule_id=coupon.rule_id)
+        <where>
+            <if test="ownCouponParam.contentType != null and ownCouponParam.contentType!=''">
+                AND rule.coupon_type = #{ownCouponParam.contentType}
+            </if>
+            <if test="ownCouponParam.siteId != null and ownCouponParam.siteId!=''">
+                AND activity.site_id = #{ownCouponParam.siteId}
+            </if>
+            AND activity.status=0
+            AND activity.send_way=0
+            AND activity.send_type=6
+            AND coupon.status=0
+            AND rule.status=0
+
+        </where>
+    </select>
+
+    <select id="centerOfOwnCouponDetail" resultType="java.util.Map"
+            parameterType="com.jk51.modules.coupon.request.OwnCouponParam">
+        select activity.id as activityId,rule.*
+        from b_coupon_activity activity
+        INNER JOIN b_coupon_activity_coupon coupon ON (activity.site_id=coupon.site_id and activity.id=coupon.active_id)
+        INNER JOIN b_coupon_rule rule ON (rule.site_id=coupon.site_id and rule.rule_id=coupon.rule_id)
+        <where>
+            <if test="ownCouponParam.siteId != null and ownCouponParam.siteId!=''">
+                AND activity.site_id = #{ownCouponParam.siteId}
+            </if>
+            <if test="ownCouponParam.ruleId != null and ownCouponParam.ruleId!=''">
+                AND rule.rule_id = #{ownCouponParam.ruleId}
+            </if>
+            <if test="ownCouponParam.activityId != null and ownCouponParam.activityId!=''">
+                AND activity.id = #{ownCouponParam.activityId}
+            </if>
+        </where>
+    </select>
+
+    <select id="useAmountBySiteIdAndRuleIdForRuleList" resultType="java.util.HashMap">
+        SELECT
+        count(1) countNum,
+        status,
+        rule_id
+        FROM
+        b_coupon_detail
+        WHERE
+        site_id = #{siteId}
+        AND rule_id IN
+        <foreach collection="ruleIds" item="ruleId" index="index" open="(" close=")" separator=",">
+            #{ruleId}
+        </foreach>
+        GROUP BY
+        `status`, rule_id;
+    </select>
+
+    <select id="useAmountBySiteIdAndRuleIdForActivityList" resultType="java.util.HashMap">
+        SELECT
+        count(1) countNum,
+        status,
+        source
+        FROM
+        b_coupon_detail
+        WHERE
+        site_id = #{siteId}
+        AND source IN
+        <foreach collection="activityIds" item="activityId" index="index" open="(" close=")" separator=",">
+            #{activityId}
+        </foreach>
+        GROUP BY
+        `status`, source;
+    </select>
+
+    <select id="findUserCoupon" resultType="map">
+        SELECT
+            bcd.*,bcr.time_rule,bcr.goods_rule
+        FROM
+        b_coupon_detail bcd
+        LEFT JOIN
+        b_coupon_rule bcr on bcd.site_id=bcr.site_id and bcd.rule_id=bcr.rule_id and bcd.status=1 and bcr.status in (0,2,3)
+        where bcd.site_id=#{siteId} and bcd.user_id=#{userId} and bcd.status=1 and bcr.aim_at = 1
+    </select>
+
+    <select id="findCouponDetailBySiteIdAndSendOrder" resultType="int">
+      SELECT count(id) FROM b_coupon_detail cd WHERE cd.site_id = #{siteId} AND cd.source = #{source,jdbcType=VARCHAR} AND cd.rule_id = #{ruleId}  AND cd.status = 1  AND cd.send_order_id  = #{orderId}
+    </select>
+
+    <select id="findCouponDetailList" resultType="map">
+        SELECT cd.coupon_no,sa.name clerk_name,sa.mobile clerk_mobile,mb.mobile receiver_mobile,sa.clerk_invitation_code
+        promotion_code,s.name store_name,DATE_FORMAT(cd.create_time,'%Y-%m-%d %H:%i:%S') receive_time,CASE WHEN
+        cd.status!=1 THEN DATE_FORMAT(cd.update_time,'%Y-%m-%d %H:%i:%S') ELSE '--' END use_time,cd.order_id
+        trades_id,cd.status
+        FROM b_coupon_detail cd
+        LEFT JOIN b_store_adminext sa ON sa.storeadmin_id=cd.manager_id and sa.storeadmin_id!=0 AND
+        sa.site_id=cd.site_id
+        LEFT JOIN b_stores s ON cd.store_id=s.id AND cd.site_id=s.site_id
+        LEFT JOIN b_member mb ON cd.user_id=mb.member_id AND mb.site_id=cd.site_id
+        WHERE cd.rule_id=#{params.ruleId} AND cd.site_id=#{params.siteId}
+        <if test="params.mobile!=null">
+            AND mb.mobile like concat(#{params.mobile},'%')
+        </if>
+        <if test="params.status!=null">
+            AND cd.status=#{params.status}
+        </if>
+        <if test="params.startTime!=null and params.endTime!=null">
+            AND cd.create_time BETWEEN #{params.startTime} AND #{params.endTime}
+        </if>
+        <if test="params.no!=null">
+            AND cd.coupon_no=#{params.no}
+        </if>
+        ORDER BY receive_time DESC
+    </select>
+    <select id="findCouponDetailStatusBySiteIdAndRuleId" resultType="int">
+        SELECT count(cd.id) FROM b_coupon_detail cd
+        LEFT JOIN b_member mb ON cd.user_id=mb.member_id AND mb.site_id=cd.site_id
+        WHERE cd.site_id=#{siteId} AND cd.rule_id=#{ruleId}
+        <if test="status!=null and status!=-1">
+            AND cd.status=#{status}
+        </if>
+        <if test="params.mobile!=null">
+            AND mb.mobile like concat(#{params.mobile},'%')
+        </if>
+        <if test="params.startTime!=null and params.endTime!=null">
+            AND cd.create_time BETWEEN #{params.startTime} AND #{params.endTime}
+        </if>
+        <if test="params.no!=null">
+            AND cd.coupon_no=#{params.no}
+        </if>
+    </select>
+
+
+    <select id="findCouponDetailByCouponNo" resultMap="couponResultMap">
+      SELECT * from b_coupon_detail where site_id = #{siteId} and coupon_no =#{couponNo}
+    </select>
+
+    <select id="findCouponListByStoreAdmin" resultType="map">
+        SELECT
+            DATE_FORMAT(
+                d.create_time,
+                '%Y-%m-%e %H:%i'
+            ) AS create_time,
+            m.buyer_nick nick,
+            m.mobile mobile,
+            count(0) num
+        FROM
+            b_coupon_detail d
+        LEFT JOIN b_member m ON d.user_id = m.member_id AND d.site_id = m.site_id
+        WHERE
+        d.site_id = #{siteId}
+        AND d.manager_id = #{managerId}
+        AND d.store_id = #{storeId}
+        AND d.source = #{activityId}
+        AND d.rule_id = #{ruleId}
+        GROUP BY
+            create_time, m.mobile
+        ORDER BY
+            create_time DESC
+    </select>
+
+    <select id="getCouponToBuyer" resultType="map">
+
+        SELECT
+        count(IF(bc. STATUS = 1, TRUE, NULL)) used,
+        count(IF(bc. STATUS = 0, TRUE, NULL)) brandNew
+        FROM
+        b_coupon_detail bc
+        WHERE bc.site_id=#{siteId}
+        AND bc.manager_id=#{storeAdminId}
+        AND bc.user_id=#{memberId}
+        AND bc.store_id=#{storeId}
+        AND bc.create_time <![CDATA[ >= ]]>  #{startTime}
+        AND bc.create_time <![CDATA[ <= ]]>  #{endTime}
+    </select>
+
+    <select id="combineCouponActivityDetail" resultType="map">
+        SELECT
+        rule_id,
+        IFNULL(COUNT( DISTINCT user_id ),0) AS findSendMemberAmount,
+        IFNULL(COUNT( 1 ),0) AS findSendAmount,
+        IFNULL(count( DISTINCT CASE WHEN `status` = 0 THEN user_id ELSE NULL END ),0) AS findUsedMemberAmount,
+        IFNULL(count( CASE WHEN `status` = 0 THEN user_id ELSE NULL END ),0) AS findUsedAmount
+        FROM
+        b_coupon_detail
+        WHERE
+        site_id = #{siteId}
+        AND rule_id IN <foreach collection="ruleIds" open="(" close=")" separator="," item="ruleId">#{ruleId}</foreach>
+        AND source = #{activeId,jdbcType=VARCHAR}
+        GROUP BY rule_id
+    </select>
+    <select id="findGetCouponNum" resultType="map">
+        SELECT
+            source,
+            rule_id,
+            user_id,
+            count( 1 ) as num
+        FROM
+            b_coupon_detail cd
+        WHERE
+            cd.site_id = #{siteId}
+            AND cd.source IN <foreach collection="activityIds" open="(" close=")" separator="," item="id">#{id}</foreach>
+            AND user_id = #{userId}
+        GROUP BY
+            cd.user_id,
+            source,
+            rule_id
+    </select>
+</mapper>

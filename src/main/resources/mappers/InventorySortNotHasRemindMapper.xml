@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.pandian.mapper.InventorySortNotHasRemindMapper">
+
+    <insert id="insert" parameterType="com.jk51.model.InventorySortNotHasRemind">
+
+        insert into b_inventory_sort_not_has_remind
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pandianNum != null">
+                pandian_num,
+            </if>
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="storeId != null">
+                store_id,
+            </if>
+            <if test="storeAdminId != null">
+                store_admin_id,
+            </if>
+            <if test="currentGoodsCode != null">
+                current_goods_code,
+            </if>
+            <if test="nextGoodsCode != null">
+                next_goods_code,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            create_time,
+            update_time
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="pandianNum != null">
+                #{pandianNum},
+            </if>
+            <if test="siteId != null">
+                #{siteId},
+            </if>
+            <if test="storeId != null">
+                #{storeId},
+            </if>
+            <if test="storeAdminId != null">
+                #{storeAdminId},
+            </if>
+            <if test="currentGoodsCode != null">
+                #{currentGoodsCode},
+            </if>
+            <if test="nextGoodsCode != null">
+                #{nextGoodsCode},
+            </if>
+            <if test="type != null">
+                #{type},
+            </if>
+            CURRENT_TIMESTAMP ,
+            CURRENT_TIMESTAMP
+        </trim>
+    </insert>
+
+    <select id="countRate" parameterType="com.jk51.modules.pandian.param.StatusParam" resultType="com.jk51.modules.pandian.dto.NotHasRemindCountRate">
+
+        select sum(`type`=4) nextChecked,sum(`type`=5) nextNotInInventory,sum(`type`=6) nextNotInRedis,sum(`type`=7) currentNotInRedis,sum(`type`=8) hasRemind
+        from b_inventory_sort_not_has_remind
+        where
+          pandian_num = #{pandian_num}
+          and
+          site_id = #{siteId}
+          and
+          store_id = #{storeId}
+          and
+          is_del = 0
+    </select>
+    <update id="delete" parameterType="com.jk51.model.InventorySortNotHasRemind">
+        update b_inventory_sort_not_has_remind
+        set is_del = 1
+         where
+          pandian_num = #{pandianNum}
+          and
+          site_id = #{siteId}
+          and
+          store_id = #{storeId}
+          and
+          current_goods_code = #{currentGoodsCode}
+          and
+          is_del = 0
+    </update>
+
+</mapper>

@@ -1,0 +1,711 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.task.mapper.BTaskrewardMapper">
+  <resultMap id="BaseResultMap" type="com.jk51.model.task.BTaskreward">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="site_id" jdbcType="INTEGER" property="siteId" />
+    <result column="execute_id" jdbcType="INTEGER" property="executeId" />
+    <result column="task_id" jdbcType="INTEGER" property="taskId" />
+    <result column="task_name" jdbcType="VARCHAR" property="taskName" />
+    <result column="plan_id" jdbcType="INTEGER" property="planId" />
+    <result column="plan_name" jdbcType="VARCHAR" property="planName" />
+    <result column="join_type" jdbcType="TINYINT" property="joinType" />
+    <result column="join_id" jdbcType="INTEGER" property="joinId" />
+    <result column="join_name" jdbcType="VARCHAR" property="joinName" />
+    <result column="reward_type" jdbcType="TINYINT" property="rewardType" />
+    <result column="reward" jdbcType="INTEGER" property="reward" />
+    <result column="count_value" jdbcType="INTEGER" property="countValue" />
+    <result column="complete_time" jdbcType="TIMESTAMP" property="completeTime"/>
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, site_id, execute_id, task_id, task_name, plan_id, plan_name, join_type, join_id, 
+    join_name, reward_type, reward, count_value, complete_time, create_time, update_time
+  </sql>
+  <select id="selectByExample" parameterType="com.jk51.model.task.BTaskrewardExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from b_taskreward
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limit != null">
+      <if test="offset != null">
+        limit ${offset}, ${limit}
+      </if>
+      <if test="offset == null">
+        limit ${limit}
+      </if>
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from b_taskreward
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from b_taskreward
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jk51.model.task.BTaskrewardExample">
+    delete from b_taskreward
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jk51.model.task.BTaskreward">
+    insert into b_taskreward (id, site_id, execute_id, 
+      task_id, task_name, plan_id, 
+      plan_name, join_type, join_id, 
+      join_name, reward_type, reward, 
+      count_value, create_time, update_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{siteId,jdbcType=INTEGER}, #{executeId,jdbcType=INTEGER}, 
+      #{taskId,jdbcType=INTEGER}, #{taskName,jdbcType=VARCHAR}, #{planId,jdbcType=INTEGER}, 
+      #{planName,jdbcType=VARCHAR}, #{joinType,jdbcType=TINYINT}, #{joinId,jdbcType=INTEGER}, 
+      #{joinName,jdbcType=VARCHAR}, #{rewardType,jdbcType=TINYINT}, #{reward,jdbcType=INTEGER}, 
+      #{countValue,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" keyProperty="id" useGeneratedKeys="true" parameterType="com.jk51.model.task.BTaskreward">
+    insert into b_taskreward
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="siteId != null">
+        site_id,
+      </if>
+      <if test="executeId != null">
+        execute_id,
+      </if>
+      <if test="taskId != null">
+        task_id,
+      </if>
+      <if test="taskName != null">
+        task_name,
+      </if>
+      <if test="planId != null">
+        plan_id,
+      </if>
+      <if test="planName != null">
+        plan_name,
+      </if>
+      <if test="joinType != null">
+        join_type,
+      </if>
+      <if test="joinId != null">
+        join_id,
+      </if>
+      <if test="joinName != null">
+        join_name,
+      </if>
+      <if test="rewardType != null">
+        reward_type,
+      </if>
+      <if test="reward != null">
+        reward,
+      </if>
+      <if test="countValue != null">
+        count_value,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="siteId != null">
+        #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="executeId != null">
+        #{executeId,jdbcType=INTEGER},
+      </if>
+      <if test="taskId != null">
+        #{taskId,jdbcType=INTEGER},
+      </if>
+      <if test="taskName != null">
+        #{taskName,jdbcType=VARCHAR},
+      </if>
+      <if test="planId != null">
+        #{planId,jdbcType=INTEGER},
+      </if>
+      <if test="planName != null">
+        #{planName,jdbcType=VARCHAR},
+      </if>
+      <if test="joinType != null">
+        #{joinType,jdbcType=TINYINT},
+      </if>
+      <if test="joinId != null">
+        #{joinId,jdbcType=INTEGER},
+      </if>
+      <if test="joinName != null">
+        #{joinName,jdbcType=VARCHAR},
+      </if>
+      <if test="rewardType != null">
+        #{rewardType,jdbcType=TINYINT},
+      </if>
+      <if test="reward != null">
+        #{reward,jdbcType=INTEGER},
+      </if>
+      <if test="countValue != null">
+        #{countValue,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+    ON DUPLICATE KEY UPDATE reward = #{rewardType,jdbcType=TINYINT}
+  </insert>
+  <select id="countByExample" parameterType="com.jk51.model.task.BTaskrewardExample" resultType="java.lang.Long">
+    select count(*) from b_taskreward
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update b_taskreward
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.siteId != null">
+        site_id = #{record.siteId,jdbcType=INTEGER},
+      </if>
+      <if test="record.executeId != null">
+        execute_id = #{record.executeId,jdbcType=INTEGER},
+      </if>
+      <if test="record.taskId != null">
+        task_id = #{record.taskId,jdbcType=INTEGER},
+      </if>
+      <if test="record.taskName != null">
+        task_name = #{record.taskName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.planId != null">
+        plan_id = #{record.planId,jdbcType=INTEGER},
+      </if>
+      <if test="record.planName != null">
+        plan_name = #{record.planName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.joinType != null">
+        join_type = #{record.joinType,jdbcType=TINYINT},
+      </if>
+      <if test="record.joinId != null">
+        join_id = #{record.joinId,jdbcType=INTEGER},
+      </if>
+      <if test="record.joinName != null">
+        join_name = #{record.joinName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.rewardType != null">
+        reward_type = #{record.rewardType,jdbcType=TINYINT},
+      </if>
+      <if test="record.reward != null">
+        reward = #{record.reward,jdbcType=INTEGER},
+      </if>
+      <if test="record.countValue != null">
+        count_value = #{record.countValue,jdbcType=INTEGER},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update b_taskreward
+    set id = #{record.id,jdbcType=INTEGER},
+      site_id = #{record.siteId,jdbcType=INTEGER},
+      execute_id = #{record.executeId,jdbcType=INTEGER},
+      task_id = #{record.taskId,jdbcType=INTEGER},
+      task_name = #{record.taskName,jdbcType=VARCHAR},
+      plan_id = #{record.planId,jdbcType=INTEGER},
+      plan_name = #{record.planName,jdbcType=VARCHAR},
+      join_type = #{record.joinType,jdbcType=TINYINT},
+      join_id = #{record.joinId,jdbcType=INTEGER},
+      join_name = #{record.joinName,jdbcType=VARCHAR},
+      reward_type = #{record.rewardType,jdbcType=TINYINT},
+      reward = #{record.reward,jdbcType=INTEGER},
+      count_value = #{record.countValue,jdbcType=INTEGER},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.task.BTaskreward">
+    update b_taskreward
+    <set>
+      <if test="siteId != null">
+        site_id = #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="executeId != null">
+        execute_id = #{executeId,jdbcType=INTEGER},
+      </if>
+      <if test="taskId != null">
+        task_id = #{taskId,jdbcType=INTEGER},
+      </if>
+      <if test="taskName != null">
+        task_name = #{taskName,jdbcType=VARCHAR},
+      </if>
+      <if test="planId != null">
+        plan_id = #{planId,jdbcType=INTEGER},
+      </if>
+      <if test="planName != null">
+        plan_name = #{planName,jdbcType=VARCHAR},
+      </if>
+      <if test="joinType != null">
+        join_type = #{joinType,jdbcType=TINYINT},
+      </if>
+      <if test="joinId != null">
+        join_id = #{joinId,jdbcType=INTEGER},
+      </if>
+      <if test="joinName != null">
+        join_name = #{joinName,jdbcType=VARCHAR},
+      </if>
+      <if test="rewardType != null">
+        reward_type = #{rewardType,jdbcType=TINYINT},
+      </if>
+      <if test="reward != null">
+        reward = #{reward,jdbcType=INTEGER},
+      </if>
+      <if test="countValue != null">
+        count_value = #{countValue,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jk51.model.task.BTaskreward">
+    update b_taskreward
+    set site_id = #{siteId,jdbcType=INTEGER},
+      execute_id = #{executeId,jdbcType=INTEGER},
+      task_id = #{taskId,jdbcType=INTEGER},
+      task_name = #{taskName,jdbcType=VARCHAR},
+      plan_id = #{planId,jdbcType=INTEGER},
+      plan_name = #{planName,jdbcType=VARCHAR},
+      join_type = #{joinType,jdbcType=TINYINT},
+      join_id = #{joinId,jdbcType=INTEGER},
+      join_name = #{joinName,jdbcType=VARCHAR},
+      reward_type = #{rewardType,jdbcType=TINYINT},
+      reward = #{reward,jdbcType=INTEGER},
+      count_value = #{countValue,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="taskAdminFollow" resultType="com.jk51.modules.task.domain.FollowTask">
+    SELECT
+      A.name AS adminName,
+      A.storeadmin_id as storeadminId,
+      A.clerk_invitation_code as clerkInvitationCode,
+      S.name AS storeName,
+      T.reward_detail as rewardDetail,
+      C.count_value as countValue,
+      R.reward_type as rewardType,
+      R.reward,
+      E.start_day as startDay,
+      E.end_day as endDay
+    FROM b_taskreward AS R
+    LEFT JOIN b_store_adminext AS A ON R.site_id=A.`site_id` AND R.join_id=A.`storeadmin_id`
+    LEFT JOIN b_stores AS S ON A.`store_id`=S.`id`
+    LEFT JOIN b_task_execute AS E  ON R.execute_id=E.`id`
+    LEFT JOIN b_task AS T ON R.task_id=T.`id`
+    LEFT JOIN
+        (SELECT SUM(count_value) AS count_value, execute_id,join_id
+        FROM b_taskcount
+        WHERE count_start <![CDATA[ >= ]]> #{startDay} AND count_end <![CDATA[ <= ]]> #{endDay}
+        GROUP BY execute_id,join_id) AS C ON C.execute_id=R.execute_id AND C.join_id=R.join_id
+    WHERE R.`task_id`=#{taskId} AND R.`plan_id`=#{planId} AND start_day=#{startDay} AND end_day=#{endDay} AND R.site_id=#{siteId}
+    <if test="objectName != null and objectName !=''">
+      AND A.name = #{objectName}
+    </if>
+    ORDER BY C.count_value DESC
+  </select>
+  <select id="taskStoreFollow" resultType="com.jk51.modules.task.domain.FollowTask">
+    SELECT
+    S.stores_number AS storesNumber,
+    S.name AS storeName,
+    A.adminCount,
+    T.reward_detail AS rewardDetail,
+    C.count_value AS countValue,
+    R.reward_type AS rewardType,
+    R.reward,
+    E.start_day AS startDay,
+    E.end_day AS endDay
+    FROM b_taskreward AS R
+    LEFT JOIN b_stores AS S ON R.join_id=S.`id`
+    LEFT JOIN b_task_execute AS E  ON R.execute_id=E.`id`
+    LEFT JOIN b_task AS T ON R.task_id=T.`id`
+    LEFT JOIN (SELECT site_id, store_id, COUNT(1) AS adminCount FROM b_store_admin GROUP BY site_id,store_id) AS A ON A.site_id=R.`site_id` AND A.store_id=R.`join_id`
+    LEFT JOIN (SELECT SUM(count_value) AS count_value, execute_id,join_id FROM b_taskcount WHERE count_start <![CDATA[ >= ]]>#{startDay} AND count_end <![CDATA[ <= ]]>#{endDay}
+    GROUP BY execute_id,join_id) AS C ON C.execute_id=R.execute_id AND C.join_id=R.join_id
+    WHERE R.`task_id`=#{taskId} AND R.`plan_id`=#{planId} AND start_day=#{startDay} AND end_day=#{endDay} AND R.site_id=#{siteId}
+    <if test="objectName != null and objectName !=''">
+      AND S.name = #{objectName}
+    </if>
+    ORDER BY C.count_value DESC
+  </select>
+
+  <select id="queryTaskRewardByJoinId" resultType="map">
+    SELECT reward_type,reward FROM b_taskreward
+    WHERE site_id = #{siteId}
+    <if test="joinId != null and joinId != ''">
+      and join_id = #{joinId}
+    </if>
+    <if test="executeId != null and executeId != ''">
+      and execute_id = #{executeId}
+    </if>
+  </select>
+
+  <select id="queryTaskRewardList" resultType="map">
+    select t1.join_id,sum(t1.count_value) total,t3.user_name,t4.avatar from b_taskcount t1
+    LEFT JOIN b_task_execute as t2 on (t2.id = t1.execute_id)
+    left join b_store_admin t3 on t1.join_id=t3.id
+    left join b_store_adminext t4 on t3.id = t4.storeadmin_id
+    WHERE t1.site_id=#{siteId} and t3.store_id=#{storeId}
+
+    <if test="taskId != null and taskId != ''">
+    and t1.task_id=#{taskId}
+  </if>
+    <if test="start != null and start != ''">
+      and t2.start_day = #{start}
+    </if>
+    <if test="end != null and end != ''">
+      and t2.end_day = #{end}
+    </if>
+    <!--&lt;if test="joinId != null and joinId != ''"&gt;-->
+      <!--and t1.join_id=#{joinId}-->
+    <!--&lt;/if&gt;-->
+
+    <if test="complete != null and complete != ''">
+      and t2.complete=#{complete}
+    </if>
+
+    group by t1.join_id
+    order by total DESC
+  </select>
+
+  <select id="queryRewardFollow" resultType="com.jk51.modules.task.domain.FollowTask">
+    SELECT
+    R.site_id AS siteId,
+    R.`join_id` AS joinId,
+    T.reward_detail AS rewardDetail,
+    SUM(C.count_value) AS countValue,
+    R.reward_type AS rewardType,
+    R.reward,
+    P.`start_time` AS startDay,
+    P.`end_time` AS endDay,
+    T.name AS taskName,
+    T.target_id AS targetId,
+    P.name AS planName
+    FROM b_taskreward AS R
+    LEFT JOIN b_task AS T ON R.task_id=T.`id`
+    LEFT JOIN b_taskcount AS C ON C.execute_id=R.execute_id AND C.join_id=R.join_id
+    LEFT JOIN b_taskplan AS P ON R.`plan_id` = P.`id`
+    WHERE  R.`execute_id`=#{executeId}
+
+    GROUP BY C.join_id
+    ORDER BY countValue DESC,joinId ASC
+  </select>
+
+  <insert id="addRewardOnDuplicateUpdate" keyProperty="id" useGeneratedKeys="true" parameterType="com.jk51.model.task.BTaskreward">
+    insert into b_taskreward
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="siteId != null">
+        site_id,
+      </if>
+      <if test="executeId != null">
+        execute_id,
+      </if>
+      <if test="taskId != null">
+        task_id,
+      </if>
+      <if test="taskName != null">
+        task_name,
+      </if>
+      <if test="planId != null">
+        plan_id,
+      </if>
+      <if test="planName != null">
+        plan_name,
+      </if>
+      <if test="joinType != null">
+        join_type,
+      </if>
+      <if test="joinId != null">
+        join_id,
+      </if>
+      <if test="joinName != null">
+        join_name,
+      </if>
+      <if test="rewardType != null">
+        reward_type,
+      </if>
+      <if test="reward != null">
+        reward,
+      </if>
+      <if test="countValue != null">
+        count_value,
+      </if>
+      complete_time
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="siteId != null">
+        #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="executeId != null">
+        #{executeId,jdbcType=INTEGER},
+      </if>
+      <if test="taskId != null">
+        #{taskId,jdbcType=INTEGER},
+      </if>
+      <if test="taskName != null">
+        #{taskName,jdbcType=VARCHAR},
+      </if>
+      <if test="planId != null">
+        #{planId,jdbcType=INTEGER},
+      </if>
+      <if test="planName != null">
+        #{planName,jdbcType=VARCHAR},
+      </if>
+      <if test="joinType != null">
+        #{joinType,jdbcType=TINYINT},
+      </if>
+      <if test="joinId != null">
+        #{joinId,jdbcType=INTEGER},
+      </if>
+      <if test="joinName != null">
+        #{joinName,jdbcType=VARCHAR},
+      </if>
+      <if test="rewardType != null">
+        #{rewardType,jdbcType=TINYINT},
+      </if>
+      <if test="reward != null">
+        #{reward,jdbcType=INTEGER},
+      </if>
+      <if test="countValue != null">
+        #{countValue,jdbcType=INTEGER},
+      </if>
+      IF(complete_time IS NULL AND #{reward,jdbcType=INTEGER} > 0, now(), NULL)
+    </trim>
+    ON DUPLICATE KEY UPDATE reward = #{rewardType,jdbcType=TINYINT}, count_value = count_value + #{countValue,jdbcType=INTEGER}
+  </insert>
+
+  <update id="updateRewardIncre" parameterType="com.jk51.model.task.BTaskreward">
+    update b_taskreward
+    <set>
+      <if test="siteId != null">
+        site_id = #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="executeId != null">
+        execute_id = #{executeId,jdbcType=INTEGER},
+      </if>
+      <if test="taskId != null">
+        task_id = #{taskId,jdbcType=INTEGER},
+      </if>
+      <if test="taskName != null">
+        task_name = #{taskName,jdbcType=VARCHAR},
+      </if>
+      <if test="planId != null">
+        plan_id = #{planId,jdbcType=INTEGER},
+      </if>
+      <if test="planName != null">
+        plan_name = #{planName,jdbcType=VARCHAR},
+      </if>
+      <if test="joinType != null">
+        join_type = #{joinType,jdbcType=TINYINT},
+      </if>
+      <if test="joinId != null">
+        join_id = #{joinId,jdbcType=INTEGER},
+      </if>
+      <if test="joinName != null">
+        join_name = #{joinName,jdbcType=VARCHAR},
+      </if>
+      <if test="rewardType != null">
+        reward_type = #{rewardType,jdbcType=TINYINT},
+      </if>
+      <if test="reward != null">
+        reward = #{reward,jdbcType=INTEGER},
+      </if>
+      <if test="countValue != null">
+        count_value = #{countValue,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      complete_time = IF(complete_time IS NULL AND #{reward,jdbcType=INTEGER} > 0, now(), NULL)
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+   <select id="beansReward" resultType="java.lang.Integer">
+     SELECT SUM(reward) FROM b_taskreward AS R
+     LEFT JOIN b_task_execute AS E ON R.execute_id=E.id
+     WHERE site_id=#{siteId} AND join_type=20 AND join_id=#{storeAdminId} AND reward_type=30 AND complete=1
+
+   </select>
+
+    <sql id="sortCondition">
+        SELECT
+            t1.join_type,
+            t1.task_id,
+            t1.join_id,
+            t1.plan_id,
+            t1.join_name as user_name,
+            t1.reward_type,
+            t1.reward,
+            CASE
+            WHEN t4.target_id in ('3','4','5','6') THEN
+                truncate(t1.count_value/100,2)
+            ELSE
+                t1.count_value
+            END
+            AS complete,
+            IFNULL(t2.avatar, "") AS avatar
+        FROM b_taskreward as t1
+        LEFT JOIN b_task_execute t3 on t3.id =t1.execute_id
+        LEFT JOIN b_task t4 on t3.task_id =t4.id
+        LEFT JOIN b_store_adminext as t2
+        ON (
+            t1.join_type = 20 AND t1.site_id = t2.site_id AND t1.join_id = t2.storeadmin_id
+        )
+        where
+        execute_id = #{executeId}
+    </sql>
+    <select id="selectSortList" resultType="com.jk51.model.JKHashMap">
+        <include refid="sortCondition"/>
+        ORDER BY t1.count_value desc, t1.create_time asc
+        limit #{top}
+    </select>
+
+    <select id="selectPersonalSort" resultType="com.jk51.model.JKHashMap">
+        <include refid="sortCondition"/>
+        AND t1.join_type = #{joinType}
+        AND t1.join_id = #{joinId}
+    </select>
+
+    <select id="selectRank" resultType="_int">
+        SELECT count(*) + 1 FROM b_taskreward WHERE execute_id = #{executeId} AND count_value > #{countValue}
+    </select>
+
+    <select id="selectNoneReward" resultType="com.jk51.model.JKHashMap">
+        <choose>
+            <when test="joinType == 10">
+                SELECT
+                    id as join_id,
+                    name as user_name,
+                    "" as avatar
+                FROM b_stores
+                WHERE id IN
+                <foreach collection="selectedIds" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </when>
+            <otherwise>
+                SELECT
+                    storeadmin_id as join_id,
+                    name as user_name,
+                    avatar
+                FROM b_store_adminext
+                WHERE storeadmin_id IN
+                <foreach collection="selectedIds" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </otherwise>
+        </choose>
+    </select>
+</mapper>

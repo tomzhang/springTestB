@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.trades.mapper.TradesFinanceLogMapper" >
+  <resultMap id="BaseResultMap" type="com.jk51.model.order.TradesFinanceLog" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <id column="site_id" property="siteId" jdbcType="INTEGER" />
+    <result column="trades_id" property="tradesId" jdbcType="VARCHAR" />
+    <result column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="real_pay" property="realPay" jdbcType="INTEGER" />
+    <result column="refund_fee" property="refundFee" jdbcType="INTEGER" />
+    <result column="trades_split" property="tradesSplit" jdbcType="INTEGER" />
+    <result column="plat_split" property="platSplit" jdbcType="INTEGER" />
+    <result column="O2O_freight" property="o2oFreight" jdbcType="INTEGER" />
+    <result column="pay_style" property="payStyle" jdbcType="VARCHAR" />
+    <result column="settlement_type" property="settlementType" jdbcType="INTEGER" />
+    <result column="trades_status" property="tradesStatus" jdbcType="INTEGER" />
+    <result column="is_payment" property="isPayment" jdbcType="INTEGER" />
+    <result column="is_refund" property="isRefund" jdbcType="INTEGER" />
+    <result column="deal_finish_status" property="dealFinishStatus" jdbcType="INTEGER" />
+    <result column="finance_no" property="financeNo" jdbcType="VARCHAR" />
+    <result column="finance_no_refund" property="financeNoRefund" jdbcType="VARCHAR" />
+    <result column="finance_type" property="financeType" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, site_id, trades_id, pay_time, end_time, real_pay, refund_fee,
+    trades_split, plat_split, O2O_freight, pay_style, settlement_type, trades_status, 
+    is_payment, is_refund, deal_finish_status, finance_no, finance_no_refund, finance_type, 
+    create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from b_trades_finance_log
+    where id = #{id,jdbcType=INTEGER}
+      and site_id = #{siteId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map" >
+    delete from b_trades_finance_log
+    where id = #{id,jdbcType=INTEGER}
+      and site_id = #{siteId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.jk51.model.order.TradesFinanceLog" >
+    insert into b_trades_finance_log (id, site_id, trades_id, 
+      pay_time, end_time, real_pay, refund_fee,
+      trades_split, plat_split, O2O_freight, 
+      pay_style, settlement_type, trades_status, 
+      is_payment, is_refund, deal_finish_status, 
+      finance_no, finance_no_refund, finance_type, 
+      create_time, update_time)
+    values (#{id,jdbcType=INTEGER}, #{siteId,jdbcType=INTEGER}, #{tradesId,jdbcType=VARCHAR}, 
+      #{payTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP},#{realPay,jdbcType=INTEGER}, #{refundFee,jdbcType=INTEGER},
+      #{tradesSplit,jdbcType=INTEGER}, #{platSplit,jdbcType=INTEGER}, #{o2oFreight,jdbcType=INTEGER}, 
+      #{payStyle,jdbcType=VARCHAR}, #{settlementType,jdbcType=INTEGER}, #{tradesStatus,jdbcType=INTEGER}, 
+      #{isPayment,jdbcType=INTEGER}, #{isRefund,jdbcType=INTEGER}, #{dealFinishStatus,jdbcType=INTEGER}, 
+      #{financeNo,jdbcType=VARCHAR}, #{financeNoRefund,jdbcType=VARCHAR}, #{financeType,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jk51.model.order.TradesFinanceLog" >
+    insert into b_trades_finance_log
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="siteId != null" >
+        site_id,
+      </if>
+      <if test="tradesId != null" >
+        trades_id,
+      </if>
+      <if test="payTime != null" >
+        pay_time,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="realPay != null" >
+        real_pay,
+      </if>
+      <if test="refundFee != null" >
+        refund_fee,
+      </if>
+      <if test="tradesSplit != null" >
+        trades_split,
+      </if>
+      <if test="platSplit != null" >
+        plat_split,
+      </if>
+      <if test="o2oFreight != null" >
+        O2O_freight,
+      </if>
+      <if test="payStyle != null" >
+        pay_style,
+      </if>
+      <if test="settlementType != null" >
+        settlement_type,
+      </if>
+      <if test="tradesStatus != null" >
+        trades_status,
+      </if>
+      <if test="isPayment != null" >
+        is_payment,
+      </if>
+      <if test="isRefund != null" >
+        is_refund,
+      </if>
+      <if test="dealFinishStatus != null" >
+        deal_finish_status,
+      </if>
+      <if test="financeNo != null" >
+        finance_no,
+      </if>
+      <if test="financeNoRefund != null" >
+        finance_no_refund,
+      </if>
+      <if test="financeType != null" >
+        finance_type,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="siteId != null" >
+        #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="tradesId != null" >
+        #{tradesId,jdbcType=VARCHAR},
+      </if>
+      <if test="payTime != null" >
+        #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="realPay != null" >
+        #{realPay,jdbcType=INTEGER},
+      </if>
+      <if test="refundFee != null" >
+        #{refundFee,jdbcType=INTEGER},
+      </if>
+      <if test="tradesSplit != null" >
+        #{tradesSplit,jdbcType=INTEGER},
+      </if>
+      <if test="platSplit != null" >
+        #{platSplit,jdbcType=INTEGER},
+      </if>
+      <if test="o2oFreight != null" >
+        #{o2oFreight,jdbcType=INTEGER},
+      </if>
+      <if test="payStyle != null" >
+        #{payStyle,jdbcType=VARCHAR},
+      </if>
+      <if test="settlementType != null" >
+        #{settlementType,jdbcType=INTEGER},
+      </if>
+      <if test="tradesStatus != null" >
+        #{tradesStatus,jdbcType=INTEGER},
+      </if>
+      <if test="isPayment != null" >
+        #{isPayment,jdbcType=INTEGER},
+      </if>
+      <if test="isRefund != null" >
+        #{isRefund,jdbcType=INTEGER},
+      </if>
+      <if test="dealFinishStatus != null" >
+        #{dealFinishStatus,jdbcType=INTEGER},
+      </if>
+      <if test="financeNo != null" >
+        #{financeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="financeNoRefund != null" >
+        #{financeNoRefund,jdbcType=VARCHAR},
+      </if>
+      <if test="financeType != null" >
+        #{financeType,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.order.TradesFinanceLog" >
+    update b_trades_finance_log
+    <set >
+      <if test="tradesId != null" >
+        trades_id = #{tradesId,jdbcType=VARCHAR},
+      </if>
+      <if test="payTime != null" >
+        pay_time = #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="realPay != null" >
+        real_pay = #{realPay,jdbcType=INTEGER},
+      </if>
+      <if test="refundFee != null" >
+        refund_fee = #{refundFee,jdbcType=INTEGER},
+      </if>
+      <if test="tradesSplit != null" >
+        trades_split = #{tradesSplit,jdbcType=INTEGER},
+      </if>
+      <if test="platSplit != null" >
+        plat_split = #{platSplit,jdbcType=INTEGER},
+      </if>
+      <if test="o2oFreight != null" >
+        O2O_freight = #{o2oFreight,jdbcType=INTEGER},
+      </if>
+      <if test="payStyle != null" >
+        pay_style = #{payStyle,jdbcType=VARCHAR},
+      </if>
+      <if test="settlementType != null" >
+        settlement_type = #{settlementType,jdbcType=INTEGER},
+      </if>
+      <if test="tradesStatus != null" >
+        trades_status = #{tradesStatus,jdbcType=INTEGER},
+      </if>
+      <if test="isPayment != null" >
+        is_payment = #{isPayment,jdbcType=INTEGER},
+      </if>
+      <if test="isRefund != null" >
+        is_refund = #{isRefund,jdbcType=INTEGER},
+      </if>
+      <if test="dealFinishStatus != null" >
+        deal_finish_status = #{dealFinishStatus,jdbcType=INTEGER},
+      </if>
+      <if test="financeNo != null" >
+        finance_no = #{financeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="financeNoRefund != null" >
+        finance_no_refund = #{financeNoRefund,jdbcType=VARCHAR},
+      </if>
+      <if test="financeType != null" >
+        finance_type = #{financeType,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+      and site_id = #{siteId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jk51.model.order.TradesFinanceLog" >
+    update b_trades_finance_log
+    set trades_id = #{tradesId,jdbcType=VARCHAR},
+      pay_time = #{payTime,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      real_pay = #{realPay,jdbcType=INTEGER},
+      refund_fee = #{refundFee,jdbcType=INTEGER},
+      trades_split = #{tradesSplit,jdbcType=INTEGER},
+      plat_split = #{platSplit,jdbcType=INTEGER},
+      O2O_freight = #{o2oFreight,jdbcType=INTEGER},
+      pay_style = #{payStyle,jdbcType=VARCHAR},
+      settlement_type = #{settlementType,jdbcType=INTEGER},
+      trades_status = #{tradesStatus,jdbcType=INTEGER},
+      is_payment = #{isPayment,jdbcType=INTEGER},
+      is_refund = #{isRefund,jdbcType=INTEGER},
+      deal_finish_status = #{dealFinishStatus,jdbcType=INTEGER},
+      finance_no = #{financeNo,jdbcType=VARCHAR},
+      finance_no_refund = #{financeNoRefund,jdbcType=VARCHAR},
+      finance_type = #{financeType,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+      and site_id = #{siteId,jdbcType=INTEGER}
+  </update>
+  <cache />
+</mapper>

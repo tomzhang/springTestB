@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.im.mapper.ChOrderRemindMapper" >
+  <resultMap id="BaseResultMap" type="com.jk51.model.ChOrderRemind" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="order_id" property="orderId" jdbcType="VARCHAR" />
+    <result column="post_style" property="postStyle" jdbcType="INTEGER" />
+    <result column="pharmacist_id" property="pharmacistId" jdbcType="INTEGER" />
+    <result column="is_pushed" property="isPushed" jdbcType="INTEGER" />
+    <result column="is_readed" property="isReaded" jdbcType="INTEGER" />
+    <result column="extra" property="extra" jdbcType="VARCHAR" />
+    <result column="deleted_at" property="deletedAt" jdbcType="TIMESTAMP" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, order_id, post_style, pharmacist_id, is_pushed, is_readed, extra, deleted_at, 
+    created_at, updated_at
+  </sql>
+
+
+  <select id="getChOrderRemindByOrderId" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from ch_order_remind
+    where order_id = #{tradesId}
+  </select>
+
+  <update id="updateByOrderId" >
+    update ch_order_remind
+    set post_style = #{postStyle}, pharmacist_id = 0, is_readed = 0, extra = #{extraStr}, updated_at = CURRENT_TIMESTAMP
+    where order_id = #{tradesId}
+  </update>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ch_order_remind
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from ch_order_remind
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.jk51.model.ChOrderRemind" >
+    insert into ch_order_remind (id, order_id, post_style, 
+      pharmacist_id, is_pushed, is_readed, 
+      extra, deleted_at, created_at, 
+      updated_at)
+    values (#{id,jdbcType=INTEGER}, #{orderId,jdbcType=VARCHAR}, #{postStyle,jdbcType=INTEGER}, 
+      #{pharmacistId,jdbcType=INTEGER}, #{isPushed,jdbcType=INTEGER}, #{isReaded,jdbcType=INTEGER}, 
+      #{extra,jdbcType=VARCHAR}, #{deletedAt,jdbcType=TIMESTAMP}, #{createdAt,jdbcType=TIMESTAMP}, 
+      #{updatedAt,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jk51.model.ChOrderRemind" >
+    insert into ch_order_remind
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="orderId != null" >
+        order_id,
+      </if>
+      <if test="postStyle != null" >
+        post_style,
+      </if>
+      <if test="pharmacistId != null" >
+        pharmacist_id,
+      </if>
+      <if test="isPushed != null" >
+        is_pushed,
+      </if>
+      <if test="isReaded != null" >
+        is_readed,
+      </if>
+      <if test="extra != null" >
+        extra,
+      </if>
+      <if test="deletedAt != null" >
+        deleted_at,
+      </if>
+        created_at,
+        updated_at,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="postStyle != null" >
+        #{postStyle,jdbcType=INTEGER},
+      </if>
+      <if test="pharmacistId != null" >
+        #{pharmacistId,jdbcType=INTEGER},
+      </if>
+      <if test="isPushed != null" >
+        #{isPushed,jdbcType=INTEGER},
+      </if>
+      <if test="isReaded != null" >
+        #{isReaded,jdbcType=INTEGER},
+      </if>
+      <if test="extra != null" >
+        #{extra,jdbcType=VARCHAR},
+      </if>
+      <if test="deletedAt != null" >
+        #{deletedAt,jdbcType=TIMESTAMP},
+      </if>
+      CURRENT_TIMESTAMP,
+      CURRENT_TIMESTAMP,
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.ChOrderRemind" >
+    update ch_order_remind
+    <set >
+      <if test="orderId != null" >
+        order_id = #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="postStyle != null" >
+        post_style = #{postStyle,jdbcType=INTEGER},
+      </if>
+      <if test="pharmacistId != null" >
+        pharmacist_id = #{pharmacistId,jdbcType=INTEGER},
+      </if>
+      <if test="isPushed != null" >
+        is_pushed = #{isPushed,jdbcType=INTEGER},
+      </if>
+      <if test="isReaded != null" >
+        is_readed = #{isReaded,jdbcType=INTEGER},
+      </if>
+      <if test="extra != null" >
+        extra = #{extra,jdbcType=VARCHAR},
+      </if>
+      <if test="deletedAt != null" >
+        deleted_at = #{deletedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdAt != null" >
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null" >
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jk51.model.ChOrderRemind" >
+    update ch_order_remind
+    set order_id = #{orderId,jdbcType=VARCHAR},
+      post_style = #{postStyle,jdbcType=INTEGER},
+      pharmacist_id = #{pharmacistId,jdbcType=INTEGER},
+      is_pushed = #{isPushed,jdbcType=INTEGER},
+      is_readed = #{isReaded,jdbcType=INTEGER},
+      extra = #{extra,jdbcType=VARCHAR},
+      deleted_at = #{deletedAt,jdbcType=TIMESTAMP},
+      created_at = #{createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <!--<select id="findNotReaded" resultType="java.lang.Integer">
+    SELECT count(*)
+    FROM ch_order_remind ch
+	JOIN (SELECT * from b_trades where site_id = #{siteId} and assigned_stores = #{storeId} and DATEDIFF(create_time,NOW())=0) as b on ch.order_id=b.trades_id
+	where ch.deleted_at='0000-00-00 00:00:00' and ch.is_readed = 0
+  </select>-->
+  <select id="findNotReaded" resultType="java.lang.Integer">
+    SELECT count(*) FROM ch_order_remind ch JOIN b_trades t ON ch.order_id = t.trades_id
+    WHERE t.site_id = #{siteId} AND t.assigned_stores = #{storeId} and ch.deleted_at = '0000-00-00 00:00:00' AND ch.is_readed = 0
+  </select>
+
+  <select id="getOrderRemindListMap" resultType="java.util.Map">
+    SELECT ch.id, ch.order_id AS orderId, ch.post_style AS postStyle, date_format(ch.created_at,'%Y-%m-%d %H:%i:%s') AS createdAt, ch.is_readed AS isReaded, ch.pharmacist_id AS pharmacistId
+    FROM ch_order_remind ch JOIN b_trades b ON ch.order_id=b.trades_id
+    WHERE b.site_id=#{siteId} AND b.assigned_stores=#{storeId} AND ch.deleted_at='0000-00-00 00:00:00' ORDER BY ch.is_readed ASC,ch.updated_at DESC
+  </select>
+  <select id="getOrderRemindListMap2" resultType="java.util.Map">
+    SELECT ch.id, ch.order_id AS orderId, ch.post_style AS postStyle, ch.pharmacist_id AS pharmacistId, ch.is_pushed, ch.is_readed AS isReaded, ch.extra, ch.deleted_at, date_format(ch.created_at,'%Y-%m-%d %H:%i:%s') AS createdAt, ch.updated_at
+    FROM ch_order_remind ch JOIN b_trades b ON ch.order_id=b.trades_id
+    WHERE b.site_id=#{siteId} AND b.assigned_stores=#{storeId} AND ch.deleted_at='0000-00-00 00:00:00' ORDER BY ch.is_readed ASC,ch.updated_at DESC
+  </select>
+
+
+  <select id="fingIsReadedOrderId" resultType="java.lang.String">
+    SELECT order_id
+    from ch_order_remind
+    WHERE
+    pharmacist_id = #{pharmacistId}
+    AND
+    is_readed = 1
+  </select>
+
+  <select id="getOrderRemindList" resultType="java.util.Map">
+    SELECT *
+    from ch_order_remind
+    WHERE pharmacist_id = #{pharmacistId} AND deleted_at = '0000-00-00 00:00:00' ORDER BY is_readed ASC ,id DESC
+  </select>
+
+  <select id="getOrderReminds" resultType="com.jk51.model.ChOrderRemind">
+    SELECT *
+    from ch_order_remind
+    WHERE order_id = #{orderId} AND is_readed = 1 AND deleted_at = '0000-00-00 00:00:00'
+  </select>
+
+  <select id="getOrderReminds2" resultMap="BaseResultMap" >
+    SELECT <include refid="Base_Column_List" />
+    from ch_order_remind
+    WHERE order_id = #{orderId} AND is_readed = 1 AND deleted_at = '0000-00-00 00:00:00'
+  </select>
+
+  <select id="getOrderRemindById" resultType="com.jk51.model.ChOrderRemind">
+    SELECT *
+    from ch_order_remind
+    WHERE id = #{id}
+  </select>
+
+  <select id="getOrderRemindById2" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from ch_order_remind
+    WHERE id = #{id}
+  </select>
+
+  <update id="setOrderRemindRead" >
+    update ch_order_remind
+    set is_readed = 1, updated_at = CURRENT_TIMESTAMP, pharmacist_id = #{storeAdminId}
+    where order_id = #{orderId}
+  </update>
+
+  <select id="getOrderRemindList2" resultType="java.util.Map">
+    SELECT	ch.id, ch.order_id AS orderId, ch.post_style AS postStyle, ch.pharmacist_id AS pharmacistId, ch.is_pushed, ch.is_readed AS isReaded, ch.extra, ch.deleted_at, date_format(ch.created_at,'%Y-%m-%d %H:%i:%s') AS createdAt, ch.updated_at
+    FROM ch_order_remind ch JOIN (SELECT trades_id FROM b_trades WHERE site_id=#{siteId} AND assigned_stores=#{storeId})b ON ch.order_id=b.trades_id
+    WHERE ch.deleted_at='0000-00-00 00:00:00' ORDER BY ch.is_readed ASC,ch.updated_at DESC
+    limit #{startRow},#{pageSize}
+  </select>
+
+  <select id="getOrderRemindListCount2" resultType="java.lang.Long">
+    SELECT COUNT(*)
+    FROM ch_order_remind ch JOIN (SELECT trades_id FROM b_trades WHERE site_id=#{siteId} AND assigned_stores=#{storeId})b ON ch.order_id=b.trades_id
+    WHERE ch.deleted_at='0000-00-00 00:00:00'
+  </select>
+
+</mapper>

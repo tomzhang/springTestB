@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.persistence.mapper.UserSpecificDiscountMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.merchant.MemberLabel">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="crowd_name" jdbcType="VARCHAR" property="crowdName"/>
+        <result column="store_ids" jdbcType="VARCHAR" property="storeIds"/>
+        <result column="crowd_sort" jdbcType="INTEGER" property="crowdSort"/>
+        <result column="crowd_type" jdbcType="INTEGER" property="crowdType"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="count" jdbcType="INTEGER" property="labelCount"/>
+        <result column="label_sort" jdbcType="INTEGER" property="labelSort"/>
+        <result column="scene" jdbcType="VARCHAR" property="scene"/>
+        <result column="label_group" jdbcType="VARCHAR" property="labelGroup"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createtime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updatetime"/>
+        <result column="is_del" jdbcType="INTEGER" property="isDel"/>
+        <result column="custom_ids" jdbcType="VARCHAR" property="customIds"/>
+        <result column="crowd_ids" jdbcType="VARCHAR" property="crowdIds"/>
+    </resultMap>
+    <!--优惠券-->
+    <sql id="couponActivity">
+        id, site_id siteId, title, content, image, send_obj sendObj, sign_members signMermbers, send_type sendType, send_condition_type sendConditionType,  send_condition sendCondition, send_way sendWay,
+        send_limit sendLimit, send_way_value sendWayValue, status, start_time startTime, end_time endTime, create_time createTime, update_time updateTime, created_total createdTotal, used_total usedTotal,
+        send_status sendStatus, send_rules sendRules
+    </sql>
+    <sql id="couponActivity2">
+        activity.id, activity.site_id siteId, activity.title, activity.content, activity.image, activity.send_obj sendObj, activity.sign_members signMermbers,
+        activity.send_type sendType, activity.send_condition_type sendConditionType,  activity.send_condition sendCondition, activity.send_way sendWay,
+        activity.send_limit sendLimit, activity.send_way_value sendWayValue, activity.status, activity.start_time startTime, activity.end_time endTime,
+        activity.create_time createTime, activity.update_time updateTime, activity.created_total createdTotal, activity.used_total usedTotal,
+        activity.send_status sendStatus, activity.send_rules sendRules
+    </sql>
+    <sql id="couponRule">
+        site_id siteId, rule_id ruleId, rule_name ruleName, marked_words markedWords, coupon_type couponType, coupon_mode_id couponModeId, amount, time_rule timeRule, limit_rule limitRule, limit_state limitState,
+        limit_remark limitRemark, aim_at aimAt, start_time startTime, end_time endTime, create_time createTime, update_time updateTime, status, order_rule orderRule, area_rule areaRule, goods_rule goodsRule, version,
+        total, send_num sendNum, use_amount useAmount, share_num shareNum, order_price orderPrice, goods_num goodsNum, receive_num receiveNum, old_coupon_id oldCouponId
+    </sql>
+    <sql id="couponRuleActivity">
+        site_id siteId, id, rule_id ruleId, active_id activeId, create_time createTime, num, amount, send_num sendNum, use_num useNum, receive_num receiveNum, status
+    </sql>
+    <sql id="couponDetail">
+        site_id siteId, id, coupon_no couponNo, order_id orderId, status, source, manager_id managerId, create_time createTime, update_time updateTime, is_copy isCopy, is_share isShare, share_num shareNum,
+        share_url shareUrl, rule_id ruleId, user_id userId, money, version, store_id storeId, send_order_id sendOrderId, recovery_time recoveryTime, recovery_status recoveryStatus, return_status returnStatus,
+        type, distance_reduce distanceReduce, distance_discount distanceDiscount, discount_amount discountAmount
+    </sql>
+    <!--活动-->
+    <sql id="promotionsActivity">
+        site_id siteId, id, title, promotions_id promotionsId, start_time startTime, end_time endTime, show_rule showRule, template_pic templatePic, intro, poster_pic posterPic, status, use_object useObject,
+        create_time createTime, update_time updateTime, active_link activeLink, is_independent isIndependent, can_use_coupon canUseCoupon, show_ad showAd
+    </sql>
+    <sql id="promotionsRule">
+        site_id siteId, id, promotions_type promotionsType, promotions_name promotionsName, label, status, promotions_rule promotionsRule, amount, time_rule timeRule, is_first_order isFirstOrder,
+        order_type orderType, use_store useStore, use_area useArea, version, total, use_amount useAmount, send_amount sendAmount, create_time createTime, update_time updateTime, limit_state limitState,
+        limit_remark limitRemark
+    </sql>
+
+    <!--商品-->
+    <sql id="goods">
+        site_id siteId, goods_id goodsId, approval_number approvalNumber, drug_name drugName, com_name comName, specif_cation specifCation, goods_company goodsCompany, barnd_id barndId, drug_category drugCategory,
+        goods_property goodsProperty, goods_use goodsUse, goods_forts goodsForts, goods_validity goodsValidity, goods_forpeople goodsForpeople, user_cateid userCateid, goods_title goodsTitle, goods_tagsid goodsTagsid,
+        market_price marketPrice, shop_price shopPrice, cost_price costPrice, discount_price discountPrice, in_stock inStock, goods_weight goodsWeight, control_num controlNum, goods_status goodsStatus,
+        freight_payer freightPayer, list_time listTime, delist_time delistTime, deplete_time depleteTime, postage_id postageId, detail_tpl detailTpl, is_medicare isMedicare, medicare_code medicareCode,
+        medicare_top_price medicareTopPrice, bar_code barCode, mnemonic_code mnemonicCode, purchase_way purchaseWay, wx_purchase_way wxPurchaseWay, goods_code goodsCode, yb_goods_id ybGoodsId, schedule_time scheduleTime,
+        servce_num servceNum, remark, create_time createTime, update_time updateTime, erp_price erpPrice, disease_label diseaseLabel, efficacy_label efficacyLabel
+    </sql>
+
+    <select id="getCouponActivityBySiteId" resultType="com.jk51.model.coupon.CouponActivity">
+        <!--SELECT <include refid="couponActivity"/> FROM b_coupon_activity WHERE site_id=#{siteId} AND status = 0 ORDER BY create_time DESC-->
+        SELECT <include refid="couponActivity2"/>
+        FROM b_coupon_activity activity
+        INNER JOIN b_coupon_activity_coupon coupon ON (activity.site_id=coupon.site_id and activity.id=coupon.active_id)
+        INNER JOIN b_coupon_rule rule ON (rule.site_id=coupon.site_id and rule.rule_id=coupon.rule_id)
+        AND activity.site_id = #{siteId}
+        AND activity.status=0
+        AND activity.send_way=0
+        AND activity.send_type=6
+        AND coupon.status=0
+        AND rule.status=0
+        ORDER BY activity.create_time DESC
+    </select>
+
+    <select id="getMemberLabelBySiteIdAndLabels" resultType="String">
+        SELECT
+        bm.member_id memberId
+        FROM
+        b_relation_label brl
+        LEFT JOIN b_member bm on brl.buyer_id = bm.buyer_id and brl.site_id=bm.site_id
+        WHERE
+        brl.site_id = #{siteId} AND brl.label_name IN
+        <foreach collection="memberIdOrLabelList" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        AND brl.is_del=0
+    </select>
+    <select id="getMemberLabelBySiteIdAndLabelGroup" resultMap="BaseResultMap">
+        select * from b_member_label
+        where site_id=#{siteId}
+        <if test="memberIdOrLabelGroupList!=null ">
+            and id  in
+            <foreach collection="memberIdOrLabelGroupList" item="item" index="index"
+                     open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        AND is_del=0
+
+    </select>
+
+    <select id="getCouponRuleBySiteIdAndRuleIds" parameterType="java.util.Set" resultType="com.jk51.model.coupon.CouponRule">
+        SELECT <include refid="couponRule"/> FROM b_coupon_rule WHERE site_id = #{siteId} AND aim_at = 1 AND status = 0 AND (amount > 0 OR amount = -1)
+        <if test="ruleIdList != null">
+            AND rule_id IN
+            <foreach collection="ruleIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        ORDER BY create_time DESC
+    </select>
+    <select id="getCouponRuleActivityBySiteIdAndActiveId" resultType="com.jk51.model.coupon.CouponRuleActivity">
+        SELECT <include refid="couponRuleActivity"/> FROM b_coupon_activity_coupon WHERE site_id = #{siteId} AND active_id = #{activeId} AND `status` = 0
+    </select>
+    <select id="getCouponDetailBySiteIdAndMemberIdAndActiveIdAndRuleId" resultType="com.jk51.model.coupon.CouponDetail">
+        SELECT <include refid="couponDetail"/> FROM b_coupon_detail WHERE site_id = #{siteId} AND user_id = #{memberId} AND source = #{activeId} AND rule_id = #{ruleId}
+    </select>
+
+
+
+</mapper>

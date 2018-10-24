@@ -1,0 +1,88 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>主页面</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css">
+        table {
+            margin:auto;
+            border: solid black;
+            border-width:1px 0px 0px 1px;
+            background-color: #ff916e;
+            width: 900px;
+            height: 500px;
+        }
+
+        td {
+            text-align: center;
+            border:solid black;
+            border-width:0px 1px 1px 0px;
+        }
+        p{
+            margin:auto;
+            height: 60px;
+            width: 900px;
+            text-align: center;
+        }
+
+        #title{
+            height: 20px;
+        }
+    </style>
+</head>
+
+<body>
+<p></p>
+<p id="title">示例程序列表，仅供参考，如需交流请联系<a href="mailto:basicservice@51jk.com">basicservice@51jk.coml</a></p>
+<table>
+    <tr>
+        <td width="40%">示例说明</td>
+        <td>连接地址</td>
+    </tr>
+    <tr>
+        <td>示例说明，注：此功能有点慢属于正常(使用了@Async Future.get)</td>
+        <td><a th:href="@{/thymeleaf/index}">/thymeleaf/index</a></td>
+    </tr>
+    <tr>
+        <td>thymeleaf 字符串的常用操作演示</td>
+        <td><a th:href="@{/thymeleaf/str}">/thymeleaf/str</a></td>
+    </tr>
+    <tr>
+        <td>thymeleaf 迭代的常用操作演示</td>
+        <td><a th:href="@{/thymeleaf/each}">/thymeleaf/each</a></td>
+    </tr>
+    <tr>
+        <td>thymeleaf 集合的常用操作演示</td>
+        <td><a th:href="@{/thymeleaf/list}">/thymeleaf/list</a></td>
+    </tr>
+    <tr>
+        <td>【会员管理】的CRUD完整操作示例</td>
+        <td><a th:href="@{/member/query}">/member/query</a></td>
+    </tr>
+    <tr>
+        <td>连接池监控(用户名/密码：admin/admin)</td>
+        <td><a th:href="@{/druid}">/druid</a></td>
+    </tr>
+    <tr>
+        <td>应用、JVM健康状态以及服务列表</td>
+        <td>
+            <a th:href="@{/configprops}">/configprops</a>&nbsp;
+            <a th:href="@{/mappings}">/mappings</a>&nbsp;
+            <a th:href="@{/trace}">/trace</a>&nbsp;
+            <a th:href="@{/dump}">/dump</a>&nbsp;
+            <a th:href="@{/env}">/env</a>&nbsp;
+            <a th:href="@{/health}">/health</a>&nbsp;
+            <a th:href="@{/heapdump}">/heapdump</a>&nbsp;
+            <a th:href="@{/beans}">/beans</a>&nbsp;
+            <a th:href="@{/info}">/info</a>&nbsp;
+            <a th:href="@{/autoconfig}">/autoconfig</a>&nbsp;
+            <a th:href="@{/metrics}">/metrics</a>&nbsp;
+        </td>
+    </tr>
+</table>
+</body>
+
+</html>

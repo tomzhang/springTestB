@@ -1,0 +1,822 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.index.mapper.StoresMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.order.Store">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <id column="site_id" property="siteId" jdbcType="INTEGER"/>
+        <result column="stores_number" property="storesNumber" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="is_qjd" property="isQjd" jdbcType="BIT"/>
+        <result column="type" property="type" jdbcType="BIT"/>
+        <result column="city_id" property="cityId" jdbcType="INTEGER"/>
+        <result column="region_id" property="regionId" jdbcType="INTEGER"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="baidu_lat" property="baiduLat" jdbcType="VARCHAR"/>
+        <result column="baidu_lng" property="baiduLng" jdbcType="VARCHAR"/>
+        <result column="gaode_lng" property="gaodeLng" jdbcType="VARCHAR"/>
+        <result column="gaode_lat" property="gaodeLat" jdbcType="VARCHAR"/>
+        <result column="map_flag" property="mapFlag" jdbcType="BIT"/>
+        <result column="tel" property="tel" jdbcType="VARCHAR"/>
+        <result column="business_time" property="businessTime" jdbcType="VARCHAR"/>
+        <result column="feature" property="feature" jdbcType="VARCHAR"/>
+        <result column="summary" property="summary" jdbcType="VARCHAR"/>
+        <result column="qr_code_img" property="qrCodeImg" jdbcType="VARCHAR"/>
+        <result column="qr_code_type" property="qrCodeType" jdbcType="BIT"/>
+        <result column="stores_status" property="storesStatus" jdbcType="BIT"/>
+        <result column="is_del" property="isDel" jdbcType="BIT"/>
+        <result column="province" property="province" jdbcType="VARCHAR"/>
+        <result column="city" property="city" jdbcType="VARCHAR"/>
+        <result column="service_support" property="serviceSupport" jdbcType="VARCHAR"/>
+        <result column="self_token_time" property="selfTokenTime" jdbcType="VARCHAR"/>
+        <result column="delivery_time" property="deliveryTime" jdbcType="VARCHAR"/>
+        <result column="remind_mobile" property="remindMobile" jdbcType="VARCHAR"/>
+        <result column="order_lert" property="order_lert" jdbcType="VARCHAR"/>
+        <result column="country" property="country" jdbcType="VARCHAR"/>
+        <result column="own_pricing_type" property="ownPricingType" jdbcType="TINYINT"/>
+        <result column="up_pricing_type" property="upPricingType" jdbcType="TINYINT"/>
+        <result column="own_promotion_type" property="ownPromotionType" jdbcType="TINYINT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <resultMap id="ResultMapstoresGroupByCity" type="com.jk51.model.CityHasStores">
+        <id column="cityId" property="cityId" jdbcType="INTEGER"/>
+        <result column="cityName" property="cityName" jdbcType="VARCHAR"/>
+        <collection property="bStores" ofType="com.jk51.model.order.Store">
+            <id column="id" property="id" jdbcType="INTEGER"/>
+            <id column="site_id" property="siteId" jdbcType="INTEGER"/>
+            <result column="stores_number" property="storesNumber" jdbcType="VARCHAR"/>
+            <result column="name" property="name" jdbcType="VARCHAR"/>
+            <result column="is_qjd" property="isQjd" jdbcType="BIT"/>
+            <result column="type" property="type" jdbcType="BIT"/>
+            <result column="city_id" property="cityId" jdbcType="INTEGER"/>
+            <result column="region_id" property="regionId" jdbcType="INTEGER"/>
+            <result column="address" property="address" jdbcType="VARCHAR"/>
+            <result column="baidu_lat" property="baiduLat" jdbcType="VARCHAR"/>
+            <result column="baidu_lng" property="baiduLng" jdbcType="VARCHAR"/>
+            <result column="gaode_lng" property="gaodeLng" jdbcType="VARCHAR"/>
+            <result column="gaode_lat" property="gaodeLat" jdbcType="VARCHAR"/>
+            <result column="map_flag" property="mapFlag" jdbcType="BIT"/>
+            <result column="tel" property="tel" jdbcType="VARCHAR"/>
+            <result column="business_time" property="businessTime" jdbcType="VARCHAR"/>
+            <result column="feature" property="feature" jdbcType="VARCHAR"/>
+            <result column="summary" property="summary" jdbcType="VARCHAR"/>
+            <result column="qr_code_img" property="qrCodeImg" jdbcType="VARCHAR"/>
+            <result column="qr_code_type" property="qrCodeType" jdbcType="BIT"/>
+            <result column="stores_status" property="storesStatus" jdbcType="BIT"/>
+            <result column="is_del" property="isDel" jdbcType="BIT"/>
+            <result column="province" property="province" jdbcType="VARCHAR"/>
+            <result column="city" property="city" jdbcType="VARCHAR"/>
+            <result column="service_support" property="serviceSupport" jdbcType="VARCHAR"/>
+            <result column="self_token_time" property="selfTokenTime" jdbcType="VARCHAR"/>
+            <result column="delivery_time" property="deliveryTime" jdbcType="VARCHAR"/>
+            <result column="remind_mobile" property="remindMobile" jdbcType="VARCHAR"/>
+            <result column="country" property="country" jdbcType="VARCHAR"/>
+            <result column="own_pricing_type" property="ownPricingType" jdbcType="TINYINT"/>
+            <result column="up_pricing_type" property="upPricingType" jdbcType="TINYINT"/>
+            <result column="own_promotion_type" property="ownPromotionType" jdbcType="TINYINT"/>
+            <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+            <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        </collection>
+    </resultMap>
+    <resultMap id="ResultMapWithBLOBs" type="com.jk51.model.order.Store" extends="BaseResultMap">
+        <result column="store_imgs" property="storeImgs" jdbcType="LONGVARCHAR"/>
+        <result column="device_num" property="deviceNum" jdbcType="VARCHAR"/>
+        <result column="device_img_url" property="deviceImgUrl" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, site_id, stores_number, name, is_qjd, type, city_id, region_id, address, baidu_lat,
+        baidu_lng, gaode_lng, gaode_lat, map_flag, tel, business_time, feature, summary,
+        qr_code_img, qr_code_type, stores_status, is_del, province, city, service_support,
+        self_token_time, delivery_time, remind_mobile, order_lert,country, own_pricing_type, own_promotion_type,
+        create_time, update_time,device_num,device_img_url
+    </sql>
+    <sql id="Blob_Column_List">
+        store_imgs
+    </sql>
+    <select id="getStore" resultType="com.jk51.model.Stores" parameterType="java.lang.Integer">
+        SELECT * FROM b_stores
+        <where>
+            <if test="siteId != null and siteId != 0">
+                site_id = #{siteId}
+            </if>
+            AND id = #{storeId}
+        </where>
+        limit 1
+    </select>
+    <select id="selectAllStore" resultMap="BaseResultMap">
+        select * from b_stores where site_id=#{site_id}
+        <if test="name!=null and name!=''">
+            and name LIKE CONCAT(CONCAT('%', #{name}), '%')
+        </if>
+        <if test="storesNumber!=null and storesNumber!=''">
+            and stores_number=#{storesNumber}
+        </if>
+        <if test="storeId !=null">
+            AND id=#{storeId}
+        </if>
+        and stores_status=1
+    </select>
+    <select id="selectAllStoreByStoresstatus" resultMap="BaseResultMap">
+        select * from b_stores where site_id=#{site_id}
+        <if test="name!=null and name!=''">
+            and name LIKE CONCAT(CONCAT('%', #{name}), '%')
+        </if>
+        <if test="storesNumber!=null and storesNumber!=''">
+            and stores_number=#{storesNumber}
+        </if>
+        <if test="storeId !=null">
+            AND id=#{storeId}
+        </if>
+        <if test="storesStatus !=null">
+            AND stores_status=#{storesStatus}
+        </if>
+    </select>
+    <select id="getStoresIsQJDList" resultType="java.util.Map">
+        SELECT site_id, id AS store_id, is_qjd AS quantity FROM `b_stores` WHERE is_qjd='1' AND is_del='1' AND stores_status='1' GROUP BY site_id, id
+    </select>
+    <select id="selectServiceSupport" resultType="Map">
+       select id,service_support from b_stores where site_id=#{site_id} and stores_status=1 and service_support !='' ;
+    </select>
+
+    <select id="getStorePhone" resultType="java.lang.String">
+        SELECT tel FROM `b_stores` WHERE site_id=#{siteId} AND id=#{storeId}
+    </select>
+
+    <update id="updateOriginStoreId" parameterType="com.jk51.model.Stores">
+        update b_stores set origin_shop_id = #{origin_shop_id} where site_id = #{site_id} and id = #{id}
+    </update>
+    <select id="GroupStoresByCityAndServiceSupport" resultMap="ResultMapstoresGroupByCity">
+        select city_id as cityId, city as cityName,bstores.*  from b_stores bstores where site_id=#{site_id} and stores_status=1
+        and service_support LIKE CONCAT(CONCAT('%', #{serviceSupport}), '%') ORDER BY city
+    </select>
+    <select id="selectStoresByCityAndServiceSupport" resultMap="BaseResultMap">
+        select *  from b_stores bstores where site_id=#{site_id} and stores_status=1 and  city_id=#{cityId}
+        and service_support LIKE CONCAT(CONCAT('%', #{serviceSupport}), '%')
+    </select>
+    <select id="selectByOwnPricingTypeAndSiteId" resultType="java.lang.Integer">
+        select id from b_stores where site_id=#{siteId} and own_pricing_type=1 and stores_status=1
+    </select>
+
+    <select id="selectByUpPricingTypeAndSiteId" resultType="java.lang.Integer">
+        select id from b_stores where site_id=#{siteId} and up_pricing_type=1 and stores_status=1
+    </select>
+    <select id="selectByOwnPricingTypeAndSiteIdAndStoreId" resultMap="BaseResultMap">
+        select * from b_stores where site_id=#{siteId} and own_pricing_type=1 and id=#{id} and stores_status=1
+    </select>
+    <select id="selectByOwnPromotionTypeAndSiteId" resultType="java.lang.Integer">
+        select id from b_stores where site_id=#{siteId} and own_promotion_type=1 and stores_status=1
+    </select>
+    <select id="selectByOwnPromotionTypeAndSiteIdAndStoreId" resultMap="BaseResultMap">
+        select * from b_stores where site_id=#{siteId} and own_promotion_type=1 and id=#{id} and stores_status=1
+    </select>
+    <select id="selectAllStoreByStatus" resultMap="BaseResultMap">
+        select * from b_stores where site_id=#{site_id} and stores_status=#{stores_status}
+    </select>
+    <insert id="insertstores" parameterType="Map" useGeneratedKeys="true" keyProperty="id">
+        insert into b_stores
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="storesNumber != null">
+                stores_number,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="isQjd != null">
+                is_qjd,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="cityId != null">
+                city_id,
+            </if>
+            <if test="regionId != null">
+                region_id,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
+            <if test="baiduLat != null">
+                baidu_lat,
+            </if>
+            <if test="baiduLng != null">
+                baidu_lng,
+            </if>
+            <if test="gaodeLng != null">
+                gaode_lng,
+            </if>
+            <if test="gaodeLat != null">
+                gaode_lat,
+            </if>
+            <if test="mapFlag != null">
+                map_flag,
+            </if>
+            <if test="tel != null">
+                tel,
+            </if>
+            <if test="businessTime != null">
+                business_time,
+            </if>
+            <if test="feature != null">
+                feature,
+            </if>
+            <if test="summary != null">
+                summary,
+            </if>
+            <if test="qrCodeImg != null">
+                qr_code_img,
+            </if>
+            <if test="qrCodeType != null">
+                qr_code_type,
+            </if>
+            <if test="storesStatus != null">
+                stores_status,
+            </if>
+            <if test="isDel != null">
+                is_del,
+            </if>
+            <if test="province != null">
+                province,
+            </if>
+            <if test="city != null">
+                city,
+            </if>
+            <if test="serviceSupport != null">
+                service_support,
+            </if>
+            <if test="selfTokenTime != null">
+                self_token_time,
+            </if>
+            <if test="deliveryTime != null">
+                delivery_time,
+            </if>
+            <if test="remindMobile != null">
+                remind_mobile,
+            </if>
+            <if test="order_lert != null">
+                order_lert,
+            </if>
+            <if test="country != null">
+                country,
+            </if>
+            <if test="ownPricingType != null">
+                own_pricing_type,
+            </if>
+            <if test="ownPromotionType != null">
+                own_promotion_type,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="storeImgs != null">
+                store_imgs,
+            </if>
+            <if test="deviceNum != null">
+                device_num,
+            </if>
+            <if test="deviceImgUrl != null">
+                device_img_url,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="storesNumber != null">
+                #{storesNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="isQjd != null">
+                #{isQjd,jdbcType=BIT},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=BIT},
+            </if>
+            <if test="cityId != null">
+                #{cityId,jdbcType=INTEGER},
+            </if>
+            <if test="regionId != null">
+                #{regionId,jdbcType=INTEGER},
+            </if>
+            <if test="address != null">
+                #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="baiduLat != null">
+                #{baiduLat,jdbcType=VARCHAR},
+            </if>
+            <if test="baiduLng != null">
+                #{baiduLng,jdbcType=VARCHAR},
+            </if>
+            <if test="gaodeLng != null">
+                #{gaodeLng,jdbcType=VARCHAR},
+            </if>
+            <if test="gaodeLat != null">
+                #{gaodeLat,jdbcType=VARCHAR},
+            </if>
+            <if test="mapFlag != null">
+                #{mapFlag,jdbcType=BIT},
+            </if>
+            <if test="tel != null">
+                #{tel,jdbcType=VARCHAR},
+            </if>
+            <if test="businessTime != null">
+                #{businessTime,jdbcType=VARCHAR},
+            </if>
+            <if test="feature != null">
+                #{feature,jdbcType=VARCHAR},
+            </if>
+            <if test="summary != null">
+                #{summary,jdbcType=VARCHAR},
+            </if>
+            <if test="qrCodeImg != null">
+                #{qrCodeImg,jdbcType=VARCHAR},
+            </if>
+            <if test="qrCodeType != null">
+                #{qrCodeType,jdbcType=BIT},
+            </if>
+            <if test="storesStatus != null">
+                #{storesStatus,jdbcType=BIT},
+            </if>
+            <if test="isDel != null">
+                #{isDel,jdbcType=BIT},
+            </if>
+            <if test="province != null">
+                #{province,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null">
+                #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="serviceSupport != null">
+                #{serviceSupport,jdbcType=VARCHAR},
+            </if>
+            <if test="selfTokenTime != null">
+                #{selfTokenTime,jdbcType=VARCHAR},
+            </if>
+            <if test="deliveryTime != null">
+                #{deliveryTime,jdbcType=VARCHAR},
+            </if>
+            <if test="remindMobile != null">
+                #{remindMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="order_lert != null">
+                #{order_lert,jdbcType=VARCHAR},
+            </if>
+            <if test="country != null">
+                #{country,jdbcType=VARCHAR},
+            </if>
+            <if test="ownPricingType != null">
+                #{ownPricingType,jdbcType=TINYINT},
+            </if>
+            <if test="ownPromotionType != null">
+                #{ownPromotionType,jdbcType=TINYINT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="storeImgs != null">
+                #{storeImgs,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="deviceNum != null">
+                #{deviceNum,jdbcType=VARCHAR},
+            </if>
+            <if test="deviceImgUrl != null">
+                #{deviceImgUrl,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updatestorebymap" parameterType="Map" useGeneratedKeys="true" keyProperty="id">
+        update b_stores
+        <set>
+            <if test="storesNumber != null">
+                stores_number = #{storesNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="isQjd != null">
+                is_qjd = #{isQjd,jdbcType=BIT},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=BIT},
+            </if>
+            <if test="cityId != null">
+                city_id = #{cityId,jdbcType=INTEGER},
+            </if>
+            <if test="regionId != null">
+                region_id = #{regionId,jdbcType=INTEGER},
+            </if>
+            <if test="address != null">
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="baiduLat != null">
+                baidu_lat = #{baiduLat,jdbcType=VARCHAR},
+            </if>
+            <if test="baiduLng != null">
+                baidu_lng = #{baiduLng,jdbcType=VARCHAR},
+            </if>
+            <if test="gaodeLng != null">
+                gaode_lng = #{gaodeLng,jdbcType=VARCHAR},
+            </if>
+            <if test="gaodeLat != null">
+                gaode_lat = #{gaodeLat,jdbcType=VARCHAR},
+            </if>
+            <if test="mapFlag != null">
+                map_flag = #{mapFlag,jdbcType=BIT},
+            </if>
+            <if test="tel != null">
+                tel = #{tel,jdbcType=VARCHAR},
+            </if>
+            <if test="businessTime != null">
+                business_time = #{businessTime,jdbcType=VARCHAR},
+            </if>
+            <if test="feature != null">
+                feature = #{feature,jdbcType=VARCHAR},
+            </if>
+            <if test="summary != null">
+                summary = #{summary,jdbcType=VARCHAR},
+            </if>
+            <if test="qrCodeImg != null">
+                qr_code_img = #{qrCodeImg,jdbcType=VARCHAR},
+            </if>
+            <if test="qrCodeType != null">
+                qr_code_type = #{qrCodeType,jdbcType=BIT},
+            </if>
+            <if test="storesStatus != null">
+                stores_status = #{storesStatus,jdbcType=BIT},
+            </if>
+            <if test="isDel != null">
+                is_del = #{isDel,jdbcType=BIT},
+            </if>
+            <if test="province != null">
+                province = #{province,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null">
+                city = #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="serviceSupport != null">
+                service_support = #{serviceSupport,jdbcType=VARCHAR},
+            </if>
+            <if test="selfTokenTime != null">
+                self_token_time = #{selfTokenTime,jdbcType=VARCHAR},
+            </if>
+            <if test="deliveryTime != null">
+                delivery_time = #{deliveryTime,jdbcType=VARCHAR},
+            </if>
+            remind_mobile = #{remindMobile,jdbcType=VARCHAR},
+            <if test="order_lert != null">
+                order_lert=#{order_lert,jdbcType=VARCHAR},
+            </if>
+            <if test="country != null">
+                country = #{country,jdbcType=VARCHAR},
+            </if>
+            <if test="ownPricingType != null">
+                own_pricing_type = #{ownPricingType,jdbcType=TINYINT},
+            </if>
+            <if test="ownPromotionType != null">
+                own_promotion_type = #{ownPromotionType,jdbcType=TINYINT},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="storeImgs != null">
+                store_imgs = #{storeImgs,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="deviceNum != null">
+                device_num = #{deviceNum,jdbcType=VARCHAR},
+            </if>
+            <if test="deviceImgUrl != null">
+                device_img_url = #{deviceImgUrl,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+        and site_id = #{siteId,jdbcType=INTEGER}
+    </update>
+    <update id="updatestoreStatusBystoreId">
+        update b_stores set stores_status=#{stores_status}
+        where site_id=#{site_id}
+        <if test="merchantIds != null">
+            and id in
+            <foreach item="item" index="index" collection="merchantIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </update>
+
+    <update id="updateUpPricingType">
+        update b_stores set up_pricing_type=#{upPricingType}
+        where site_id=#{site_id}
+        <if test="_parameter != null">
+            and id in
+            <foreach item="item" index="index" collection="merchantIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </update>
+
+    <update id="updateOwnPricingType">
+        update b_stores set own_pricing_type=#{ownPricingType}
+        where site_id=#{site_id}
+        <if test="_parameter != null">
+            and id in
+            <foreach item="item" index="index" collection="merchantIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </update>
+
+    <select id="findShopbyCity" resultMap="BaseResultMap">
+        select * from b_stores where site_id=#{site_id,jdbcType=INTEGER} and city LIKE CONCAT(CONCAT('%', #{city}), '%') and stores_status=1
+    </select>
+    <select id="selectMaxId" resultType="java.lang.Integer">
+        select MAX(id) from b_stores where site_id=#{siteId,jdbcType=INTEGER}
+    </select>
+    <select id="selectByFuzzy" resultMap="BaseResultMap">
+        select * FROM b_stores where 1=1
+        <if test="siteId != null">
+            and site_id=#{siteId}
+        </if>
+        <if test="storeNumber != '' and storeNumber != null">
+            and stores_number =#{storeNumber}
+        </if>
+        <if test="name!=null and name!=''">
+            and name LIKE concat('%',#{name,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="type!= null">
+            and type =#{type}
+        </if>
+        <if test="storesStatus!= null">
+            and stores_status =#{storesStatus}
+        </if>
+        <if test="isQjd!=null">
+            and is_qjd=#{isQjd}
+        </if>
+        <if test="service_support!=null and service_support!=''">
+            and service_support LIKE CONCAT(CONCAT('%', #{service_support}), '%')
+        </if>
+        order by create_time desc
+    </select>
+    <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from b_stores
+        where id = #{id,jdbcType=INTEGER}
+        and site_id = #{siteId,jdbcType=INTEGER}
+    </select>
+    <update id="initOwnPricingTypeBySiteId">
+        update b_stores set own_pricing_type=#{initPricingType} where site_id=#{siteId}
+    </update>
+
+    <update id="initUpPricingTypeBySiteId">
+        update b_stores set up_pricing_type=#{initPricingType} where site_id=#{siteId}
+    </update>
+
+    <select id="getStoreNamesByStoreIds" resultType="java.lang.String">
+
+        SELECT name FROM b_stores WHERE site_id = #{siteId} AND id IN
+
+        <foreach item="item" index="index" collection="storeIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </select>
+
+    <select id="queryStoreAndAdminCount" resultType="java.util.Map">
+        SELECT S.name, S.stores_number AS storesNumber, COUNT(1) AS adminCount
+        FROM b_stores AS S
+        LEFT JOIN b_store_adminext AS A
+        ON S.`site_id`=A.`site_id` AND S.`id`=A.`store_id`
+        WHERE S.site_id=#{siteId} AND S.`id`=#{storeId}
+        <if test="objectName != null and objectName != ''">
+            AND S.`name`=#{objectName}
+        </if>
+    </select>
+
+    <select id="getstoreidsByStoreNumber" resultType="java.lang.String">
+        select id from b_stores where site_id=#{siteId} and stores_number in (#{uids})
+    </select>
+    <select id="selectStoreIdbyServiceSupport" resultType="Map">
+        select * from b_stores where site_id=#{siteId}
+        <if test="storesStatus!= null">
+            and stores_status =#{storesStatus}
+        </if>
+        <if test="service_support!=null and service_support!=''">
+            and service_support LIKE CONCAT(CONCAT('%', #{service_support}), '%')
+        </if>
+    </select>
+    <select id="selectStoreByIds" resultMap="BaseResultMap">
+        select *
+        FROM b_stores
+        WHERE
+          site_id = #{siteId}
+        AND
+          id in (${ids})
+        AND
+          stores_status = #{storesStatus}
+    </select>
+
+    <select id="selectStoreByCityIds" resultMap="BaseResultMap">
+        SELECT *
+        FROM b_stores
+        WHERE site_id = #{siteId}
+        AND stores_status = #{storesStatus}
+        AND city_id IN (${cityIds})
+    </select>
+
+    <select id="searchStores" resultType="Map">
+        select id,name,province,city,country,address,store_imgs,gaode_lng,gaode_lat,business_time,feature,summary from
+        b_stores
+        where site_id = #{siteId} and is_del = 1 and stores_status = 1
+        <if test="keyword !=null and keyword !='' ">
+            and (name like concat('%',#{keyword},'%') or address like concat('%',#{keyword},'%'))
+        </if>
+        <if test="city !=null and city !='' ">
+            and city = #{city}
+        </if>
+        <if test="storeIds !=null and storeIds !='' ">
+            and id in (#{storeIds})
+        </if>
+    </select>
+
+    <select id="searchStoresPro" resultType="Map">
+        select a.id as
+        id,name,province,city,country,address,store_imgs,gaode_lng,gaode_lat,stores_number,type,tel,stores_status,is_qjd,ifnull(b.post_style,'')
+        as post_style,a.origin_shop_id,a.ele_status,b.post_style_meituan,
+        CASE b.implementation_phase
+        WHEN 0 THEN '试点阶段'
+        WHEN 1 THEN '推广T-1阶段'
+        WHEN 2 THEN '推广T-2阶段'
+        ELSE '---' END as implementation_phase
+        from b_stores a
+        left join b_store_delivery b on a.site_id = b.site_id and a.id = b.store_id
+        where a.site_id = #{siteId} and is_del = 1
+        <if test="keyword !=null and keyword !='' ">
+            and (name like concat('%',#{keyword},'%') or address like concat('%',#{keyword},'%'))
+        </if>
+        <if test="name !=null and name !='' ">
+            and name like concat('%',#{name},'%')
+        </if>
+        <if test="storesNumber !=null and storesNumber !='' ">
+            and stores_number =#{storesNumber}
+        </if>
+        <if test="isQjd !=null and isQjd !='' ">
+            and is_qjd =#{isQjd}
+        </if>
+        <if test="type !=null and type !='' ">
+            and type =#{type}
+        </if>
+        <if test="storesStatus !=null and storesStatus !='' ">
+            and stores_status =#{storesStatus}
+        </if>
+        <if test="dStatus !=null and dStatus !='' and dStatus ==1 ">
+            and b.post_style = 1
+        </if>
+        <if test="dStatus !=null and dStatus !='' and dStatus !=1 ">
+            and (b.post_style is null or b.post_style = 0)
+        </if>
+        <if test="implementationPhase !=null and implementationPhase !=''">
+            and b.implementation_phase = #{implementationPhase}
+        </if>
+    </select>
+
+    <select id="queryClicks" resultType="Map">
+        select id,storeadmin_id,mobile,name,avatar,clerk_job,clerk_invitation_code,
+        ifnull((select is_online from ch_pharmacist where site_id = #{siteId} and store_id = #{storeId} and store_user_id =b_store_adminext.id limit 1 ), '0') as is_online
+        from b_store_adminext
+        where site_id=#{siteId} AND store_id=#{storeId} and is_del = 0
+        ORDER BY is_online desc
+    </select>
+
+    <select id="queryClickDiss" resultType="Map">
+        SELECT b.open_id,ifnull(evaluate,'') as evaluate,sender,a.create_time
+        FROM b_im_service a
+        LEFT JOIN b_member b ON a.site_id=b.site_id AND b.buyer_id=substring_index(a.sender, '_', -1)
+        WHERE a.site_id=#{siteId} AND a.receiver=concat('helper_',#{siteId},'_',#{id}) order by create_time desc
+    </select>
+
+    <update id="updateStoreEleStatus" parameterType="com.jk51.model.Stores">
+        update b_stores set ele_status = 1 where site_id = #{site_id} and id = #{id}
+    </update>
+    <select id="selectAllStoresBySiteId" resultType="string">
+      SELECT id FROM b_stores WHERE is_del=1 AND stores_status=1 AND site_id=#{siteId}
+    </select>
+
+    <select id="queryStoreByIds" resultType="com.jk51.modules.task.domain.FollowTask">
+        SELECT S.id AS joinId,S.stores_number AS storesNumber, S.`name` AS storeName,A.adminCount
+        FROM b_stores AS S
+        LEFT JOIN
+        (SELECT COUNT(1) AS adminCount,storeadmin_id ,site_id,store_id FROM b_store_adminext
+        WHERE site_id=#{siteId} AND store_id IN
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        GROUP BY store_id) AS A
+        ON S.site_id=A.site_id AND S.id = A.store_id
+        WHERE S.site_id=#{siteId} AND S.id IN
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        <if test="objectName!=null and objectName!=''">
+            AND S.name = #{objectName}
+        </if>
+    </select>
+
+    <select id="selectByStoreId" resultMap="BaseResultMap">
+        select *
+        FROM b_stores
+        WHERE
+          site_id = #{siteId}
+        AND
+          id = #{storeId}
+        AND
+          stores_status = #{status}
+    </select>
+
+    <select id="queryTradesTime" resultType="Map">
+         select a.pay_time,a.shipping_status,a.trades_status,ifnull(b.shipping_time,'') as shipping_time, ifnull(b.stockup_time,'') as stockup_time,a.confirm_goods_time,a.consign_time,
+          a.post_id,a.post_name,a.post_number,a.delivery_name,a.store_shipping_clerk_id,c.mobile,c.name,c.storeadmin_id,a.post_style
+          from b_trades a left join b_stockup b on a.site_id = b.site_id and a.trades_id = b.trades_id
+          left join b_store_adminext c on a.site_id = c.site_id and a.store_shipping_clerk_id = c.storeadmin_id and c.is_del=0
+          where a.site_id = #{siteId} and a.trades_id = #{tradesId}
+    </select>
+
+    <select id="queryStoresBySiteId" resultType="map">
+        SELECT id, name user_name, store_imgs avatar,tel mobile,stores_number from b_stores where site_id = #{siteId} and stores_status=1 and is_del=1
+    </select>
+
+    <select id="queryStoreCities" resultType="Map">
+        select distinct(city) from b_stores where site_id = #{siteId} and is_del = 1 and stores_status = 1
+    </select>
+
+    <select id="queryStoreName" resultType="String">
+        select name from b_stores where  site_id = #{siteId} and id = (select assigned_stores from b_trades where site_id = #{siteId} and trades_id = #{tradesId} limit 1) limit 1
+    </select>
+    <select id="selectStoreNumbers" resultType="String">
+        select GROUP_CONCAT(stores_number) from b_stores where site_id=#{siteId} and id in(${ids})
+    </select>
+    <select id="selectAllStoreNumbers" resultType="String">
+        select GROUP_CONCAT(stores_number) from b_stores where site_id=#{siteId} and stores_status = 1;
+    </select>
+
+    <select id="getStoreBySiteId" resultType="java.util.Map">
+        SELECT id,name,city_id AS cityId,region_id AS regionId,province,city,country from b_stores WHERE site_id = #{siteId} AND stores_status = 1
+    </select>
+
+    <select id="getStoreIdBySiteId" resultType="java.util.Map">
+        SELECT id,stores_number storeNumber from b_stores WHERE site_id = #{siteId} and stores_status=1;
+    </select>
+
+    <select id="queryStoreQrcodeWx" resultType="String">
+        SELECT ifnull(store_qrcode_wx,'') as store_qrcode_wx from b_stores WHERE site_id = #{siteId} and id = #{id}
+    </select>
+
+    <update id="updateStoreQrcodeWx">
+        update b_stores set store_qrcode_wx = #{store_qrcode_wx} where site_id = #{siteId} and id = #{id}
+    </update>
+    <select id="selectStoreByAreaIds" resultType="java.util.Map">
+        select * from b_stores where site_id=#{siteId}
+        and stores_status=1
+        <if test="cityId!=null">
+            AND city_id=#{cityId}
+        </if>
+        <if test="regionId!=null">
+            AND region_id=#{regionId}
+        </if>
+    </select>
+
+    <select id="queryEleStatus" resultType="java.lang.Integer">
+        select post_style from b_store_delivery where site_id = #{siteId} and store_id = #{id}
+    </select>
+
+    <select id="queryEleStatusMeituan" resultType="java.lang.Integer">
+        select post_style_meituan from b_store_delivery where site_id = #{siteId} and store_id = #{id}
+    </select>
+
+    <select id="queryStoreNumbers" resultType="java.lang.Integer">
+        select id from b_stores where site_id=#{siteId} and is_del = 1 and stores_status = 1
+    </select>
+
+    <select id="getStoreName" resultType="String">
+        SELECT b_stores.name FROM b_stores WHERE b_stores.site_id=#{siteId} and b_stores.device_num = #{deviceNum}
+    </select>
+    <select id="selectStoreAll" resultMap="BaseResultMap">
+        select * from b_stores where site_id=#{siteId}
+    </select>
+</mapper>

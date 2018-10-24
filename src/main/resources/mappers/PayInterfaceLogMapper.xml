@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.pay.mapper.PayInterfaceLogMapper">
+    <resultMap id="PayInterfaceLogMap" type="com.jk51.model.pay.PayInterfaceLog">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="site_id" jdbcType="INTEGER" property="siteId" />
+        <result column="trades_id" jdbcType="BIGINT" property="tradesId" />
+        <result column="trades_fee" jdbcType="INTEGER" property="tradesFee" />
+        <result column="refund_no" jdbcType="BIGINT" property="refundNo" />
+        <result column="refund_fee" jdbcType="INTEGER" property="refundFee" />
+        <result column="refund_id" jdbcType="VARCHAR" property="refundId" />
+        <result column="transaction_id" jdbcType="VARCHAR" property="transactionId" />
+        <result column="pay_style" jdbcType="VARCHAR" property="payStyle" />
+        <result column="pay_interface" jdbcType="VARCHAR" property="payInterface" />
+        <result column="pay_result" jdbcType="VARCHAR" property="payResult" />
+        <result column="exe_result" jdbcType="TINYINT" property="exeResult" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createDate" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateDate" />
+        <result column="trades_id_time" jdbcType="VARCHAR" property="tradesIdTime" />
+
+    </resultMap>
+
+    <insert id="insert" parameterType="com.jk51.model.pay.PayInterfaceLog">
+        INSERT INTO b_pay_api_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="tradesId != null">
+                trades_id,
+            </if>
+            <if test="refundNo != null">
+                refund_no,
+            </if>
+            <if test="refundFee != null">
+                refund_fee,
+            </if>
+            <if test="tradesFee != null">
+                trades_fee,
+            </if>
+            <if test="refundId != null">
+                refund_id,
+            </if>
+            <if test="transactionId != null">
+                transaction_id,
+            </if>
+            <if test="payStyle != null">
+                pay_style,
+            </if>
+            <if test="payInterface != null">
+                pay_interface,
+            </if>
+            <if test="payResult != null">
+                pay_result,
+            </if>
+            <if test="exeResult != null">
+                exe_result,
+            </if>
+            <if test="tradesIdTime != null">
+                trades_id_time,
+            </if>
+            create_time,update_time
+        </trim>
+        <trim prefix="value (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId},
+            </if>
+            <if test="tradesId != null">
+                #{tradesId},
+            </if>
+            <if test="refundNo != null">
+                #{refundNo},
+            </if>
+            <if test="refundFee != null">
+                #{refundFee},
+            </if>
+            <if test="tradesFee != null">
+                #{tradesFee},
+            </if>
+            <if test="refundId != null">
+                #{refundId},
+            </if>
+            <if test="transactionId != null">
+                #{transactionId},
+            </if>
+            <if test="payStyle != null">
+                #{payStyle},
+            </if>
+            <if test="payInterface != null">
+                #{payInterface},
+            </if>
+            <if test="payResult != null">
+                #{payResult},
+            </if>
+            <if test="exeResult != null">
+                #{exeResult},
+            </if>
+            <if test="tradesIdTime != null">
+                #{tradesIdTime},
+            </if>
+            CURRENT_TIMESTAMP,CURRENT_TIMESTAMP
+        </trim>
+    </insert>
+
+    <select id="findByTradesId" resultMap="PayInterfaceLogMap">
+        select id, site_id,trades_id, refund_no,refund_fee,trades_fee, refund_id, transaction_id,pay_style,pay_interface,pay_result,exe_result,create_time,update_time
+        from b_pay_api_log where trades_id=#{tradesId} and pay_interface=#{payInterface} and site_id=#{siteId} and pay_style=#{payStyle} and exe_result=1
+        order by create_time desc
+    </select>
+    <select id="findByTradesIdALL" resultMap="PayInterfaceLogMap">
+        select id, site_id,trades_id, refund_no,refund_fee,trades_fee, refund_id, transaction_id,pay_style,pay_interface,pay_result,exe_result,create_time,update_time,trades_id_time
+        from b_pay_api_log where trades_id=#{tradesId} and pay_interface='wx_po' and pay_style='wx_native' and is_close=0
+    </select>
+    <select id="findByTradesIdquery" resultMap="PayInterfaceLogMap">
+        select id, site_id,trades_id, refund_no,refund_fee,trades_fee, refund_id, transaction_id,pay_style,pay_interface,pay_result,exe_result,create_time,update_time,trades_id_time
+        from b_pay_api_log where trades_id=#{tradesId} and trades_id_time &lt;&gt; '' and is_close=0
+    </select>
+
+    <update id="updateByTradesId">
+        UPDATE b_pay_api_log SET is_close=1
+        WHERE id=#{id}
+    </update>
+</mapper>

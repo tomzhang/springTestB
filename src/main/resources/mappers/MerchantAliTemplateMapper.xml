@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.merchant.mapper.MerchantAliTemplateMapper">
+
+    <insert id="add">
+        INSERT INTO yb_merchant_ali_template (merchant_id, template_name, template_id, is_del, create_time, update_time)
+        VALUES (#{merchantId}, #{templateName}, #{templateId}, 0, now(), now())
+    </insert>
+
+    <update id="upd">
+        UPDATE yb_merchant_ali_template SET template_id=#{templateId} WHERE merchant_id=#{merchantId} AND id=#{id}
+    </update>
+
+    <select id="getAliTemplateLst" resultType="map">
+        SELECT * FROM yb_merchant_ali_template WHERE is_del=0 AND merchant_id=#{siteId}
+    </select>
+
+    <select id="getAliTemplateIdBySiteIdAndName" resultType="String">
+        SELECT template_id FROM yb_merchant_ali_template WHERE merchant_id=#{merchantId} AND template_name=#{templateName} AND is_del=0
+    </select>
+
+</mapper>

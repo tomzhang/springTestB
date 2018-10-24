@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.task.mapper.YbJkexcrecordMapper">
+  <resultMap id="BaseResultMap" type="com.jk51.model.task.YbJkexcrecord">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="site_id" jdbcType="INTEGER" property="siteId" />
+    <result column="store_id" jdbcType="INTEGER" property="storeId" />
+    <result column="store_admin_id" jdbcType="INTEGER" property="storeAdminId" />
+    <result column="exc_id" jdbcType="BIGINT" property="excId" />
+    <result column="money" jdbcType="VARCHAR" property="money" />
+    <result column="jkd" jdbcType="VARCHAR" property="jkd" />
+    <result column="is_use" jdbcType="BIT" property="isUse" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, site_id, store_id, store_admin_id, exc_id, money, jkd, is_use, status, create_time, 
+    update_time
+  </sql>
+  <select id="selectByExample" parameterType="com.jk51.model.task.YbJkexcrecordExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from yb_jkexcrecord
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limit != null">
+      <if test="offset != null">
+        limit ${offset}, ${limit}
+      </if>
+      <if test="offset == null">
+        limit ${limit}
+      </if>
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yb_jkexcrecord
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from yb_jkexcrecord
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jk51.model.task.YbJkexcrecordExample">
+    delete from yb_jkexcrecord
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jk51.model.task.YbJkexcrecord">
+    insert into yb_jkexcrecord (id, site_id, store_id, 
+      store_admin_id, exc_id, money, 
+      jkd, is_use, status, create_time, 
+      update_time)
+    values (#{id,jdbcType=INTEGER}, #{siteId,jdbcType=INTEGER}, #{storeId,jdbcType=INTEGER}, 
+      #{storeAdminId,jdbcType=INTEGER}, #{excId,jdbcType=BIGINT}, #{money,jdbcType=VARCHAR}, 
+      #{jkd,jdbcType=VARCHAR}, #{isUse,jdbcType=BIT}, #{status,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jk51.model.task.YbJkexcrecord">
+    insert into yb_jkexcrecord
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="siteId != null">
+        site_id,
+      </if>
+      <if test="storeId != null">
+        store_id,
+      </if>
+      <if test="storeAdminId != null">
+        store_admin_id,
+      </if>
+      <if test="excId != null">
+        exc_id,
+      </if>
+      <if test="money != null">
+        money,
+      </if>
+      <if test="jkd != null">
+        jkd,
+      </if>
+      <if test="isUse != null">
+        is_use,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="siteId != null">
+        #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="storeId != null">
+        #{storeId,jdbcType=INTEGER},
+      </if>
+      <if test="storeAdminId != null">
+        #{storeAdminId,jdbcType=INTEGER},
+      </if>
+      <if test="excId != null">
+        #{excId,jdbcType=BIGINT},
+      </if>
+      <if test="money != null">
+        #{money,jdbcType=VARCHAR},
+      </if>
+      <if test="jkd != null">
+        #{jkd,jdbcType=VARCHAR},
+      </if>
+      <if test="isUse != null">
+        #{isUse,jdbcType=BIT},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jk51.model.task.YbJkexcrecordExample" resultType="java.lang.Long">
+    select count(*) from yb_jkexcrecord
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update yb_jkexcrecord
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.siteId != null">
+        site_id = #{record.siteId,jdbcType=INTEGER},
+      </if>
+      <if test="record.storeId != null">
+        store_id = #{record.storeId,jdbcType=INTEGER},
+      </if>
+      <if test="record.storeAdminId != null">
+        store_admin_id = #{record.storeAdminId,jdbcType=INTEGER},
+      </if>
+      <if test="record.excId != null">
+        exc_id = #{record.excId,jdbcType=BIGINT},
+      </if>
+      <if test="record.money != null">
+        money = #{record.money,jdbcType=VARCHAR},
+      </if>
+      <if test="record.jkd != null">
+        jkd = #{record.jkd,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isUse != null">
+        is_use = #{record.isUse,jdbcType=BIT},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=TINYINT},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update yb_jkexcrecord
+    set id = #{record.id,jdbcType=INTEGER},
+      site_id = #{record.siteId,jdbcType=INTEGER},
+      store_id = #{record.storeId,jdbcType=INTEGER},
+      store_admin_id = #{record.storeAdminId,jdbcType=INTEGER},
+      exc_id = #{record.excId,jdbcType=BIGINT},
+      money = #{record.money,jdbcType=VARCHAR},
+      jkd = #{record.jkd,jdbcType=VARCHAR},
+      is_use = #{record.isUse,jdbcType=BIT},
+      status = #{record.status,jdbcType=TINYINT},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.task.YbJkexcrecord">
+    update yb_jkexcrecord
+    <set>
+      <if test="siteId != null">
+        site_id = #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="storeId != null">
+        store_id = #{storeId,jdbcType=INTEGER},
+      </if>
+      <if test="storeAdminId != null">
+        store_admin_id = #{storeAdminId,jdbcType=INTEGER},
+      </if>
+      <if test="excId != null">
+        exc_id = #{excId,jdbcType=BIGINT},
+      </if>
+      <if test="money != null">
+        money = #{money,jdbcType=VARCHAR},
+      </if>
+      <if test="jkd != null">
+        jkd = #{jkd,jdbcType=VARCHAR},
+      </if>
+      <if test="isUse != null">
+        is_use = #{isUse,jdbcType=BIT},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jk51.model.task.YbJkexcrecord">
+    update yb_jkexcrecord
+    set site_id = #{siteId,jdbcType=INTEGER},
+      store_id = #{storeId,jdbcType=INTEGER},
+      store_admin_id = #{storeAdminId,jdbcType=INTEGER},
+      exc_id = #{excId,jdbcType=BIGINT},
+      money = #{money,jdbcType=VARCHAR},
+      jkd = #{jkd,jdbcType=VARCHAR},
+      is_use = #{isUse,jdbcType=BIT},
+      status = #{status,jdbcType=TINYINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="surplusBeans" resultType="java.lang.Integer">
+    SELECT SUM(jkd) FROM yb_jkexcrecord WHERE site_id=#{siteId} AND store_id=#{storeId} AND store_admin_id=#{storeAdminId}
+  </select>
+
+  <select id="selectByMap" resultType="java.util.Map">
+    select
+    yj.id,
+    ym.merchant_name,
+    bs.name as storename,
+    bsa.name as adminname,
+    bsa.mobile,
+    yj.jkd,
+    yj.money,
+    yj.update_time,
+    yj.is_use
+    from yb_jkexcrecord AS yj
+    LEFT JOIN yb_merchant AS ym ON yj.site_id = ym.merchant_id
+    LEFT JOIN b_stores AS bs ON yj.store_id = bs.id
+    LEFT JOIN b_store_adminext AS bsa  ON yj.store_admin_id= bsa.storeadmin_id
+    where
+    yj.status=10
+    <if test="phone!=null and phone!=''">
+      AND  bsa.mobile = #{phone}
+    </if>
+    <if test="name!=null and name!=''">
+      AND  bsa.name  = #{name}
+    </if>
+    <choose>
+      <when test="starttime!=null and starttime!='' and endtime!=null and endtime!=''">
+        AND yj.update_time &gt; #{starttime} AND yj.update_time &lt; date_add( #{endtime},INTERVAL 1 DAY )
+      </when>
+      <when test="starttime!=null and starttime!=''">
+        AND yj.update_time &gt; #{starttime}
+      </when>
+      <when test="endtime!=null and endtime!=''">
+        AND yj.update_time &lt; date_add( #{endtime},INTERVAL 1 DAY )
+      </when>
+    </choose>
+    ORDER BY  yj.create_time  DESC
+  </select>
+
+  <update id="changeStatusById" parameterType="java.lang.Integer">
+    update yb_jkexcrecord
+    set
+    is_use =1
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateStatusById" parameterType="java.lang.Integer">
+    update yb_jkexcrecord
+    set
+    status =20
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

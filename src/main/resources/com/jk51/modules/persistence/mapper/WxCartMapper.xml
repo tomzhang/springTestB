@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.persistence.mapper.WxCartMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.order.WxCart" >
+        <id column="goods_id" property="goodsId" jdbcType="INTEGER" />
+        <id column="site_id" property="siteId" jdbcType="INTEGER" />
+        <id column="user_id" property="userId" jdbcType="INTEGER" />
+        <result column="quantity" property="quantity" jdbcType="INTEGER" />
+        <result column="status" property="status" jdbcType="TINYINT" />
+        <result column="update_date" property="createDate" jdbcType="TIMESTAMP" />
+        <result column="create_date" property="updateDate" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <select id="get" resultType="com.jk51.model.order.WxCart" useCache="false" timeout="1800" flushCache="false" resultMap="BaseResultMap">
+        select * from wx_cart where goods_id = #{goods_id} and site_id=#{site_id} and user_id=#{user_id} and status = 1 LIMIT 1
+    </select>
+
+    <select id="getList" resultType="com.jk51.model.order.WxCart" useCache="false" resultMap="BaseResultMap">
+    select * from wx_cart
+   </select>
+
+    <insert id="insert1" parameterType="java.util.Map">
+        INSERT into wx_cart
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="goodsId != null">
+                goods_id,
+            </if>
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="userId != null ">
+                user_id,
+            </if>
+            <if test="quantity != null ">
+                quantity,
+            </if>
+            <if test="status != null ">
+                status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+        <if test="goodsId != null">
+            #{goods_id},
+        </if>
+        <if test="siteId != null">
+            #{site_id},
+        </if>
+        <if test="userId != null">
+            #{user_id},
+        </if>
+        <if test="quantity != null">
+            #{quantity},
+        </if>
+        <if test="status != null">
+            #{status},
+        </if>
+        </trim>
+    </insert>
+
+    <insert id="insert" parameterType="java.util.Map">
+        insert into wx_cart (goods_id,quantity,status,site_id,user_id,create_date,update_date)
+        values
+        (#{goodsId},#{quantity},1,#{siteId},#{userId},CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)
+    </insert>
+
+    <update id="update" parameterType="java.util.Map">
+          UPDATE wx_cart SET quantity=#{quantity},update_date=CURRENT_TIMESTAMP
+          where goods_id=#{goodsId} AND site_id=#{siteId} AND user_id=#{userId} and status = 1
+    </update>
+
+    <update id="delete">
+        UPDATE wx_cart set status = 0,update_date=CURRENT_TIMESTAMP where
+        site_id=#{site_id} AND user_id=#{user_id} AND
+        goods_id IN
+        <foreach collection="good_ids" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

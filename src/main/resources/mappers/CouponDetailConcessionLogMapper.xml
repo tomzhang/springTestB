@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.coupon.mapper.CouponDetailConcessionLogMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.coupon.CouponDetailConcessionLog">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="coupon_detail_id" jdbcType="INTEGER" property="couponDetailId"/>
+        <result column="coupon_no" jdbcType="VARCHAR" property="couponNo"/>
+        <result column="order_id" jdbcType="VARCHAR" property="orderId"/>
+        <result column="source" jdbcType="VARCHAR" property="source"/>
+        <result column="manager_id" jdbcType="VARCHAR" property="managerId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="is_copy" jdbcType="INTEGER" property="isCopy"/>
+        <result column="is_share" jdbcType="INTEGER" property="isShare"/>
+        <result column="share_num" jdbcType="INTEGER" property="shareNum"/>
+        <result column="rule_id" jdbcType="INTEGER" property="ruleId"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="store_id" jdbcType="INTEGER" property="storeId"/>
+        <result column="send_order_id" jdbcType="VARCHAR" property="sendOrderId"/>
+        <result column="type" jdbcType="INTEGER" property="type"/>
+        <result column="distance_reduce" jdbcType="INTEGER" property="distanceReduce"/>
+        <result column="distance_discount" jdbcType="INTEGER" property="distanceDiscount"/>
+        <result column="discount_amount" jdbcType="INTEGER" property="discountAmount"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, site_id, coupon_detail_id, coupon_no, order_id, source, manager_id, create_time,
+        is_copy, is_share, share_num, rule_id, user_id, store_id, send_order_id, type, distance_reduce,
+        distance_discount, discount_amount
+    </sql>
+
+
+    <!-- insert -->
+    <insert id="insertWithoutId" keyProperty="id" useGeneratedKeys="true"
+            parameterType="com.jk51.model.coupon.CouponDetailConcessionLog">
+          INSERT INTO b_coupon_detail_concession_log(
+          `site_id`, `coupon_detail_id`, `coupon_no`, `order_id`,
+          `source`, `manager_id`, `create_time`, `is_copy`,
+          `is_share`, `share_num`, `rule_id`, `user_id`,
+          `store_id`, `send_order_id`, `type`, `distance_reduce`,
+          `distance_discount`, `discount_amount`)
+          VALUES(
+          #{siteId},  #{couponDetailId}, #{couponNo}, #{orderId},
+          #{source}, #{managerId}, #{createTime}, #{isCopy},
+          #{isShare}, #{shareNum}, #{ruleId}, #{userId},
+          #{storeId}, #{sendOrderId}, #{type}, #{distanceReduce},
+          #{distanceDiscount}, #{discountAmount});
+    </insert>
+
+    <!-- insert END -->
+
+
+    <!-- query -->
+    <select id="queryByTradesId" resultMap="BaseResultMap">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM b_coupon_detail_concession_log
+        WHERE site_id = #{siteId}
+          AND order_id = #{tradesId}
+        ORDER BY id DESC
+        LIMIT 0, 1
+    </select>
+
+    <!-- query END -->
+
+</mapper>

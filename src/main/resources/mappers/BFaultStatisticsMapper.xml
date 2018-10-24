@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.offline.mapper.BFaultStatisticsMapper">
+    <insert id="insertStatics" parameterType="com.jk51.modules.offline.utils.FaultStaticsUtils">
+        insert into b_faultstatistics
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="siteId!=null">
+                site_id,
+            </if>
+            <if test="type!=null">
+                type,
+            </if>
+            <if test="faultType!=null">
+                fault_type,
+            </if>
+            <if test="faultDetails!=null">
+                fault_details,
+            </if>
+            <if test="pushInfo!=null">
+                push_info,
+            </if>
+            <if test="isPush!=null">
+                is_push,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=");" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            <if test="siteId!=null">
+                #{siteId},
+            </if>
+            <if test="type!=null">
+                #{type},
+            </if>
+            <if test="faultType!=null">
+                #{faultType},
+            </if>
+            <if test="faultDetails!=null">
+                #{faultDetails},
+            </if>
+            <if test="pushInfo!=null">
+                #{pushInfo},
+            </if>
+            <if test="isPush!=null">
+                #{isPush},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateStaticsStatus">
+        UPDATE b_faultstatistics SET
+        <if test="faultType!=null and faultType!=200">
+            fault_type= #{faultType},
+        </if>
+        <if test="faultDetails!=null and faultDetails !=''">
+            fault_details= #{faultDetails},
+        </if>
+        <if test="isPush!=null">
+            is_push= #{isPush}
+        </if>
+        <where>
+            id=#{id} and site_id=#{siteId}
+        </where>
+    </update>
+    <select id="findFaultStatics" resultType="map">
+        select
+        bf.id id,yme.merchant_id merchantId,yme.merchant_name merchantName,
+        bf.type type,bf.fault_type faultType,bf.fault_details faultDetails,bf.is_push
+        isPush,bf.push_info pushInfo,bf.create_time createTime
+        FROM b_faultstatistics bf left JOIN yb_merchant_erp yme on bf.site_id=yme.merchant_id where
+        1=1
+        <if test="siteId!=null and siteId!=''">
+            and yme.merchant_id=#{siteId}
+        </if>
+        <if test="merchantName!=null and merchantName!=''">
+            AND yme.merchant_name LIKE concat('%',#{merchantName},'%')
+        </if>
+        <if test="type!= null and type!=''">
+            and bf.type=#{type}
+        </if>
+        <if test="startTime != null and startTime!=''">
+            AND bf.create_time &gt;= str_to_date(concat(#{startTime},' 00:00:00'),'%Y-%m-%d %H:%i:%s')
+        </if>
+        <if test="endTime != null and endTime!=''">
+            AND bf.create_time &lt;= str_to_date(concat(#{endTime},' 23:59:59'),'%Y-%m-%d %H:%i:%s')
+        </if>
+        order by bf.create_time desc
+    </select>
+
+    <select id="selectFaultInfoById" resultType="map">
+        select id,site_id siteId,type type,fault_type faultType,fault_details faultDetails,is_push
+        isPush,push_info pushInfo,create_time createTime
+        FROM b_faultstatistics where 1=1 and
+        id IN
+        <foreach collection="faultIds" item="faultId" index="index" open="(" close=")" separator=",">
+            #{faultId}
+        </foreach>
+    </select>
+
+    <select id="findByPushInfo" resultType="integer">
+        SELECT id from b_faultstatistics where site_id=#{siteId} and type=#{type} and  push_info=#{pushInfo};
+    </select>
+
+</mapper>

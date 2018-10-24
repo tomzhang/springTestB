@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.order.mapper.OrdersMapper">
+
+    <resultMap id="OrdersMap" type="com.jk51.model.order.Orders">
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="order_id" property="orderId"/>
+        <result column="goods_id" property="goodsId"/>
+        <result column="goods_title" property="goodsTitle"/>
+        <result column="goods_price" property="goodsPrice"/>
+        <result column="goods_num" property="goodsNum"/>
+        <result column="goods_gifts" property="goodsGifts"/>
+        <result column="concession_desc" property="concessionDesc"/>
+        <result column="approval_number" property="approvalNumber"/>
+        <result column="specif_cation" property="specifCation"/>
+        <result column="goods_category" property="goodsCategory"/>
+        <result column="trades_id" property="tradesId"/>
+        <result column="goods_imgurl" property="goodsImgurl"/>
+        <result column="orders_status" property="ordersStatus"/>
+        <result column="goods_code" property="goodsCode"/>
+        <result column="yb_goods_id" property="ybGoodsId"/>
+        <result column="goods_batch_no" property="goodsBatchNo"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="trades_snapshot" property="tradesSnapshot"/>
+        <result column="goods_final_price" property="goodsFinalPrice"/>
+    </resultMap>
+
+    <resultMap id="bMemberResultMap" type="com.jk51.model.order.BMember">
+        <id column="site_id" property="siteId"></id>
+        <id column="member_id" property="memberId"></id>
+        <result column="buyer_id" property="buyerId"></result>
+        <result column="buyer_nick" property="buyerNick"></result>
+        <result column="mobile" property="mobile"></result>
+        <result column="passwd" property="passwd"></result>
+        <result column="sex" property="sex"></result>
+        <result column="email" property="email"></result>
+        <result column="idcard_number" property="idcardNumber"></result>
+        <result column="order_num" property="orderNum"></result>
+        <result column="order_fee" property="orderFee"></result>
+        <result column="memo" property="memo"></result>
+        <result column="register_stores" property="registerStores"></result>
+        <result column="register_clerks" property="registerClerks"></result>
+        <result column="name" property="name"></result>
+        <result column="last_ipaddr" property="lastIpaddr"></result>
+        <result column="integrate" property="integrate"></result>
+        <result column="open_id" property="openId"></result>
+        <result column="total_get_integrate" property="totalGetIntegrate"></result>
+        <result column="total_consume_integrate" property="totalConsumeIntegrate"></result>
+        <result column="mem_source" property="memSource"></result>
+        <result column="is_activated" property="isActivated"></result>
+        <result column="ban_status" property="banStatus"></result>
+        <result column="last_time" property="lastTime"></result>
+        <result column="create_time" property="createTime"></result>
+        <result column="update_time" property="updateTime"></result>
+    </resultMap>
+    <resultMap id="bMemberInfoResultMap" type="com.jk51.model.order.BMemberInfo">
+        <id column="site_id" property="siteId"></id>
+        <id column="id" property="id"></id>
+        <result column="member_id" property="memberId"></result>
+        <result column="birthday" property="birthday"></result>
+        <result column="concerned" property="concerned"></result>
+        <result column="concerned_time" property="concernedTime"></result>
+        <result column="integrate" property="integrate"></result>
+        <result column="integrate_used" property="integrateUsed"></result>
+        <result column="checkin_num" property="checkinNum"></result>
+        <result column="checkin_sum" property="checkinSum"></result>
+        <result column="checkin_lasttime" property="checkinLasttime"></result>
+        <result column="weixin_code" property="weixinCode"></result>
+        <result column="qq" property="qq"></result>
+        <result column="membership_number" property="membershipNumber"></result>
+        <result column="barcode" property="barcode"></result>
+        <result column="country" property="country"></result>
+        <result column="province" property="province"></result>
+        <result column="city" property="city"></result>
+        <result column="area" property="area"></result>
+        <result column="address" property="address"></result>
+        <result column="tag" property="tag"></result>
+        <result column="age" property="age"></result>
+        <result column="yibao_card" property="yibaoCard"></result>
+        <result column="status" property="status"></result>
+        <result column="store_id" property="storeId"></result>
+        <result column="avatar" property="avatar"></result>
+        <result column="invite_code" property="inviteCode"></result>
+        <result column="create_time" property="createTime"></result>
+        <result column="update_time" property="updateTime"></result>
+    </resultMap>
+
+    <resultMap id="ybMemberResultMap" type="com.jk51.model.order.YBMember">
+        <id column="member_id" property="memberId"></id>
+        <result column="mobile" property="mobile"></result>
+        <result column="buyer_nick" property="buyerNick"></result>
+        <result column="passwd" property="passwd"></result>
+        <result column="sex" property="sex"></result>
+        <result column="idcard_number" property="idcardNumber"></result>
+        <result column="register_stores" property="registerStores"></result>
+        <result column="regin_source" property="reginSource"></result>
+        <result column="name" property="name"></result>
+        <result column="last_ipaddr" property="lastIpaddr"></result>
+        <result column="integrate" property="integrate"></result>
+        <result column="is_activated" property="isActivated"></result>
+        <result column="b_usersarr" property="bUsersarr"></result>
+        <result column="last_time" property="lastTime"></result>
+        <result column="birthday" property="birthday"></result>
+        <result column="area" property="area"></result>
+        <result column="create_time" property="createTime"></result>
+        <result column="update_time" property="updateTime"></result>
+    </resultMap>
+    <resultMap id="ybAccountResultMap" type="com.jk51.model.order.YBAccount">
+        <id column="account_id" property="accountId"></id>
+        <result column="seller_id" property="sellerId"></result>
+        <result column="account_name" property="accountName"></result>
+        <result column="payplatform_id" property="payplatformId"></result>
+        <result column="account" property="account"></result>
+        <result column="payment_name" property="paymentName"></result>
+        <result column="proportion" property="proportion"></result>
+        <result column="create_time" property="createTime"></result>
+        <result column="update_time" property="updateTime"></result>
+    </resultMap>
+
+    <resultMap id="OrdersMapper" type="com.jk51.model.order.Orders">
+
+    </resultMap>
+
+
+    <select id="getOrdersListByTradesId" resultMap="OrdersMap">
+        select o.*,b.barnd_name barndName,g.goods_company goodsCompany,g.goods_status goodsStatus, bia.`hash`
+        from b_orders o left join b_goods g on (o.goods_id=g.goods_id and o.site_id=g.site_id)
+        LEFT JOIN b_barnd b ON g.site_id=b.site_id AND g.barnd_id = b.barnd_id
+        LEFT JOIN b_images_attr bia ON o.goods_id = bia.goods_id AND o.site_id = bia.site_id AND bia.is_default=1 AND bia.flag=0
+        WHERE o.site_id = #{siteId} AND o.trades_id = #{tradesId} order by goods_gifts asc
+    </select>
+
+    <select id="getOrdersTotalPriceByTradesId" resultType="Integer" useCache="false">
+        select IFNULL(sum(goods_price),0) from b_orders where trades_id=#{tradesId}
+    </select>
+
+    <select id="getOrdersByTradesId" resultMap="OrdersMap" useCache="false">
+       select o.*,b.barnd_name barndName,g.goods_company goodsCompany,g.goods_status goodsStatus from b_orders o left join b_goods g on (o.goods_id=g.goods_id and o.site_id=g.site_id) LEFT JOIN b_barnd b ON g.site_id=b.site_id AND g.barnd_id = b.barnd_id
+       where trades_id=#{tradesId}
+    </select>
+    <update id="updateOrdersStatus">
+        update b_orders set orders_status=#{ordersStatus} ,update_time=CURRENT_TIMESTAMP() where order_id in
+        <foreach collection="list" open="(" close=")" separator="," item="o">
+            #{o.orderId}
+        </foreach>
+    </update>
+
+    <select id="getDistributorDiscount" resultType="java.util.Map">
+        SELECT d.site_id siteId, d.trades_discount tradesDiscount ,d.trades_id tradesId from d_distributor_discount d
+        where d.site_id=#{siteId}
+        and d.trades_id=#{tradesId}
+    </select>
+    <select id="getMemberById" resultMap="bMemberResultMap" useCache="false">
+        SELECT * FROM b_member WHERE site_id=#{0} AND mobile=#{1}
+    </select>
+    <select id="getMemberInfoById" resultMap="bMemberInfoResultMap" useCache="false">
+        SELECT  * FROM b_member_info WHERE site_id=#{siteId} AND member_id=#{memberId} limit 1
+    </select>
+    <select id="getYBMemberByMobile" parameterType="String" resultMap="ybMemberResultMap" useCache="false">
+        SELECT * FROM yb_member WHERE mobile=#{mobile}
+    </select>
+    <insert id="addYBMember" parameterType="com.jk51.model.order.YBMember">
+        insert into yb_member (mobile,passwd,regin_source,b_usersarr,register_stores,create_time,is_activated) values (#{ybMember.mobile},#{ybMember.passwd},#{ybMember.reginSource},#{ybMember.bUsersarr},#{ybMember.registerStores},CURRENT_TIMESTAMP,#{ybMember.isActivated})
+    </insert>
+    <update id="updateYBMember" parameterType="com.jk51.model.order.YBMember">
+        UPDATE yb_member set b_usersarr=#{ybMember.bUsersarr},update_time=CURRENT_TIMESTAMP WHERE mobile=#{ybMember.mobile}
+    </update>
+    <select id="getMemberByBuyerId" resultMap="bMemberResultMap">
+            SELECT * FROM b_member WHERE site_id=#{0} AND buyer_id=#{1} limit 1
+    </select>
+    <select id="getYBAccountById" parameterType="Integer" resultMap="ybAccountResultMap">
+        SELECT * FROM yb_account where seller_id=#{0} AND payplatform_id=#{1}
+    </select>
+    <insert id="addDirectOrderTrades" parameterType="com.jk51.model.order.Trades">
+        INSERT INTO b_trades (site_id,trades_id,seller_id,buyer_id,seller_nick,buyer_nick,receiver_phone,recevier_mobile,recevier_name,receiver_city,receiver_address,receiver_zip,seller_pay_no,seller_phone,seller_mobile,seller_name,trades_status,total_fee,post_fee,real_pay,trades_split,plat_split,O2O_freight,post_style,trades_source,trades_invoice,trades_store,assigned_stores,stockup_status,create_time,update_time,create_order_assigned_stores,budgetdate,is_payment,account_checking_status,pay_style,self_taken_code,store_user_id,distributor_id,buyer_message,settlement_type,self_taken_store,freight_commission,servce_type,lng,lat,clerk_invitation_code,postage_discount,is_service_order)
+        values (#{trades.siteId},#{trades.tradesId},#{trades.sellerId},#{trades.buyerId},#{trades.sellerNick},#{trades.buyerNick},#{trades.receiverPhone},#{trades.recevierMobile},#{trades.recevierName},#{trades.receiverCity},#{trades.receiverAddress},#{trades.receiverZip},#{trades.sellerPayNo},#{trades.sellerPhone},#{trades.sellerMobile},#{trades.sellerName},#{trades.tradesStatus},#{trades.totalFee},#{trades.postFee},#{trades.realPay},#{trades.tradesSplit},#{trades.platSplit},#{trades.O2OFreight},#{trades.postStyle},#{trades.tradesSource},#{trades.tradesInvoice},#{trades.tradesStore},#{trades.assignedStores},#{trades.stockupStatus},CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP(),#{trades.createOrderAssignedStores},#{trades.budgetdate},#{trades.isPayment},#{trades.accountCheckingStatus},#{trades.payStyle},#{trades.selfTakenCode},#{trades.storeUserId},#{trades.distributorId},#{trades.buyerMessage},#{trades.settlementType},#{trades.selfTakenStore},#{trades.freightCommission},#{trades.servceType},#{trades.lng},#{trades.lat},#{trades.clerkInvitationCode},#{trades.postageDiscount},#{trades.isServiceOrder})
+    </insert>
+    <insert id="addOrders" parameterType="com.jk51.model.order.Orders">
+        insert into b_orders(site_id,order_id,goods_id,goods_title,goods_price,goods_num,goods_gifts, concession_desc,approval_number,specif_cation,goods_category,trades_id,goods_imgurl,orders_status,goods_code,yb_goods_id,goods_batch_no,create_time,update_time,trades_snapshot,goods_final_price)
+        values (#{orders.siteId},#{orders.orderId},#{orders.goodsId},#{orders.goodsTitle},#{orders.goodsPrice},#{orders.goodsNum},#{orders.goodsGifts},#{orders.concessionDesc},#{orders.approvalNumber},#{orders.specifCation},#{orders.goodsCategory},#{orders.tradesId},#{orders.goodsImgurl},#{orders.ordersStatus},#{orders.goodsCode},#{orders.ybGoodsId},#{orders.goodsBatchNo},CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,#{orders.tradesSnapshot},#{orders.goodsFinalPrice})
+    </insert>
+    <update id="updateBShopMember">
+        UPDATE b_member SET integrate=#{integrate},update_time=CURRENT_TIMESTAMP where site_id=#{siteId} AND buyer_id=#{buyerId}
+    </update>
+    <insert id="addTradesExt" parameterType="com.jk51.model.order.TradesExt">
+        INSERT INTO b_trades_ext (site_id,trades_id,integral_used,integral_pre_award,integral_final_award,is_first_order,integral_price,reduce_reduction_amount,bj_discount_amount,user_coupon_id,user_coupon_amount,trades_rank_time,trades_rank,cash_payment_pay,medical_insurance_card_pay,line_breaks_pay,cash_receipt_note,distance,create_time,update_time) VALUES (#{tradesExt.siteId},#{tradesExt.tradesId},#{tradesExt.integralUsed},#{tradesExt.integralPreAward},#{tradesExt.integralFinalAward},#{tradesExt.isFirstOrder},#{tradesExt.integralPrice},#{tradesExt.reduceReductionAmount},#{tradesExt.bjDiscountAmount},#{tradesExt.userCouponId},#{tradesExt.userCouponAmount},#{tradesExt.tradesRankTime},#{tradesExt.tradesRank},#{tradesExt.cashPaymentPay},#{tradesExt.medicalInsuranceCardPay},#{tradesExt.lineBreaksPay},#{tradesExt.cashReceiptNote},#{tradesExt.distance},CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)
+    </insert>
+    <update id="updateTradesExt">
+        UPDATE b_trades_ext set cash_payment_pay=#{cashPaymentPay},medical_insurance_card_pay=#{medicalInsuranceCardPay},line_breaks_pay=#{lineBreaksPay},cash_receipt_note=#{cashReceiptNote} WHERE trades_id=#{tradesId}
+    </update>
+    <insert id="addDistributorDiscount">
+        INSERT into d_distributor_discount(site_id,trades_id,trades_discount)
+        VALUES (#{siteId},#{tradesId},#{tradesDiscount})
+    </insert>
+    <update id="updateOrderPayStyle" parameterType="com.jk51.model.order.response.UpdateOrderPayStyleReq">
+        UPDATE b_trades set pay_style=#{updateOrderPayStyleReq.payStyle} WHERE site_id=#{updateOrderPayStyleReq.siteId} AND trades_id=#{updateOrderPayStyleReq.tradesId}
+    </update>
+    <select id="getStore" parameterType="int" resultType="com.jk51.model.order.Store">
+        SELECT site_id siteId,
+        id,
+        stores_number storesNumber,
+        name,
+        is_qjd isQjd,
+        type,
+        city_id cityId,
+        region_id regionId,
+        address,
+        baidu_lat baiduLat,
+        baidu_lng baiduLng,
+        gaode_lng gaodeLng,
+        gaode_lat gaodeLat,
+        map_flag mapFlag,
+        store_imgs storeImgs,
+        tel,
+        business_time businessTime,
+        feature,
+        summary,
+        qr_code_img qrCodeImg,
+        qr_code_type qrCodeType,
+        stores_status storesStatus,
+        is_del isDel,
+        province,
+        city,
+        service_support serviceSupport,
+        self_token_time selfTokenTime,
+        delivery_time deliveryTime,
+        remind_mobile remindMobile,
+        country,
+        own_pricing_type ownPricingType,
+        own_promotion_type ownPromotionType,
+        create_time createTime,
+        update_time updateTime
+
+        FROM b_stores t
+        where t.site_id = #{siteId}
+        and t.stores_status = 1
+        and t.id = #{storeId}
+    </select>
+    <select id="getStoresBySiteId" parameterType="int" resultType="com.jk51.model.order.Store">
+        SELECT site_id siteId,
+        id,
+        stores_number storesNumber,
+        name,
+        is_qjd isQjd,
+        type,
+        city_id cityId,
+        region_id regionId,
+        address,
+        baidu_lat baiduLat,
+        baidu_lng baiduLng,
+        gaode_lng gaodeLng,
+        gaode_lat gaodeLat,
+        map_flag mapFlag,
+        store_imgs storeImgs,
+        tel,
+        business_time businessTime,
+        feature,
+        summary,
+        qr_code_img qrCodeImg,
+        qr_code_type qrCodeType,
+        stores_status storesStatus,
+        is_del isDel,
+        province,
+        city,
+        service_support serviceSupport,
+        self_token_time selfTokenTime,
+        delivery_time deliveryTime,
+        remind_mobile remindMobile,
+        country,
+        own_pricing_type ownPricingType,
+        own_promotion_type ownPromotionType,
+        create_time createTime,
+        update_time updateTime
+
+        FROM b_stores t
+        where t.site_id = #{siteId}
+        and t.stores_status = 1
+        <if test="cityId != null and cityId != ''">
+            and t.city_id = #{cityId}
+        </if>
+    </select>
+    <update id="updateOrderMember">
+        UPDATE b_member SET order_fee=#{orderFee},order_num=#{orderNum},update_time=CURRENT_TIMESTAMP where site_id=#{siteId} AND buyer_id=#{buyerId}
+    </update>
+    <update id="updateStatusByTradesId">
+        UPDATE b_orders SET orders_status = ${tradesStatus} where trades_id = #{tradesId}
+    </update>
+
+    <select id="getAreaId" parameterType="String" resultType="String">
+        SELECT name FROM yb_area WHERE areaid=#{areaId} limit 1
+    </select>
+    <insert id="addBMemberInfo" parameterType="com.jk51.model.order.BMemberInfo">
+        INSERT into b_member_info (site_id,member_id,store_id,invite_code,create_time)VALUES (#{siteId},#{memberId},#{storeId},#{inviteCode},CURRENT_TIMESTAMP )
+
+    </insert>
+    <select id="selectOrderListFromERP" resultType="java.util.Map">
+        SELECT
+        goods_code gcode,
+        goods_num gnum,
+        specif_cation gsc,
+        IF ( goods_gifts = 1,0, IFNULL(goods_final_price, goods_price )) gprice,
+        goods_gifts isGift from b_orders where site_id=#{siteId} and trades_id=#{tradesId};
+    </select>
+
+
+    <select id="getOrdersInfoList" resultMap="OrdersMap">
+        select o.*,b.barnd_name barndName,g.goods_company goodsCompany,g.goods_status goodsStatus, bia.`hash`
+        from b_orders o left join b_goods g on (o.goods_id=g.goods_id and o.site_id=g.site_id)
+        LEFT JOIN b_barnd b ON g.site_id=b.site_id AND g.barnd_id = b.barnd_id
+        LEFT JOIN b_images_attr bia ON o.goods_id = bia.goods_id AND o.site_id = bia.site_id AND bia.is_default=1 AND
+        bia.flag=0
+        WHERE o.site_id = #{siteId} AND o.trades_id IN
+        <foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <update id="cancelStockup">
+        UPDATE b_orders SET orders_status=120 WHERE trades_id=#{tradesId}
+    </update>
+
+    <update id="memberUseIntegral">
+        UPDATE b_member SET integrate = integrate - #{needIntegral}
+        WHERE site_id = #{siteId} and member_id = #{memberId} AND integrate - #{needIntegral} >= 0
+    </update>
+
+    <select id="getParentId" parameterType="String" resultType="String">
+        SELECT parent_id FROM yb_area WHERE areaid=#{areaId} limit 1
+    </select>
+
+    <select id="getordersByCouponDetail" resultMap="OrdersMap">
+        SELECT o.* FROM b_coupon_detail d
+        LEFT JOIN b_trades t
+        ON d.order_id = t.trades_id
+        AND t.trades_status in (110, 120, 130, 140, 150, 200, 210, 900, 220, 230, 800, 240)
+        LEFT JOIN b_orders o
+        ON o.site_id = d.site_id
+        AND d.order_id = o.trades_id
+        <where>
+            d.site_id = #{siteId}
+            AND d.source = #{activityId}
+            AND d.user_id = #{userId}
+            AND d.rule_id = #{ruleId}
+            <if test="orderId != null">
+                AND d.order_id =#{orderId}
+            </if>
+            AND d.status = 0
+            <if test="goods!=null and goods.size>0">
+                AND o.goods_id in
+                <foreach collection="goods" open="(" close=")" item="goodsId" separator=",">
+                    #{goodsId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="getGoodsNumByTime" parameterType="Map" resultType="java.lang.Integer">
+      SELECT
+			SUM(bo.goods_num)
+		FROM
+			b_trades bt
+		LEFT JOIN b_orders bo ON bo.trades_id = bt.trades_id
+		AND bo.site_id = bt.site_id
+		WHERE
+			bo.goods_id = #{goodsId}
+		AND bo.site_id = #{siteId}
+		AND bt.buyer_id=#{buyerId}
+		AND bt.pay_time >= DATE_ADD(#{time},INTERVAL #{visitDay} DAY)
+		AND bt.trades_status in (150,210,220,230,800,900)
+    </select>
+
+    <select id="getOrdersListByTradesIdAndSiteId" resultType="java.util.Map">
+        select o.*,g.goods_company goodsCompany,g.goods_status goodsStatus, bia.`hash`
+        from b_orders o left join b_goods g on (o.goods_id=g.goods_id and o.site_id=g.site_id)
+        LEFT JOIN b_images_attr bia ON o.goods_id = bia.goods_id AND o.site_id = bia.site_id AND bia.is_default=1 AND bia.flag=0
+        WHERE o.site_id = #{siteId} AND o.trades_id = #{tradesId} order by goods_gifts asc
+    </select>
+
+    <select id="getOrdersListByActivity" resultType="java.util.Map">
+        SELECT CONCAT(bt.trades_id,'') as trades_id,bt.real_pay ,bt.total_fee,GROUP_CONCAT(bo.goods_title separator ',')
+        goodsTitles ,GROUP_CONCAT(bo.goods_num separator ',') goodsNums
+        FROM b_orders bo
+        LEFT JOIN b_trades bt on bt.site_id =bo.site_id and bt.trades_id= bo.trades_id
+        where bt.site_id =#{siteId}
+        and bt.buyer_id=#{buyerId}
+        and bt.is_payment=1
+        and bt.create_time <![CDATA[ >= ]]> #{startTime}
+        and bt.create_time <![CDATA[ <= ]]> #{endTime}
+        <if test="goodsIds != null and goodsIds != ''">
+            and bo.goods_id in
+            <foreach item="id" index="index" collection="goodsIds" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        GROUP BY bt.trades_id
+    </select>
+
+    <select id="queryshoppingNum" resultType="java.util.Map">
+        SELECT sum(bo.goods_num) goodsNum FROM  b_trades bt
+        LEFT JOIN b_orders bo ON bt.site_id = bo.site_id AND bt.trades_id = bo.trades_id
+        WHERE bt.site_id = #{siteId} AND bt.buyer_id = #{buyerId} AND is_payment = 1
+    </select>
+
+    <select id="queryshoppingLog" resultType="java.util.Map">
+      SELECT bo.create_time as createTime, bo.goods_num as goodsNum ,bt.post_style as postStyle,bs.`name` as storeName from
+	  b_orders bo
+	  LEFT JOIN b_trades bt on bt.site_id = bo.site_id and bt.trades_id =bo.trades_id
+	  LEFT JOIN b_stores bs on bo.site_id =bs.site_id and bs.id =bt.assigned_stores
+	  where bo.site_id = #{siteId} and bo.goods_id = #{goodsId}  and bt.buyer_id = #{buyerId}
+	  and bt.is_payment =1
+	  ORDER BY bo.create_time desc LIMIT 1
+    </select>
+
+    <select id="queryDealAnalyze" resultType="java.util.Map">
+      SELECT count(trades_id) buyGoodsTimes, sum(real_pay) totalMoney, sum(total_fee) totalFee, sum(post_fee) postFee  FROM b_trades
+      WHERE site_id = #{siteId} AND buyer_id = #{buyerId} AND is_payment = 1
+    </select>
+
+    <select id="queryIntervalTime" resultType="java.lang.Long">
+      SELECT IFNULL(MAX(create_time)- MIN(create_time),0) time FROM b_trades
+      WHERE site_id = #{siteId} AND buyer_id = #{buyerId}  AND is_payment = 1
+    </select>
+
+    <select id="queryReVisitLog" resultType="java.util.Map">
+        SELECT  bcv.admin_name adminName, bcv.visit_time visitTime, bcv.real_visit_time realVisitTime ,
+        bvf.tel_result telResult, bvf.content, bvf.create_time feedBacCreateTime
+        FROM b_clerk_visit bcv
+        INNER JOIN b_visit_feedback bvf ON bcv.site_id = bvf.site_id AND bcv.id = bvf.visit_id
+        WHERE bcv.site_id = #{siteId} AND bcv.buyer_id = #{buyerId}
+    </select>
+
+    <select id="queryOrdersUsePromotions" resultMap="OrdersMap">
+        SELECT o.*
+        FROM
+            b_promotions_detail d
+            INNER JOIN b_trades t ON d.order_id = t.trades_id
+                                     AND t.trades_status IN (
+            110,
+            120,
+            130,
+            140,
+            150,
+            200,
+            210,
+            900,
+            220,
+            230,
+            800,
+            240
+        )
+            INNER JOIN b_orders o ON o.trades_id = t.trades_id
+        WHERE
+            d.site_id = #{siteId}
+            AND d.rule_id = #{ruleId}
+            AND d.activity_id = #{activityId}
+            and d.user_id = #{memberId}
+            and o.goods_id  = #{goodsId}
+    </select>
+    <select id="findHistoryGoods" resultType="integer">
+        SELECT distinct a.goods_id
+        FROM
+        (SELECT
+            o.goods_id,o.create_time
+        FROM
+            b_trades t
+            LEFT JOIN b_orders o ON o.site_id = t.site_id
+            AND o.trades_id = t.trades_id
+        WHERE
+            t.site_id = #{siteId}
+            AND t.buyer_id = #{buyerId}
+        ORDER BY
+            o.create_time DESC
+            ) as a
+    </select>
+    <insert id="addpaInfo" parameterType="map">
+        insert into b_trades_pa(site_id,trades_id,order_no,file,secondToken,diagnostic_results,prescription_no)
+        values (#{siteId},#{tradesId},#{orderNo},#{file},#{secondToken},#{diagnosticResults},#{prescriptionNo})
+    </insert>
+    <select id="findPingAnOrderId" resultType="map">
+        SELECT order_no orderNo,prescription_no prescriptionNo from b_trades_pa where site_id=#{siteId} and trades_id=#{tradesId};
+    </select>
+
+</mapper>

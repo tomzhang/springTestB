@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.promotions.mapper.PromotionsDetailMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.promotions.PromotionsDetail">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="promotions_no" jdbcType="VARCHAR" property="promotionsNo"/>
+        <result column="order_id" jdbcType="VARCHAR" property="orderId"/>
+        <result column="status" jdbcType="BIT" property="status"/>
+        <result column="activity_id" jdbcType="INTEGER" property="activityId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="refund_time" jdbcType="TIMESTAMP" property="refundTime"/>
+        <result column="rule_id" jdbcType="INTEGER" property="ruleId"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="discount_amount" jdbcType="INTEGER" property="discountAmount"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, site_id, promotions_no, order_id, status, activity_id, create_time, update_time,
+        refund_time, rule_id, user_id, discount_amount
+    </sql>
+
+    <!-- insert start -->
+    <insert id="insert" parameterType="com.jk51.model.promotions.PromotionsDetail">
+        INSERT INTO b_promotions_detail (
+            site_id,
+            promotions_no,
+            order_id,
+            STATUS,
+            activity_id,
+            create_time,
+            update_time,
+            rule_id,
+            user_id,
+            discount_amount
+        )
+        VALUES
+            (
+                #{promotionsDetail.siteId},
+                #{promotionsDetail.promotionsNo},
+                #{promotionsDetail.orderId},
+                #{promotionsDetail.status},
+                #{promotionsDetail.activityId},
+                CURRENT_TIMESTAMP(),
+                CURRENT_TIMESTAMP(),
+                #{promotionsDetail.ruleId},
+                #{promotionsDetail.userId},
+                #{promotionsDetail.discountAmount}
+            );
+    </insert>
+    <!-- insert end -->
+
+    <!-- update start -->
+    <update id="updateByCancel" flushCache="true" parameterType="com.jk51.model.promotions.PromotionsDetail">
+        update b_promotions_detail set
+        `status` = #{promotionsDetail.status},
+        `update_time` =  CURRENT_TIMESTAMP(),
+        `refund_time` =  CURRENT_TIMESTAMP()
+        where
+        order_id = #{promotionsDetail.orderId} AND site_id = #{promotionsDetail.siteId}
+    </update>
+    <!-- update end -->
+
+    <!-- select start -->
+    <select id="findByParam" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        b_promotions_detail d
+        <where>
+            <if test="siteId != null">
+                AND d.site_id = #{siteId}
+            </if>
+            <if test="tradesId != null">
+                AND d.order_id = #{tradesId}
+            </if>
+            <if test="status != null">
+                AND d.status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryPromotionsDetailListByOrderId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        b_promotions_detail
+        WHERE
+        order_id = #{orderId}
+    </select>
+
+    <select id="getMAxPromotionsDetail" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from b_promotions_detail where site_id = #{1}
+        AND rule_id = #{0} order by promotions_no desc limit 1
+    </select>
+
+    <select id="getUseBuyedGoodsNum" resultType="java.lang.Integer">
+        select IFNULL(sum(orders.goods_num),0) from b_promotions_detail detail
+                INNER JOIN b_trades trades on (trades.site_id=detail.site_id and detail.order_id=trades.trades_id AND trades.trades_status in (110, 120, 130, 140, 150, 200, 210, 900, 220, 230, 800, 240))
+                INNER JOIN b_orders orders on (orders.trades_id=trades.trades_id and orders.site_id=trades.site_id)
+                where  detail.site_id=#{siteId}
+                        and detail.rule_id=#{proRuleId}
+                        and detail.activity_id=#{proActivityId}
+                        and trades.buyer_id= #{userId}
+                        and(trades.is_payment=1 or trades.is_payment=0)
+                        and orders.goods_id = #{goodsId}
+    </select>
+
+    <select id="queryDetailAndRuleListByOrderId" resultType="java.util.Map">
+       select bpd.site_id,bpd.rule_id,bpd.order_id,bpr.promotions_type
+        from b_promotions_detail bpd
+        LEFT JOIN b_promotions_rule bpr
+        on bpd.order_id= #{orderId}
+        and bpd.rule_id = bpr.id
+        and bpd.site_id=bpr.site_id
+        where bpd.order_id = #{orderId}
+    </select>
+
+    <select id="queryGiftByOrderId" resultType="java.util.Map">
+       select site_id,order_id,goods_id,goods_num from b_orders
+       where site_id= #{siteId}
+       and trades_id= #{orderId}
+       and goods_gifts = 1
+    </select>
+
+    <select id="queryUseNumAndSendNumForActivity" resultType="java.util.HashMap">
+        SELECT
+        count(1) countNum,
+        status,
+        activity_id
+        FROM
+        b_promotions_detail
+        WHERE
+        site_id = #{siteId}
+        AND
+        activity_id IN
+        <foreach collection="activityIds" item="activityId" index="index" open="(" close=")" separator=",">
+            #{activityId}
+        </foreach>
+        group by
+        activity_id, status;
+    </select>
+
+    <!-- select end -->
+
+
+    <select id="queryPromotionsDetailListByRuleIdAndSiteId" resultType="map">
+        SELECT cd.promotions_no coupon_no,mb.mobile receiver_mobile,DATE_FORMAT(cd.create_time,'%Y-%m-%d %H:%i:%S')
+        receive_time,CASE WHEN cd.status!=1 THEN DATE_FORMAT(cd.update_time,'%Y-%m-%d %H:%i:%S') ELSE '--' END
+        use_time,cd.order_id trades_id,
+        CASE WHEN trades.trades_status = 900 THEN 1
+        WHEN trades.trades_status in (160,170,180) THEN 2
+        ELSE 0
+        END as status
+        FROM b_promotions_detail cd
+        LEFT JOIN b_trades trades ON cd.order_id = trades.trades_id
+        LEFT JOIN b_member mb ON cd.user_id=mb.member_id AND mb.site_id=cd.site_id
+        WHERE cd.rule_id=#{ruleId} AND cd.site_id=#{siteId}
+        <if test="params.mobile!=null">
+            AND mb.mobile like concat(#{params.mobile},'%')
+        </if>
+        <if test="params.status!=null">
+            AND CASE WHEN trades.trades_status = 900 then 1
+            WHEN trades.trades_status in (160,170,180) then 2
+            ELSE 0 end  =#{params.status}
+        </if>
+        <if test="params.startTime!=null and params.endTime!=null">
+            AND cd.create_time BETWEEN #{params.startTime} AND #{params.endTime}
+        </if>
+        <if test="params.no!=null">
+            AND cd.promotions_no=#{params.no}
+        </if>
+        ORDER BY receive_time DESC
+    </select>
+    <select id="queryPromotionsDetailCount" resultType="int">
+        SELECT count(cd.order_id) value
+        FROM b_promotions_detail cd
+        LEFT JOIN b_trades trades ON cd.order_id = trades.trades_id
+        LEFT JOIN b_member mb ON cd.user_id=mb.member_id AND mb.site_id=cd.site_id
+        WHERE cd.rule_id=#{ruleId} AND cd.site_id=#{siteId}
+        <if test="params.mobile!=null">
+            AND mb.mobile like concat(#{params.mobile},'%')
+        </if>
+        <if test="params.status!=null and params.status!=-1">
+            AND CASE WHEN trades.trades_status = 900 then 1
+            WHEN trades.trades_status in (160,170,180) then 2
+            ELSE 0 end = #{params.status}
+        </if>
+        <if test="params.startTime!=null and params.endTime!=null">
+            AND cd.create_time BETWEEN #{params.startTime} AND #{params.endTime}
+        </if>
+        <if test="params.no!=null">
+            AND cd.promotions_no=#{params.no}
+        </if>
+    </select>
+
+    <select id="getPromotionsStatus" resultType="map">
+        SELECT CASE WHEN trades.trades_status = 900 then 'refund'
+        WHEN trades.trades_status in (160,170,180) then 'cancel'
+        ELSE 'use' end as t_status
+        ,count(cd.order_id) as `value`
+        FROM b_promotions_detail cd
+        LEFT JOIN b_trades trades ON cd.order_id = trades.trades_id
+        LEFT JOIN b_member mb ON cd.user_id=mb.member_id AND mb.site_id=cd.site_id
+        WHERE cd.rule_id=#{ruleId} AND cd.site_id=#{siteId}
+        <if test="params.mobile!=null">
+            AND mb.mobile like concat(#{params.mobile},'%')
+        </if>
+        <if test="params.status!=null and params.status!=-1">
+            AND CASE WHEN trades.trades_status = 900 then 1
+            WHEN trades.trades_status in (160,170,180) then 2
+            ELSE 0 end = #{params.status}
+        </if>
+        <if test="params.startTime!=null and params.endTime!=null">
+            AND cd.create_time BETWEEN #{params.startTime} AND #{params.endTime}
+        </if>
+        <if test="params.no!=null">
+            AND cd.promotions_no=#{params.no}
+        </if>
+        group by t_status
+    </select>
+</mapper>

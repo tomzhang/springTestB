@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.appInterface.mapper.BMessageSenderMapper" >
+  <resultMap id="BaseResultMap" type="com.jk51.model.BMessageSender" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <id column="site_id" property="siteId" jdbcType="INTEGER" />
+    <result column="store_admin_id" property="storeAdminId" jdbcType="INTEGER" />
+    <result column="app_name" property="appName" jdbcType="VARCHAR" />
+    <result column="client_id" property="clientId" jdbcType="VARCHAR" />
+    <result column="device_token" property="deviceToken" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, site_id, store_admin_id, app_name, client_id, device_token, created_at, updated_at
+  </sql>
+
+  <!-- 获取店员 推送clientID  -->
+  <select id="getPushClientId" resultType="java.lang.String" >
+      SELECT client_id FROM b_message_sender WHERE site_id=#{siteId} AND store_admin_id=#{storeAdminId}
+  </select>
+
+  <!-- 店员登录 更新clientID  -->
+  <update id="updateClinetId" >
+      UPDATE b_message_sender SET client_id=#{clientId}, device_token=#{deviceToken} WHERE site_id=#{siteId} AND store_admin_id=#{storeAdminId}
+  </update>
+
+  <!-- 获取门店 所有店员 推送clientID  -->
+  <select id="getPushClientIdList" resultType="java.util.Map" >
+     SELECT a.site_id, a.store_admin_id, a.client_id FROM b_message_sender a JOIN b_store_admin b ON a.site_id=b.site_id AND a.store_admin_id=b.id WHERE a.site_id=#{siteId} AND b.store_id=#{storeId}
+  </select>
+
+
+
+
+
+
+
+
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from b_message_sender
+    where id = #{id,jdbcType=INTEGER}
+      and site_id = #{siteId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" >
+    delete from b_message_sender
+    where id = #{id,jdbcType=INTEGER}
+      and site_id = #{siteId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.jk51.model.BMessageSender" >
+    insert into b_message_sender (id, site_id, store_admin_id, 
+      app_name, client_id, device_token, 
+      created_at, updated_at)
+    values (#{id,jdbcType=INTEGER}, #{siteId,jdbcType=INTEGER}, #{storeAdminId,jdbcType=INTEGER}, 
+      #{appName,jdbcType=VARCHAR}, #{clientId,jdbcType=VARCHAR}, #{deviceToken,jdbcType=VARCHAR}, 
+      #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jk51.model.BMessageSender" >
+    insert into b_message_sender
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="siteId != null" >
+        site_id,
+      </if>
+      <if test="storeAdminId != null" >
+        store_admin_id,
+      </if>
+      <if test="appName != null" >
+        app_name,
+      </if>
+      <if test="clientId != null" >
+        client_id,
+      </if>
+      <if test="deviceToken != null" >
+        device_token,
+      </if>
+      <if test="createdAt != null" >
+        created_at,
+      </if>
+      <if test="updatedAt != null" >
+        updated_at,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="siteId != null" >
+        #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="storeAdminId != null" >
+        #{storeAdminId,jdbcType=INTEGER},
+      </if>
+      <if test="appName != null" >
+        #{appName,jdbcType=VARCHAR},
+      </if>
+      <if test="clientId != null" >
+        #{clientId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceToken != null" >
+        #{deviceToken,jdbcType=VARCHAR},
+      </if>
+      <if test="createdAt != null" >
+        #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null" >
+        #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.BMessageSender" >
+    update b_message_sender
+    <set >
+      <if test="storeAdminId != null" >
+        store_admin_id = #{storeAdminId,jdbcType=INTEGER},
+      </if>
+      <if test="appName != null" >
+        app_name = #{appName,jdbcType=VARCHAR},
+      </if>
+      <if test="clientId != null" >
+        client_id = #{clientId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceToken != null" >
+        device_token = #{deviceToken,jdbcType=VARCHAR},
+      </if>
+      <if test="createdAt != null" >
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null" >
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+      and site_id = #{siteId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jk51.model.BMessageSender" >
+    update b_message_sender
+    set store_admin_id = #{storeAdminId,jdbcType=INTEGER},
+      app_name = #{appName,jdbcType=VARCHAR},
+      client_id = #{clientId,jdbcType=VARCHAR},
+      device_token = #{deviceToken,jdbcType=VARCHAR},
+      created_at = #{createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+      and site_id = #{siteId,jdbcType=INTEGER}
+  </update>
+  <insert id="insertPhoneLog">
+    insert into b_app_phone_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="siteId != null">
+        site_id,
+      </if>
+      <if test="storeadmin_id != null">
+        storeadmin_id,
+      </if>
+      <if test="params != null">
+        params,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="siteId != null">
+        #{siteId},
+      </if>
+      <if test="storeadmin_id != null">
+        #{storeadmin_id},
+      </if>
+      <if test="params != null">
+        #{params},
+      </if>
+      <if test="status != null">
+        #{status},
+      </if>
+    </trim>
+  </insert>
+  <select id="findAllClientId" resultType="java.lang.String">
+    select distinct client_id from b_message_sender
+  </select>
+</mapper>

@@ -1,0 +1,65 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>用户会员测试页面</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+<div align="center">
+    <p>这个是展示会员列表的页面。</p>
+    <a href="/member/add_html" th:href="@{/member/add_html}">添加会员</a>
+</div>
+
+<table align="center" valign="middle" border="1px">
+    <tr>
+        <th>member_id</th>
+        <th>buyer_id</th>
+        <th>buyer_nick</th>
+        <th>mobile</th>
+        <th>sex</th>
+        <th>email</th>
+        <th>idcard_number</th>
+        <th>name</th>
+        <th>register_stores</th>
+        <th>create_time</th>
+        <th>奇数行</th>
+        <th>偶数行</th>
+        <th>操作</th>
+
+    </tr>
+    <tr th:each="member,membersVs: ${members}">
+        <td th:text="${member.member_id}"></td>
+        <td th:text="${member.buyer_id}"></td>
+        <td th:text="${member.buyer_nick}"></td>
+        <td th:text="${member.mobile}"></td>
+        <td th:text="${member.sex}"></td>
+        <td th:text="${member.email}"></td>
+        <td th:text="${member.idcard_number}"></td>
+        <td th:text="${member.name}"></td>
+        <td th:text="${member.register_stores}"></td>
+        <td th:text="${member.create_time}"></td>
+        <td th:text="${membersVs.even}">奇数</td>
+        <td th:text="${membersVs.odd}">偶数</td>
+        <td>
+            <a th:href="@{/member/del(id=${member.member_id})}">删除</a>
+            <a th:href="@{/member/update_html(id=${member.member_id})}">修改</a>
+        </td>
+    </tr>
+    <tr >
+        <td colspan="13" align="center">
+            当前第：<span th:text="${page.pageNum}"></span>页
+        共<span th:text="${page.total}"></span>条数据，总共：<span th:text="${page.pages}"></span>页
+            <a th:href="@{/member/query(pageNum=1)}">第一页</a>
+            <span th:if="${page.hasPreviousPage}"><a th:href="@{/member/query(pageNum=${page.prePage})}">上一页</a></span>
+            <span th:if="${page.hasNextPage}"><a th:href="@{/member/query(pageNum=${page.nextPage})}">下一页</a></span>
+            <a th:href="@{/member/query(pageNum=${page.pages})}">最后一页</a>
+        </td>
+    </tr>
+</table>
+</body>
+
+</html>

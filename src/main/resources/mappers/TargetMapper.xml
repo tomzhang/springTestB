@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.index.mapper.TargetMapper">
+
+
+    <select id="getTargetById" resultType="com.jk51.model.Target" parameterType="java.lang.String">
+        SELECT * from b_target WHERE target_id = #{targetId}
+    </select>
+
+    <select id="getTargetByOwnerAndFirstWeigthId" resultType="com.jk51.model.Target" parameterType="java.lang.String">
+        SELECT * from b_target WHERE 1=1
+            <if test="firstWeigthId !=null and firstWeigthId !=''">
+                AND   first_weigth_id = #{firstWeigthId}
+            </if>
+            <if test="owner !=null and owner !=''">
+                AND   owner = #{owner}
+            </if>
+    </select>
+    <select id="getTargetBySiteIdAndTargetName"  resultType="com.jk51.model.Target">
+        SELECT * from b_target
+        WHERE owner = #{site_id}
+        and target_name = #{targetName}
+
+    </select>
+    <select id="getTargetBySiteId"  resultType="com.jk51.model.Target">
+        SELECT * from b_target
+        WHERE owner = #{site_id}
+    </select>
+
+    <update id="updateTarget" parameterType="com.jk51.model.Target">
+        UPDATE b_target SET owner=#{owner}, target_name=#{target_name}, second_weigth_value=#{second_weigth_value}, use_status=#{use_status}, first_weigth_id=#{first_weigth_id}, initial_value=#{initial_value}, score_parameter_section=#{score_parameter_section}, update_time=CURRENT_TIMESTAMP, reference_value=#{reference_value} where target_id=#{target_id}
+    </update>
+
+    <insert id="insertTarget" parameterType="com.jk51.model.Target">
+        insert INTO b_target
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="owner != null">
+                owner,
+            </if>
+            <if test="target_name != null">
+                target_name,
+            </if>
+            <if test="second_weigth_value != null">
+                second_weigth_value,
+            </if>
+            <if test="use_status != null">
+                use_status,
+            </if>
+            <if test="first_weigth_id != null">
+                first_weigth_id,
+            </if>
+            <if test="initial_value != null">
+                initial_value,
+            </if>
+            <if test="score_parameter_section != null">
+                score_parameter_section,
+            </if>
+            create_time,
+            update_time,
+            <if test="reference_value != null">
+                reference_value,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="owner != null">
+                #{owner},
+            </if>
+            <if test="target_name != null">
+                #{target_name},
+            </if>
+            <if test="second_weigth_value != null">
+                #{second_weigth_value},
+            </if>
+            <if test="use_status != null">
+                #{use_status},
+            </if>
+            <if test="first_weigth_id != null">
+                #{first_weigth_id},
+            </if>
+            <if test="initial_value != null">
+                #{initial_value},
+            </if>
+            <if test="score_parameter_section != null">
+                #{score_parameter_section},
+            </if>
+            CURRENT_TIMESTAMP,
+            CURRENT_TIMESTAMP,
+            <if test="reference_value != null">
+                #{reference_value},
+            </if>
+        </trim>
+    </insert>
+    <select id="getAllTarget" resultType="com.jk51.model.Target">
+        SELECT * from b_target
+    </select>
+</mapper>

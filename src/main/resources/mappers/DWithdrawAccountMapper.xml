@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.distribution.mapper.DWithdrawAccountMapper">
+
+    <select id="selectWithdrawAccountBySiteIdAndDistributorId" resultType="com.jk51.modules.distribution.result.DWithdrawAccount">
+        SELECT
+          id,
+          distributor_id AS distributorId,
+          owner,
+          name,
+          type,
+          account,
+          band_name AS bankName
+        FROM d_withdraw_account
+        WHERE
+          distributor_id = #{distributorId}
+          <if test="siteId != null">
+              AND owner = #{siteId}
+          </if>
+    </select>
+
+    <select id="selectWithdrawAccountByRecordIdAndDistributorId" resultType="com.jk51.modules.distribution.result.DWithdrawAccount">
+        SELECT
+            a.id,
+            a.distributor_id AS distributorId,
+            a.owner,
+            a.name,
+            a.type,
+            a.account,
+            a.band_name AS bankName
+        FROM
+            d_withdraw_account AS a,
+            (
+                SELECT
+                id,
+                distributor_id,
+                owner,
+                account,
+                withdraw_style,
+                money_record_id
+                FROM
+                d_withdraw_record
+                WHERE
+                money_record_id = #{recordId}
+            ) AS b
+        WHERE
+            a.distributor_id = #{distributorId}
+            AND a.owner = #{siteId}
+            AND a.distributor_id = b.distributor_id
+            AND a.owner = b.owner
+            AND a.account = b.account
+            AND a.type = b.withdraw_style
+            limit 1
+
+    </select>
+  
+  <insert id="withdrawAccountAdd" parameterType="com.jk51.model.distribute.DWithdrawAccount">
+    INSERT into `d_withdraw_account`(distributor_id,owner,`name`,account,`type`,band_name,create_time,update_time) VALUES (#{distributorId},#{owner},#{name},#{account},#{type},#{bandName},CURRENT_TIMESTAMP ,CURRENT_TIMESTAMP );
+  </insert>
+
+    <select id="getAccountList" resultType="com.jk51.model.distribute.DWithdrawAccount">
+        SELECT id,distributor_id distributorId,`owner`,`name`,account,`type`,band_name bandName,create_time createTime,update_time updateTime FROM d_withdraw_account WHERE distributor_id = #{distributorId} AND owner = #{siteId}
+    </select>
+    
+
+</mapper>

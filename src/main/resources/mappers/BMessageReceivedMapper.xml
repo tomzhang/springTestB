@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.appInterface.mapper.BMessageReceivedMapper" >
+  <resultMap id="BaseResultMap" type="com.jk51.model.BMessageReceived" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <id column="site_id" property="siteId" jdbcType="INTEGER" />
+    <result column="store_id" property="storeId" jdbcType="INTEGER" />
+    <result column="store_admin_id" property="storeAdminId" jdbcType="INTEGER" />
+    <result column="b_message_id" property="bMessageId" jdbcType="INTEGER" />
+    <result column="message_type" property="messageType" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="is_del" jdbcType="INTEGER" property="isDel"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, site_id, store_id, store_admin_id, b_message_id, message_type, status, create_time, 
+    update_time
+  </sql>
+
+  <!-- 获取店员收到最新消息 -->
+  <select id="getLastMessages" resultType="java.util.Map">
+    SELECT
+      a.site_id, a.id, a.store_id, a.store_admin_id, a.b_message_id, SUBSTRING_INDEX(a.message_type,'_',1) message_type, a.`status`, date_format(a.create_time,'%Y-%m-%d %H:%i:%s') create_time, date_format(a.update_time,'%Y-%m-%d %H:%i:%s') update_time,
+      b.message_title, b.message_icon, b.message_summary, b.message_content, b.message_whereabouts, b.notification_title, b.notification_text,
+      b.notification_logo, b.notification_logo_url, b.notification_ring, b.notification_vibrate, b.notification_clearable, b.mandatory_reminder,
+      b.ext, b.offline, b.wifi
+    FROM
+      (SELECT * FROM b_message_received WHERE is_del=0 AND site_id=#{siteId} AND store_id=#{storeId} AND store_admin_id=#{storeAdminId} AND message_type &lt;&gt;'' AND LOCATE('_',message_type)&lt;&gt;0 ORDER BY id DESC) a
+    JOIN b_message b ON a.site_id=b.site_id AND a.b_message_id=b.id
+    GROUP BY SUBSTRING_INDEX(a.message_type,'_',1)
+  </select>
+
+  <!-- 获取店员未读消息数-->
+  <select id="getNoReadMessageNum" resultType="java.util.Map">
+    SELECT
+      SUBSTRING_INDEX(message_type,'_',1) message_type, COUNT(*) num
+    FROM b_message_received
+    WHERE is_del=0 AND site_id=#{siteId} AND store_id=#{storeId} AND store_admin_id=#{storeAdminId} AND message_type &lt;&gt;'' AND `status`=0 AND LOCATE('_',message_type)&lt;&gt;0
+    GROUP BY SUBSTRING_INDEX(message_type,'_',1)
+  </select>
+
+  <!--获取店员指定类型消息列表-->
+  <select id="getMessageList" resultType="java.util.Map">
+    SELECT
+      a.site_id, a.id, a.store_id, a.store_admin_id, a.b_message_id, a.message_type, a.`status`, date_format(a.create_time,'%Y-%m-%d %H:%i:%s') create_time, date_format(a.update_time,'%Y-%m-%d %H:%i:%s') update_time,
+      b.message_title, b.message_icon, b.message_summary, b.message_content, b.message_whereabouts, b.notification_title, b.notification_text,
+      b.notification_logo, b.notification_logo_url, b.notification_ring, b.notification_vibrate, b.notification_clearable, b.mandatory_reminder,
+      b.ext, b.offline, b.wifi
+    FROM
+      b_message_received a JOIN b_message b ON a.site_id=b.site_id AND a.b_message_id=b.id
+    WHERE a.is_del=0 AND
+      a.site_id=#{siteId} AND a.store_id=#{storeId} AND a.store_admin_id=#{storeAdminId} AND SUBSTRING_INDEX(a.message_type,'_',1)=#{messageType}
+    ORDER BY a.create_time DESC
+  </select>
+
+  <!--设置消息为已读-->
+  <update id="updateReadMessage" >
+    update b_message_received set status=1 where site_id=#{siteId} and id=#{id}
+  </update>
+
+  <!--设置消息为已读-->
+  <update id="readMessageAll" >
+      UPDATE b_message_received SET `status`=1 WHERE site_id=#{siteId} AND store_admin_id=#{storeAdminId} AND (SUBSTRING_INDEX(message_type,'_',1)=#{messageType} OR message_type=#{messageType}) AND `status`=0
+  </update>
+
+  <!--删除店员指定类型消息-->
+  <update id="delMessageList" >
+    UPDATE b_message_received SET is_del=1 WHERE site_id=#{siteId} AND store_admin_id=#{storeAdminId} AND (SUBSTRING_INDEX(message_type,'_',1)=#{messageType} OR message_type=#{messageType}) AND is_del=0
+  </update>
+
+
+
+  <insert id="insertByList" >
+      insert into b_message_received (site_id, store_id, store_admin_id, b_message_id, message_type)
+      values
+      <foreach collection="list" item="item" index="index" separator="," >
+        (#{item.siteId}, #{item.storeId}, #{item.storeAdminId}, #{item.bMessageId}, #{item.messageType})
+      </foreach>
+  </insert>
+
+
+
+
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from b_message_received
+    where id = #{id,jdbcType=INTEGER}
+    and site_id = #{siteId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" >
+    update b_message_received set is_del=1 where id = #{id} and site_id = #{siteId}
+  </delete>
+  <insert id="insert" parameterType="com.jk51.model.BMessageReceived" >
+    insert into b_message_received (id, site_id, store_id, 
+      store_admin_id, b_message_id, message_type, 
+      status, create_time, update_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{siteId,jdbcType=INTEGER}, #{storeId,jdbcType=INTEGER}, 
+      #{storeAdminId,jdbcType=INTEGER}, #{bMessageId,jdbcType=INTEGER}, #{messageType,jdbcType=VARCHAR}, 
+      #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.jk51.model.BMessageReceived" >
+    insert into b_message_received
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="siteId != null" >
+        site_id,
+      </if>
+      <if test="storeId != null" >
+        store_id,
+      </if>
+      <if test="storeAdminId != null" >
+        store_admin_id,
+      </if>
+      <if test="bMessageId != null" >
+        b_message_id,
+      </if>
+      <if test="messageType != null" >
+        message_type,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="siteId != null" >
+        #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="storeId != null" >
+        #{storeId,jdbcType=INTEGER},
+      </if>
+      <if test="storeAdminId != null" >
+        #{storeAdminId,jdbcType=INTEGER},
+      </if>
+      <if test="bMessageId != null" >
+        #{bMessageId,jdbcType=INTEGER},
+      </if>
+      <if test="messageType != null" >
+        #{messageType,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.BMessageReceived" >
+    update b_message_received
+    <set >
+      <if test="storeId != null" >
+        store_id = #{storeId,jdbcType=INTEGER},
+      </if>
+      <if test="storeAdminId != null" >
+        store_admin_id = #{storeAdminId,jdbcType=INTEGER},
+      </if>
+      <if test="bMessageId != null" >
+        b_message_id = #{bMessageId,jdbcType=INTEGER},
+      </if>
+      <if test="messageType != null" >
+        message_type = #{messageType,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+    and site_id = #{siteId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jk51.model.BMessageReceived" >
+    update b_message_received
+    set store_id = #{storeId,jdbcType=INTEGER},
+      store_admin_id = #{storeAdminId,jdbcType=INTEGER},
+      b_message_id = #{bMessageId,jdbcType=INTEGER},
+      message_type = #{messageType,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+      and site_id = #{siteId,jdbcType=INTEGER}
+  </update>
+</mapper>

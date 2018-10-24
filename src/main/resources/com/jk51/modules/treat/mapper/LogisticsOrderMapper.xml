@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.treat.mapper.LogisticsOrderMapper">
+    <select id="getLogisticsOrder" resultType="com.jk51.model.BLogisticsOrder">
+        SELECT
+            a.site_id siteId,
+            a.order_number orderNumber,
+            a.waybill_number waybillNumber,
+            a.province,
+            a.city,
+            a.logistics_name logisticsName,
+            a.store_name storeName,
+            a.order_time orderTime,
+            a.order_amount orderAmount,
+            a.distribution_distance distributionDistance,
+            a.starting_fare startingFare,
+            a.surpass_distance_fare surpassDistanceFare,
+            a.overweight_charge_fare overweightChargeFare,
+            a.overtime_fare overtimeFare,
+            a.chargeback_fare chargebackFare,
+            a.total_fee totalFee,
+            a.STATUS,
+            a.order_number orderNo,
+            t.O2O_freight o2OFreight
+        FROM
+        b_logistics_order a LEFT JOIN b_trades t ON a.order_number=t.trades_id
+        <where>
+            1=1
+            <if test= "order_number != null and order_number != '0'" >
+                AND order_number = #{order_number}
+            </if>
+            <if test= "waybill_number != null and waybill_number != ''" >
+                AND waybill_number = #{waybill_number}
+            </if>
+            <if test= "area != null and area != ''" >
+                AND CONCAT(province,city) like CONCAT('%',#{area},'%')
+            </if>
+            <if test="logistics_name != null and logistics_name != ''" >
+                AND logistics_name = #{logistics_name}
+            </if>
+            <if test="start_time != null ">
+                AND order_time <![CDATA[ >= ]]>  #{start_time}
+            </if>
+            <if test="end_time != null ">
+                AND order_time <![CDATA[ <= ]]>  #{end_time}
+            </if>
+        </where>
+        ORDER BY a.order_time  desc
+    </select>
+
+    <insert id="insertLogistics" parameterType="com.jk51.model.BLogisticsOrder" >
+        insert into b_logistics_order
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="siteId != null" >
+                site_id,
+            </if>
+            <if test="waybillNumber != null" >
+                waybill_number,
+            </if>
+            <if test="orderNumber != null" >
+                order_number,
+            </if>
+            <if test="logisticsId != null" >
+                logistics_id,
+            </if>
+            <if test="logisticsName != null" >
+                logistics_name,
+            </if>
+            <if test="province != null" >
+                province,
+            </if>
+            <if test="city != null" >
+                city,
+            </if>
+            <if test="storeId != null" >
+                store_id,
+            </if>
+            <if test="storeName != null" >
+                store_name,
+            </if>
+            <if test="orderTime != null" >
+                order_time,
+            </if>
+            <if test="orderAmount != null" >
+                order_amount,
+            </if>
+            <if test="distributionDistance != null" >
+                distribution_distance,
+            </if>
+            <if test="totalFee != null" >
+                total_fee,
+            </if>
+            <if test="totalWeight != null" >
+                total_weight,
+            </if>
+            <if test="startingFare != null" >
+                starting_fare,
+            </if>
+            <if test="surpassDistanceFare != null" >
+                surpass_distance_fare,
+            </if>
+            <if test="overweightChargeFare != null" >
+                overweight_charge_fare,
+            </if>
+            <if test="overtimeFare != null" >
+                overtime_fare,
+            </if>
+            <if test="chargebackFare != null" >
+                chargeback_fare,
+            </if>
+            <if test="diliveryman != null" >
+                diliveryman,
+            </if>
+            <if test="distributionPhone != null" >
+                distribution_phone,
+            </if>
+            <if test="status != null" >
+                status,
+            </if>
+            <if test="errorCode != null" >
+                error_code,
+            </if>
+            <if test="createTime != null" >
+                create_time,
+            </if>
+            <if test="updateTime != null" >
+                update_time,
+            </if>
+            <if test="operatorId != null" >
+                operator_id,
+            </if>
+            <if test="notifyMobile != null" >
+                notify_mobile,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="siteId != null" >
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="waybillNumber != null" >
+                #{waybillNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="orderNumber != null" >
+                #{orderNumber,jdbcType=BIGINT},
+            </if>
+            <if test="logisticsId != null" >
+                #{logisticsId,jdbcType=INTEGER},
+            </if>
+            <if test="logisticsName != null" >
+                #{logisticsName,jdbcType=VARCHAR},
+            </if>
+            <if test="province != null" >
+                #{province,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null" >
+                #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="storeId != null" >
+                #{storeId,jdbcType=INTEGER},
+            </if>
+            <if test="storeName != null" >
+                #{storeName,jdbcType=VARCHAR},
+            </if>
+            <if test="orderTime != null" >
+                #{orderTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="orderAmount != null" >
+                #{orderAmount,jdbcType=INTEGER},
+            </if>
+            <if test="distributionDistance != null" >
+                #{distributionDistance,jdbcType=INTEGER},
+            </if>
+            <if test="totalFee != null" >
+                #{totalFee,jdbcType=INTEGER},
+            </if>
+            <if test="totalWeight != null" >
+                #{totalWeight,jdbcType=INTEGER},
+            </if>
+            <if test="startingFare != null" >
+                #{startingFare,jdbcType=INTEGER},
+            </if>
+            <if test="surpassDistanceFare != null" >
+                #{surpassDistanceFare,jdbcType=INTEGER},
+            </if>
+            <if test="overweightChargeFare != null" >
+                #{overweightChargeFare,jdbcType=INTEGER},
+            </if>
+            <if test="overtimeFare != null" >
+                #{overtimeFare,jdbcType=INTEGER},
+            </if>
+            <if test="chargebackFare != null" >
+                #{chargebackFare,jdbcType=INTEGER},
+            </if>
+            <if test="diliveryman != null" >
+                #{diliveryman,jdbcType=VARCHAR},
+            </if>
+            <if test="distributionPhone != null" >
+                #{distributionPhone,jdbcType=BIGINT},
+            </if>
+            <if test="status != null" >
+                #{status,jdbcType=TINYINT},
+            </if>
+            <if test="errorCode != null" >
+                #{errorCode,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null" >
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null" >
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="operatorId != null" >
+                #{operatorId,jdbcType=INTEGER},
+            </if>
+            <if test="notifyMobile != null" >
+                #{notifyMobile,jdbcType=BIGINT},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="getLogisticsName" resultType="String">
+        SELECT DISTINCT logistics_name FROM b_logistics_order
+    </select>
+
+    <select id="getLogisticsOrderAccount" resultType="com.jk51.model.BLogisticsOrder">
+        SELECT
+        a.site_id siteId,
+        a.order_number orderNumber,
+        a.waybill_number waybillNumber,
+        a.province,
+        a.city,
+        a.logistics_name logisticsName,
+        a.store_name storeName,
+        a.order_time orderTime,
+        a.order_amount orderAmount,
+        a.distribution_distance distributionDistance,
+        a.starting_fare startingFare,
+        a.surpass_distance_fare surpassDistanceFare,
+        a.overweight_charge_fare overweightChargeFare,
+        a.overtime_fare overtimeFare,
+        a.chargeback_fare chargebackFare,
+        a.total_fee totalFee,
+        a.STATUS,
+        a.order_number orderNo,
+        t.O2O_freight o2OFreight
+        FROM
+        b_logistics_order a LEFT JOIN b_trades t ON a.order_number=t.trades_id
+        <where>
+            is_service_order = 1
+            <if test= "order_number != null and order_number != '0'" >
+                AND order_number = #{order_number}
+            </if>
+            <if test= "waybill_number != null and waybill_number != ''" >
+                AND waybill_number = #{waybill_number}
+            </if>
+            <if test= "area != null and area != ''" >
+                AND CONCAT(province,city) like CONCAT('%',#{area},'%')
+            </if>
+            <if test="logistics_name != null and logistics_name != ''" >
+                AND logistics_name = #{logistics_name}
+            </if>
+            <if test="start_time != null ">
+                AND order_time <![CDATA[ >= ]]>  #{start_time}
+            </if>
+            <if test="end_time != null ">
+                AND order_time <![CDATA[ <= ]]>  #{end_time}
+            </if>
+        </where>
+        ORDER BY a.order_time  desc
+    </select>
+</mapper>

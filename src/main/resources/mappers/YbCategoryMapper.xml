@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.goods.mapper.YbCategoryMapper">
+    <resultMap id="CateResultMap" type="com.jk51.model.goods.Category">
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="cate_id" jdbcType="INTEGER" property="cateId"/>
+        <result column="parent_id" jdbcType="INTEGER" property="parentId"/>
+        <result column="cate_code" jdbcType="VARCHAR" property="cateCode"/>
+        <result column="cate_name" jdbcType="VARCHAR" property="cateName"/>
+        <result column="cate_sort" jdbcType="INTEGER" property="cateSort"/>
+        <result column="img_hash" jdbcType="VARCHAR" property="imgHash"/>
+        <result column="cate_ishow" jdbcType="INTEGER" property="cateIshow"/>
+        <result column="yb_cateid" jdbcType="INTEGER" property="ybCateid"/>
+        <result column="del_tag" jdbcType="INTEGER" property="delTag"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.jk51.model.goods.YbCategory" useGeneratedKeys="true" keyProperty="cate_id">
+        insert into yb_category
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="cate_id!=null">
+                cate_id,
+            </if>
+            <if test="parent_id!=null">
+                parent_id,
+            </if>
+            <if test="cate_name!=null and cate_name!=''">
+                cate_name,
+            </if>
+            <if test="cate_code!=null and cate_code!=''">
+                cate_code,
+            </if>
+            <if test="cate_sort!=null">
+                cate_sort,
+            </if>
+            <if test="cate_ishow!=null">
+                cate_ishow,
+            </if>
+            <if test="create_time!=null">
+                create_time,
+            </if>
+            <if test="update_time!=null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="cate_id!=null">
+                 #{cate_id,jdbcType=INTEGER},
+            </if>
+            <if test="parent_id!=null">
+                #{parent_id,jdbcType=INTEGER},
+            </if>
+            <if test="cate_name!=null and cate_name!=''">
+                #{cate_name,jdbcType=VARCHAR},
+            </if>
+            <if test="cate_code!=null and cate_code!=''">
+                #{cate_code,jdbcType=VARCHAR},
+            </if>
+            <if test="cate_sort!=null">
+                #{cate_sort,jdbcType=INTEGER},
+            </if>
+            <if test="cate_ishow!=null">
+                #{cate_ishow,jdbcType=INTEGER},
+            </if>
+            <if test="create_time!=null">
+                #{create_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="update_time!=null">
+               #{update_time,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+
+    </insert>
+
+    <update id="updateByprimaryKey" parameterType="com.jk51.model.goods.YbCategory">
+        UPDATE  yb_category
+        <set>
+            <if test="parent_id!=null">
+                parent_id = #{parent_id,jdbcType=INTEGER},
+            </if>
+            <if test="cate_name!=null and cate_name!=''">
+                cate_name = #{cate_name,jdbcType=VARCHAR},
+            </if>
+            <if test="cate_code!=null and cate_code!=''">
+                cate_code = #{cate_code,jdbcType=VARCHAR},
+            </if>
+            <if test="cate_sort!=null">
+                cate_sort = #{cate_sort,jdbcType=INTEGER},
+            </if>
+            <if test="cate_ishow!=null">
+                cate_ishow = #{cate_ishow,jdbcType=INTEGER},
+            </if>
+            <if test="create_time!=null">
+                create_time = #{create_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="update_time!=null">
+                update_time = #{update_time,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where cate_id =#{cate_id,jdbcType=INTEGER}
+    </update>
+    <update id="updateCateName">
+        update yb_category set cate_name=#{cate_name}  where cate_id=#{cate_id}
+    </update>
+    <update id="deleteByCate_id">
+         update yb_category set del_tag=1 where cate_id=#{cate_id}
+    </update>
+
+    <!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
+    <resultMap type="com.jk51.model.goods.YbCategory" id="YbCategoryResultMap">
+        <id property="cate_id" column="cate_id"/>
+        <result property="parent_id" column="parent_id"/>
+        <result property="cate_code" column="cate_code"/>
+        <result property="cate_name" column="cate_name"/>
+
+        <!-- 查询子級商品分類 -->
+        <collection property="subYbCategory" column="cate_id" select="getChildren"/>
+    </resultMap>
+    <select id="getAllGoodsClassify" resultMap="YbCategoryResultMap">
+        SELECT * from yb_category where parent_id = 0 and (del_tag =0 or del_tag is null)
+        <!-- and del_tag =0 -->
+    </select>
+    <select id="getParentCategory" resultType="com.jk51.model.goods.YbCategory">
+        SELECT * from yb_category where parent_id = 0 and (del_tag =0 or del_tag is null)
+        <!-- and del_tag =0 -->
+    </select>
+
+    <select id="getChildren" parameterType="int" resultMap="YbCategoryResultMap">
+        SELECT * from yb_category where parent_id = #{cate_id} and (del_tag =0 or del_tag is null)
+        <!-- and del_tag =0 -->
+    </select>
+
+    <select id="queryCatByCateId" resultType="com.jk51.model.goods.YbCategory">
+        SELECT * from yb_category where cate_id = #{cate_id}
+    </select>
+    <select id="queryCatByCateCode" resultType="com.jk51.model.goods.YbCategory">
+        SELECT * from yb_category where cate_code = #{cateCode}
+    </select>
+    <select id="join51jkByCode" resultType="java.util.Map">
+        SELECT * FROM b_category WHERE site_id = #{siteId} AND cate_name = (SELECT cate_name FROM yb_category WHERE cate_code = #{cateCode} limit 1) limit 1
+    </select>
+    <select id="getGoodsClassifyByParentId" resultType="com.jk51.model.goods.YbCategory">
+        SELECT * from yb_category where parent_id = #{parent_id}
+    </select>
+    <select id="getCodeId" resultType="java.lang.Integer">
+        SELECT cate_id FROM yb_category WHERE cate_code=#{cateCode}
+    </select>
+    <select id="selectCateNameById" resultType="java.lang.String">
+      SELECT cate_name FROM yb_category WHERE cate_id = #{id}
+    </select>
+</mapper>

@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.persistence.mapper.CoordinateMapper">
+
+    <insert id="insertCoordinate">
+        insert into b_coordinate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="coordinateName != null">
+                coordinate_name,
+            </if>
+            <if test="coordinateType != null">
+                coordinate_type,
+            </if>
+            <if test="coordinateAddr != null">
+                coordinate_addr,
+            </if>
+            <if test="memberCount != null">
+                member_count,
+            </if>
+            <if test="storeCount != null">
+                store_count,
+            </if>
+            <if test="gaodeLng != null">
+                gaode_lng,
+            </if>
+            <if test="gaodeLat != null">
+                gaode_lat,
+            </if>
+            <if test="disMemberCount != null">
+                dis_member_count,
+            </if>
+            <if test="disStoreCount != null">
+                dis_store_count,
+            </if>
+            <if test="memberIds != null">
+                member_ids,
+            </if>
+            <if test="storeIds != null">
+                store_ids,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="coordinateName != null">
+                #{coordinateName,jdbcType=VARCHAR},
+            </if>
+            <if test="coordinateType != null">
+                #{coordinateType,jdbcType=INTEGER},
+            </if>
+            <if test="coordinateAddr != null">
+                #{coordinateAddr,jdbcType=VARCHAR},
+            </if>
+            <if test="memberCount != null">
+                #{memberCount,jdbcType=INTEGER},
+            </if>
+            <if test="storeCount != null">
+                #{storeCount,jdbcType=INTEGER},
+            </if>
+            <if test="gaodeLng != null">
+                #{gaodeLng,jdbcType=VARCHAR},
+            </if>
+            <if test="gaodeLat != null">
+                #{gaodeLat,jdbcType=VARCHAR},
+            </if>
+            <if test="disMemberCount != null">
+                #{disMemberCount,jdbcType=VARCHAR},
+            </if>
+            <if test="disStoreCount != null">
+                #{disStoreCount,jdbcType=VARCHAR},
+            </if>
+            <if test="memberIds != null">
+                #{memberIds,jdbcType=VARCHAR},
+            </if>
+            <if test="storeIds != null">
+                #{storeIds,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateCoordinate">
+        update b_coordinate
+        <set>
+            <if test="coordinateName != null">
+                coordinate_name = #{coordinateName,jdbcType=VARCHAR},
+            </if>
+            <if test="coordinateType != null">
+                coordinate_type = #{coordinateType,jdbcType=INTEGER},
+            </if>
+            <if test="coordinateAddr != null">
+                coordinate_addr = #{coordinateAddr,jdbcType=VARCHAR},
+            </if>
+            <if test="memberCount != null">
+                member_count = #{memberCount,jdbcType=INTEGER},
+            </if>
+            <if test="storeCount != null">
+                store_count = #{storeCount,jdbcType=INTEGER},
+            </if>
+            <if test="disMemberCount != null">
+                dis_member_count = #{disMemberCount,jdbcType=VARCHAR},
+            </if>
+            <if test="disStoreCount != null">
+                dis_store_count = #{disStoreCount,jdbcType=VARCHAR},
+            </if>
+            <if test="storeIds != null">
+                store_ids = #{storeIds,jdbcType=VARCHAR},
+            </if>
+            <if test="memberIds != null">
+                member_ids = #{memberIds,jdbcType=VARCHAR},
+            </if>
+            <if test="gaodeLng != null">
+                gaode_lng = #{gaodeLng,jdbcType=VARCHAR},
+            </if>
+            <if test="gaodeLat != null">
+                gaode_lat = #{gaodeLat,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where site_id = #{siteId} AND id=#{id}
+    </update>
+    <select id="selectCoordinate" resultType="map" parameterType="map">
+        SELECT
+        id,coordinate_name coordinateName,coordinate_type coordinateType,coordinate_addr coordinateAddr,member_count memberCount,store_count storeCount,dis_member_count memberMap,dis_store_count storeMap
+        FROM b_coordinate
+        WHERE site_id=#{siteId}
+        <if test="coordinateName != null">
+            AND coordinate_name LIKE CONCAT('%',#{coordinateName},'%')
+        </if>
+        <if test="coordinateType != null">
+            AND coordinate_type = #{coordinateType}
+        </if>
+        AND is_del=0
+        ORDER BY update_time DESC
+    </select>
+    <select id="selectCoordinateById" resultType="map" parameterType="map">
+        SELECT id,coordinate_name coordinateName,coordinate_type coordinateType,member_count memberCount,store_count storeCount,gaode_lng gaodeLng,gaode_lat gaodeLat,coordinate_addr addr,dis_member_count memberIds,dis_store_count storeIds
+        FROM b_coordinate
+        WHERE site_id=#{siteId}
+        AND id=#{id}
+        AND is_del=0
+    </select>
+    <update id="deleteCoordinate">
+        update b_coordinate
+        SET is_del=1
+        where site_id = #{siteId} AND id=#{id}
+    </update>
+    <select id="getMemberCoordinateAll" resultType="String" parameterType="map">
+        SELECT CONCAT(user_gaode_lng,',',user_gaode_lat) lol
+        FROM b_user_stores_distance
+        WHERE site_id=#{siteId}
+        AND user_id > 0
+        AND user_gaode_lng BETWEEN #{gaodeLngE} AND #{gaodeLngW}
+        AND user_gaode_lat BETWEEN #{gaodeLatS} AND #{gaodeLatN}
+        AND create_time > #{time}
+    </select>
+    <select id="getMemberCoordinateOne" resultType="map" parameterType="map">
+        SELECT CONCAT(user_gaode_lng,',',user_gaode_lat) point,user_id userId
+        FROM b_user_stores_distance_log
+        WHERE site_id=#{siteId}
+        AND user_id > 0
+        AND user_gaode_lng BETWEEN #{gaodeLngE} AND #{gaodeLngW}
+        AND user_gaode_lat BETWEEN #{gaodeLatS} AND #{gaodeLatN}
+        AND create_time > #{time}
+    </select>
+    <select id="getStoreCoordinateAll" resultType="String" parameterType="map">
+        SELECT CONCAT(gaode_lng,',',gaode_lat) lol
+        FROM b_stores
+        WHERE site_id=#{siteId}
+        AND gaode_lng BETWEEN #{gaodeLngE} AND #{gaodeLngW}
+        AND gaode_lat BETWEEN #{gaodeLatS} AND #{gaodeLatN}
+        AND (gaode_lng IS NOT NULL OR gaode_lat IS NOT NULL)
+    </select>
+
+    <select id="getStoreIdCoordinateAll" resultType="map" parameterType="map">
+        SELECT CONCAT(gaode_lng,',',gaode_lat) point,id
+        FROM b_stores
+        WHERE site_id=#{siteId}
+        AND gaode_lng BETWEEN #{gaodeLngE} AND #{gaodeLngW}
+        AND gaode_lat BETWEEN #{gaodeLatS} AND #{gaodeLatN}
+        AND (gaode_lng IS NOT NULL OR gaode_lat IS NOT NULL)
+    </select>
+
+    <select id="getUserIdsAll" resultType="map" parameterType="map">
+        SELECT
+        IFNULL(group_concat(distinct case when round(6378.138*2*asin(sqrt(pow(sin( (#{gaodeLat}*pi()/180-user_gaode_lat*pi()/180)/2),2)+cos(#{gaodeLat}*pi()/180)*cos(user_gaode_lat*pi()/180)* pow(sin( (#{gaodeLng}*pi()/180-user_gaode_lng*pi()/180)/2),2)))*1000)
+                        BETWEEN 0 and 300 then user_id else null end),'') as useid1,
+        IFNULL(group_concat(distinct case when round(6378.138*2*asin(sqrt(pow(sin( (#{gaodeLat}*pi()/180-user_gaode_lat*pi()/180)/2),2)+cos(#{gaodeLat}*pi()/180)*cos(user_gaode_lat*pi()/180)* pow(sin( (#{gaodeLng}*pi()/180-user_gaode_lng*pi()/180)/2),2)))*1000)
+                        BETWEEN 300 and 500 then user_id else null end),'') as useid2,
+        IFNULL(group_concat(distinct case when round(6378.138*2*asin(sqrt(pow(sin( (#{gaodeLat}*pi()/180-user_gaode_lat*pi()/180)/2),2)+cos(#{gaodeLat}*pi()/180)*cos(user_gaode_lat*pi()/180)* pow(sin( (#{gaodeLng}*pi()/180-user_gaode_lng*pi()/180)/2),2)))*1000)
+                        BETWEEN 500 and 1000 then user_id else null end),'') as useid3,
+        IFNULL(group_concat(distinct case when round(6378.138*2*asin(sqrt(pow(sin( (#{gaodeLat}*pi()/180-user_gaode_lat*pi()/180)/2),2)+cos(#{gaodeLat}*pi()/180)*cos(user_gaode_lat*pi()/180)* pow(sin( (#{gaodeLng}*pi()/180-user_gaode_lng*pi()/180)/2),2)))*1000)
+                        BETWEEN 1000 and 2000 then user_id else null end),'') as useid4,
+        IFNULL(group_concat(distinct case when round(6378.138*2*asin(sqrt(pow(sin( (#{gaodeLat}*pi()/180-user_gaode_lat*pi()/180)/2),2)+cos(#{gaodeLat}*pi()/180)*cos(user_gaode_lat*pi()/180)* pow(sin( (#{gaodeLng}*pi()/180-user_gaode_lng*pi()/180)/2),2)))*1000)
+                        BETWEEN 2000 and 3000 then user_id else null end),'') as useid5,
+        IFNULL(group_concat(distinct case when round(6378.138*2*asin(sqrt(pow(sin( (#{gaodeLat}*pi()/180-user_gaode_lat*pi()/180)/2),2)+cos(#{gaodeLat}*pi()/180)*cos(user_gaode_lat*pi()/180)* pow(sin( (#{gaodeLng}*pi()/180-user_gaode_lng*pi()/180)/2),2)))*1000)
+                        BETWEEN 3000 and 4000 then user_id else null end),'') as useid6,
+        IFNULL(group_concat(distinct case when round(6378.138*2*asin(sqrt(pow(sin( (#{gaodeLat}*pi()/180-user_gaode_lat*pi()/180)/2),2)+cos(#{gaodeLat}*pi()/180)*cos(user_gaode_lat*pi()/180)* pow(sin( (#{gaodeLng}*pi()/180-user_gaode_lng*pi()/180)/2),2)))*1000)
+                        BETWEEN 4000 and 5000 then user_id else null end),'') as useid7,
+        IFNULL(group_concat(distinct case when round(6378.138*2*asin(sqrt(pow(sin( (#{gaodeLat}*pi()/180-user_gaode_lat*pi()/180)/2),2)+cos(#{gaodeLat}*pi()/180)*cos(user_gaode_lat*pi()/180)* pow(sin( (#{gaodeLng}*pi()/180-user_gaode_lng*pi()/180)/2),2)))*1000)
+                        BETWEEN 5000 and 6000 then user_id else null end),'') as useid8
+        FROM b_user_stores_distance_log t
+        where site_id = #{siteId}
+        AND user_id > 0
+        AND create_time > #{time}
+    </select>
+    <select id="getMemberCountAll" resultType="Integer" parameterType="map">
+        SELECT
+        count(distinct case when round(6378.138*2*asin(sqrt(pow(sin( (#{gaodeLat}*pi()/180-user_gaode_lat*pi()/180)/2),2)+cos(#{gaodeLat}*pi()/180)*cos(user_gaode_lat*pi()/180)* pow(sin( (#{gaodeLng}*pi()/180-user_gaode_lng*pi()/180)/2),2)))*1000)
+                        BETWEEN 0 and 6000 then user_id else null end) as count
+        FROM b_user_stores_distance_log t
+        where site_id = #{siteId}
+        AND user_id > 0
+        AND create_time > #{time}
+    </select>
+    <select id="getStoreCountAll" resultType="Integer" parameterType="map">
+        SELECT
+        count(distinct case when round(6378.138*2*asin(sqrt(pow(sin( (#{gaodeLat}*pi()/180-gaode_lat*pi()/180)/2),2)+cos(#{gaodeLat}*pi()/180)*cos(gaode_lat*pi()/180)* pow(sin( (#{gaodeLng}*pi()/180-gaode_lng*pi()/180)/2),2)))*1000)
+                        BETWEEN 0 and 6000 then id else null end) as count
+        FROM b_stores t
+        where site_id = #{siteId}
+    </select>
+    <select id="getStoreIdsAll" resultType="map" parameterType="map">
+        SELECT
+        IFNULL(group_concat(distinct case when round(6378.138*2*asin(sqrt(pow(sin( (#{gaodeLat}*pi()/180-gaode_lat*pi()/180)/2),2)+cos(#{gaodeLat}*pi()/180)*cos(gaode_lat*pi()/180)* pow(sin( (#{gaodeLng}*pi()/180-gaode_lng*pi()/180)/2),2)))*1000)
+                        BETWEEN 0 and 1000 then id else null end),'') as storeids1,
+        IFNULL(group_concat(distinct case when round(6378.138*2*asin(sqrt(pow(sin( (#{gaodeLat}*pi()/180-gaode_lat*pi()/180)/2),2)+cos(#{gaodeLat}*pi()/180)*cos(gaode_lat*pi()/180)* pow(sin( (#{gaodeLng}*pi()/180-gaode_lng*pi()/180)/2),2)))*1000)
+                        BETWEEN 1000 and 2000 then id else null end),'') as storeids2,
+        IFNULL(group_concat(distinct case when round(6378.138*2*asin(sqrt(pow(sin( (#{gaodeLat}*pi()/180-gaode_lat*pi()/180)/2),2)+cos(#{gaodeLat}*pi()/180)*cos(gaode_lat*pi()/180)* pow(sin( (#{gaodeLng}*pi()/180-gaode_lng*pi()/180)/2),2)))*1000)
+                        BETWEEN 2000 and 3000 then id else null end),'') as storeids3,
+        IFNULL(group_concat(distinct case when round(6378.138*2*asin(sqrt(pow(sin( (#{gaodeLat}*pi()/180-gaode_lat*pi()/180)/2),2)+cos(#{gaodeLat}*pi()/180)*cos(gaode_lat*pi()/180)* pow(sin( (#{gaodeLng}*pi()/180-gaode_lng*pi()/180)/2),2)))*1000)
+                        BETWEEN 3000 and 4000 then id else null end),'') as storeids4,
+        IFNULL(group_concat(distinct case when round(6378.138*2*asin(sqrt(pow(sin( (#{gaodeLat}*pi()/180-gaode_lat*pi()/180)/2),2)+cos(#{gaodeLat}*pi()/180)*cos(gaode_lat*pi()/180)* pow(sin( (#{gaodeLng}*pi()/180-gaode_lng*pi()/180)/2),2)))*1000)
+                        BETWEEN 4000 and 5000 then id else null end),'') as storeids5,
+        IFNULL(group_concat(distinct case when round(6378.138*2*asin(sqrt(pow(sin( (#{gaodeLat}*pi()/180-gaode_lat*pi()/180)/2),2)+cos(#{gaodeLat}*pi()/180)*cos(gaode_lat*pi()/180)* pow(sin( (#{gaodeLng}*pi()/180-gaode_lng*pi()/180)/2),2)))*1000)
+                        BETWEEN 5000 and 6000 then id else null end),'') as storeids6
+        FROM b_stores t
+        where site_id = #{siteId}
+    </select>
+
+
+</mapper>

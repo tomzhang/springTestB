@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.offline.mapper.MerchantERPMapper">
+    <select id="selectMerchantERPInfo" resultType="java.util.Map">
+        select merchant_id merchantId,gatewayurl erpUrl,merchant_name merchantName,status status,member member,
+        integrate integrate,trades trades,price price,secret_name secretName,secret_value secretValue from yb_merchant_erp
+        where merchant_id=#{siteId} limit 1;
+    </select>
+
+    <select id="selectMerchantByStatus" resultType="java.util.Map">
+        select id , merchant_id merchantId,merchant_name merchantName, IFNULL(remind_email, "") emails,
+        IFNULL(remind_mobile, "") mobiles,gatewayurl erpUrl,status,trades,member,storage, price,pandian pandian from
+        yb_merchant_erp where 1=1
+        <if test="siteId!=null and siteId!=''">
+            AND merchant_id=#{siteId}
+        </if>
+        <if test="status!=null and status!=''">
+            and status=#{status}
+        </if>
+    </select>
+    <update id="updateErpAppliStatus" parameterType="com.jk51.modules.offline.utils.ErpMerchantUtils">
+        update yb_merchant_erp
+        <trim prefix="set" suffixOverrides=",">
+            <if test="emails!=null">
+                remind_email=#{emails},
+            </if>
+            <if test="mobiles!=null">
+                remind_mobile =#{mobiles},
+            </if>
+            <if test="trades!=null">
+                trades=#{trades},
+            </if>
+            <if test="member!=null">
+                member=#{member},
+            </if>
+            <if test="storage!=null">
+                storage=#{storage},
+            </if>
+            <if test="price!=null">
+                price=#{price},
+            </if>
+            <if test="pandian!=null">
+                pandian=#{pandian},
+            </if>
+            <if test="erpUrl!=null">
+                gatewayurl=#{erpUrl},
+            </if>
+            <if test="status!=null">
+                status=#{status},
+            </if>
+        </trim>
+        where merchant_id=#{siteId};
+    </update>
+    <select id="selectErpMerchantName" resultType="map">
+        SELECT id, merchant_id siteId,merchant_name merchantName from yb_merchant_erp where 1=1
+        <if test="siteId!=null and siteId!=''">
+            and merchant_id=#{siteId}
+        </if>
+        <if test="merchantName!=null and merchantName!=''">
+            AND `merchant_name` LIKE concat('%',#{merchantName},'%')
+        </if>
+        <if test="status!=null and status!=''">
+            and status=#{status}
+        </if>
+    </select>
+    <select id="selectMerchantAppli" resultType="java.util.Map">
+        select merchant_id merchantId,member_flag,integrate_flag,trades_flag,price_flag,
+        pandian_flag from yb_merchant_erp where merchant_id=#{siteId} limit 1;
+    </select>
+    <insert id="insertERPMerchantInfo" parameterType="com.jk51.modules.offline.utils.ErpMerchantUtils">
+        INSERT INTO `yb_merchant_erp`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId!=null">
+                `merchant_id`,
+            </if>
+            <if test="erpUrl!=null">
+                `gatewayurl`,
+            </if>
+            <if test="merchantName!=null">
+                `merchant_name`,
+            </if>
+            <if test="status!=null">
+                `status`,
+            </if>
+            <if test="member!=null">
+                `member`,
+            </if>
+            <if test="integrate!=null">
+                `integrate`,
+            </if>
+            <if test="trades!=null">
+                `trades`,
+            </if>
+            <if test="storage!=null">
+                `storage`,
+            </if>
+            <if test="price!=null">
+                `price`,
+            </if>
+            <if test="pandian!=null">
+                `pandian`,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId!=null">
+                #{siteId},
+            </if>
+            <if test="erpUrl!=null">
+                #{erpUrl},
+            </if>
+            <if test="merchantName!=null">
+                #{merchantName},
+            </if>
+            <if test="status!=null">
+                #{status},
+            </if>
+            <if test="member!=null">
+                #{member},
+            </if>
+            <if test="integrate!=null">
+                #{integrate},
+            </if>
+            <if test="trades!=null">
+                #{trades},
+            </if>
+            <if test="storage!=null">
+                #{storage},
+            </if>
+            <if test="price!=null">
+                #{price},
+            </if>
+            <if test="pandian!=null">
+                #{pandian},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="getGoodsYibao" resultType="java.lang.Integer">
+        SELECT count(1) FROM b_goods_yibao
+        <where>
+            <if test="siteId != null and siteId != 0">
+                site_id = #{siteId}
+            </if>
+            AND goods_code = #{goodsCode}
+        </where>
+    </select>
+    <select id="getStoresYibao" resultType="java.lang.Integer">
+        SELECT count(1) FROM b_stores_yibao
+        <where>
+            <if test="siteId != null and siteId != 0">
+                site_id = #{siteId}
+            </if>
+            AND stores_number = #{storesNumber}
+        </where>
+    </select>
+</mapper>

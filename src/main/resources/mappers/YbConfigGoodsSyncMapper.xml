@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.goods.mapper.YbConfigGoodsSyncMapper">
+  <resultMap id="BaseResultMap" type="com.jk51.model.YbConfigGoodsSync">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="detail_tpl" jdbcType="INTEGER" property="detailTpl" />
+    <result column="allow_add" jdbcType="BIT" property="allowAdd" />
+    <result column="allow_update" jdbcType="BIT" property="allowUpdate" />
+    <result column="fields_pk" jdbcType="VARCHAR" property="fieldsPk" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.jk51.model.YbConfigGoodsSync">
+    <result column="fields" jdbcType="LONGVARCHAR" property="fields" />
+  </resultMap>
+  <sql id="Column_List">
+    id,detail_tpl,allow_add,allow_update,fields,fields_pk,create_time,update_time
+  </sql>
+
+  <select id="findByDetailTplFirst" flushCache="true" resultMap="BaseResultMap">
+    select * from yb_config_goods_sync
+    <where>
+      detail_tpl = #{detail_tpl}
+    </where>
+    limit 1
+  </select>
+</mapper>

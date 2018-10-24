@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.account.mapper.ClassifiedStatisticMapper">
+    <insert id="addClassifiedStatistic" parameterType="com.jk51.model.account.models.ClassifiedStatistic">
+        insert into yb_classified_statistic (finance_no,seller_id,seller_name,pay_style,settlement_start_date,settlement_end_date,total_pay,
+        finance_checking_total,platform_total,commission_total,refund_total,refund_checking_total,post_total,create_time,update_time)
+        values (#{classifiedStatistic.finance_no},#{classifiedStatistic.seller_id},#{classifiedStatistic.seller_name},#{classifiedStatistic.pay_style},
+        #{classifiedStatistic.settlement_start_date},#{classifiedStatistic.settlement_end_date},#{classifiedStatistic.total_pay},
+        #{classifiedStatistic.finance_checking_total},#{classifiedStatistic.platform_total},
+        #{classifiedStatistic.commission_total},#{classifiedStatistic.refund_total},#{classifiedStatistic.refund_checking_total},
+        #{classifiedStatistic.post_total},CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
+    </insert>
+
+    <select id="getClassifiedList" resultType="com.jk51.model.account.models.FinancesStatistic">
+        SELECT
+            G.finance_no financeNo,
+            B.seller_id sellerId,
+            C.merchant_name sellerName,
+            date_format(G.settlement_start_date,'%Y-%m-%d') as settlementStartDate,
+            date_format(G.settlement_end_date,'%Y-%m-%d') as settlementEndDate,
+            date_format(G.pay_day,'%Y-%m-%d') as payDay,
+            date_format(ADDDATE(G.pay_day,3),'%Y-%m-%d') as payDays,
+            G.total_pay totalPays,
+            IFNULL(B.total_pay,0) totalpayA,
+            B.finance_checking_total financeCheckingTotal,
+            B.refund_total refundTotal,
+            B.refund_checking_total refundCheckingTotal,
+            G.platform_total platformTotal,
+            B.platform_total,
+            case  B.pay_style
+            WHEN 'health_insurance' THEN  0
+            when 'cash' then 0
+            when 'unionPay' then B.total_pay
+            when  'wx' then  B.total_pay
+            WHEN 'ali' THEN  B.total_pay
+            ELSE '---'end  totalPay,
+            CASE G.status
+            WHEN '0' THEN '未处理'
+            WHEN '100' THEN '未支付'
+            WHEN '110' THEN '延期支付'
+            WHEN '200' THEN '支付部分'
+            WHEN '900' THEN '已结清'
+            ELSE '其他'
+            END statuss,
+            CASE G.audit_status
+            WHEN '0' THEN '审核中'
+            WHEN '110' THEN '审核成功'
+            WHEN '120' THEN '审核失败'
+            WHEN '130' THEN '商家已确认'
+            WHEN '140' THEN '商家未确认'
+            ELSE '其他'
+            END auditStatus,
+            CASE B.pay_style
+                WHEN 'wx' THEN '微信'
+                WHEN 'ali' THEN '支付宝'
+                WHEN 'unionPay' THEN '银联'
+                WHEN 'health_insurance' THEN '医保卡'
+                WHEN 'cash' THEN '现金'
+                ELSE '其他'
+            END payStyle,
+            B.commission_total commissionTotal,
+            G.remark,
+            date_format(G.pay_date,'%Y-%m-%d') as payDate,
+            date_format(G.invoice_time,'%Y-%m-%d') as invoiceTime,
+            G.express_number expressNumber,
+            G.express_type expressType,
+            G.operator_name operatorName,
+            date_format(G.change_130_time,'%Y-%m-%d %H:%i:%S') as changeTime,
+            date_format(date_add(G.create_time, interval 3 day),'%Y-%m-%d %H:%i:%S') as actualDate,
+            B.post_total postTotal
+        FROM
+        yb_finances G
+        INNER JOIN yb_classified_statistic B ON G.finance_no = B.finance_no
+        LEFT JOIN yb_merchant C ON G.seller_id=C.merchant_id
+        <where>
+            1 = 1
+            <if test="classifiedAccountParam.financeNo!=null and classifiedAccountParam.financeNo!=''" >
+                AND G.finance_no = #{classifiedAccountParam.financeNo}
+            </if>
+            <if test="classifiedAccountParam.sellerName!=null and classifiedAccountParam.sellerName!=''" >
+                AND C.merchant_name like concat('%',#{classifiedAccountParam.sellerName},'%')
+
+            </if>
+            <if test="classifiedAccountParam.sellerId!=null and classifiedAccountParam.sellerId!=''" >
+                AND G.seller_id = #{classifiedAccountParam.sellerId}
+            </if>
+            <if test="classifiedAccountParam.payStyle!=null and classifiedAccountParam.payStyle!=''" >
+                AND B.pay_style = #{classifiedAccountParam.payStyle}
+            </if>
+            <if test="classifiedAccountParam.invoice!=null and classifiedAccountParam.invoice!=''" >
+                AND G.invoice = #{classifiedAccountParam.invoice}
+            </if>
+            <if test="classifiedAccountParam.status!=null and classifiedAccountParam.status!=''" >
+                AND G.status = #{classifiedAccountParam.status}
+            </if>
+            <if test="classifiedAccountParam.auditStatus!=null" >
+                AND G.audit_status = #{classifiedAccountParam.auditStatus}
+            </if>
+            <if test="classifiedAccountParam.sOutDate!=null and classifiedAccountParam.sOutDate!=null">
+                AND G.pay_day  <![CDATA[ >= ]]>  #{classifiedAccountParam.sOutDate}
+            </if>
+            <if test="classifiedAccountParam.eOutDate!=null and classifiedAccountParam.eOutDate!=null">
+                AND G.pay_day <![CDATA[ <= ]]> #{classifiedAccountParam.eOutDate}
+            </if>
+            <if test="classifiedAccountParam.findType!=null and classifiedAccountParam.findType=='merchant' " >
+                AND (G.audit_status !=0 and G.audit_status !=120)
+            </if>
+        </where>
+        order by G.pay_day DESC,G.seller_id DESC,B.pay_style DESC
+    </select>
+
+    <select id="getClassified" resultType="java.util.Map">
+        SELECT
+        G.finance_no financeno,
+        B.seller_id sellerid,
+        C.merchant_name sellername,
+        date_format(G.settlement_start_date,'%Y-%m-%d') as settlementstartdate,
+        date_format(G.settlement_end_date,'%Y-%m-%d') as settlementenddate,
+        date_format(G.pay_day,'%Y-%m-%d') as payday,
+        date_format(ADDDATE(G.pay_day,3),'%Y-%m-%d') as paydays,
+        G.total_pay totalpays,
+        FORMAT(B.finance_checking_total/100,2) financecheckingtotal,
+        FORMAT(B.refund_total/100,2) refundtotal,
+        FORMAT(B.refund_checking_total/100,2) refundcheckingtotal,
+        FORMAT(B.post_total/100,2) posttotal,
+        FORMAT(B.platform_total/100,2) platformtotal,
+        FORMAT(B.commission_total/100,2) commissiontotal,
+        FORMAT(B.total_pay/100,2)  totalpay,
+        CASE G.status
+        WHEN '0' THEN '未处理'
+        WHEN '100' THEN '未支付'
+        WHEN '110' THEN '延期支付'
+        WHEN '200' THEN '支付部分'
+        WHEN '900' THEN '已结清'
+        ELSE '其他'
+        END statuss,
+        CASE G.audit_status
+        WHEN '0' THEN '审核中'
+        WHEN '110' THEN '审核成功'
+        WHEN '120' THEN '审核失败'
+        WHEN '130' THEN '商家已确认'
+        WHEN '140' THEN '商家未确认'
+        ELSE '其他'
+        END auditstatus,
+        CASE B.pay_style
+        WHEN 'wx' THEN '微信'
+        WHEN 'ali' THEN '支付宝'
+        WHEN 'unionPay' THEN '银联'
+        WHEN 'health_insurance' THEN '医保卡'
+        WHEN 'cash' THEN '现金'
+        ELSE '其他'
+        END paystyle,
+        G.remark,
+        date_format(G.pay_date,'%Y-%m-%d') as paydate,
+        date_format(G.invoice_time,'%Y-%m-%d') as invoicetime,
+        G.express_number expressnumber,
+        G.express_type expresstype,
+        G.operator_name operatorname,
+        date_format(G.change_130_time,'%Y-%m-%d %H:%i:%S') as changeTime,
+        date_format(date_add(G.create_time, interval 3 day),'%Y-%m-%d %H:%i:%S') as actualDate
+        FROM
+        yb_finances G
+        INNER JOIN yb_classified_statistic B ON G.finance_no = B.finance_no
+        LEFT JOIN yb_merchant C ON G.seller_id=C.merchant_id
+        <where>
+            1 = 1
+            <if test="classifiedAccountParam.financeNo!=null and classifiedAccountParam.financeNo!=''" >
+                AND G.finance_no = #{classifiedAccountParam.financeNo}
+            </if>
+            <if test="classifiedAccountParam.sellerName!=null and classifiedAccountParam.sellerName!=''" >
+                AND G.seller_name = #{classifiedAccountParam.sellerName}
+            </if>
+            <if test="classifiedAccountParam.sellerId!=null and classifiedAccountParam.sellerId!=''" >
+                AND G.seller_id = #{classifiedAccountParam.sellerId}
+            </if>
+            <if test="classifiedAccountParam.payStyle!=null and classifiedAccountParam.payStyle!=''" >
+                AND B.pay_style = #{classifiedAccountParam.payStyle}
+            </if>
+            <if test="classifiedAccountParam.invoice!=null and classifiedAccountParam.invoice!=''" >
+                AND G.invoice = #{classifiedAccountParam.invoice}
+            </if>
+            <if test="classifiedAccountParam.status!=null and classifiedAccountParam.status!=''" >
+                AND G.status = #{classifiedAccountParam.status}
+            </if>
+            <if test="classifiedAccountParam.auditStatus!=null" >
+                AND G.audit_status = #{classifiedAccountParam.auditStatus}
+            </if>
+            <if test="classifiedAccountParam.sOutDate!=null and classifiedAccountParam.sOutDate!=null">
+                AND G.pay_day  <![CDATA[ >= ]]>  #{classifiedAccountParam.sOutDate}
+            </if>
+            <if test="classifiedAccountParam.eOutDate!=null and classifiedAccountParam.eOutDate!=null">
+                AND G.pay_day <![CDATA[ <= ]]> #{classifiedAccountParam.eOutDate}
+            </if>
+        </where>
+        order by G.pay_day DESC,G.seller_id DESC,B.pay_style DESC
+    </select>
+
+    <update id="updateCheckedMoney" parameterType="com.jk51.model.account.models.ClassifiedStatistic">
+      UPDATE yb_classified_statistic
+          SET refund_checking_total=#{classifiedStatistic.refund_checking_total},
+             finance_checking_total=#{classifiedStatistic.finance_checking_total}
+      WHERE finance_no=#{classifiedStatistic.finance_no} AND pay_style=#{classifiedStatistic.pay_style}
+    </update>
+
+</mapper>

@@ -1,0 +1,539 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.clerkvisit.mapper.BVisitDescMapper">
+
+  <resultMap id="BaseResultMap" type="com.jk51.model.clerkvisit.BVisitDesc">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="site_id" jdbcType="INTEGER" property="siteId" />
+    <result column="visit_id" jdbcType="INTEGER" property="visitId" />
+    <result column="store_admin_id" jdbcType="INTEGER" property="storeAdminId" />
+    <result column="admin_name" jdbcType="VARCHAR" property="adminName" />
+    <result column="store_id" jdbcType="INTEGER" property="storeId" />
+    <result column="store_name" jdbcType="VARCHAR" property="storeName" />
+    <result column="buyer_id" jdbcType="INTEGER" property="buyerId" />
+    <result column="send_coupon_num" jdbcType="INTEGER" property="sendCouponNum" />
+    <result column="sms_status" jdbcType="TINYINT" property="smsStatus" />
+    <result column="page_status" jdbcType="TINYINT" property="pageStatus" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+
+  <sql id="Detail_Column_List">
+    bsc.id,bsc.site_id as siteId,bsc.visit_id as visitId,bsc.store_admin_id as storeAdminId,bsc.admin_name as adminName,
+    bsc.store_id as storeId,bsc.store_name as storeName,bsc.buyer_id as buyerId,IFNULL(bj.couponNum,0) AS sendCouponNum,
+    bsc.sms_status as smsStatus,bsc.page_status as pageStatus, bsc.create_time as creatTime,bsc.update_time as updateTime,
+    bf.tel_result as telResult, IFNULL(b.goodsNum,0) as goodsNum,t.trades as tradesIds,bc.status as status,bsc.admin_mobile as adminMobile,
+    bsc.buyer_mobile as buyerMobile
+  </sql>
+
+  <select id="queryVisitDetailList" resultType="com.jk51.model.clerkvisit.BVisitDescWithDetail" parameterType="int">
+    SELECT
+    <include refid="Detail_Column_List"/>
+    FROM
+    b_clerk_visit bc
+    -- 活动期间回访顾客购买活动商品数
+    LEFT JOIN b_visit_desc bv ON bc.site_id = bv.site_id
+    AND bc.id = bv.visit_id
+    LEFT JOIN (
+    SELECT
+    SUM(bo.goods_num) AS goodsNum,c.site_id,c.buyer_id,c.id
+    FROM b_clerk_visit c
+    LEFT JOIN b_visit_trade b  ON b.site_id = c.site_id and b.visit_id =c.id
+    LEFT JOIN b_trades t on t.site_id =b.site_id and t.trades_id =b.trades_id
+    AND t.buyer_id = c.buyer_id
+    LEFT JOIN b_orders bo ON b.trades_id = bo.trades_id
+    AND bo.site_id = b.site_id
+    LEFT JOIN b_promotions_activity ba ON b.site_id = ba.site_id
+    AND ba.id IN (c.activity_ids)
+    WHERE
+    b.site_id = #{siteId}
+    AND t.is_payment = 1
+    AND t.pay_time  <![CDATA[ >= ]]> ba.start_time
+    AND t.pay_time <![CDATA[ <= ]]> ba.end_time
+    GROUP BY c.site_id,c.buyer_id,c.id
+    ) b ON b.site_id = bc.site_id
+    AND b.buyer_id = bc.buyer_id
+    AND b.id = bc.id
+    -- 店员下单订单号
+    LEFT JOIN (
+    SELECT
+    GROUP_CONCAT(b.trades_id) AS trades,
+    c.id,
+    c.site_id
+    FROM b_clerk_visit c
+    LEFT JOIN b_visit_trade b  ON b.site_id = c.site_id and b.visit_id =c.id
+    LEFT JOIN b_trades t on t.site_id =b.site_id and t.trades_id =b.trades_id
+    AND t.buyer_id = c.buyer_id
+    AND b.visit_id = c.id
+    where c.site_id=#{siteId}
+    and t.is_payment=1
+    GROUP BY
+    b.visit_id
+    ) t ON bc.site_id = t.site_id
+    AND bc.id = t.id
+    LEFT JOIN (
+    SELECT
+    COUNT(bcd.coupon_no) as couponNum ,bc.site_id,bc.id
+    FROM b_clerk_visit bc
+    LEFT JOIN b_member bm on bc.buyer_id = bm.buyer_id and bc.site_id =bm.site_id
+    LEFT JOIN b_coupon_detail bcd ON bcd.site_id = bc.site_id
+    AND bcd.manager_id = bc.store_admin_id
+    AND bcd.store_id= bc.store_id
+    AND bcd.user_id = bm.member_id
+    LEFT JOIN (
+    SELECT MIN(bca.start_time) AS startTime, MAX(bca.end_time) AS endTime,bc.site_id,bc.id
+    FROM b_promotions_activity bca
+    LEFT JOIN b_clerk_visit bc ON bca.site_id = bc.site_id
+    AND FIND_IN_SET(bca.id, bc.activity_ids)
+    ) bj ON bj.site_id = bc.site_id AND bj.id = bc.id and bcd.create_time <![CDATA[ >= ]]> bj.startTime and bcd.create_time <![CDATA[ <= ]]> bj.endTime
+    GROUP BY bc.site_id,bc.id
+    ) bj on bj.site_id =bc.site_id and bj.id =bc.id
+    -- 回访反馈
+    LEFT JOIN  b_visit_feedback bf on bc.site_id=bf.site_id and bc.id =bf.visit_id
+    LEFT JOIN  b_visit_desc bsc on bc.id=bsc.visit_id and bc.site_id =bsc.site_id
+    LEFT JOIN  b_promotions_activity bca on bc.site_id =bca.site_id and bca.id in (bc.activity_ids)
+    WHERE
+    bc.site_id = #{siteId}
+    AND bv.visit_id is not NULL
+    <if test="title != null ">
+       and bca.title=#{title}
+    </if>
+    <if test="startTime != null">
+      and bca.start_time <![CDATA[ >= ]]> #{startTime}
+    </if>
+    <if test="endTime != null">
+      and bca.end_time <![CDATA[ <= ]]> #{endTime}
+    </if>
+    <if test="adminName != null">
+      and bsc.admin_name =#{adminName}
+    </if>
+    <if test="adminMobile != null">
+      and bsc.admin_mobile =#{adminMobile}
+    </if>
+    <if test="bvsId != null">
+     and bc.bvs_id =#{bvsId}
+    </if>
+    GROUP BY bc.id
+  </select>
+
+
+
+  <select id="queryVisitDetailReport" resultType="Map">
+    SELECT
+    bsc.admin_name 店员,
+    bsc.admin_mobile 店员手机号,
+    bsc.buyer_mobile 受访顾客,
+    (CASE bc. STATUS
+      when 10 THEN '待回访'
+      when 20 THEN '回访中'
+      when 30 THEN '以回访'
+      ELSE '未回访'
+      END
+    ) 回访状态,
+    (CASE bf.tel_result
+    WHEN 10 THEN '未拨打'
+    WHEN 20 THEN '空号'
+    WHEN 30 THEN '停机'
+    WHEN 40 THEN '打通未接'
+    WHEN 50 THEN '打通被挂断'
+    WHEN 60 THEN '不是顾客本人'
+    WHEN 70 THEN '完成正常通话'
+    else '暂无'
+    END) 回访反馈 ,
+    IFNULL(bsc.send_coupon_num,0) 店员发券数,
+    t.trades 店员下单,
+    (CASE bsc.sms_status
+    WHEN 10 THEN '未发'
+    ELSE  '已发'
+    END) 短信发送情况,
+    (CASE bsc.page_status
+    WHEN 10 THEN '未发送'
+    WHEN 20 THEN '已发送顾客未打开'
+    ELSE '顾客已浏览' END) 顾客是否打开活动页面,
+    IFNULL(b.goodsNum,0) 活动期间回访顾客购买活动商品数
+    FROM
+    b_clerk_visit bc
+    -- 活动期间回访顾客购买活动商品数
+    LEFT JOIN b_visit_desc bv ON bc.site_id = bv.site_id
+    AND bc.id = bv.visit_id
+    LEFT JOIN (
+    SELECT
+    SUM(bo.goods_num) AS goodsNum,c.site_id,c.buyer_id,c.id
+    FROM b_clerk_visit c
+    LEFT JOIN b_visit_trade b  ON b.site_id = c.site_id and b.visit_id =c.id
+    LEFT JOIN b_trades t on t.site_id =b.site_id and t.trades_id =b.trades_id
+    AND t.buyer_id = c.buyer_id
+    LEFT JOIN b_orders bo ON b.trades_id = bo.trades_id
+    AND bo.site_id = b.site_id
+    LEFT JOIN b_promotions_activity ba ON b.site_id = ba.site_id
+    AND ba.id IN (c.activity_ids)
+    WHERE
+    b.site_id = #{siteId}
+    AND t.is_payment = 1
+    AND t.pay_time  <![CDATA[ >= ]]> ba.start_time
+    AND t.pay_time <![CDATA[ <= ]]> ba.end_time
+    GROUP BY c.site_id,c.buyer_id,c.id
+    ) b ON b.site_id = bc.site_id
+    AND b.buyer_id = bc.buyer_id
+    AND b.id = bc.id
+    -- 店员下单订单号
+    LEFT JOIN (
+    SELECT
+    GROUP_CONCAT(b.trades_id) AS trades,
+    c.id,
+    c.site_id
+    FROM b_clerk_visit c
+    LEFT JOIN b_visit_trade b  ON b.site_id = c.site_id and b.visit_id =c.id
+    LEFT JOIN b_trades t on t.site_id =b.site_id and t.trades_id =b.trades_id
+    AND t.buyer_id = c.buyer_id
+    AND b.visit_id = c.id
+    where c.site_id=#{siteId}
+    and t.is_payment=1
+    GROUP BY
+    b.visit_id
+    ) t ON bc.site_id = t.site_id
+    AND bc.id = t.id
+    LEFT JOIN (
+    SELECT
+    COUNT(bcd.coupon_no) as couponNum ,bc.site_id,bc.id
+    FROM b_clerk_visit bc
+    LEFT JOIN b_member bm on bc.buyer_id = bm.buyer_id and bc.site_id =bm.site_id
+    LEFT JOIN b_coupon_detail bcd ON bcd.site_id = bc.site_id
+    AND bcd.manager_id = bc.store_admin_id
+    AND bcd.store_id= bc.store_id
+    AND bcd.user_id = bm.member_id
+    LEFT JOIN (
+    SELECT MIN(bca.start_time) AS startTime, MAX(bca.end_time) AS endTime,bc.site_id,bc.id
+    FROM b_promotions_activity bca
+    LEFT JOIN b_clerk_visit bc ON bca.site_id = bc.site_id
+    AND FIND_IN_SET(bca.id, bc.activity_ids)
+    ) bj ON bj.site_id = bc.site_id AND bj.id = bc.id and bcd.create_time <![CDATA[ >= ]]> bj.startTime and bcd.create_time <![CDATA[ <= ]]> bj.endTime
+    GROUP BY bc.site_id,bc.id
+    ) bj on bj.site_id =bc.site_id and bj.id =bc.id
+    -- 回访反馈
+    LEFT JOIN  b_visit_feedback bf on bc.site_id=bf.site_id and bc.id =bf.visit_id
+    LEFT JOIN  b_visit_desc bsc on bc.id=bsc.visit_id and bc.site_id =bsc.site_id
+    LEFT JOIN  b_promotions_activity bca on bc.site_id =bca.site_id and bca.id in (bc.activity_ids)
+    WHERE
+    bc.site_id = #{siteId}
+    AND bv.visit_id is not NULL
+    <if test="title != null ">
+      and bca.title=#{title}
+    </if>
+    <if test="startTime != null">
+      and bca.start_time <![CDATA[ >= ]]> #{startTime}
+    </if>
+    <if test="endTime != null">
+      and bca.end_time <![CDATA[ <= ]]> #{endTime}
+    </if>
+    <if test="adminName != null">
+      and bsc.admin_name =#{adminName}
+    </if>
+    <if test="adminMobile != null">
+      and bsc.admin_mobile =#{adminMobile}
+    </if>
+    <if test="activityId != null">
+      and bc.bvs_id=#{activityId}
+    </if>
+  </select>
+
+  <insert id="insert" parameterType="com.jk51.model.clerkvisit.BVisitDesc">
+    insert into b_visit_desc (id, site_id, visit_id, 
+      store_admin_id, admin_name, store_id, 
+      store_name, buyer_id, send_coupon_num, 
+      sms_status, page_status, create_time, 
+      update_time, admin_mobile, buyer_mobile
+      )
+    values (#{id,jdbcType=INTEGER}, #{siteId,jdbcType=INTEGER}, #{visitId,jdbcType=INTEGER}, 
+      #{storeAdminId,jdbcType=INTEGER}, #{adminName,jdbcType=VARCHAR}, #{storeId,jdbcType=INTEGER}, 
+      #{storeName,jdbcType=VARCHAR}, #{buyerId,jdbcType=INTEGER}, #{sendCouponNum,jdbcType=INTEGER}, 
+      #{smsStatus,jdbcType=TINYINT}, #{pageStatus,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{adminMobile,jdbcType=LONGVARCHAR}, #{buyerMobile,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.jk51.model.clerkvisit.BVisitDesc">
+    insert into b_visit_desc
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="siteId != null">
+        site_id,
+      </if>
+      <if test="visitId != null">
+        visit_id,
+      </if>
+      <if test="storeAdminId != null">
+        store_admin_id,
+      </if>
+      <if test="adminName != null">
+        admin_name,
+      </if>
+      <if test="storeId != null">
+        store_id,
+      </if>
+      <if test="storeName != null">
+        store_name,
+      </if>
+      <if test="buyerId != null">
+        buyer_id,
+      </if>
+      <if test="sendCouponNum != null">
+        send_coupon_num,
+      </if>
+      <if test="smsStatus != null">
+        sms_status,
+      </if>
+      <if test="pageStatus != null">
+        page_status,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="adminMobile != null">
+        admin_mobile,
+      </if>
+      <if test="buyerMobile != null">
+        buyer_mobile,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="siteId != null">
+        #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="visitId != null">
+        #{visitId,jdbcType=INTEGER},
+      </if>
+      <if test="storeAdminId != null">
+        #{storeAdminId,jdbcType=INTEGER},
+      </if>
+      <if test="adminName != null">
+        #{adminName,jdbcType=VARCHAR},
+      </if>
+      <if test="storeId != null">
+        #{storeId,jdbcType=INTEGER},
+      </if>
+      <if test="storeName != null">
+        #{storeName,jdbcType=VARCHAR},
+      </if>
+      <if test="buyerId != null">
+        #{buyerId,jdbcType=INTEGER},
+      </if>
+      <if test="sendCouponNum != null">
+        #{sendCouponNum,jdbcType=INTEGER},
+      </if>
+      <if test="smsStatus != null">
+        #{smsStatus,jdbcType=TINYINT},
+      </if>
+      <if test="pageStatus != null">
+        #{pageStatus,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adminMobile != null">
+        #{adminMobile,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="buyerMobile != null">
+        #{buyerMobile,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.clerkvisit.BVisitDesc">
+    update b_visit_desc
+    <set>
+      <if test="siteId != null">
+        site_id = #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="visitId != null">
+        visit_id = #{visitId,jdbcType=INTEGER},
+      </if>
+      <if test="storeAdminId != null">
+        store_admin_id = #{storeAdminId,jdbcType=INTEGER},
+      </if>
+      <if test="adminName != null">
+        admin_name = #{adminName,jdbcType=VARCHAR},
+      </if>
+      <if test="storeId != null">
+        store_id = #{storeId,jdbcType=INTEGER},
+      </if>
+      <if test="storeName != null">
+        store_name = #{storeName,jdbcType=VARCHAR},
+      </if>
+      <if test="buyerId != null">
+        buyer_id = #{buyerId,jdbcType=INTEGER},
+      </if>
+      <if test="sendCouponNum != null">
+        send_coupon_num = #{sendCouponNum,jdbcType=INTEGER},
+      </if>
+      <if test="smsStatus != null">
+        sms_status = #{smsStatus,jdbcType=TINYINT},
+      </if>
+      <if test="pageStatus != null">
+        page_status = #{pageStatus,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adminMobile != null">
+        admin_mobile = #{adminMobile,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="buyerMobile != null">
+        buyer_mobile = #{buyerMobile,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.jk51.model.clerkvisit.BVisitDesc">
+    update b_visit_desc
+    set site_id = #{siteId,jdbcType=INTEGER},
+      visit_id = #{visitId,jdbcType=INTEGER},
+      store_admin_id = #{storeAdminId,jdbcType=INTEGER},
+      admin_name = #{adminName,jdbcType=VARCHAR},
+      store_id = #{storeId,jdbcType=INTEGER},
+      store_name = #{storeName,jdbcType=VARCHAR},
+      buyer_id = #{buyerId,jdbcType=INTEGER},
+      send_coupon_num = #{sendCouponNum,jdbcType=INTEGER},
+      sms_status = #{smsStatus,jdbcType=TINYINT},
+      page_status = #{pageStatus,jdbcType=TINYINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      admin_mobile = #{adminMobile,jdbcType=LONGVARCHAR},
+      buyer_mobile = #{buyerMobile,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jk51.model.clerkvisit.BVisitDesc">
+    update b_visit_desc
+    set site_id = #{siteId,jdbcType=INTEGER},
+      visit_id = #{visitId,jdbcType=INTEGER},
+      store_admin_id = #{storeAdminId,jdbcType=INTEGER},
+      admin_name = #{adminName,jdbcType=VARCHAR},
+      store_id = #{storeId,jdbcType=INTEGER},
+      store_name = #{storeName,jdbcType=VARCHAR},
+      buyer_id = #{buyerId,jdbcType=INTEGER},
+      send_coupon_num = #{sendCouponNum,jdbcType=INTEGER},
+      sms_status = #{smsStatus,jdbcType=TINYINT},
+      page_status = #{pageStatus,jdbcType=TINYINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+  <select id="checkVisitResult" resultType="java.util.Map">
+    SELECT  bvd.site_id,bvd.sms_status,bvd.page_status,bvd.send_coupon_num,bvd.buyer_id,bvd.store_admin_id,bvd.store_id FROM b_visit_desc bvd
+    WHERE  bvd.visit_id=#{id}
+    AND  bvd.site_id=#{siteId}
+  </select>
+
+  <update id="updateSmsStatusByVisitId" >
+    update b_visit_desc
+    set sms_status = 20,
+     page_status = 20
+    where visit_id = #{visitId}
+    AND site_id = #{siteId}
+    AND store_admin_id=#{storeAdminId}
+  </update>
+
+  <update id="updatePageStatus" >
+    update b_visit_desc
+    set page_status = 30
+    where visit_id = #{visitId}
+    AND site_id = #{siteId}
+  </update>
+
+  <select id="queryVisitCount" resultType="java.util.Map" >
+    SELECT
+    SUM(IFNULL(bj.couponNum, 0))AS send_num,
+    SUM(if(bsc.page_status=30,1,0)) AS page_open_num,
+    SUM(IFNULL(b.goodsNum, 0)) AS goods_num,
+    SUM(IFNULL(b.tradeNum, 0)) AS trade_num,
+    SUM(IFNULL(bj.couponUseNum, 0)) AS send_used_num,
+    bca.id,
+    bca.site_id
+    FROM
+    b_clerk_visit bc
+    LEFT JOIN b_visit_desc bv ON bc.site_id = bv.site_id
+    AND bc.id = bv.visit_id
+    LEFT JOIN (
+    SELECT
+    SUM(bo.goods_num) AS goodsNum,
+    c.site_id,
+    c.buyer_id,
+    c.id,
+    COUNT(t.trades_id) AS  tradeNum
+    FROM
+    b_clerk_visit c
+    LEFT JOIN b_visit_trade b ON b.site_id = c.site_id
+    AND b.visit_id = c.id
+    LEFT JOIN b_trades t ON t.site_id = b.site_id
+    AND t.trades_id = b.trades_id
+    AND t.buyer_id = c.buyer_id
+    LEFT JOIN b_orders bo ON b.trades_id = bo.trades_id
+    AND bo.site_id = b.site_id
+    LEFT JOIN b_promotions_activity ba ON b.site_id = ba.site_id
+    AND ba.id IN (c.activity_ids)
+    WHERE
+    b.site_id = #{siteId}
+    AND t.is_payment = 1
+    AND t.pay_time <![CDATA[ >= ]]> ba.start_time
+    AND t.pay_time <![CDATA[ <= ]]> ba.end_time
+    GROUP BY
+    c.id
+    ) b ON b.site_id = bc.site_id
+    AND b.buyer_id = bc.buyer_id
+    AND b.id = bc.id
+    LEFT JOIN (
+    SELECT
+    COUNT(bcd.coupon_no) AS couponNum,
+    bc.site_id,
+    bc.id,
+    SUM(if(bcd.status=0,1,0)) AS couponUseNum
+    FROM
+    b_clerk_visit bc
+    LEFT JOIN b_member bm on bc.buyer_id = bm.buyer_id and bc.site_id =bm.site_id
+    LEFT JOIN b_coupon_detail bcd ON bcd.site_id = bc.site_id
+    AND bcd.manager_id = bc.store_admin_id
+    AND bcd.user_id = bm.member_id
+    LEFT JOIN (
+    SELECT
+    MIN(bca.start_time) AS startTime,
+    MAX(bca.end_time) AS endTime,
+    bc.site_id,
+    bc.id
+    FROM
+    b_promotions_activity bca
+    LEFT JOIN b_clerk_visit bc ON bca.site_id = bc.site_id
+    AND FIND_IN_SET(bca.id, bc.activity_ids)
+    ) bj ON bj.site_id = bc.site_id
+    AND bj.id = bc.id
+    AND bcd.create_time <![CDATA[ >= ]]> bj.startTime
+    AND bcd.create_time <![CDATA[ <= ]]> bj.endTime
+    GROUP BY bcd.user_id
+    ) bj ON bj.site_id = bc.site_id
+    AND bj.id = bc.id
+    LEFT JOIN b_visit_desc bsc ON bc.id = bsc.visit_id
+    AND bc.site_id = bsc.site_id
+    LEFT JOIN b_promotions_activity bca ON bc.site_id = bca.site_id
+    AND bca.id IN (bc.activity_ids)
+    WHERE
+    bc.site_id = #{siteId}
+    AND bv.visit_id IS NOT NULL
+    AND find_in_set(#{activityId}, bc.activity_ids)
+    GROUP BY bca.id
+  </select>
+</mapper>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.treat.mapper.MerchantOrderMapper">
+    <resultMap id="BGoodsPrebookMap" type="com.jk51.model.treat.BGoodsPrebook">
+        <id column="site_id" property="siteId" />
+        <id column="prebook_id"  property="prebookId" />
+        <result column="prebook_phone" property="prebookPhone" />
+        <result column="prebook_goods_id" property="prebookGoodsId" />
+        <result column="prebook_goods_name" property="prebookGoodsName" />
+        <result column="prebook_goods_num" property="prebookGoodsNum" />
+        <result column="prebook_clerk_id" property="prebookClerkId" />
+        <result column="prebook_clerk" property="prebookClerk" />
+        <result column="prebook_trades" property="prebookTrades" />
+        <result column="prebook_accept_time" property="prebookAcceptTime" />
+        <result column="prebook_trades_time" property="prebookTradesTime" />
+        <result column="prebook_state" property="prebookState"/>
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+    <select id="getGoodsPrebookList" resultMap="BGoodsPrebookMap" parameterType="com.jk51.model.treat.OrderPreQueryReqTreat">
+      SELECT * FROM b_goods_prebook
+        <where>
+            site_id=#{siteId}
+            <if test="mobile != null">AND prebook_phone like CONCAT(CONCAT('%', #{mobile}), '%')</if>
+            <if test="goodsName != null">AND prebook_goods_name like CONCAT(CONCAT('%', #{goodsName}), '%')</if>
+        </where>
+
+        ORDER BY  create_time desc
+    </select>
+</mapper>

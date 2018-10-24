@@ -1,0 +1,536 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.pandian.mapper.BPandianPlanMapper" >
+  <resultMap id="BaseResultMap" type="com.jk51.model.BPandianPlan" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <id column="site_id" property="siteId" jdbcType="INTEGER" />
+    <result column="store_id" property="storeId" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="plan_type" property="planType" jdbcType="INTEGER" />
+    <result column="plan_day" property="planDay" jdbcType="INTEGER" />
+    <result column="plan_hour" property="planHour" jdbcType="INTEGER" />
+    <result column="plan_executor" property="planExecutor" jdbcType="VARCHAR" />
+    <result column="plan_stock_show" property="planStockShow" jdbcType="INTEGER" />
+    <result column="plan_check" property="planCheck" jdbcType="INTEGER" />
+    <result column="plan_check_type" property="planCheckType" jdbcType="INTEGER" />
+    <result column="plan_signature" property="planSignature" jdbcType="INTEGER" />
+    <result column="plan_operator" property="planOperator" jdbcType="INTEGER" />
+    <result column="plan_stop" property="planStop" jdbcType="INTEGER" />
+    <result column="plan_delete" property="planDelete" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="plan_stop_time" property="planStopTime" jdbcType="TIMESTAMP" />
+    <result column="plan_delete_time" property="planDeleteTime" jdbcType="TIMESTAMP" />
+    <result column="upload_type" property="uploadType" jdbcType="INTEGER" />
+    <result column="again_type" property="againType" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, site_id, store_id, type, plan_type, plan_day, plan_hour, plan_executor, plan_stock_show,
+    plan_check, plan_check_type, plan_signature, plan_operator, plan_stop, plan_delete,
+    create_time, update_time, plan_stop_time, plan_delete_time, upload_type, again_type
+  </sql>
+
+  <!-- 获取相同设置：计划盘点 -->
+  <select id="getExistPlans" resultType="java.util.Map">
+    SELECT plan.id, plan.site_id siteId, plan.store_id planStoreId, plan.type, plan.plan_type planType, plan.plan_check_type checkType, plan.plan_day planDay,
+    plan.plan_hour planHour, plan.plan_stop planStop, plan.plan_delete planDelete, GROUP_CONCAT(ifnull(store.`name`, '全部门店')) planExecutor,
+    plan.upload_type uploadType, plan.again_type againType
+    FROM b_pandian_plan plan
+    LEFT JOIN b_pandian_plan_executor executor ON plan.site_id=executor.site_id AND plan.id=executor.plan_id
+    LEFT JOIN b_stores store ON plan.site_id=store.site_id AND executor.store_id=store.id
+    WHERE plan.site_id = #{siteId} AND plan.plan_delete = 0 AND plan.plan_type = 0 AND plan.plan_check_type = #{planCheckType} AND plan.plan_day = #{planDay}
+    AND plan.plan_hour BETWEEN (#{planHour} - 1) AND (#{planHour} + 1)
+    AND (executor.store_id IN <foreach item="id" index="index" collection="storeIdList" open="(" separator="," close=")"> #{id} </foreach>
+          OR executor.store_id=0
+          <if test="storeId != null and storeId == 0" >
+           OR executor.site_id = #{siteId}
+          </if>
+        )
+    GROUP BY plan.id
+  </select>
+
+  <!-- 停用/删除 计划 -->
+  <update id="stopOrDelPlan" parameterType="com.jk51.model.BPandianPlan" >
+    update b_pandian_plan
+    <set >
+      <if test="planOperator != null" >
+        plan_operator = #{planOperator,jdbcType=VARCHAR},
+      </if>
+      <if test="planStop != null" >
+        plan_stop = #{planStop,jdbcType=INTEGER},
+      </if>
+      <if test="planDelete != null" >
+        plan_delete = #{planDelete,jdbcType=INTEGER},
+      </if>
+      <if test="planStop != null" >
+        plan_stop_time = CURRENT_TIMESTAMP,
+      </if>
+      <if test="planDelete != null" >
+        plan_delete_time = CURRENT_TIMESTAMP,
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER} and site_id = #{siteId,jdbcType=INTEGER}
+  </update>
+
+  <select id="getPlanList" resultType="com.jk51.modules.pandian.Response.PandianPlanInfo" >
+    SELECT
+      a.id,
+      b.pandian_num pdNum,
+      CASE a.plan_type
+          WHEN 0 THEN CONCAT('每月',a.plan_day,'日',a.plan_hour,'点')
+          WHEN 1 THEN '立即盘点'
+          ELSE '---' END planType,
+      CASE a.plan_check_type
+          WHEN 0 THEN '有批号盘点'
+          WHEN 2 THEN '无批号盘点'
+          ELSE '---' END checkType,
+      CURRENT_TIMESTAMP() serverTime,
+      IF((a.plan_type=0 AND a.plan_stop=0),
+          IF((SELECT COUNT(*) FROM b_pandian_order bpo WHERE bpo.site_id=a.site_id AND bpo.plan_id=a.id AND bpo.create_time &gt; b.create_time),
+              NULL,
+              (CASE WHEN DATE_FORMAT(b.create_time,'%Y-%m')=DATE_FORMAT(CURDATE(),'%Y-%m')
+                          THEN STR_TO_DATE(CONCAT(SUBSTRING_INDEX(DATE_ADD(CURDATE(),INTERVAL 1 MONTH),'-',2), '-', LEAST(DAY(LAST_DAY(DATE_ADD(CURDATE(),INTERVAL 1 MONTH))), a.plan_day), ' ', a.plan_hour), '%Y-%m-%d %H')
+                          ELSE STR_TO_DATE(CONCAT(SUBSTRING_INDEX(CURDATE(),'-',2), '-', LEAST(DAY(LAST_DAY(CURDATE())), a.plan_day), ' ', a.plan_hour), '%Y-%m-%d %H') END)),
+          NULL) expireTime,
+      CONCAT((SELECT COUNT(*) FROM b_pandian_order_status os WHERE os.site_id=b.site_id AND os.pandian_num=b.pandian_num AND os.`status`=400),
+          '/',
+          (SELECT COUNT(*) FROM b_pandian_plan_executor ppe WHERE ppe.site_id=a.site_id AND ppe.plan_id=a.id)) storeRate,
+      IFNULL(c.`name`,'总部') source,
+      if(a.type=0,
+          if(a.plan_operator=0,
+              (SELECT ym.seller_nick FROM yb_merchant ym WHERE ym.merchant_id=a.site_id LIMIT 1),
+              (SELECT bm.username FROM b_manager bm WHERE bm.site_id=a.site_id AND bm.id=a.plan_operator)),
+          if(a.type=1,
+              (IFNULL((SELECT bsae.`name` FROM b_store_adminext bsae WHERE bsae.site_id=a.site_id AND bsae.store_id=a.store_id AND bsae.storeadmin_id=a.plan_operator),
+              (SELECT bsa.user_name FROM b_store_admin bsa WHERE bsa.site_id=a.site_id AND bsa.store_id=a.store_id AND bsa.id=a.plan_operator))),'---')) operatorName,
+      IFNULL(b.create_time,a.create_time) createTime
+    FROM b_pandian_plan a
+      LEFT JOIN b_pandian_order b ON a.site_id=b.site_id AND a.id=b.plan_id
+      LEFT JOIN b_stores c ON a.site_id=c.site_id AND a.store_id=c.id AND a.type=1
+      <if test="storeId != null">
+        LEFT JOIN b_pandian_plan_executor d ON a.site_id=d.site_id AND a.id=d.plan_id
+      </if>
+    WHERE a.plan_delete=0 AND a.site_id = #{siteId}
+        <if test="storeId != null">
+          AND d.store_id = #{storeId}
+        </if>
+        <if test="id != null">
+          AND a.id = #{id}
+        </if>
+        <if test="source != null">
+          AND a.type = #{source}
+        </if>
+        <if test="planType != null">
+          AND a.plan_type = #{planType}
+        </if>
+        <if test='startTime!=null and !"".equals(startTime.trim())'>
+          AND (a.create_time &gt;= #{startTime} OR b.create_time &gt;= #{startTime})
+        </if>
+        <if test='endTime!=null and !"".equals(endTime.trim())'>
+          AND (a.create_time &lt; #{endTime} OR b.create_time &lt; #{endTime})
+        </if>
+        ORDER BY createTime DESC
+  </select>
+
+
+  <!-- 商家设置计划列表 -->
+  <select id="getPlanListBySite" resultMap="BaseResultMap" >
+    SELECT plan.id, plan.site_id, plan.store_id, plan.type, plan.plan_type, plan.plan_day, plan.plan_hour, plan.plan_stock_show,
+    plan.plan_check, plan.plan_check_type, plan.plan_signature, plan.plan_operator, plan.plan_stop, plan.plan_delete, plan.create_time, plan.update_time,
+    plan.plan_stop_time, plan.plan_delete_time, <!-- GROUP_CONCAT(ifnull(store.`name`, '全部门店'))--> GROUP_CONCAT(executor.store_id) plan_executor
+    FROM b_pandian_plan plan
+    LEFT JOIN b_pandian_plan_executor executor ON plan.site_id=executor.site_id AND plan.id=executor.plan_id
+  <!-- LEFT JOIN b_stores store ON plan.site_id=store.site_id AND executor.store_id=store.id-->
+  WHERE plan.plan_delete = 0 AND plan.type = 0 AND plan.site_id = #{siteId} AND plan.store_id=0 GROUP BY plan.id ORDER BY plan.id DESC
+</select>
+
+<!-- 门店设置计划列表 -->
+  <!--<resultMap id="planResult" type="com.jk51.model.BPandianPlan" extends="BaseResultMap">
+    <association property="planExecutor" select="selectStoreNames" column="{siteId=site_id,planId=id}"/>
+  </resultMap>-->
+  <select id="getPlanListByStore" resultMap="BaseResultMap" >
+    SELECT plan.*
+    FROM b_pandian_plan plan
+    LEFT JOIN b_pandian_plan_executor executor ON plan.site_id=executor.site_id AND plan.id=executor.plan_id
+    WHERE plan.plan_delete = 0 AND plan.site_id = #{siteId} AND (executor.store_id = #{storeId} OR executor.store_id=0) ORDER BY plan.id DESC
+  </select>
+  <!--<select id="selectStoreNames" resultType="java.lang.String">
+    SELECT GROUP_CONCAT(ifnull(store.`name`, '全部门店')) planExecutor
+    FROM b_pandian_plan_executor executor
+    LEFT JOIN b_stores store ON executor.site_id=store.site_id AND executor.store_id=store.id
+    WHERE executor.site_id = #{siteId} AND executor.plan_id = #{planId} GROUP BY executor.plan_id
+  </select>-->
+
+  <select id="getUnCreateOrderPlanList" resultMap="BaseResultMap" >
+    SELECT plan.*
+    FROM b_pandian_plan plan
+    LEFT JOIN b_pandian_order ord ON plan.site_id=ord.site_id AND plan.id=ord.plan_id AND DATE_FORMAT(ord.create_time,'%Y-%m')=DATE_FORMAT(CURDATE(),'%Y-%m')
+    WHERE plan.plan_delete=0 AND plan.plan_stop=0 AND plan.plan_type=0
+    AND str_to_date(CONCAT(SUBSTRING_INDEX(CURDATE(),'-',2), '-', LEAST(DAY(LAST_DAY(CURDATE())), plan.plan_day), ' ', plan.plan_hour), '%Y-%m-%d %H') BETWEEN NOW() AND DATE_ADD(NOW(),INTERVAL 50 MINUTE)
+    AND ord.create_time IS NULL
+    GROUP BY plan.id
+  </select>
+
+  <select id="getStoreNum" resultType="java.lang.String" >
+      SELECT stores_number FROM b_stores WHERE site_id = #{siteId} AND id = #{storeId}
+  </select>
+
+
+  <select id="getPDStoreList" resultType="java.util.Map">
+      SELECT site_id siteId, id, `name`, stores_number storesNumber, province, city, country
+      FROM b_stores
+      WHERE site_id = #{siteId} AND FIND_IN_SET(id,(SELECT store_id FROM b_stores_permission WHERE site_id = #{siteId}))
+        <if test="storeName != null and storeName!=''" >
+          AND `name` LIKE concat('%',#{storeName},'%')
+        </if>
+        <if test="storesNumber != null and storesNumber!=''" >
+          AND stores_number = #{storesNumber}
+        </if>
+  </select>
+
+  <select id="getPDClerkList" resultType="java.util.Map">
+    SELECT
+          b_store_adminext.mobile mobile,
+          b_store_adminext.`name` name,
+          b_store_adminext.id id,
+          b_store_adminext.employee_number employeeNumber,
+          b_store_adminext.clerk_invitation_code ivocode,
+          b_store_adminext.create_time createTime,
+          b_store_adminext.clerk_job clerkJob,
+          b_stores.`name` storeName,
+          b_store_adminext.memo memo,
+          b_store_adminext.storeadmin_status status,
+          b_store_adminext.id id,
+          b_store_adminext.store_id storeId,
+          b_store_adminext.storeadmin_id storeadminid
+    FROM b_store_adminext INNER JOIN b_stores ON b_stores.id=b_store_adminext.store_id AND b_stores.site_id = b_store_adminext.site_id
+    WHERE b_store_adminext.is_del=0 AND b_store_adminext.site_id = #{siteId} AND FIND_IN_SET(store_id,(SELECT store_id FROM b_stores_permission WHERE site_id = #{siteId}))
+        <if test="name!=null and name!=''">
+          AND b_store_adminext.`name` LIKE concat('%',#{name},'%')
+        </if>
+        <if test="storeId!=null and storeId!=''">
+          AND b_store_adminext.store_id=#{storeId}
+        </if>
+  </select>
+
+
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from b_pandian_plan
+    where id = #{id,jdbcType=INTEGER}
+    and site_id = #{siteId,jdbcType=INTEGER}
+  </select>
+
+  <insert id="insertSelective" parameterType="com.jk51.model.BPandianPlan" useGeneratedKeys="true" keyProperty="id" >
+    insert into b_pandian_plan
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="siteId != null" >
+        site_id,
+      </if>
+      <if test="storeId != null" >
+        store_id,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="planType != null" >
+        plan_type,
+      </if>
+      <if test="planDay != null" >
+        plan_day,
+      </if>
+      <if test="planHour != null" >
+        plan_hour,
+      </if>
+      <if test="planExecutor != null" >
+        plan_executor,
+      </if>
+      <if test="planStockShow != null" >
+        plan_stock_show,
+      </if>
+      <if test="planCheck != null" >
+        plan_check,
+      </if>
+      <if test="planCheckType != null" >
+        plan_check_type,
+      </if>
+      <if test="planSignature != null" >
+        plan_signature,
+      </if>
+      <if test="planOperator != null" >
+        plan_operator,
+      </if>
+      <if test="planStop != null" >
+        plan_stop,
+      </if>
+      <if test="planDelete != null" >
+        plan_delete,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="planStopTime != null" >
+        plan_stop_time,
+      </if>
+      <if test="planDeleteTime != null" >
+        plan_delete_time,
+      </if>
+      <if test="uploadType != null" >
+        upload_type,
+      </if>
+      <if test="againType != null" >
+        again_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="siteId != null" >
+        #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="storeId != null" >
+        #{storeId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="planType != null" >
+        #{planType,jdbcType=INTEGER},
+      </if>
+      <if test="planDay != null" >
+        #{planDay,jdbcType=INTEGER},
+      </if>
+      <if test="planHour != null" >
+        #{planHour,jdbcType=INTEGER},
+      </if>
+      <if test="planExecutor != null" >
+        #{planExecutor,jdbcType=VARCHAR},
+      </if>
+      <if test="planStockShow != null" >
+        #{planStockShow,jdbcType=INTEGER},
+      </if>
+      <if test="planCheck != null" >
+        #{planCheck,jdbcType=INTEGER},
+      </if>
+      <if test="planCheckType != null" >
+        #{planCheckType,jdbcType=INTEGER},
+      </if>
+      <if test="planSignature != null" >
+        #{planSignature,jdbcType=INTEGER},
+      </if>
+      <if test="planOperator != null" >
+        #{planOperator,jdbcType=INTEGER},
+      </if>
+      <if test="planStop != null" >
+        #{planStop,jdbcType=INTEGER},
+      </if>
+      <if test="planDelete != null" >
+        #{planDelete,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="planStopTime != null" >
+        #{planStopTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="planDeleteTime != null" >
+        #{planDeleteTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uploadType != null" >
+        #{uploadType,jdbcType=INTEGER},
+      </if>
+      <if test="againType != null" >
+        #{againType,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.BPandianPlan" >
+    update b_pandian_plan
+    <set >
+      <if test="storeId != null" >
+        store_id = #{storeId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="planType != null" >
+        plan_type = #{planType,jdbcType=INTEGER},
+      </if>
+      <if test="planDay != null" >
+        plan_day = #{planDay,jdbcType=INTEGER},
+      </if>
+      <if test="planHour != null" >
+        plan_hour = #{planHour,jdbcType=INTEGER},
+      </if>
+      <if test="planExecutor != null" >
+        plan_executor = #{planExecutor,jdbcType=VARCHAR},
+      </if>
+      <if test="planStockShow != null" >
+        plan_stock_show = #{planStockShow,jdbcType=INTEGER},
+      </if>
+      <if test="planCheck != null" >
+        plan_check = #{planCheck,jdbcType=INTEGER},
+      </if>
+      <if test="planCheckType != null" >
+        plan_check_type = #{planCheckType,jdbcType=INTEGER},
+      </if>
+      <if test="planSignature != null" >
+        plan_signature = #{planSignature,jdbcType=INTEGER},
+      </if>
+      <if test="planOperator != null" >
+        plan_operator = #{planOperator,jdbcType=INTEGER},
+      </if>
+      <if test="planStop != null" >
+        plan_stop = #{planStop,jdbcType=INTEGER},
+      </if>
+      <if test="planDelete != null" >
+        plan_delete = #{planDelete,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="planStopTime != null" >
+        plan_stop_time = #{planStopTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="planDeleteTime != null" >
+        plan_delete_time = #{planDeleteTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uploadType != null" >
+        upload_type = #{uploadType,jdbcType=INTEGER},
+      </if>
+      <if test="againType != null" >
+        again_type = #{againType,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+    and site_id = #{siteId,jdbcType=INTEGER}
+  </update>
+  <select id="findByPandianNum" resultMap="BaseResultMap">
+    select
+      <include refid="Base_Column_List" />
+    from b_pandian_plan p
+    where
+      p.id  = (select plan_id from b_pandian_order where pandian_num = #{pandianNum} and site_id = #{siteId} limit 1 )
+      and p.site_id = #{siteId}
+
+  </select>
+
+
+  <resultMap id="planDetail" type="com.jk51.modules.pandian.Response.PandianPlanDetail">
+    <id property="id" column="id" jdbcType="INTEGER"/>
+    <result property="source" column="source" jdbcType="VARCHAR"/>
+    <result property="planType" column="planType" jdbcType="VARCHAR"/>
+    <result property="uploadType" column="uploadType" jdbcType="VARCHAR"/>
+    <result property="stockShow" column="stockShow" jdbcType="VARCHAR"/>
+    <result property="checkType" column="checkType" jdbcType="VARCHAR"/>
+    <result property="planCheck" column="planCheck" jdbcType="VARCHAR"/>
+    <result property="againType" column="againType" jdbcType="VARCHAR"/>
+    <result property="planStop" column="planStop" jdbcType="INTEGER"/>
+    <result property="planDelete" column="planDelete" jdbcType="INTEGER"/>
+    <collection property="stores" ofType="com.jk51.modules.pandian.Response.PandianPlanDetail$PandianStore">
+      <id property="id" column="storeId" jdbcType="INTEGER"/>
+      <result property="name" column="storeName" jdbcType="VARCHAR"/>
+    </collection>
+    <collection property="clerks" ofType="java.lang.String">
+      <result column="clerkName" jdbcType="VARCHAR"/>
+    </collection>
+  </resultMap>
+  <select id="getPlanDetail" resultMap="planDetail">
+      SELECT
+        a.id,
+        IFNULL(c.`name`,'总部') source,
+        CASE a.plan_type
+          WHEN 0 THEN CONCAT('每月',a.plan_day,'日',a.plan_hour,'点')
+          WHEN 1 THEN '立即盘点'
+          ELSE '---' END planType,
+        CASE a.upload_type
+          WHEN 0 THEN '总部和门店都可以上传盘点'
+          WHEN 1 THEN '仅限总部上传盘点单'
+          ELSE '---' END uploadType,
+        CASE a.plan_stock_show
+          WHEN 0 THEN '不显示账面库存'
+          WHEN 1 THEN '显示账面库存'
+          ELSE '---' END stockShow,
+        CASE a.plan_check_type
+          WHEN 0 THEN '有批号盘点'
+          WHEN 2 THEN '无批号盘点'
+          ELSE '---' END checkType,
+        CASE a.plan_check
+          WHEN 0 THEN '校验库存'
+          WHEN 1 THEN '不校验库存'
+          ELSE '---' END planCheck,
+        CASE a.again_type
+          WHEN 0 THEN '只能复盘自己盘点过的商品'
+          ELSE '---' END againType,
+        a.plan_stop planStop,
+        a.plan_delete planDelete
+        <if test="storeId == null">
+          , b.store_id storeId,
+          d.`name` storeName,
+          null clerkName
+        </if>
+        <if test="storeId != null">
+          , null storeId,
+          null storeName,
+          e.`name` clerkName
+        </if>
+      FROM b_pandian_plan a
+        LEFT JOIN b_pandian_plan_executor b ON a.site_id=b.site_id AND a.id=b.plan_id
+        LEFT JOIN b_stores c ON a.site_id=c.site_id AND a.store_id=c.id AND a.type=1
+        <if test="storeId == null">
+          LEFT JOIN b_stores d ON b.site_id=d.site_id AND b.store_id=d.id
+        </if>
+        <if test="storeId != null">
+          LEFT JOIN b_store_adminext e ON b.site_id=e.site_id AND b.store_id=e.store_id AND e.is_del=0 AND (b.clerks='0' OR FIND_IN_SET(e.storeadmin_id,REPLACE(REPLACE(b.clerks,'[',''),']','')))
+        </if>
+      WHERE a.site_id = #{siteId} AND a.id = #{id}
+          <if test="storeId != null">
+            AND b.store_id = #{storeId}
+          </if>
+  </select>
+
+  <select id="planOrderNum" resultType="java.lang.Integer">
+    SELECT COUNT(*)
+    FROM b_pandian_plan a
+	  LEFT JOIN b_pandian_order b ON a.site_id=b.site_id AND a.id=b.plan_id
+	  LEFT JOIN b_pandian_order_status c ON b.site_id=c.site_id AND b.id=c.order_id
+    WHERE a.id = #{id} AND c.`status` IN (200,300,400,500,600)
+  </select>
+
+
+  <resultMap id="StorePandianStatus" type="com.jk51.modules.pandian.Response.PandianUploadStatus">
+    <id property="id" column="id" jdbcType="INTEGER"/>
+    <result property="planId" column="planId" jdbcType="INTEGER"/>
+    <result property="uploadType" column="uploadType" jdbcType="INTEGER"/>
+    <collection property="stores" ofType="com.jk51.modules.pandian.param.StoreOrderStatus">
+      <id property="storeId" column="storeId" jdbcType="INTEGER"/>
+      <result property="storesNumber" column="storesNumber" jdbcType="VARCHAR"/>
+      <result property="status" column="status" jdbcType="INTEGER"/>
+    </collection>
+  </resultMap>
+  <select id="getStorePandianStatus" resultMap="StorePandianStatus">
+      SELECT a.id, a.is_up_site uploadType, a.plan_id planId, b.`status`, c.id storeId, c.stores_number storesNumber
+      FROM b_pandian_order a
+          LEFT JOIN b_pandian_order_status b ON a.site_id=b.site_id AND a.pandian_num=b.pandian_num
+          LEFT JOIN b_stores c ON b.site_id=c.site_id AND b.store_id=c.id AND c.is_del=1
+      WHERE a.site_id = #{siteId} AND a.pandian_num = #{pdNum}
+        <if test="storeId != null">
+          AND b.store_id = #{storeId}
+        </if>
+  </select>
+</mapper>

@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.persistence.mapper.StmpMetaMapper">
+    <resultMap id="MetaMap" type="com.jk51.model.order.SMeta">
+        <id column="site_id" property="siteId"/>
+        <result column="meta_id" property="metaId"/>
+        <result column="meta_type" property="metaType"/>
+        <result column="meta_val" property="metaVal"/>
+        <result column="meta_status" property="metaStatus"/>
+        <result column="meta_key" property="metaKey"/>
+        <result column="meta_desc" property="metaDesc"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="theme_id" property="themeId"/>
+    </resultMap>
+    <select id="findBySiteIdAndMetaId" resultMap="MetaMap">
+        SELECT * FROM b_meta WHERE site_id=#{0} and meta_id=#{1}
+    </select>
+    <select id="findIndexPageBySiteId" resultMap="MetaMap">
+        SELECT * FROM b_meta WHERE site_id=#{0}
+    </select>
+    <select id="selectByMetaTypeAndKey" resultMap="MetaMap">
+        SELECT * FROM b_meta WHERE site_id = #{siteId} AND meta_type = #{metaType} and meta_key = #{metaKey} and meta_status=1
+        <choose>
+            <when test="themeId != null">
+                and theme_id = #{themeId}
+            </when>
+            <!--线上有默认为null，也默认线上 -->
+            <otherwise>
+                and ( theme_id = 0 OR theme_id is NULL )
+            </otherwise>
+        </choose>
+    </select>
+    <select id="selectMetesTypeAndKey" resultMap="MetaMap">
+        SELECT * FROM b_meta WHERE site_id =#{0} AND meta_type = #{1} and meta_key = #{2} and meta_status = 1
+    </select>
+    <select id="selectBysiteIdAndMetaType" resultMap="MetaMap">
+        SELECT * FROM b_meta WHERE site_id =#{0} AND meta_type = #{1} and meta_status = 1
+    </select>
+    <insert id="addMeta" parameterType="com.jk51.model.order.SMeta">
+        insert into b_meta(site_id,meta_type,meta_val,meta_status,meta_key,meta_desc,create_time, theme_id)
+        VALUES(#{siteId},#{metaType},#{metaVal},#{metaStatus},#{metaKey},#{metaDesc},CURRENT_TIMESTAMP(), #{themeId})
+    </insert>
+    <update id="updateMeta" parameterType="com.jk51.model.order.SMeta">
+        update b_meta set meta_val=#{metaVal},update_time=CURRENT_TIMESTAMP() where site_id=#{siteId}  and meta_id=#{metaId}
+    </update>
+    <update id="updateByPrimaryKeys" parameterType="com.jk51.model.order.SMeta">
+        update b_meta
+        <set>
+            <if test="metaType != null">
+                meta_type = #{metaType,jdbcType=VARCHAR},
+            </if>
+            <if test="metaVal != null">
+                meta_val = #{metaVal,jdbcType=VARCHAR},
+            </if>
+            <if test="metaStatus != null">
+                meta_status = #{metaStatus,jdbcType=INTEGER},
+            </if>
+            <if test="metaKey != null">
+                meta_key = #{metaKey,jdbcType=VARCHAR},
+            </if>
+            <if test="metaDesc != null">
+                meta_desc = #{metaDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where meta_id = #{metaId,jdbcType=INTEGER}
+        and site_id = #{siteId,jdbcType=INTEGER}
+
+    </update>
+    <update id="updateMetaByMetaTypeMetaKey" parameterType="com.jk51.model.order.SMeta">
+        update b_meta
+        <trim prefix="set" suffixOverrides=",">
+            <if test="metaVal != null and metaVal!=''">
+                meta_val = #{metaVal,jdbcType=VARCHAR},
+            </if>
+            <if test="metaStatus != null and metaStatus!=''">
+                meta_status = #{metaStatus,jdbcType=INTEGER},
+            </if>
+            <if test="metaDesc != null and metaDesc!=''">
+                meta_desc = #{metaDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="true">
+                update_time=now(),
+            </if>
+        </trim>
+        where site_id=#{siteId} and meta_type = #{metaType} and meta_key = #{metaKey}
+        <choose>
+            <when test="themeId != null">
+                and theme_id = #{themeId}
+            </when>
+            <!--线上有默认为null，也默认线上 -->
+            <otherwise>
+                and ( theme_id = 0 OR theme_id is NULL )
+            </otherwise>
+        </choose>
+
+    </update>
+
+    <update id="delAutoCode">
+        UPDATE b_meta
+        <set>
+            meta_status=2
+        </set>
+        where site_id=#{site_id,jdbcType=INTEGER} AND meta_key=#{store_id,jdbcType=VARCHAR}
+    </update>
+    <insert id="insertSelective" parameterType="com.jk51.model.order.SMeta">
+        insert into b_meta
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="metaId != null">
+                meta_id,
+            </if>
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="metaType != null">
+                meta_type,
+            </if>
+            <if test="metaStatus != null">
+                meta_status,
+            </if>
+            <if test="metaKey != null">
+                meta_key,
+            </if>
+            <if test="metaDesc != null">
+                meta_desc,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="metaVal != null">
+                meta_val,
+            </if>
+            <if test="themeId != null">
+                theme_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="metaId != null">
+                #{meta_id,jdbcType=INTEGER},
+            </if>
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="metaType != null">
+                #{metaType,jdbcType=VARCHAR},
+            </if>
+            <if test="metaStatus != null">
+                #{metaStatus,jdbcType=INTEGER},
+            </if>
+            <if test="metaKey != null">
+                #{metaKey,jdbcType=VARCHAR},
+            </if>
+            <if test="metaDesc != null">
+                #{metaDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="metaVal != null">
+                #{metaVal,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="themeId != null">
+                #{themeId}
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.order.SMeta">
+        update b_meta
+        <set>
+            <if test="meta_type != null">
+                meta_type = #{meta_type,jdbcType=VARCHAR},
+            </if>
+            <if test="meta_status != null">
+                meta_status = #{meta_status,jdbcType=INTEGER},
+            </if>
+            <if test="meta_key != null">
+                meta_key = #{meta_key,jdbcType=VARCHAR},
+            </if>
+            <if test="meta_desc != null">
+                meta_desc = #{meta_desc,jdbcType=VARCHAR},
+            </if>
+            <if test="create_time != null">
+                create_time = #{create_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="update_time != null">
+                update_time = #{update_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="meta_val != null">
+                meta_val = #{meta_val,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where meta_id = #{meta_id,jdbcType=INTEGER}
+        and site_id = #{site_id,jdbcType=INTEGER}
+    </update>
+    <select id="selectBySiteIdAndKey" resultMap="MetaMap">
+        select * from b_meta where site_id=#{site_id,jdbcType=INTEGER} and meta_key=#{meta_key,jdbcType=VARCHAR} and meta_status =1
+    </select>
+    <update id="updateStatus">
+        update b_meta set meta_status=0 where site_id=#{site_id} and meta_type=#{meta_type}
+    </update>
+    <select id="getWxAdvertiseListBySiteId" resultMap="MetaMap">
+        select * from b_shop_${siteId}.b_meta;
+    </select>
+    <select id="getMetasSiteId" resultMap="MetaMap">
+        select * from b_shop_${siteId}.b_meta where meta_type= 'weixin_diy_cat';
+    </select>
+
+</mapper>

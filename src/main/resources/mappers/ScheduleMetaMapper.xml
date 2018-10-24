@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.schedule.mapper.ScheduleMetaMapper">
+
+    <select id="queryAll" resultType="com.jk51.model.schedule.ScheduleMeta" >
+        select id,`name`,bean_name beanName,method,server_addr serverAddr,
+        cron_exp cronExp,param_json paramJSON,`status`,enabled,`desc`,
+        created_at createdAt,updated_at updatedAt
+        from schedule_meta
+        <if test="enabled != null">
+            where enabled = #{enabled}
+        </if>
+    </select>
+
+    <select id="queryOne" resultType="com.jk51.model.schedule.ScheduleMeta">
+        select id,`name`,bean_name beanName,method,server_addr serverAddr,
+        cron_exp cronExp,param_json paramJSON,`status`,enabled,`desc`,
+        created_at createdAt,updated_at updatedAt
+        from schedule_meta where id = #{id}
+    </select>
+
+    <update id="updateStatus" >
+        update schedule_meta set status = #{status} where id = #{id}
+
+    </update>
+
+</mapper>

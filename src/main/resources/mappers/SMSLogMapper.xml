@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.offline.mapper.SMSLogMapper">
+    <insert id="insertLog">
+        insert into b_sms_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="site_id != null">
+                site_id,
+            </if>
+            <if test="ext_id != null">
+                ext_id,
+            </if>
+            <if test="store_id != null">
+                store_id,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="send_msg != null">
+                send_msg,
+            </if>
+            <if test="return_msg != null">
+                return_msg,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="site_id != null">
+                #{site_id},
+            </if>
+            <if test="ext_id != null">
+                #{ext_id},
+            </if>
+            <if test="store_id != null">
+                #{store_id},
+            </if>
+            <if test="type != null">
+                #{type},
+            </if>
+            <if test="send_msg != null">
+                #{send_msg},
+            </if>
+            <if test="return_msg != null">
+                #{return_msg},
+            </if>
+        </trim>
+    </insert>
+</mapper>

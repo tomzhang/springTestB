@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.persistence.mapper.LoginLogMapper" >
+
+    <insert id="recordLog">
+        insert into b_login_log (site_id,mobile,buyer_id,invite_code,ip) values
+            (#{siteId},#{mobile},#{buyerId},#{inviteCode},#{ip})
+    </insert>
+    <insert id="recordLoginLog2">
+        insert into b_member_login_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="member_id != null">
+                member_id,
+            </if>
+            <if test="open_id != null">
+                open_id,
+            </if>
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="token != null">
+                token,
+            </if>
+            <if test="login_source != null">
+                login_source,
+            </if>
+            <if test="login_status != null">
+                login_status,
+            </if>
+            <if test="ali_user_id != null">
+                ali_user_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId},
+            </if>
+            <if test="member_id != null">
+                #{member_id},
+            </if>
+            <if test="open_id != null">
+                #{open_id},
+            </if>
+            <if test="mobile != null">
+                #{mobile},
+            </if>
+            <if test="token != null">
+                #{token},
+            </if>
+            <if test="login_source != null">
+                #{login_source},
+            </if>
+            <if test="login_status != null">
+                #{login_status},
+            </if>
+            <if test="ali_user_id != null">
+                #{ali_user_id},
+            </if>
+        </trim>
+    </insert>
+    <select id="getTokenByMemberId" resultType="String" parameterType="map">
+        SELECT token
+        FROM b_member_login_log
+        WHERE site_id=#{siteId}
+        AND member_id=#{memberId}
+        <if test="source == 200">
+            AND open_id=#{openId}
+            AND login_source = 200
+        </if>
+        <if test="source == 300">
+            AND ali_user_id=#{openId}
+            AND login_source = 300
+        </if>
+        AND login_status=0
+        ORDER BY create_time DESC
+        LIMIT 1
+    </select>
+</mapper>

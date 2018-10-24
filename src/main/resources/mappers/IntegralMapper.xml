@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.integral.mapper.IntegralMapper">
+
+    <select id="query" parameterType="Map" resultType="Map" useCache="false">
+        select * from b_integral where site_id = #{siteId}
+        <if test="useCase !=null and useCase !='' ">
+            and use_case=#{useCase}
+        </if>
+    </select>
+
+    <insert id="init" parameterType="Map">
+        insert into b_integral (site_id,title,value,use_case,type,integral_desc)
+          values (#{siteId},#{title},#{value},#{useCase},#{type},#{integralDesc})
+    </insert>
+
+    <update id="updateRule" parameterType="Map">
+        update b_integral
+        <set>
+            <if test="subtractType!=null and subtractType !=''">subtract_type=#{subtractType},</if>
+            <if test="subtractMax!=null and subtractMax !=''">subtract_max=#{subtractMax},</if>
+            <if test="addType!=null and addType !=''">add_type=#{addType},</if>
+            <if test="addMax!=null and addMax !=''">add_max=#{addMax},</if>
+            value=#{value},status=#{status},integral_desc=#{integralDesc},
+        </set>
+        where site_id =#{siteId} and id = #{id}
+    </update>
+
+    <insert id="logAdd" parameterType="Map">
+       insert into b_integrallog (site_id,member_id,buyer_nick,integral_desc,integral_add,integral_overplus,mark,integral_diff,type)
+            values (#{siteId},#{buyerId},#{buyerNick},#{integralDesc},#{integralAdd},#{integralOverplus},#{mark},#{integralDiff},#{type})
+    </insert>
+
+    <select id="logQuery" parameterType="Map" resultType="Map" useCache="false">
+        select * from b_integrallog where site_id = #{siteId}
+        <if test="buyerId !=null and buyerId !='' ">
+            and member_id = #{buyerId}
+        </if>
+        <if test="integralDesc !=null and integralDesc !='' ">
+            and integral_desc = #{integralDesc}
+        </if>
+        <if test="createTime !=null and createTime !='' ">
+            and to_days(now())-to_days(create_time) = 0
+        </if>
+        <if test="getFlag !=null and getFlag !='' ">
+            and integral_add !=0
+        </if>
+        <if test="diffFlag !=null and diffFlag !='' ">
+            and integral_diff !=0
+        </if>
+        order by create_time desc
+    </select>
+
+    <select id="getOverPlus" parameterType="Map" resultType="Map" useCache="false">
+        select integrate,total_get_integrate,total_consume_integrate from b_member where site_id = #{siteId} and buyer_id = #{buyerId} limit 1
+    </select>
+
+    <select id="selectMemberData" parameterType="java.util.Map" resultType="java.util.Map">
+       select integrate,total_get_integrate totalGetIntegrate,total_consume_integrate totalConsumeIntegrate,buyer_nick
+        from b_member where site_id = #{siteId} and buyer_id = #{buyerId}
+    </select>
+
+    <update id="updateMemberData" parameterType="Map">
+        update b_member set integrate= #{integrate}
+        <if test="totalGetIntegrate !=null and totalGetIntegrate !='' ">
+            ,total_get_integrate = #{totalGetIntegrate}
+        </if>
+        <if test="totalConsumeIntegrate !=null and totalConsumeIntegrate !='' ">
+            ,total_consume_integrate = #{totalConsumeIntegrate}
+        </if>
+        where site_id = #{siteId} and buyer_id = #{buyerId}
+    </update>
+
+    <update id="updateMemberInfoData" parameterType="Map">
+        update b_member_info set integrate= #{integrate}
+        <if test="totalConsumeIntegrate !=null and totalConsumeIntegrate !='' ">
+            ,integrate_used = #{totalConsumeIntegrate}
+        </if>
+        where site_id = #{siteId} and member_id = #{buyerId}
+    </update>
+
+    <select id="queryIntegralProportion" parameterType="Map" resultType="BigDecimal" useCache="false">
+        select integral_proportion from yb_merchant where merchant_id = #{siteId}
+    </select>
+
+    <!--签到 -->
+    <select id="checkinYesterday" parameterType="Map" resultType="Map" useCache="false">
+        select  checkin_num,checkin_sum,checkin_lasttime from b_member_info where site_id = #{siteId} and member_id =#{buyerId}
+            and to_days(now())-to_days(checkin_lasttime)=1
+    </select>
+
+    <select id="checkinToday" parameterType="Map" resultType="Map" useCache="false">
+        select  checkin_num,checkin_sum,checkin_lasttime from b_member_info where site_id = #{siteId} and member_id =#{buyerId}
+        and to_days(now())-to_days(checkin_lasttime)=0
+    </select>
+
+    <update id="updateChickenData" parameterType="Map">
+        update b_member_info set checkin_num = #{checkinNum},checkin_sum = checkin_sum+1 ,checkin_lasttime=CURRENT_TIMESTAMP where site_id = #{siteId} and member_id = #{buyerId}
+    </update>
+
+    <!-- 积分抵现金-->
+    <select id="queryDiffSum" resultType="BigInteger" parameterType="Map" useCache="false">
+       select sum(integral_diff) as diffSum from b_integrallog where site_id = #{siteId} and member_id = #{buyerId} and date(create_time) = curdate()
+    </select>
+
+    <select id="queryAddSum" resultType="BigInteger" parameterType="Map" useCache="false">
+        select sum(integral_add) as addSum from b_integrallog where site_id = #{siteId} and member_id = #{buyerId} and date(create_time) = curdate()
+    </select>
+
+    <select id="queryMemberi" resultType="Map" parameterType="Map" useCache="false">
+        select site_id,mobile,total_get_integrate,total_consume_integrate,integrate,buyer_id from b_member where
+        site_id = #{siteId}
+        <if test="mobile !=null and mobile !='' ">
+            and mobile like concat("%",#{mobile},"%")
+        </if>
+        ORDER by create_time DESC
+    </select>
+
+    <select id="queryRules" resultType="Map" parameterType="Map" useCache="false">
+        select * from b_integral where site_id = #{siteId}
+        <if test="id !=null and id !='' ">
+            and id =#{id}
+        </if>
+        and title!='积分抵现金'
+    </select>
+
+    <insert id="insertList" parameterType="java.util.List">
+        insert into b_integrallog
+        (site_id,member_id,buyer_nick,integral_desc,integral_add,integral_diff,integral_overplus,mark,type)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.siteId},#{item.memberId},#{item.buyerNick},#{item.integralDesc},#{item.integralAdd},#{item.integralDiff},#{item.integralOverplus},#{item.mark},#{item.type})
+        </foreach>
+    </insert>
+
+    <update id="setProportion" parameterType="Map">
+        update yb_merchant set integral_proportion = #{integralProportion} where merchant_id=#{siteId}
+    </update>
+
+    <!-- 根据查询条件查询积分明细记录-->
+    <select id="queryIntegralList" resultType="Map" parameterType="Map" useCache="false">
+        select site_id,id,member_id,buyer_nick,integral_desc,integral_add, integral_diff, integral_overplus, mark, create_time, update_time from b_integrallog where
+            site_id = #{siteId}
+        <if test="buyerId !=null and buyerId !='' ">
+            and member_id = #{buyerId}
+        </if>
+        <if test="integralDesc !=null and integralDesc !='' ">
+            and integral_desc = #{integralDesc}
+        </if>
+        <if test="createTime !=null and createTime !='' ">
+            and to_days(now())-to_days(create_time) = 0
+        </if>
+        <if test="getFlag !=null and getFlag !='' ">
+            and integral_add !=0
+        </if>
+        <if test="diffFlag !=null and diffFlag !='' ">
+            and integral_diff !=0
+        </if>
+        ORDER by create_time DESC
+    </select>
+
+    <select id="rules" resultType="com.jk51.model.integral.IntegralRule">
+        select * from b_integral_rule where site_id=#{siteId}
+        <if test="status != null and status != ''">
+            and status = #{status}
+        </if>
+        <if test="type != null and type != ''">
+            and type = #{type}
+        </if>
+    </select>
+
+    <select id="calcIntegral" resultType="int">
+        SELECT sum(s) FROM (
+            <foreach collection="goodsList" item="goods" separator="UNION ALL">
+                SELECT intrgral_exchanges * #{goods.goodsNum} as s FROM b_integral_goods WHERE site_id = #{siteId} and goods_id = #{goods.goodsId}
+            </foreach>
+        ) as t
+    </select>
+
+
+</mapper>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.persistence.mapper.AskMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.merchant.Ask">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="questions" jdbcType="VARCHAR" property="questions"/>
+        <result column="answers" jdbcType="VARCHAR" property="answers"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createtime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updatetime"/>
+        <result column="is_del" jdbcType="INTEGER" property="isDel"/>
+    </resultMap>
+
+    <insert id="insertAsk" parameterType="com.jk51.model.merchant.Ask">
+        insert into b_ask
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="id != null">
+                id,
+            </if>
+            <if test="questions != null">
+                questions,
+            </if>
+            <if test="answers != null">
+                answers
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="questions != null">
+                #{questions,jdbcType=VARCHAR},
+            </if>
+            <if test="answers != null">
+                #{answers,jdbcType=VARCHAR}
+            </if>
+        </trim>
+    </insert>
+    <select id="getAskAll" resultType="com.jk51.model.merchant.Ask" resultMap="BaseResultMap">
+        select * from b_ask
+        <where>
+            site_id=#{siteId}
+            AND is_del=0
+        </where>
+        ORDER BY update_time desc
+    </select>
+    <select id="getAskById" resultType="com.jk51.model.merchant.Ask" resultMap="BaseResultMap">
+        select * from b_ask where
+        site_id=#{siteId}
+        <if test="id!=null">
+            and id=#{id}
+        </if>
+        AND is_del=0
+    </select>
+    <update id="updateAsk" parameterType="com.jk51.model.merchant.Ask">
+        update b_ask
+        <set>
+            <if test="questions != null">
+                questions = #{questions,jdbcType=VARCHAR},
+            </if>
+            <if test="answers != null">
+                answers = #{answers,jdbcType=VARCHAR}
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER} and site_id=#{siteId,jdbcType=INTEGER}
+    </update>
+    <update id="deleteAsk" parameterType="com.jk51.model.merchant.Ask">
+        update b_ask
+        SET is_del = 1
+        where id = #{id,jdbcType=INTEGER} and site_id=#{siteId,jdbcType=INTEGER}
+    </update>
+    <select id="getAskByName" resultType="com.jk51.model.merchant.Ask" resultMap="BaseResultMap">
+        select * from b_ask where
+        site_id=#{siteId}
+        <if test="dimName!=null">
+            and (answers like CONCAT('%',#{dimName},'%') OR questions like CONCAT('%',#{dimName},'%'))
+        </if>
+        AND is_del=0
+        ORDER BY update_time desc
+    </select>
+</mapper>

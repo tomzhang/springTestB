@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.coupon.mapper.CouponLogMapper">
+    <insert id="insertLog"  parameterType="com.jk51.model.coupon.CouponLog">
+        INSERT INTO b_coupon_export_log (
+        `site_id`, `rule_id`,  `start_coupon_no`,`end_coupon_no`,`create_time`,`update_time`
+        ) VALUE (
+        #{siteId},
+        #{ruleId},
+        #{startCouponNo},
+        #{endCouponNo},
+        CURRENT_TIMESTAMP(),
+        CURRENT_TIMESTAMP()
+        )
+    </insert>
+
+    <update id="updateLog"  parameterType="com.jk51.model.coupon.CouponLog">
+       UPDATE b_coupon_export_log set update_time=CURRENT_TIMESTAMP()
+        where
+        site_id=#{siteId} and
+        rule_id=#{ruleId} and
+        start_coupon_no=#{startCouponNo} and
+        end_coupon_no=#{endCouponNo};
+
+    </update>
+    <select id="queryLog" resultType="com.jk51.model.coupon.CouponLog">
+        SELECT
+           log.site_id,
+           log.id,
+           log.rule_id,
+           log.start_coupon_no,
+           log.end_coupon_no,
+           log.is_export,
+           log.create_time,
+           log.update_time
+        from b_coupon_export_log log
+        where
+        site_id=#{siteId} and
+        rule_id=#{ruleId} and
+        start_coupon_no=#{startCouponNo} and
+        end_coupon_no=#{endCouponNo}
+    </select>
+
+</mapper>

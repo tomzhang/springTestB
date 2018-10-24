@@ -1,0 +1,525 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.merchant.mapper.MerchantExtMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.merchant.MerchantExt">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="merchant_id" jdbcType="INTEGER" property="merchant_id"/>
+        <result column="client_id" jdbcType="VARCHAR" property="client_id"/>
+        <result column="client_secret" jdbcType="VARCHAR" property="client_secret"/>
+        <result column="company_qualurl" jdbcType="VARCHAR" property="company_qualurl"/>
+        <result column="tax_certificate" jdbcType="VARCHAR" property="tax_certificate"/>
+        <result column="organization_codecert" jdbcType="VARCHAR" property="organization_codecert"/>
+        <result column="gsp_approve" jdbcType="VARCHAR" property="gsp_approve"/>
+        <result column="drug_cert" jdbcType="VARCHAR" property="drug_cert"/>
+        <result column="medical_cert" jdbcType="VARCHAR" property="medical_cert"/>
+        <result column="medicalequi_cert" jdbcType="VARCHAR" property="medicalequi_cert"/>
+        <result column="fdcirculation_cert" jdbcType="VARCHAR" property="fdcirculation_cert"/>
+        <result column="inter_drug_inform_cert" jdbcType="VARCHAR" property="inter_drug_inform_cert"/>
+        <result column="inter_drug_trad_cert" jdbcType="VARCHAR" property="inter_drug_trad_cert"/>
+        <result column="legal_person" jdbcType="VARCHAR" property="legal_person"/>
+        <result column="recipe_frontend_setting" jdbcType="VARCHAR" property="recipe_frontend_setting"/>
+        <result column="recipe_backend_setting" jdbcType="VARCHAR" property="recipe_backend_setting"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="wei_show_invite_code" jdbcType="INTEGER" property="wei_show_invite_code"/>
+        <result column="compu_show_invite_code" jdbcType="INTEGER" property="compu_show_invite_code"/>
+        <result column="trade_cert_number" jdbcType="VARCHAR" property="trade_cert_number"/>
+        <result column="style_list" jdbcType="VARCHAR" property="style_list"/>
+        <result column="active_style" jdbcType="VARCHAR" property="active_style"/>
+        <result column="icp_position" jdbcType="INTEGER" property="icp_position"/>
+        <result column="order_assign_type" jdbcType="INTEGER" property="order_assign_type"/>
+        <result column="order_pc_alert" jdbcType="TINYINT" property="order_pc_alert"/>
+        <result column="order_voice_alert" jdbcType="TINYINT" property="order_voice_alert"/>
+        <result column="order_phone_lert" jdbcType="TINYINT" property="order_phone_lert"/>
+        <result column="order_lert" jdbcType="VARCHAR" property="order_lert"/>
+        <result column="order_remind_phones" jdbcType="VARCHAR" property="order_remind_phones"/>
+        <result column="balance_sheet_date" jdbcType="TINYINT" property="balance_sheet_date"/>
+        <result column="shopwx_serverurl" jdbcType="VARCHAR" property="shopwx_serverurl"/>
+        <result column="shop_ip" jdbcType="VARCHAR" property="shop_ip"/>
+        <result column="store_url" jdbcType="VARCHAR" property="store_url"/>
+        <result column="wx_sub_mch_id" jdbcType="CHAR" property="wx_sub_mch_id"/>
+        <result column="allow_refund" jdbcType="BIT" property="allow_refund"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="create_time"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="update_time"/>
+        <result column="system_backup" jdbcType="INTEGER" property="system_backup"/>
+        <result column="wx_appid" jdbcType="VARCHAR" property="wx_appid"/>
+        <result column="wx_secret" jdbcType="VARCHAR" property="wx_secret"/>
+        <result column="alipay_account" jdbcType="VARCHAR" property="alipay_account"/>
+        <result column="wx_original_id" jdbcType="VARCHAR" property="wx_original_id"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, merchant_id, client_id, client_secret, company_qualurl, tax_certificate, organization_codecert, 
+    gsp_approve, drug_cert, medical_cert, medicalequi_cert, fdcirculation_cert, inter_drug_inform_cert, 
+    inter_drug_trad_cert, legal_person, recipe_frontend_setting, recipe_backend_setting, 
+    remark, wei_show_invite_code, compu_show_invite_code, trade_cert_number, style_list, 
+    active_style, icp_position, order_assign_type, order_pc_alert, order_voice_alert, 
+    order_phone_lert,order_lert, order_remind_phones, balance_sheet_date, shopwx_serverurl, shop_ip,
+    store_url, wx_sub_mch_id, allow_refund, create_time, update_time, system_backup,wx_appid,wx_appid,wx_secret,alipay_account,wx_original_id
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from yb_merchant_ext
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="selectByMerchantId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from yb_merchant_ext
+        where merchant_id=#{merchant_id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from yb_merchant_ext
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.jk51.model.merchant.MerchantExt">
+    insert into yb_merchant_ext (id, merchant_id, client_id, 
+      client_secret, company_qualurl, tax_certificate, 
+      organization_codecert, gsp_approve, drug_cert, 
+      medical_cert, medicalequi_cert, fdcirculation_cert, 
+      inter_drug_inform_cert, inter_drug_trad_cert, 
+      legal_person, recipe_frontend_setting, 
+      recipe_backend_setting, remark, wei_show_invite_code, 
+      compu_show_invite_code, trade_cert_number, 
+      style_list, active_style, icp_position, 
+      order_assign_type, order_pc_alert, order_voice_alert, 
+      order_phone_lert, order_remind_phones, balance_sheet_date, 
+      shopwx_serverurl, shop_ip, store_url, 
+      wx_sub_mch_id, allow_refund, create_time, 
+      update_time, system_backup)
+    values (#{id,jdbcType=INTEGER}, #{merchant_id,jdbcType=INTEGER}, #{client_id,jdbcType=VARCHAR}, 
+      #{client_secret,jdbcType=VARCHAR}, #{company_qualurl,jdbcType=VARCHAR}, #{tax_certificate,jdbcType=VARCHAR}, 
+      #{organization_codecert,jdbcType=VARCHAR}, #{gsp_approve,jdbcType=VARCHAR}, #{drug_cert,jdbcType=VARCHAR}, 
+      #{medical_cert,jdbcType=VARCHAR}, #{medicalequi_cert,jdbcType=VARCHAR}, #{fdcirculation_cert,jdbcType=VARCHAR}, 
+      #{inter_drug_inform_cert,jdbcType=VARCHAR}, #{inter_drug_trad_cert,jdbcType=VARCHAR}, 
+      #{legal_person,jdbcType=VARCHAR}, #{recipe_frontend_setting,jdbcType=VARCHAR}, 
+      #{recipe_backend_setting,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{wei_show_invite_code,jdbcType=INTEGER}, 
+      #{compu_show_invite_code,jdbcType=INTEGER}, #{trade_cert_number,jdbcType=VARCHAR}, 
+      #{style_list,jdbcType=VARCHAR}, #{active_style,jdbcType=VARCHAR}, #{icp_position,jdbcType=INTEGER}, 
+      #{order_assign_type,jdbcType=INTEGER}, #{order_pc_alert,jdbcType=BIT}, #{order_voice_alert,jdbcType=BIT}, 
+      #{order_phone_lert,jdbcType=BIT}, #{order_remind_phones,jdbcType=VARCHAR}, #{balance_sheet_date,jdbcType=TINYINT}, 
+      #{shopwx_serverurl,jdbcType=VARCHAR}, #{shop_ip,jdbcType=VARCHAR}, #{store_url,jdbcType=VARCHAR}, 
+      #{wx_sub_mch_id,jdbcType=CHAR}, #{allow_refund,jdbcType=BIT}, #{create_time,jdbcType=TIMESTAMP}, 
+      #{update_time,jdbcType=TIMESTAMP}, #{system_backup,jdbcType=INTEGER})
+  </insert>
+    <insert id="insertSelective" parameterType="com.jk51.model.merchant.MerchantExt">
+        insert into yb_merchant_ext
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="merchant_id != null">
+                merchant_id,
+            </if>
+            <if test="client_id != null">
+                client_id,
+            </if>
+            <if test="client_secret != null">
+                client_secret,
+            </if>
+            <if test="company_qualurl != null">
+                company_qualurl,
+            </if>
+            <if test="tax_certificate != null">
+                tax_certificate,
+            </if>
+            <if test="organization_codecert != null">
+                organization_codecert,
+            </if>
+            <if test="gsp_approve != null">
+                gsp_approve,
+            </if>
+            <if test="drug_cert != null">
+                drug_cert,
+            </if>
+            <if test="medical_cert != null">
+                medical_cert,
+            </if>
+            <if test="medicalequi_cert != null">
+                medicalequi_cert,
+            </if>
+            <if test="fdcirculation_cert != null">
+                fdcirculation_cert,
+            </if>
+            <if test="inter_drug_inform_cert != null">
+                inter_drug_inform_cert,
+            </if>
+            <if test="inter_drug_trad_cert != null">
+                inter_drug_trad_cert,
+            </if>
+            <if test="legal_person != null">
+                legal_person,
+            </if>
+            <if test="recipe_frontend_setting != null">
+                recipe_frontend_setting,
+            </if>
+            <if test="recipe_backend_setting != null">
+                recipe_backend_setting,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="wei_show_invite_code != null">
+                wei_show_invite_code,
+            </if>
+            <if test="compu_show_invite_code != null">
+                compu_show_invite_code,
+            </if>
+            <if test="trade_cert_number != null">
+                trade_cert_number,
+            </if>
+            <if test="style_list != null">
+                style_list,
+            </if>
+            <if test="active_style != null">
+                active_style,
+            </if>
+            <if test="icp_position != null">
+                icp_position,
+            </if>
+            <if test="order_assign_type != null">
+                order_assign_type,
+            </if>
+            <if test="order_pc_alert != null">
+                order_pc_alert,
+            </if>
+            <if test="order_voice_alert != null">
+                order_voice_alert,
+            </if>
+            <if test="order_phone_lert != null">
+                order_phone_lert,
+            </if>
+            <if test="order_remind_phones != null">
+                order_remind_phones,
+            </if>
+            <if test="balance_sheet_date != null">
+                balance_sheet_date,
+            </if>
+            <if test="shopwx_serverurl != null">
+                shopwx_serverurl,
+            </if>
+            <if test="shop_ip != null">
+                shop_ip,
+            </if>
+            <if test="store_url != null">
+                store_url,
+            </if>
+            <if test="wx_sub_mch_id != null">
+                wx_sub_mch_id,
+            </if>
+            <if test="allow_refund != null">
+                allow_refund,
+            </if>
+            <if test="create_time != null">
+                create_time,
+            </if>
+            <if test="update_time != null">
+                update_time,
+            </if>
+            <if test="system_backup != null">
+                system_backup,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="merchant_id != null">
+                #{merchant_id,jdbcType=INTEGER},
+            </if>
+            <if test="client_id != null">
+                #{client_id,jdbcType=VARCHAR},
+            </if>
+            <if test="client_secret != null">
+                #{client_secret,jdbcType=VARCHAR},
+            </if>
+            <if test="company_qualurl != null">
+                #{company_qualurl,jdbcType=VARCHAR},
+            </if>
+            <if test="tax_certificate != null">
+                #{tax_certificate,jdbcType=VARCHAR},
+            </if>
+            <if test="organization_codecert != null">
+                #{organization_codecert,jdbcType=VARCHAR},
+            </if>
+            <if test="gsp_approve != null">
+                #{gsp_approve,jdbcType=VARCHAR},
+            </if>
+            <if test="drug_cert != null">
+                #{drug_cert,jdbcType=VARCHAR},
+            </if>
+            <if test="medical_cert != null">
+                #{medical_cert,jdbcType=VARCHAR},
+            </if>
+            <if test="medicalequi_cert != null">
+                #{medicalequi_cert,jdbcType=VARCHAR},
+            </if>
+            <if test="fdcirculation_cert != null">
+                #{fdcirculation_cert,jdbcType=VARCHAR},
+            </if>
+            <if test="inter_drug_inform_cert != null">
+                #{inter_drug_inform_cert,jdbcType=VARCHAR},
+            </if>
+            <if test="inter_drug_trad_cert != null">
+                #{inter_drug_trad_cert,jdbcType=VARCHAR},
+            </if>
+            <if test="legal_person != null">
+                #{legal_person,jdbcType=VARCHAR},
+            </if>
+            <if test="recipe_frontend_setting != null">
+                #{recipe_frontend_setting,jdbcType=VARCHAR},
+            </if>
+            <if test="recipe_backend_setting != null">
+                #{recipe_backend_setting,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="wei_show_invite_code != null">
+                #{wei_show_invite_code,jdbcType=INTEGER},
+            </if>
+            <if test="compu_show_invite_code != null">
+                #{compu_show_invite_code,jdbcType=INTEGER},
+            </if>
+            <if test="trade_cert_number != null">
+                #{trade_cert_number,jdbcType=VARCHAR},
+            </if>
+            <if test="style_list != null">
+                #{style_list,jdbcType=VARCHAR},
+            </if>
+            <if test="active_style != null">
+                #{active_style,jdbcType=VARCHAR},
+            </if>
+            <if test="icp_position != null">
+                #{icp_position,jdbcType=INTEGER},
+            </if>
+            <if test="order_assign_type != null">
+                #{order_assign_type,jdbcType=INTEGER},
+            </if>
+            <if test="order_pc_alert != null">
+                #{order_pc_alert,jdbcType=BIT},
+            </if>
+            <if test="order_voice_alert != null">
+                #{order_voice_alert,jdbcType=BIT},
+            </if>
+            <if test="order_phone_lert != null">
+                #{order_phone_lert,jdbcType=BIT},
+            </if>
+            <if test="order_remind_phones != null">
+                #{order_remind_phones,jdbcType=VARCHAR},
+            </if>
+            <if test="balance_sheet_date != null">
+                #{balance_sheet_date,jdbcType=TINYINT},
+            </if>
+            <if test="shopwx_serverurl != null">
+                #{shopwx_serverurl,jdbcType=VARCHAR},
+            </if>
+            <if test="shop_ip != null">
+                #{shop_ip,jdbcType=VARCHAR},
+            </if>
+            <if test="store_url != null">
+                #{store_url,jdbcType=VARCHAR},
+            </if>
+            <if test="wx_sub_mch_id != null">
+                #{wx_sub_mch_id,jdbcType=CHAR},
+            </if>
+            <if test="allow_refund != null">
+                #{allow_refund,jdbcType=BIT},
+            </if>
+            <if test="create_time != null">
+                #{create_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="update_time != null">
+                #{update_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="system_backup != null">
+                #{system_backup,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.merchant.MerchantExt">
+        update yb_merchant_ext
+        <set>
+            <if test="merchant_id != null">
+                merchant_id = #{merchant_id,jdbcType=INTEGER},
+            </if>
+            <if test="client_id != null">
+                client_id = #{client_id,jdbcType=VARCHAR},
+            </if>
+            <if test="client_secret != null">
+                client_secret = #{client_secret,jdbcType=VARCHAR},
+            </if>
+            <if test="company_qualurl != null">
+                company_qualurl = #{company_qualurl,jdbcType=VARCHAR},
+            </if>
+            <if test="tax_certificate != null">
+                tax_certificate = #{tax_certificate,jdbcType=VARCHAR},
+            </if>
+            <if test="organization_codecert != null">
+                organization_codecert = #{organization_codecert,jdbcType=VARCHAR},
+            </if>
+            <if test="gsp_approve != null">
+                gsp_approve = #{gsp_approve,jdbcType=VARCHAR},
+            </if>
+            <if test="drug_cert != null">
+                drug_cert = #{drug_cert,jdbcType=VARCHAR},
+            </if>
+            <if test="medical_cert != null">
+                medical_cert = #{medical_cert,jdbcType=VARCHAR},
+            </if>
+            <if test="medicalequi_cert != null">
+                medicalequi_cert = #{medicalequi_cert,jdbcType=VARCHAR},
+            </if>
+            <if test="fdcirculation_cert != null">
+                fdcirculation_cert = #{fdcirculation_cert,jdbcType=VARCHAR},
+            </if>
+            <if test="inter_drug_inform_cert != null">
+                inter_drug_inform_cert = #{inter_drug_inform_cert,jdbcType=VARCHAR},
+            </if>
+            <if test="inter_drug_trad_cert != null">
+                inter_drug_trad_cert = #{inter_drug_trad_cert,jdbcType=VARCHAR},
+            </if>
+            <if test="legal_person != null">
+                legal_person = #{legal_person,jdbcType=VARCHAR},
+            </if>
+            <if test="recipe_frontend_setting != null">
+                recipe_frontend_setting = #{recipe_frontend_setting,jdbcType=VARCHAR},
+            </if>
+            <if test="recipe_backend_setting != null">
+                recipe_backend_setting = #{recipe_backend_setting,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="wei_show_invite_code != null">
+                wei_show_invite_code = #{wei_show_invite_code,jdbcType=INTEGER},
+            </if>
+            <if test="compu_show_invite_code != null">
+                compu_show_invite_code = #{compu_show_invite_code,jdbcType=INTEGER},
+            </if>
+            <if test="trade_cert_number != null">
+                trade_cert_number = #{trade_cert_number,jdbcType=VARCHAR},
+            </if>
+            <if test="style_list != null">
+                style_list = #{style_list,jdbcType=VARCHAR},
+            </if>
+            <if test="active_style != null">
+                active_style = #{active_style,jdbcType=VARCHAR},
+            </if>
+            <if test="icp_position != null">
+                icp_position = #{icp_position,jdbcType=INTEGER},
+            </if>
+            <if test="order_assign_type != null">
+                order_assign_type = #{order_assign_type,jdbcType=INTEGER},
+            </if>
+            <if test="order_pc_alert != null">
+                order_pc_alert = #{order_pc_alert,jdbcType=BIT},
+            </if>
+            <if test="order_voice_alert != null">
+                order_voice_alert = #{order_voice_alert,jdbcType=BIT},
+            </if>
+            <if test="order_phone_lert != null">
+                order_phone_lert = #{order_phone_lert,jdbcType=BIT},
+            </if>
+            <if test="order_remind_phones != null">
+                order_remind_phones = #{order_remind_phones,jdbcType=VARCHAR},
+            </if>
+            <if test="balance_sheet_date != null">
+                balance_sheet_date = #{balance_sheet_date,jdbcType=TINYINT},
+            </if>
+            <if test="shopwx_serverurl != null">
+                shopwx_serverurl = #{shopwx_serverurl,jdbcType=VARCHAR},
+            </if>
+            <if test="shop_ip != null">
+                shop_ip = #{shop_ip,jdbcType=VARCHAR},
+            </if>
+            <if test="store_url != null">
+                store_url = #{store_url,jdbcType=VARCHAR},
+            </if>
+            <if test="wx_sub_mch_id != null">
+                wx_sub_mch_id = #{wx_sub_mch_id,jdbcType=CHAR},
+            </if>
+            <if test="allow_refund != null">
+                allow_refund = #{allow_refund,jdbcType=BIT},
+            </if>
+            <if test="create_time != null">
+                create_time = #{create_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="update_time != null">
+                update_time = #{update_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="system_backup != null">
+                system_backup = #{system_backup,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.jk51.model.merchant.MerchantExt">
+    update yb_merchant_ext
+    set merchant_id = #{merchant_id,jdbcType=INTEGER},
+      client_id = #{client_id,jdbcType=VARCHAR},
+      client_secret = #{client_secret,jdbcType=VARCHAR},
+      company_qualurl = #{company_qualurl,jdbcType=VARCHAR},
+      tax_certificate = #{tax_certificate,jdbcType=VARCHAR},
+      organization_codecert = #{organization_codecert,jdbcType=VARCHAR},
+      gsp_approve = #{gsp_approve,jdbcType=VARCHAR},
+      drug_cert = #{drug_cert,jdbcType=VARCHAR},
+      medical_cert = #{medical_cert,jdbcType=VARCHAR},
+      medicalequi_cert = #{medicalequi_cert,jdbcType=VARCHAR},
+      fdcirculation_cert = #{fdcirculation_cert,jdbcType=VARCHAR},
+      inter_drug_inform_cert = #{inter_drug_inform_cert,jdbcType=VARCHAR},
+      inter_drug_trad_cert = #{inter_drug_trad_cert,jdbcType=VARCHAR},
+      legal_person = #{legal_person,jdbcType=VARCHAR},
+      recipe_frontend_setting = #{recipe_frontend_setting,jdbcType=VARCHAR},
+      recipe_backend_setting = #{recipe_backend_setting,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      wei_show_invite_code = #{wei_show_invite_code,jdbcType=INTEGER},
+      compu_show_invite_code = #{compu_show_invite_code,jdbcType=INTEGER},
+      trade_cert_number = #{trade_cert_number,jdbcType=VARCHAR},
+      style_list = #{style_list,jdbcType=VARCHAR},
+      active_style = #{active_style,jdbcType=VARCHAR},
+      icp_position = #{icp_position,jdbcType=INTEGER},
+      order_assign_type = #{order_assign_type,jdbcType=INTEGER},
+      order_pc_alert = #{order_pc_alert,jdbcType=BIT},
+      order_voice_alert = #{order_voice_alert,jdbcType=BIT},
+      order_phone_lert = #{order_phone_lert,jdbcType=BIT},
+      order_remind_phones = #{order_remind_phones,jdbcType=VARCHAR},
+      balance_sheet_date = #{balance_sheet_date,jdbcType=TINYINT},
+      shopwx_serverurl = #{shopwx_serverurl,jdbcType=VARCHAR},
+      shop_ip = #{shop_ip,jdbcType=VARCHAR},
+      store_url = #{store_url,jdbcType=VARCHAR},
+      wx_sub_mch_id = #{wx_sub_mch_id,jdbcType=CHAR},
+      allow_refund = #{allow_refund,jdbcType=BIT},
+      create_time = #{create_time,jdbcType=TIMESTAMP},
+      update_time = #{update_time,jdbcType=TIMESTAMP},
+      system_backup = #{system_backup,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+    <update id="updateByMerchantId" parameterType="com.jk51.model.merchant.MerchantExt">
+    update yb_merchant_ext
+    set order_pc_alert = #{order_pc_alert,jdbcType=TINYINT},
+    order_voice_alert = #{order_voice_alert,jdbcType=TINYINT},
+    order_phone_lert = #{order_phone_lert,jdbcType=TINYINT},
+    order_lert=#{order_lert,jdbcType=VARCHAR},
+    order_remind_phones = #{order_remind_phones,jdbcType=VARCHAR}
+    where merchant_id = #{merchant_id,jdbcType=INTEGER}
+  </update>
+    <update id="updateInviteCode">
+    update yb_merchant_ext set wei_show_invite_code=#{wei_show_invite_code},compu_show_invite_code=#{compu_show_invite_code}
+    where merchant_id=#{merchant_id}
+  </update>
+    <update id="setOrderAssignType">
+        update yb_merchant_ext SET order_assign_type=#{0} where merchant_id=#{1}
+    </update>
+
+    <update id="integralShopManger">
+        update yb_merchant_ext SET integral_shop=#{isOpen} where merchant_id=#{siteId}
+    </update>
+
+    <select id="getIntegralShopStatus" parameterType="java.lang.Integer" resultType="map">
+        SELECT integral_shop as status FROM yb_merchant_ext where merchant_id=#{siteId}
+    </select>
+    <select id="selectErpGoodsPriceQu" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select has_erp_price from yb_merchant_ext where merchant_id=#{merchant_id}
+    </select>
+</mapper>

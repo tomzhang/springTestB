@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.clerkvisit.mapper.BVisitTradeMapper">
+  <resultMap id="BaseResultMap" type="com.jk51.model.clerkvisit.BVisitTrade">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="site_id" jdbcType="INTEGER" property="siteId" />
+    <result column="visit_id" jdbcType="INTEGER" property="visitId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <select id="queryCountForActivityTrades" parameterType="Map" resultType="java.lang.Integer">
+    SELECT COUNT(1)  from b_trades b
+    LEFT JOIN  b_clerk_visit c  on b.site_id=c.site_id and b.buyer_id =c.buyer_id
+    LEFT JOIN  b_coupon_activity ba on ba.site_id=b.site_id and ba.id in (c.activity_ids)
+    where
+    find_in_set(#{activityId},c.activity_ids)
+    and b.pay_time <![CDATA[ >= ]]>  ba.start_time
+    and b.pay_time <![CDATA[ <= ]]> ba.end_time
+    and b.site_id=#{siteId}
+    and b.is_payment=1
+    and b.trades_source=140
+  </select>
+
+  <insert id="insert" parameterType="com.jk51.model.clerkvisit.BVisitTrade">
+    insert into b_visit_trade (id, site_id, visit_id, 
+      create_time, update_time, trades_id
+      )
+    values (#{id,jdbcType=INTEGER}, #{siteId,jdbcType=INTEGER}, #{visitId,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{tradesId,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.jk51.model.clerkvisit.BVisitTrade">
+    insert into b_visit_trade
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="siteId != null">
+        site_id,
+      </if>
+      <if test="visitId != null">
+        visit_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="tradesId != null">
+        trades_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="siteId != null">
+        #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="visitId != null">
+        #{visitId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="tradesId != null">
+        #{tradesId,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.clerkvisit.BVisitTrade">
+    update b_visit_trade
+    <set>
+      <if test="siteId != null">
+        site_id = #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="visitId != null">
+        visit_id = #{visitId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="tradesId != null">
+        trades_id = #{tradesId,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="com.jk51.model.clerkvisit.BVisitTrade">
+    update b_visit_trade
+    set site_id = #{siteId,jdbcType=INTEGER},
+      visit_id = #{visitId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="selectByVisitIdAndSiteId" resultType="java.util.Map">
+   SELECT CONCAT(bvt.trades_id,'')AS trades_id,bt.real_pay,DATE_FORMAT(bvt.create_time,'%Y-%m-%d %H:%i:%S') create_time ,
+          bt.total_fee
+    FROM b_visit_trade bvt
+    LEFT JOIN  b_trades bt ON bvt.trades_id=bt.trades_id
+	LEFT JOIN b_orders bo on bt.site_id =bo.site_id and bt.trades_id= bo.trades_id
+    WHERE bvt.visit_id=#{id}
+    AND  bvt.site_id=#{siteId}
+    AND  bt.is_payment=1
+    AND  bt.trades_source =130
+    GROUP BY  bvt.trades_id
+  </select>
+</mapper>

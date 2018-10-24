@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.trades.mapper.TradesLogMapper">
+    <resultMap id="TradesLogMap" type="com.jk51.model.order.TradesLog">
+        <result column="trades_id" property="tradesId"/>
+        <result column="seller_id" property="sellerId"/>
+        <result column="buyer_id" property="buyerId"/>
+        <result column="new_trades_status" property="newTradesStatus"/>
+        <result column="old_trades_status" property="oldTradesStatus"/>
+        <result column="stockup_status" property="stockupStatus"/>
+        <result column="shipping_status" property="shippingStatus"/>
+        <result column="source_business" property="sourceBusiness"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+    <insert id="addTradesLog" parameterType="com.jk51.model.order.TradesLog" useGeneratedKeys="true" keyProperty="id">
+        insert INTO b_tradeslogs values (#{id},#{tradesId},#{sellerId},#{buyerId},#{oldTradesStatus},#{newTradesStatus},#{stockupStatus},#{shippingStatus},#{sourceBusiness},CURRENT_TIMESTAMP())
+    </insert>
+    <insert id="batchInsertToSystemCanel" parameterType="map">/*系统取消*/
+        insert into b_tradeslogs(trades_id,seller_id,buyer_id,old_trades_status,new_trades_status,stockup_status,shipping_status,source_business,create_time)
+        select t.trades_id,t.seller_id,t.buyer_id,#{old_trades_status},#{new_trades_status},t.stockup_status,t.shipping_status,#{source_business},CURRENT_TIMESTAMP()
+        from b_trades t where date_add(t.create_time, interval #{systemCanel} day)>CURRENT_TIMESTAMP() and trades_status=110 and create_time >= date_add(CURRENT_TIMESTAMP(), interval #{tradesEnd} day) and site_id=#{siteId}
+    </insert>
+    <insert id="batchInsertToEnd" parameterType="map">
+        insert into b_tradeslogs(trades_id,seller_id,buyer_id,old_trades_status,new_trades_status,stockup_status,shipping_status,source_business,create_time)
+        select t.trades_id,t.seller_id,t.buyer_id,trades_status,1000,t.stockup_status,t.shipping_status,#{source_business},CURRENT_TIMESTAMP()
+        from b_trades t where CURRENT_TIMESTAMP()>date_add(update_time, interval #{metaKeyFinish} day) and trades_status in(210,220,230,240,800)
+        and create_time >= date_add(CURRENT_TIMESTAMP(), interval #{tradesEnd} day) and site_id=#{siteId}
+    </insert>
+    <insert id="batchInsertToSystemDelivery" parameterType="map">/*送货上门 系统确认*/
+        insert into b_tradeslogs(trades_id,seller_id,buyer_id,old_trades_status,new_trades_status,stockup_status,shipping_status,source_business,create_time)
+        select t.trades_id,t.seller_id,t.buyer_id,#{old_trades_status},#{new_trades_status},t.stockup_status,t.shipping_status,#{source_business},CURRENT_TIMESTAMP()
+        from b_trades t where date_add(t.consign_time, interval #{systemDelivery} day)>CURRENT_TIMESTAMP() and trades_status=130 and post_style=150 and create_time >= date_add(CURRENT_TIMESTAMP(), interval #{tradesEnd} day)  and site_id=#{siteId}
+    </insert>
+    <select id="selectbTradeslogs" resultMap="TradesLogMap">
+        select * from b_tradeslogs where trades_id = #{tradesId} and new_trades_status = 900 ORDER BY id DESC LIMIT 1;
+    </select>
+</mapper>

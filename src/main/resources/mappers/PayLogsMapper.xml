@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.pay.mapper.PayLogsMapper">
+    <resultMap id="PayLogsMap" type="com.jk51.model.PayLogs">
+        <id column="pay_id" jdbcType="INTEGER" property="payId" />
+        <result column="site_id" jdbcType="INTEGER" property="siteId" />
+        <result column="trades_id" jdbcType="BIGINT" property="tradesId" />
+        <result column="tradesId_intro" jdbcType="VARCHAR" property="tradesId_intro" />
+        <result column="items_total" jdbcType="INTEGER" property="itemsTotal" />
+        <result column="post_fee" jdbcType="INTEGER" property="postFee" />
+        <result column="trades_total" jdbcType="INTEGER" property="tradesTotal" />
+        <result column="platform_total" jdbcType="INTEGER" property="platformTotal" />
+        <result column="trades_split" jdbcType="INTEGER" property="tradesSplit" />
+        <result column="total_fee" jdbcType="INTEGER" property="totalFee" />
+        <result column="pay_style" jdbcType="VARCHAR" property="payStyle" />
+        <result column="pay_status" jdbcType="INTEGER" property="payStatus" />
+        <result column="callback_time" jdbcType="TIMESTAMP" property="callbackTime" />
+        <result column="pay_result" jdbcType="VARCHAR" property="payResult" />
+        <result column="yb_account" jdbcType="VARCHAR" property="ybAccount" />
+        <result column="seller_account" jdbcType="VARCHAR" property="sellerAccount" />
+        <result column="buyer_account" jdbcType="VARCHAR" property="buyerAccount" />
+        <result column="assigned_stores" jdbcType="INTEGER" property="assignedStores" />
+        <result column="trades_status" jdbcType="INTEGER" property="tradesStatus" />
+        <result column="confirm_goods_time" jdbcType="TIMESTAMP" property="confirmGoodsTime" />
+        <result column="seller_id" jdbcType="INTEGER" property="sellerId" />
+        <result column="buyer_id" jdbcType="INTEGER" property="buyerId" />
+        <result column="pay_member" jdbcType="VARCHAR" property="payMember" />
+        <result column="prescription_orders" jdbcType="TINYINT" property="prescriptionOrders" />
+        <result column="trades_store" jdbcType="INTEGER" property="tradesStore" />
+        <result column="account_checking_status" jdbcType="TINYINT" property="accountCheckingStatus" />
+        <result column="store_user_id" jdbcType="INTEGER" property="storeUserId" />
+        <result column="store_shipping_clerk_id" jdbcType="INTEGER" property="storeShippingClerkId" />
+        <result column="recommend_user_id" jdbcType="INTEGER" property="recommendUserId" />
+        <result column="cashier_id" jdbcType="INTEGER" property="cashierId" />
+        <result column="stockup_user_id" jdbcType="INTEGER" property="stockupUserId" />
+        <result column="settlement_status" jdbcType="SMALLINT" property="settlementStatus" />
+        <result column="settlement_final_time" jdbcType="TIMESTAMP" property="settlementFinalTime" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+
+    </resultMap>
+    <select id="findPayLogs" resultMap="PayLogsMap">
+        SELECT a.pay_id,a.site_id , a.trades_id, a.items_total,a.post_fee,a.trades_total,a.platform_total,
+        a.trades_split,a.pay_style,a.total_fee,a.pay_status,a.callback_time,a.pay_result,a.yb_account,a.seller_account,
+        a.buyer_account,a.assigned_stores,a.trades_status,a.confirm_goods_time,a.seller_id,a.buyer_id,a.pay_member,
+        a.prescription_orders,a.trades_store,a.account_checking_status,a.store_user_id,a.store_shipping_clerk_id,a.recommend_user_id,
+        a.cashier_id,a.stockup_user_id,a.settlement_status,a.settlement_final_time,a.create_time,a.update_time,
+        b.mobile mobile,a.trades_id as tradesId_intro
+        FROM b_paylogs a
+        LEFT JOIN b_member b ON a.buyer_id=b.buyer_id and a.site_id = b.site_id
+        <include refid="filterCondition"/>
+    </select>
+    <sql id="filterCondition">
+        <where>
+            1=1
+              <if test="siteId!=null and siteId!=''">
+                 AND a.site_id=#{siteId}
+              </if>
+            <if test="tradesId!=null and tradesId!=''">
+              AND a.trades_id=#{tradesId}
+            </if>
+            <if test="payId!=null and payId!=''">
+                AND a.pay_id=#{payId}
+            </if>
+            <if test="payStyle!=null and payStyle!=''">
+                AND a.pay_style like CONCAT('%',#{payStyle},'%')
+            </if>
+            <if test="ybAccount!=null">
+                AND a.yb_account in
+                <foreach collection="ybAccount" index="index" open="(" separator="," close=")" item="item">
+                      #{item}
+                </foreach>
+            </if>
+            <if test="payStatus!=null and payStatus!=''">
+                AND a.pay_status=#{payStatus}
+            </if>
+            <if test="tradesInvoice!=null and tradesInvoice!=''">
+                AND EXISTS (SELECT id FROM b_trades WHERE trades_invoice=#{tradesInvoice} AND b_paylogs.trades_id=b_trades.trades_id)
+            </if>
+        </where>
+        order by a.create_time desc
+    </sql>
+    <select id="findByTradesId" resultMap="PayLogsMap">
+      SELECT * FROM b_paylogs where trades_id=#{tradesId} limit 1
+    </select>
+
+    <update id="update" parameterType="com.jk51.model.PayLogs">
+      UPDATE b_paylogs
+        <trim prefix="set" suffixOverrides=",">
+            <if test="itemsTotal != null">
+                items_total = #{itemsTotal},
+            </if>
+            <if test="postFee != null">
+                post_fee = #{postFee},
+            </if>
+            <if test="tradesTotal != null">
+                trades_total = #{tradesTotal},
+            </if>
+            <if test="platformTotal != null">
+                platform_total = #{platformTotal},
+            </if>
+            <if test="tradesSplit != null">
+                trades_split = #{tradesSplit},
+            </if>
+            <if test="totalFee != null">
+                total_fee = #{totalFee},
+            </if>
+            <if test="payStyle != null">
+                pay_style = #{payStyle},
+            </if>
+            <if test="payStatus != null">
+                pay_status = #{payStatus},
+            </if>
+            <if test="callbackTime != null">
+                callback_time = #{callbackTime},
+            </if>
+            <if test="payResult != null">
+                pay_result = #{payResult},
+            </if>
+            <if test="ybAccount != null">
+                yb_account = #{ybAccount},
+            </if>
+            <if test="sellerAccount != null">
+                seller_account = #{sellerAccount},
+            </if>
+            <if test="assignedStores != null">
+                assigned_stores = #{assignedStores},
+            </if>
+            <if test="tradesStatus != null">
+                trades_status = #{tradesStatus},
+            </if>
+            <if test="confirmGoodsTime != null">
+                confirm_goods_time = #{confirmGoodsTime},
+            </if>
+            <if test="sellerId != null">
+                seller_id = #{sellerId},
+            </if>
+            <if test="buyerId != null">
+                buyer_id = #{buyerId},
+            </if>
+            <if test="payMember != null">
+                pay_member = #{payMember},
+            </if>
+            <if test="prescriptionOrders != null">
+                prescription_orders = #{prescriptionOrders},
+            </if>
+            <if test="accountCheckingStatus != null">
+                account_checking_status = #{accountCheckingStatus},
+            </if>
+            <if test="storeUserId != null">
+                store_user_id = #{storeUserId},
+            </if>
+            <if test="storeShippingClerkId != null">
+                store_shipping_clerk_id = #{storeShippingClerkId},
+            </if>
+            <if test="recommendUserId != null">
+                recommend_user_id = #{recommendUserId},
+            </if>
+            <if test="cashierId != null">
+                cashier_id = #{cashierId},
+            </if>
+            <if test="stockupUserId != null">
+                stockup_user_id = #{stockupUserId},
+            </if>
+            <if test="settlementStatus != null">
+                settlement_status = #{settlementStatus},
+            </if>
+            <if test="settlementFinalTime != null">
+                settlement_final_time = #{settlementFinalTime},
+            </if>
+        </trim>
+        <where>
+            trades_id = #{tradesId}
+        </where>
+    </update>
+
+    <insert id="insert" parameterType="com.jk51.model.PayLogs">
+        INSERT INTO b_paylogs
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+              site_id,
+            </if>
+            <if test="tradesId != null">
+                trades_id,
+            </if>
+            <if test="itemsTotal != null">
+                items_total,
+            </if>
+            <if test="postFee != null">
+                post_fee,
+            </if>
+            <if test="tradesTotal != null">
+                trades_total,
+            </if>
+            <if test="platformTotal != null">
+                platform_total,
+            </if>
+            <if test="tradesSplit != null">
+                trades_split,
+            </if>
+            <if test="totalFee != null">
+                total_fee,
+            </if>
+            <if test="payStyle != null">
+                pay_style,
+            </if>
+            <if test="payStatus != null">
+                pay_status,
+            </if>
+            <if test="callbackTime != null">
+                callback_time,
+            </if>
+            <if test="payResult != null">
+                pay_result,
+            </if>
+            <if test="ybAccount != null">
+                yb_account,
+            </if>
+            <if test="sellerAccount != null">
+                seller_account,
+            </if>
+            <if test="buyerAccount != null">
+                buyer_account
+            </if>
+            <if test="assignedStores != null">
+                assigned_stores,
+            </if>
+            <if test="tradesStatus != null">
+                trades_status,
+            </if>
+            <if test="confirmGoodsTime != null">
+                confirm_goods_time,
+            </if>
+            <if test="sellerId != null">
+                seller_id,
+            </if>
+            <if test="buyerId != null">
+                buyer_id,
+            </if>
+            <if test="payMember != null">
+                pay_member,
+            </if>
+            <if test="prescriptionOrders != null">
+                prescription_orders,
+            </if>
+            <if test="tradesStore != null">
+                trades_store,
+            </if>
+            <if test="accountCheckingStatus != null">
+                account_checking_status,
+            </if>
+            <if test="storeUserId != null">
+                store_user_id,
+            </if>
+            <if test="storeShippingClerkId != null">
+                store_shipping_clerk_id,
+            </if>
+            <if test="recommendUserId != null">
+                recommend_user_id,
+            </if>
+            <if test="cashierId != null">
+                cashier_id,
+            </if>
+            <if test="stockupUserId != null">
+                stockup_user_id,
+            </if>
+            <if test="settlementStatus != null">
+                settlement_status,
+            </if>
+            <if test="settlementFinalTime != null">
+                settlement_final_time,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+
+        </trim>
+        <trim prefix="value (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId},
+            </if>
+            <if test="tradesId != null">
+                #{tradesId},
+            </if>
+            <if test="itemsTotal != null">
+                #{itemsTotal},
+            </if>
+            <if test="postFee != null">
+                #{postFee},
+            </if>
+            <if test="tradesTotal != null">
+                #{tradesTotal},
+            </if>
+            <if test="platformTotal != null">
+                #{platformTotal},
+            </if>
+            <if test="tradesSplit != null">
+                #{tradesSplit},
+            </if>
+            <if test="totalFee != null">
+                #{totalFee},
+            </if>
+            <if test="payStyle != null">
+                #{payStyle},
+            </if>
+            <if test="payStatus != null">
+                #{payStatus},
+            </if>
+            <if test="callbackTime != null">
+                #{callbackTime},
+            </if>
+            <if test="payResult != null">
+                #{payResult},
+            </if>
+            <if test="ybAccount != null">
+                #{ybAccount},
+            </if>
+            <if test="sellerAccount != null">
+                #{sellerAccount},
+            </if>
+            <if test="buyerAccount != null">
+                #{buyerAccount},
+            </if>
+            <if test="assignedStores != null">
+                #{assignedStores},
+            </if>
+            <if test="tradesStatus != null">
+                #{tradesStatus},
+            </if>
+            <if test="confirmGoodsTime != null">
+                #{confirmGoodsTime},
+            </if>
+            <if test="sellerId != null">
+                #{sellerId},
+            </if>
+            <if test="buyerId != null">
+                #{buyerId},
+            </if>
+            <if test="payMember != null">
+                #{payMember},
+            </if>
+            <if test="prescriptionOrders != null">
+                #{prescriptionOrders},
+            </if>
+            <if test="tradesStore != null">
+                #{tradesStore},
+            </if>
+            <if test="accountCheckingStatus != null">
+                #{accountCheckingStatus},
+            </if>
+            <if test="storeUserId != null">
+                #{storeUserId},
+            </if>
+            <if test="storeShippingClerkId != null">
+                #{storeShippingClerkId},
+            </if>
+            <if test="recommendUserId != null">
+                #{recommendUserId},
+            </if>
+            <if test="cashierId != null">
+                #{cashierId},
+            </if>
+            <if test="stockupUserId != null">
+                #{stockupUserId},
+            </if>
+            <if test="settlementStatus != null">
+                #{settlementStatus},
+            </if>
+            <if test="settlementFinalTime != null">
+                #{settlementFinalTime},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+        </trim>
+    </insert>
+
+
+
+
+</mapper>

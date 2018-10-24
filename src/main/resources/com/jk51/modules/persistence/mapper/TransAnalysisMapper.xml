@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.persistence.mapper.TransAnalysisMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.merchant.TransAnalysis">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="statics_name" jdbcType="VARCHAR" property="staticsName"/>
+        <result column="statics_value" jdbcType="VARCHAR" property="staticsValue"/>
+        <result column="staticsDesc" jdbcType="VARCHAR" property="staticsDesc"/>
+        <result column="create_time" jdbcType="VARCHAR" property="createtime"/>
+    </resultMap>
+    <insert id="insertTrans" parameterType="com.jk51.model.merchant.TransAnalysis">
+        insert into b_trans_analysis_records
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="staticsName != null">
+                statics_name,
+            </if>
+            <if test="staticsValue != null">
+                statics_value ,
+            </if>
+            <if test="staticsDesc != null">
+                statics_desc ,
+            </if>
+            <if test="createTime != null">
+                create_time ,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="staticsName != null">
+                #{staticsName,jdbcType=VARCHAR},
+            </if>
+            <if test="staticsValue != null">
+                #{staticsValue,jdbcType=VARCHAR},
+            </if>
+            <if test="staticsDesc != null">
+                #{staticsDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+</mapper>

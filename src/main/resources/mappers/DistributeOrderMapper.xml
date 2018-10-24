@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.order.mapper.DistributeOrderMapper">
+
+    <resultMap id="storesResultMap" type="com.jk51.model.order.Store">
+        <id column="site_id" property="siteId"></id>
+        <id column="id" property="id"></id>
+        <result column="stores_number" property="storesNumber"></result>
+        <result column="name" property="name"></result>
+        <result column="is_qjd" property="isQjd"></result>
+        <result column="type" property="type"></result>
+        <result column="city_id" property="cityId"></result>
+        <result column="region_id" property="regionId"></result>
+        <result column="address" property="address"></result>
+        <result column="baidu_lat" property="baiduLat"></result>
+        <result column="baidu_lng" property="baiduLng"></result>
+        <result column="gaode_lng" property="gaodeLng"></result>
+        <result column="gaode_lat" property="gaodeLat"></result>
+        <result column="map_flag" property="mapFlag"></result>
+        <result column="store_imgs" property="storeImgs"></result>
+        <result column="tel" property="tel"></result>
+        <result column="business_time" property="businessTime"></result>
+        <result column="feature" property="feature"></result>
+        <result column="summary" property="summary"></result>
+        <result column="qr_code_img" property="qrCodeImg"></result>
+        <result column="qr_code_type" property="qrCodeType"></result>
+        <result column="stores_status" property="storesStatus"></result>
+        <result column="is_del" property="isDel"></result>
+        <result column="province" property="province"></result>
+        <result column="city" property="city"></result>
+        <result column="service_support" property="serviceSupport"></result>
+        <result column="self_token_time" property="selfTokenTime"></result>
+        <result column="delivery_time" property="deliveryTime"></result>
+        <result column="remind_mobile" property="remindMobile"></result>
+        <result column="country" property="country"></result>
+        <result column="own_pricing_type" property="ownPricingType"></result>
+        <result column="own_promotion_type" property="ownPromotionType"></result>
+        <result column="create_time" property="createTime"></result>
+        <result column="update_time" property="updateTime"></result>
+    </resultMap>
+
+    <resultMap id="goodsResultMap" type="com.jk51.model.order.GoodsInfo">
+        <id column="goods_id" jdbcType="INTEGER" property="goodsId" />
+        <id column="site_id" jdbcType="INTEGER" property="siteId" />
+        <result column="approval_number" jdbcType="VARCHAR" property="approvalNumber" />
+        <result column="drug_name" jdbcType="VARCHAR" property="drugName" />
+        <result column="com_name" jdbcType="VARCHAR" property="comName" />
+        <result column="specif_cation" jdbcType="VARCHAR" property="specifCation" />
+        <result column="goods_company" jdbcType="VARCHAR" property="goodsCompany" />
+        <result column="barnd_id" jdbcType="VARCHAR" property="barndId" />
+        <result column="drug_category" jdbcType="INTEGER" property="drugCategory" />
+        <result column="goods_property" jdbcType="INTEGER" property="goodsProperty" />
+        <result column="goods_use" jdbcType="VARCHAR" property="goodsUse" />
+        <result column="goods_forts" jdbcType="INTEGER" property="goodsForts" />
+        <result column="goods_validity" jdbcType="INTEGER" property="goodsValidity" />
+        <result column="goods_forpeople" jdbcType="VARCHAR" property="goodsForpeople" />
+        <result column="user_cateid" jdbcType="VARCHAR" property="userCateid" />
+        <result column="goods_title" jdbcType="VARCHAR" property="goodsTitle" />
+        <result column="goods_tagsid" jdbcType="VARCHAR" property="goodsTagsid" />
+        <result column="market_price" jdbcType="INTEGER" property="marketPrice" />
+        <result column="shop_price" jdbcType="INTEGER" property="shopPrice" />
+        <result column="cost_price" jdbcType="INTEGER" property="costPrice" />
+        <result column="discount_price" jdbcType="INTEGER" property="discountPrice" />
+        <result column="in_stock" jdbcType="INTEGER" property="inStock" />
+        <result column="goods_weight" jdbcType="INTEGER" property="goodsWeight" />
+        <result column="control_num" jdbcType="INTEGER" property="controlNum" />
+        <result column="goods_status" jdbcType="INTEGER" property="goodsStatus" />
+        <result column="app_goods_status" jdbcType="INTEGER" property="appGoodsStatus" />
+        <result column="freight_payer" jdbcType="INTEGER" property="freightPayer" />
+        <result column="list_time" jdbcType="TIMESTAMP" property="listTime" />
+        <result column="delist_time" jdbcType="TIMESTAMP" property="delistTime" />
+        <result column="postage_id" jdbcType="INTEGER" property="postageId" />
+        <result column="detail_tpl" jdbcType="INTEGER" property="detailTpl" />
+        <result column="is_medicare" jdbcType="BIT" property="isMedicare" />
+        <result column="medicare_code" jdbcType="CHAR" property="medicareCode" />
+        <result column="medicare_top_price" jdbcType="INTEGER" property="medicareTopPrice" />
+        <result column="bar_code" jdbcType="CHAR" property="barCode" />
+        <result column="mnemonic_code" jdbcType="VARCHAR" property="mnemonicCode" />
+        <result column="purchase_way" jdbcType="INTEGER" property="purchaseWay" />
+        <result column="wx_purchase_way" jdbcType="INTEGER" property="wxPurchaseWay" />
+        <result column="goods_code" jdbcType="VARCHAR" property="goodsCode" />
+        <result column="yb_goods_id" jdbcType="INTEGER" property="ybGoodsId" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="erp_price" jdbcType="INTEGER" property="erpPrice" />
+    </resultMap>
+
+    <resultMap id="merchantResultMap" type="com.jk51.model.order.Merchant">
+        <id column="id" property="id"></id>
+        <result column="merchant_id" property="merchantId"></result>
+        <result column="merchant_name" property="merchantName"></result>
+        <result column="seller_nick" property="sellerNick"></result>
+        <result column="seller_pwd" property="sellerPwd"></result>
+        <result column="company_name" property="companyName"></result>
+        <result column="legal_name" property="legalName"></result>
+        <result column="shop_title" property="shopTitle"></result>
+        <result column="shop_url" property="shopUrl"></result>
+        <result column="shop_logurl" property="shopLogurl"></result>
+        <result column="shop_area" property="shopArea"></result>
+        <result column="shop_address" property="shopAddress"></result>
+        <result column="service_phone" property="servicePhone"></result>
+        <result column="service_mobile" property="serviceMobile"></result>
+        <result column="company_email" property="companyEmail"></result>
+        <result column="short_message_sign" property="shortMessageSign"></result>
+        <result column="shop_qq" property="shopQq"></result>
+        <result column="shop_weixin" property="shopWeixin"></result>
+        <result column="shopwx_url" property="shopwxUrl"></result>
+        <result column="shop_desc" property="shopDesc"></result>
+        <result column="invoice_is" property="invoiceIs"></result>
+        <result column="role_id" property="roleId"></result>
+        <result column="company_qualurl" property="companyQualurl"></result>
+        <result column="last_login" property="lastLogin"></result>
+        <result column="last_ipaddr" property="lastIpaddr"></result>
+        <result column="is_frozen" property="isFrozen"></result>
+        <result column="frozen_resion" property="frozenResion"></result>
+        <result column="site_record" property="siteRecord"></result>
+        <result column="integral_proportion" property="integralProportion"></result>
+        <result column="qrcode_tips" property="qrcodeTips"></result>
+        <result column="legal_mobile" jdbcType="VARCHAR" property="legalMobile"></result>
+        <result column="payee_name" property="payeeName"></result>
+        <result column="shop_watermark" property="shopWatermark"></result>
+        <result column="site_status" property="siteStatus"></result>
+        <result column="wx_site_status" property="wxSiteStatus"></result>
+        <result column="shop_back1" property="shopBack1"></result>
+        <result column="create_time" property="createTime"></result>
+        <result column="update_time" property="updateTime"></result>
+    </resultMap>
+    <resultMap id="metaResultMap" type="com.jk51.model.order.Meta">
+        <id column="meta_id" property="metaId"></id>
+        <result column="site_id" property="siteId"></result>
+        <result column="meta_key" property="metaKey"></result>
+        <result column="meta_val" property="metaVal"></result>
+        <result column="meta_desc" property="metaDesc"></result>
+        <result column="meta_status" property="metaStatus"></result>
+        <result column="create_time" property="createTime"></result>
+        <result column="update_time" property="updateTime"></result>
+    </resultMap>
+    <resultMap id="deliveryMethodResultMap" type="com.jk51.model.order.DeliveryMethod">
+        <id column="site_id" property="siteId"></id>
+        <id column="devl_id" property="devlId"></id>
+        <result column="post_style_id" property="postStyleId"></result>
+        <result column="delivery_name" property="deliveryName"></result>
+        <result column="valuation" property="valuation"></result>
+        <result column="first_weight" property="firstWeight"></result>
+        <result column="add_weight" property="addWeight"></result>
+        <result column="def_firstprice" property="defFirstprice"></result>
+        <result column="def_addprice" property="defAddprice"></result>
+        <result column="appoint_firstweight" property="appointFirstweight"></result>
+        <result column="appoint_addweight" property="appointAddweight"></result>
+        <result column="appoint_firstprice" property="appointFirstprice"></result>
+        <result column="appoint_addprice" property="appointAddprice"></result>
+        <result column="appoint_area" property="appointArea"></result>
+        <result column="devl_desc" property="devlDesc"></result>
+        <result column="dev_desc" property="devDesc"></result>
+        <result column="is_activation" property="isActivation"></result>
+        <result column="default_flag" property="defaultFlag"></result>
+        <result column="update_time" property="updateTime"></result>
+    </resultMap>
+    <select id="getStores" parameterType="Integer" resultMap="storesResultMap" useCache="false">
+        SELECT * FROM b_stores WHERE site_id=#{site_id} AND stores_status = 1 AND is_del = 1
+    </select>
+    <select id="getStoresById" resultMap="storesResultMap" useCache="false">
+        SELECT * FROM b_stores WHERE site_id=#{0} AND stores_number =#{1} AND is_del = 1 limit 1
+    </select>
+    <select id="getGoodsInfo" resultMap="goodsResultMap" useCache="false">
+        SELECT * FROM b_goods WHERE site_id=#{0} AND goods_id=#{1}
+    </select>
+
+    <!--通过goodIds 和 siteId查询good信息 -->
+    <select id="getGoodsInfoByGoodIds" resultMap="goodsResultMap" useCache="false">
+        SELECT * FROM b_goods WHERE site_id=#{siteId} AND goods_id in
+        <foreach collection="goodIds" separator="," open="(" close=")" item="goodId">
+            #{goodId}
+        </foreach>
+    </select>
+    <select id="getGoodsInfoByPrice" resultType="java.util.Map" useCache="false">
+        select * from yb_stores_goods_price zp where zp.store_id = #{storeId}  AND zp.del_tag = '0' and zp.site_id=#{siteId} and zp.goods_id=#{goodsId} limit 1
+    </select>
+    <select id="getMerchant" parameterType="java.lang.Integer" resultMap="merchantResultMap" useCache="false">
+        SELECT * FROM yb_merchant WHERE merchant_id=#{merchant_id}
+    </select>
+    <select id="getMeta"  resultMap="metaResultMap" useCache="false">
+        SELECT * FROM yb_meta WHERE site_id=#{0} and meta_key=#{1}
+    </select>
+    <select id="getExpressRule" resultMap="deliveryMethodResultMap" useCache="false">
+        SELECT * FROM b_delivery_method WHERE site_id=#{site_id} and post_style_id=#{post_style_id}
+    </select>
+
+    <select id="getExpressRuledu" resultMap="deliveryMethodResultMap" useCache="false">
+        SELECT * FROM b_delivery_method WHERE site_id=#{site_id} and default_flag=1 limit 1
+    </select>
+
+    <select id="selectRecommendOrderList" resultType="java.util.Map">
+        SELECT
+            b.owner,
+            b.distributor_id AS distributorId,
+            d.mobile AS uasrname,
+            b.order_id AS orderId,
+            b.order_status AS orderStatus,
+            b.order_price AS orderPrice,
+            b.real_pay AS realPay,
+            a.create_time AS createTime,
+            b.reward_status AS rewardStatus,
+            a.trades_status AS tradesStatus
+        FROM
+            b_trades AS a,
+            d_reward AS b,
+            d_distributor AS c,
+            d_distributor_ext AS d
+        <where>
+            b.order_id = a.trades_id
+            AND  a.distributor_id = c.id
+            AND  a.distributor_id = d.did
+            AND  b.owner = #{siteId}
+            <if test="distributorName != null">
+                AND c.user_name = #{distributorName}
+            </if>
+            <if test="rewardStatus != null">
+                AND b.reward_status = #{rewardStatus}
+            </if>
+            <if test="startTime != null">
+                AND a.create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND a.create_time &lt;= #{endTime}
+            </if>
+            AND c.id  IN
+            <foreach collection="distributorIdList" open="(" close=")" separator="," item="distributorId">
+                #{distributorId}
+            </foreach>
+        </where>
+        ORDER BY a.create_time DESC
+        LIMIT   <if test="rowsIndex != null">
+                    #{rowsIndex}
+                </if>
+                <if test="rowsIndex == null">
+                    0
+                </if>,
+                <if test="pageSize != null">
+                    #{pageSize}
+                </if>
+                <if test="pageSize == null">
+                    15
+                </if>
+
+    </select>
+
+    <select id="selectRecommendOrderListCount" resultType="java.lang.Long">
+        SELECT
+          count(b.order_id)
+        FROM
+        b_trades AS a,
+        d_reward AS b,
+        d_distributor AS c,
+        d_distributor_ext AS d
+        <where>
+            b.order_id = a.trades_id
+            AND  a.distributor_id = c.id
+            AND  a.distributor_id = d.did
+            AND  b.owner = #{siteId}
+            <if test="distributorName != null">
+                AND c.user_name = #{distributorName}
+            </if>
+            <if test="rewardStatus != null">
+                AND b.reward_status = #{rewardStatus}
+            </if>
+            <if test="startTime != null">
+                AND a.create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND a.create_time &lt;= #{endTime}
+            </if>
+            AND c.id  IN
+            <foreach collection="distributorIdList" open="(" close=")" separator="," item="distributorId">
+                #{distributorId}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="selectGoodsByGoodsIds" resultMap="goodsResultMap">
+        SELECT * FROM b_goods
+        <where>
+            site_id=#{siteId}
+            AND goods_id in
+            <foreach collection="goodsIds" item="goodsId" open="(" separator="," close=")">
+                #{goodsId}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

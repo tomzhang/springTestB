@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.grouppurchase.mapper.GroupPurChaseMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.grouppurchase.GroupPurchase">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="parent_id" jdbcType="INTEGER" property="parentId"/>
+        <result column="pro_activity_id" jdbcType="INTEGER" property="proActivityId"/>
+        <result column="trades_id" jdbcType="VARCHAR" property="tradesId"/>
+        <result column="open_id" jdbcType="VARCHAR" property="openId"/>
+        <result column="ali_user_id" jdbcType="VARCHAR" property="aliUserId"/>
+        <result column="b_member_id" jdbcType="INTEGER" property="memberId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="groupbegin_time" jdbcType="TIMESTAMP" property="groupbeginTime"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="goods_id" jdbcType="INTEGER" property="goodsId"/>
+    </resultMap>
+
+    <resultMap id="BaseAndWxImgResultMap" type="com.jk51.model.grouppurchase.GroupPurchase">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="parent_id" jdbcType="INTEGER" property="parentId"/>
+        <result column="pro_activity_id" jdbcType="INTEGER" property="proActivityId"/>
+        <result column="trades_id" jdbcType="VARCHAR" property="tradesId"/>
+        <result column="open_id" jdbcType="VARCHAR" property="openId"/>
+        <!--<result column="ali_user_id" jdbcType="VARCHAR" property="aliUserId"/>-->
+        <result column="b_member_id" jdbcType="INTEGER" property="memberId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="groupbegin_time" jdbcType="TIMESTAMP" property="groupbeginTime"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="goods_id" jdbcType="INTEGER" property="goodsId"/>
+        <result column="wxInfo" jdbcType="VARCHAR" property="wxInfo"/>
+        <result column="buyerNick" jdbcType="VARCHAR" property="buyerNick"/>
+        <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+        id, site_id, parent_id, pro_activity_id, trades_id,b_member_id, create_time,groupbegin_time,
+        update_time, status,goods_id
+    </sql>
+
+    <!-- insert start -->
+    <insert id="create" parameterType="com.jk51.model.grouppurchase.GroupPurchase">
+        INSERT INTO b_group_purchase (
+        site_id,
+        id,
+        parent_id,
+        pro_activity_id,
+        trades_id,
+        b_member_id,
+        create_time,
+        update_time,
+        groupbegin_time,
+        goods_id,
+        status
+        )
+        VALUES
+        (
+        #{grouppurchase.siteId},
+        NULL,
+        #{grouppurchase.parentId},
+        #{grouppurchase.proActivityId},
+        #{grouppurchase.tradesId},
+        #{grouppurchase.memberId},
+        #{grouppurchase.createTime},
+        #{grouppurchase.updateTime},
+        #{grouppurchase.groupbeginTime},
+        #{grouppurchase.goodsId},
+        0
+        )
+    </insert>
+    <!-- insert end -->
+
+    <!-- update start -->
+
+    <update id="updateMainGroupPurchaseStatus"
+            parameterType="com.jk51.modules.grouppurchase.request.GroupPurchaseParam">
+        UPDATE b_group_purchase
+        SET status = #{groupPurchaseParam.status}
+        WHERE
+        id = #{groupPurchaseParam.id}
+        AND
+        site_id =  #{groupPurchaseParam.siteId}
+    </update>
+    <update id="updateStatusByIdAndSiteId">
+        UPDATE b_group_purchase
+        SET status = #{status},
+        <if test="status==1">
+            groupbegin_time = now(),
+        </if>
+        update_time=now()
+        WHERE
+        id = #{id}
+        AND
+        site_id = #{siteId}
+    </update>
+    <!-- update end -->
+
+    <!--select start-->
+    <select id="getGroupPurchaseList" resultMap="BaseResultMap"
+            parameterType="com.jk51.modules.grouppurchase.request.GroupPurchaseParam">
+        select groupPurchase.*,member.open_id open_id
+        from b_group_purchase groupPurchase
+        LEFT JOIN b_member member
+        on(groupPurchase.site_id=member.site_id and groupPurchase.b_member_id=member.member_id)
+        <where>
+            <if test="siteId != null">
+                AND groupPurchase.site_id = #{siteId}
+            </if>
+            <if test="id != null">
+                AND groupPurchase.id = #{id}
+            </if>
+            <if test="parentId != null">
+                AND groupPurchase.parent_id = #{parentId}
+            </if>
+            <if test="memberId != null">
+                AND groupPurchase.b_member_id = #{memberId}
+            </if>
+            <if test="tradesId != null">
+                AND groupPurchase.trades_id = #{tradesId}
+            </if>
+            <if test="status != null">
+                AND groupPurchase.status = #{status}
+            </if>
+            <if test="proActivityId != null">
+                AND groupPurchase.pro_activity_id = #{proActivityId}
+            </if>
+        </where>
+    </select>
+
+    <select id="findInfo" resultMap="BaseResultMap">
+        select groupPurchase.*,member.open_id open_id
+        from b_group_purchase groupPurchase
+        LEFT JOIN b_member member
+        on(groupPurchase.site_id=member.site_id and groupPurchase.b_member_id=member.member_id)
+        WHERE  groupPurchase.site_id = #{site_id} and groupPurchase.id =#{id}
+    </select>
+
+    <select id="findByTradesId" resultMap="BaseResultMap">
+        SELECT groupPurchase.*, member.open_id open_id
+        FROM b_group_purchase groupPurchase
+        LEFT JOIN b_member member
+            ON groupPurchase.site_id = member.site_id
+                AND groupPurchase.b_member_id=member.member_id
+        WHERE groupPurchase.site_id = #{siteId}
+            AND groupPurchase.trades_id = #{tradesId}
+    </select>
+
+    <select id="getGroupPurchaseListForTask" resultMap="BaseResultMap">
+        SELECT groupPurchase.*,member.open_id open_id
+        FROM b_group_purchase groupPurchase
+        LEFT JOIN b_member member
+        on (groupPurchase.site_id=member.site_id and groupPurchase.b_member_id = member.member_id)
+        WHERE groupPurchase.status in (0, 1)
+        AND groupPurchase.parent_id is NULL
+        <if test="headGroupPurchaseId != null">
+            AND groupPurchase.id = #{headGroupPurchaseId}
+        </if>
+    </select>
+
+    <select id="findGroupPurchasesByParentId" resultMap="BaseResultMap">
+        SELECT
+            groupPurchase.*,
+            member.open_id open_id,member.ali_user_id
+        FROM
+            b_group_purchase groupPurchase
+            LEFT JOIN b_member member ON ( groupPurchase.site_id = member.site_id AND groupPurchase.b_member_id = member.member_id )
+        WHERE
+            groupPurchase.id = #{parentId} UNION
+        SELECT
+            groupPurchase.*,
+            member.open_id open_id,member.ali_user_id
+        FROM
+            b_group_purchase groupPurchase
+            LEFT JOIN b_member member ON ( groupPurchase.site_id = member.site_id AND groupPurchase.b_member_id = member.member_id )
+        WHERE
+            groupPurchase.parent_id =#{parentId}
+    </select>
+
+    <select id="mainGroupPurchaseList" resultMap="BaseAndWxImgResultMap"
+            parameterType="com.jk51.modules.grouppurchase.request.GroupPurchaseParam">
+        select purchase.*,member.open_id open_id,memberInfo.avatar wxInfo,member.buyer_nick as buyerNick,member.mobile
+        mobile
+        from b_group_purchase purchase
+        LEFT JOIN b_member member
+        on(purchase.site_id=member.site_id and purchase.b_member_id=member.member_id)
+        LEFT JOIN b_member_info memberInfo
+        on(member.site_id=memberInfo.site_id and member.buyer_id=memberInfo.member_id)
+        <where>
+            <if test="siteId != null">
+                AND purchase.site_id = #{siteId}
+            </if>
+            <if test="id != null">
+                AND purchase.id = #{id}
+            </if>
+            <if test="memberId != null">
+                AND purchase.b_member_id = #{memberId}
+            </if>
+            <if test="tradesId != null">
+                AND purchase.trades_id = #{tradesId}
+            </if>
+            <if test="goodsId != null">
+                AND purchase.goods_id = #{goodsId}
+            </if>
+            <if test="status != null">
+                AND purchase.status = #{status}
+            </if>
+            <if test="proActivityId != null">
+                AND purchase.pro_activity_id = #{proActivityId}
+            </if>
+
+            AND purchase.parent_id is NUll
+
+        </where>
+    </select>
+
+    <select id="childrenFrommainGroupPurchaseList" resultMap="BaseAndWxImgResultMap"
+            parameterType="com.jk51.modules.grouppurchase.request.GroupPurchaseParam">
+        select purchase.*,member.open_id open_id,memberInfo.avatar wxInfo,member.mobile mobile
+        from b_group_purchase purchase
+        LEFT JOIN b_member member
+        on(purchase.site_id=member.site_id and purchase.b_member_id=member.member_id)
+        LEFT JOIN b_member_info memberInfo
+        on(member.site_id=memberInfo.site_id and member.buyer_id=memberInfo.member_id)
+        <where>
+            <if test="siteId != null">
+                AND purchase.site_id = #{siteId}
+            </if>
+            <if test="id != null">
+                AND purchase.id = #{id}
+            </if>
+            <if test="memberId != null">
+                AND purchase.b_member_id = #{memberId}
+            </if>
+            <if test="tradesId != null">
+                AND purchase.trades_id = #{tradesId}
+            </if>
+            <if test="goodsId != null">
+                AND purchase.goods_id = #{goodsId}
+            </if>
+            <if test="status != null">
+                AND purchase.status = #{status}
+            </if>
+            <if test="proActivityId != null">
+                AND purchase.pro_activity_id = #{proActivityId}
+            </if>
+            <if test="parentId != null">
+                AND purchase.parent_id = #{parentId}
+            </if>
+
+        </where>
+    </select>
+
+
+    <select id="getOneGroupPurchase" resultMap="BaseResultMap"
+            parameterType="com.jk51.modules.grouppurchase.request.GroupPurchaseParam">
+        select groupPurchase.*,member.open_id open_id,member.ali_user_id
+        from b_group_purchase groupPurchase
+        LEFT JOIN b_member member
+        on(groupPurchase.site_id=member.site_id and groupPurchase.b_member_id=member.member_id)
+
+        <where>
+            <if test="siteId != null">
+                AND groupPurchase.site_id = #{siteId}
+            </if>
+            <if test="id != null">
+                AND groupPurchase.id = #{id}
+            </if>
+            <if test="parentId != null">
+                AND groupPurchase.parent_id = #{parentId}
+            </if>
+            <if test="memberId != null">
+                AND groupPurchase.b_member_id = #{memberId}
+            </if>
+            <if test="tradesId != null">
+                AND groupPurchase.trades_id = #{tradesId}
+            </if>
+
+        </where>
+    </select>
+
+    <select id="getMainForGroupPurchase" resultMap="BaseResultMap">
+        select groupPurchase.*,member.open_id open_id
+        from b_group_purchase groupPurchase
+        LEFT JOIN b_member member
+        on(groupPurchase.site_id=member.site_id and groupPurchase.b_member_id=member.member_id)
+        <where>
+            <if test="siteId != null">
+                AND groupPurchase.site_id = #{siteId}
+            </if>
+            <if test="tradesId != null">
+                AND groupPurchase.trades_id = #{tradesId}
+            </if>
+            <if test="id != null">
+                AND groupPurchase.id = #{id}
+            </if>
+            AND groupPurchase.parent_id is null
+            And groupPurchase.status not in (0,3,4)
+        </where>
+    </select>
+
+    <select id="selectCountForGroupPurchase" parameterType="com.jk51.modules.grouppurchase.request.GroupPurchaseParam"
+            resultType="int">
+        select count(1)
+        from b_group_purchase
+           WHERE
+        parent_id = #{id}
+        AND
+        site_id = #{siteId}
+        AND status=2
+    </select>
+
+    <select id="childRenNoPayList" parameterType="com.jk51.modules.grouppurchase.request.GroupPurchaseParam"
+            resultMap="BaseResultMap">
+         select groupPurchase.*,member.open_id open_id,member.ali_user_id
+        from b_group_purchase groupPurchase
+        LEFT JOIN b_member member
+        on(groupPurchase.site_id=member.site_id and groupPurchase.b_member_id=member.member_id)
+        WHERE
+        groupPurchase.parent_id = #{id}
+        AND
+        groupPurchase.site_id = #{siteId}
+        AND groupPurchase.status=0
+    </select>
+
+
+    <select id="selectCountForJoinTheGroupPurchase"
+            parameterType="com.jk51.modules.grouppurchase.request.GroupPurchaseParam" resultType="int">
+
+        select count(1) from b_group_purchase
+        <where>
+            <if test="siteId != null">
+                AND site_id = #{siteId}
+            </if>
+            <if test="proActivityId != null">
+                AND pro_activity_id = #{proActivityId}
+            </if>
+            <if test="goodsId != null">
+                AND goods_id = #{goodsId}
+            </if>
+            <if test="id != null">
+                AND (id = #{id} or parent_id = #{id})
+            </if>
+        </where>
+    </select>
+
+    <select id="getGroupPurchaseFromTradsesId" resultMap="BaseResultMap">
+       select groupPurchase.*,member.open_id open_id
+        from b_group_purchase groupPurchase
+        LEFT JOIN b_member member
+        on(groupPurchase.site_id=member.site_id and groupPurchase.b_member_id=member.member_id)
+        WHERE 1=1
+         and groupPurchase.trades_id=#{tradesId}
+    </select>
+
+
+    <select id="getGoruoLeaderStatus1" resultMap="BaseResultMap">
+       SELECT * from b_group_purchase where site_id = #{siteId} and trades_id = #{tradesId}
+    </select>
+
+
+    <select id="getGoruoLeaderStatus2" resultMap="BaseResultMap">
+        SELECT * from b_group_purchase where site_id = #{siteId} and id = #{id}
+    </select>
+    <!--select end-->
+    <select id="getGroupPurcharseParentIdPurcharse" resultMap="BaseResultMap">
+        SELECT
+            *
+        FROM
+            b_group_purchase gp
+        WHERE
+            gp.site_id = #{siteId}
+            AND gp.pro_activity_id = #{activityId}
+            AND gp.goods_id = #{goodsId}
+	        AND gp.status = 1
+    </select>
+
+</mapper>

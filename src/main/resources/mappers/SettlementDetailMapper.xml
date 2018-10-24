@@ -1,0 +1,1487 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.account.mapper.SettlementDetailMapper">
+    <!--    <insert id="addSettlementDetail" parameterType="com.jk51.model.account.models.SettlementDetail">
+            insert into yb_settlement_detail (trades_id,pay_style,pay_number,account_checking_status,business_types,refund_fee,
+            refund_checking_status,platform_payment_amount,platform_fashionable_amount,platform_service_fee,platform_refund_fee,
+            create_time,update_time,account_status)
+            values (#{settlementDetail.trades_id},#{settlementDetail.pay_style},#{settlementDetail.pay_number},
+            #{settlementDetail.account_checking_status},#{settlementDetail.business_types},#{settlementDetail.refund_fee},
+            #{settlementDetail.refund_checking_status},#{settlementDetail.platform_payment_amount},
+            #{settlementDetail.platform_fashionable_amount},#{settlementDetail.platform_service_fee},#{settlementDetail.platform_refund_fee},
+            CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP(),#{settlementDetail.account_status});
+        </insert>-->
+    <insert id="addSettlementDetail" parameterType="com.jk51.model.account.models.SettlementDetail" useGeneratedKeys="true">
+        INSERT INTO yb_settlement_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="settlementDetail.trades_id!=null and settlementDetail.trades_id!=''">
+                `trades_id`,
+            </if>
+            <if test="settlementDetail.pay_style!=null and settlementDetail.pay_style!=''">
+                `pay_style`,
+            </if>
+            <if test="settlementDetail.pay_number!=null and settlementDetail.pay_number!=''">
+                `pay_number`,
+            </if>
+            <if test="settlementDetail.account_checking_status!=null and settlementDetail.account_checking_status!=''">
+                `account_checking_status`,
+            </if>
+            <if test="settlementDetail.business_types!=null and settlementDetail.business_types!=''">
+                `business_types`,
+            </if>
+            <if test="settlementDetail.refund_fee!=null and settlementDetail.refund_fee!=''">
+                `refund_fee`,
+            </if>
+            <if test="settlementDetail.refund_checking_status!=null ">
+                `refund_checking_status`,
+            </if>
+            <if test="settlementDetail.platform_payment_amount!=null and settlementDetail.platform_payment_amount!=''">
+                `platform_payment_amount`,
+            </if>
+            <if test="settlementDetail.platform_fashionable_amount!=null and settlementDetail.platform_fashionable_amount!=''">
+                `platform_fashionable_amount`,
+            </if>
+            <if test="settlementDetail.platform_service_fee!=null and settlementDetail.platform_service_fee!=''">
+                `platform_service_fee`,
+            </if>
+            <if test="settlementDetail.platform_refund_fee!=null and settlementDetail.platform_refund_fee!=''">
+                `platform_refund_fee`,
+            </if>
+            `create_time`,`update_time`,
+            <if test="settlementDetail.account_status!=null and settlementDetail.account_status!=''">
+                `account_status`,
+            </if>
+        </trim>
+        <trim prefix=" values (" suffix=")" suffixOverrides=",">
+            <if test="settlementDetail.trades_id!=null and settlementDetail.trades_id!=''">
+                #{settlementDetail.trades_id},
+            </if>
+            <if test="settlementDetail.pay_style!=null and settlementDetail.pay_style!=''">
+                #{settlementDetail.pay_style},
+            </if>
+            <if test="settlementDetail.pay_number!=null and settlementDetail.pay_number!=''">
+                #{settlementDetail.pay_number},
+            </if>
+            <if test="settlementDetail.account_checking_status!=null and settlementDetail.account_checking_status!=''">
+                #{settlementDetail.account_checking_status},
+            </if>
+            <if test="settlementDetail.business_types!=null and settlementDetail.business_types!=''">
+                #{settlementDetail.business_types},
+            </if>
+            <if test="settlementDetail.refund_fee!=null and settlementDetail.refund_fee!=''">
+                #{settlementDetail.refund_fee},
+            </if>
+            <if test="settlementDetail.refund_checking_status!=null">
+                #{settlementDetail.refund_checking_status},
+            </if>
+            <if test="settlementDetail.platform_payment_amount!=null and settlementDetail.platform_payment_amount!=''">
+                #{settlementDetail.platform_payment_amount},
+            </if>
+            <if test="settlementDetail.platform_fashionable_amount!=null and settlementDetail.platform_fashionable_amount!=''">
+                #{settlementDetail.platform_fashionable_amount},
+            </if>
+            <if test="settlementDetail.platform_service_fee!=null and settlementDetail.platform_service_fee!=''">
+                #{settlementDetail.platform_service_fee},
+            </if>
+            <if test="settlementDetail.platform_refund_fee!=null and settlementDetail.platform_refund_fee!=''">
+                #{settlementDetail.platform_refund_fee},
+            </if>
+            CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP(),
+            <if test="settlementDetail.account_status!=null and settlementDetail.account_status!=''">
+                #{settlementDetail.account_status},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="getSettlementListByTradesId" resultType="com.jk51.model.account.models.SettlementDetail" useCache="false">
+        select id,finance_no,trades_id from yb_settlement_detail where trades_id=#{trades_id} limit 1
+    </select>
+    <update id="updateSettlementById" parameterType="com.jk51.model.account.models.SettlementDetail" flushCache="true">
+        update yb_settlement_detail set update_time=CURRENT_TIMESTAMP(),
+        <if test="settlementDetail.account_checking_status!=null">
+            account_checking_status=#{settlementDetail.account_checking_status},
+        </if>
+        <if test="settlementDetail.refund_checking_status!=null">
+          refund_checking_status=#{settlementDetail.refund_checking_status},
+        </if>
+        platform_payment_amount=#{settlementDetail.platform_payment_amount},
+        platform_service_fee=#{settlementDetail.platform_service_fee},
+        refund_fee=#{settlementDetail.refund_fee},
+        platform_refund_fee=#{settlementDetail.platform_refund_fee}
+        where trades_id=#{settlementDetail.trades_id}
+    </update>
+
+    <update id="updateSettlementByCh" parameterType="com.jk51.model.account.models.SettlementDetail" flushCache="true">
+        update yb_settlement_detail set update_time=CURRENT_TIMESTAMP(),
+        refund_checking_status=#{settlementDetail.refund_checking_status},
+        refund_fee=#{settlementDetail.refund_fee},
+        platform_refund_fee=#{settlementDetail.platform_refund_fee}
+        where trades_id=#{settlementDetail.trades_id}
+    </update>
+
+    <update id="updateSettlementRefundById" parameterType="com.jk51.model.account.models.SettlementDetail" flushCache="true">
+        update yb_settlement_detail set update_time=CURRENT_TIMESTAMP(),
+        refund_checking_status=#{settlementDetail.refund_checking_status},
+        platform_payment_amount=#{settlementDetail.platform_payment_amount},
+        platform_fashionable_amount=#{settlementDetail.platform_fashionable_amount},
+        platform_service_fee=#{settlementDetail.platform_service_fee},
+        refund_fee=#{settlementDetail.refund_fee},
+        platform_refund_fee=#{settlementDetail.platform_refund_fee}
+        where trades_id=#{settlementDetail.trades_id}
+    </update>
+
+    <update id="updateRefundSettlementById" parameterType="com.jk51.model.account.models.SettlementDetail" flushCache="true">
+        update yb_settlement_detail set update_time=CURRENT_TIMESTAMP(),
+        refund_checking_status=#{settlementDetail.refund_checking_status},
+        refund_fee=#{settlementDetail.refund_fee}
+        where trades_id=#{settlementDetail.trades_id}
+    </update>
+
+
+    <update id="updateAccountImportById" parameterType="com.jk51.model.account.models.SettlementDetail" flushCache="true">
+        update yb_settlement_detail set remit_acount_time=CURRENT_TIMESTAMP(),platform_service_fee=#{settlementDetail.platform_service_fee}
+        ,platform_payment_amount=#{settlementDetail.platform_payment_amount}
+        ,rate=#{settlementDetail.rate}
+        where trades_id=#{settlementDetail.trades_id}
+    </update>
+    <update id="updateSettlementByTradeId">
+        update yb_settlement_detail set update_time=CURRENT_TIMESTAMP(),finance_no=#{finance_no}
+        ,summary_status=1
+        where trades_id=#{trades_id}
+
+    </update>
+    <update id="updateWechatRefundBankById" parameterType="com.jk51.model.account.models.SettlementDetail" flushCache="true">
+        update yb_settlement_detail set platform_payment_amount=#{settlementDetail.platform_payment_amount}
+        ,platform_refund_fee=#{settlementDetail.platform_service_fee}
+        ,platform_service_fee=#{settlementDetail.platform_service_fee}
+        ,rate=#{settlementDetail.rate}
+        where trades_id=#{settlementDetail.trades_id}
+    </update>
+    <!--   <insert id="saveSettlementDetailImport" parameterType="com.jk51.model.account.models.SettlementDetail">
+           insert into yb_settlement_detail (trades_id,pay_style,pay_number,account_checking_status,checking_user_type,
+           remark,business_types,finance_id,summary_status,refund_fee,refund_checking_status,platform_payment_amount,
+           platform_fashionable_amount,platform_service_fee,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,account_status,interest_rate,trades_status) VALUES (
+          #{settlementDetail.trades_id},#{settlementDetail.pay_style},#{settlementDetail.pay_number},#{settlementDetail.account_checking_status},
+           #{settlementDetail.business_types},#{settlementDetail.refund_fee},#{settlementDetail.refund_checking_status},
+           #{settlementDetail.platform_payment_amount},#{settlementDetail.platform_fashionable_amount},#{settlementDetail.platform_service_fee},
+           CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP(),#{settlementDetail.account_status},#{settlementDetail.interest_rate},#{settlementDetail.trades_status});
+       </insert>-->
+
+    <sql id="baseColumn">
+        id,finance_no,seller_id,seller_name,settlement_start_date,settlement_end_date,pay_day,post_total,
+        total_pay,finance_checking_total,platform_total,commission_total,need_pay,real_pay,
+        invoice,date_format(invoice_time,'%Y-%m-%d %H:%i:%S') as invoice_time,invoice_value,status,remark,audit_status,audit_remark,refund_total,is_charge_off,
+        create_time,update_time,pay_date,invoice_number,express_number,express_type,date_format(change_130_time,'%Y-%m-%d %H:%i:%S') as change_130_time,
+        operator_name,date_format(date_add(pay_day, interval 3 day),'%Y-%m-%d') as contract_date
+    </sql>
+
+    <select id="findSettlementDetail" parameterType="com.jk51.model.account.requestParams.QueryStatement" resultType="com.jk51.model.goods.PageData">
+        SELECT
+        a.id,
+        a.finance_no,
+        a.seller_id,
+        e.merchant_name seller_name,
+        a.settlement_start_date,
+        a.settlement_end_date,
+        a.pay_day,
+        a.post_total,
+        a.total_pay,
+        a.finance_checking_total,
+        a.platform_total,
+        a.commission_total,
+        IFNULL(a.need_pay,0) need_pay,
+        (IFNULL(a.platform_total,0)+IFNULL(a.commission_total,0)+IFNULL(a.post_total,0)) spendingAcount,
+        IFNULL(a.real_pay,0) real_pay,
+        a.invoice,
+        date_format(
+        a.invoice_time,
+        '%Y-%m-%d %H:%i:%S'
+        ) AS invoice_time,
+        a.invoice_value,
+        a.status,
+        a.remark,
+        a.audit_status,
+        a.audit_remark,
+        a.refund_total,
+        a.is_charge_off,
+        a.create_time,
+        a.update_time,
+        a.pay_date,
+        a.invoice_number,
+        a.express_number,
+        a.express_type,
+        date_format(
+        a.change_130_time,
+        '%Y-%m-%d %H:%i:%S'
+        ) AS change_130_time,
+        a.operator_name,
+        date_format(
+        date_add(a.pay_day, INTERVAL 3 DAY),
+        '%Y-%m-%d'
+        ) AS contract_date,
+        case when b.set_type = '0' then '日结'
+        when b.set_type = '1' then '周结'
+        when b.set_type = '2' then '月结'
+        else '其他' end
+        AS type,
+        IFNULL(m.create_time,'') transfer_time
+        FROM
+        yb_finances a
+        INNER JOIN yb_settlementday_config b ON a.seller_id = b.site_id
+        LEFT JOIN yb_merchant e ON a.seller_id=e.merchant_id
+        LEFT JOIN b_migrate m ON a.seller_id=m.site_id
+        <where>
+            1 = 1
+            <if test="merchantNum!=null and merchantNum!=''" >
+                AND a.seller_id = #{merchantNum}
+            </if>
+            <if test="name!=null and name!=''" >
+                AND e.merchant_name like concat('%',#{name},'%')
+            </if>
+            <if test="bilStatus!=null">
+                AND a.invoice = #{bilStatus}
+            </if>
+            <if test="examineStatus!=null">
+                AND a.audit_status = #{examineStatus}
+            </if>
+            <if test="findType!=null and findType=='merchant' " >
+                AND (a.audit_status !=0 and a.audit_status !=120)
+            </if>
+            <if test="bilNum!=null and bilNum!=''">
+                AND a.finance_no = #{bilNum}
+            </if>
+            <if test="settlementStatus==0">
+                AND a.audit_status !=130
+            </if>
+            <if test="settlementStatus==100">
+                AND a.audit_status =130 AND a.status &lt;= 100
+            </if>
+            <if test="settlementStatus>100">
+                AND a.status = #{settlementStatus}
+            </if>
+            <choose>
+                <when test="sPayment!=null and ePayment!=null">
+                    AND a.total_pay &gt;= #{sPayment} AND a.total_pay &lt;= #{ePayment}
+                </when>
+                <when test="sPayment!=null and ePayment==null">
+                    AND a.total_pay &gt;= #{sPayment}
+                </when>
+                <when test="ePayment!=null and sPayment==null">
+                    AND a.total_pay &lt;= #{ePayment}
+                </when>
+            </choose>
+            <choose>
+                <when test="sActualDate!=null and eActualDate!=null">
+                    AND a.pay_date &gt;= #{sActualDate} AND a.pay_date &lt;= #{eActualDate}
+                </when>
+                <when test="sActualDate!=null">
+                    AND a.pay_date &gt;= #{sActualDate}
+                </when>
+                <when test="eActualDate!=null">
+                    AND a.pay_date &lt;= #{eActualDate}
+                </when>
+            </choose>
+            <choose>
+                <when test="sOutDate!=null and eOutDate!=null">
+                    AND a.pay_day &gt;= #{sOutDate} AND a.pay_day &lt;= #{eOutDate}
+                </when>
+                <when test="sOutDate!=null">
+                    AND a.pay_day &gt;= #{sOutDate}
+                </when>
+                <when test="eOutDate!=null">
+                    AND a.pay_day &lt;= #{eOutDate}
+                </when>
+            </choose>
+            <if test="financeDate!=null">
+                AND a.pay_day &gt;= #{financeDate}
+            </if>
+            <if test="financeDateEnd!=null">
+                AND a.pay_day &lt;= #{financeDateEnd}
+            </if>
+            <if test="settlementType!=null">
+                AND b.set_type = #{settlementType}
+            </if>
+        </where>
+        ORDER BY a.pay_day DESC
+    </select>
+
+    <select id="findSettlementList" parameterType="com.jk51.model.account.requestParams.QueryOrderBill" resultType="com.jk51.model.goods.PageData">
+        SELECT
+        b.trades_id,
+        b.seller_id,
+        b.pay_style,
+        date_format(b.create_time,'%Y-%m-%d %H:%i:%S') as trade_time,
+        date_format(b.pay_time,'%Y-%m-%d %H:%i:%S') as pay_time,
+        b.real_pay,
+        b.trades_status,
+        b.is_refund,
+        b.seller_nick,
+        b.plat_split,
+        b.trades_split,
+        a.pay_number,
+        a.account_checking_status,
+        date_format(a.create_time,'%Y-%m-%d %H:%i:%S') as settle_time,
+        a.platform_service_fee,
+        a.platform_payment_amount,
+        a.account_status,
+        a.refund_checking_status,
+        a.platform_refund_fee,
+        a.refund_fee,
+        a.summary_status,
+        date_format(a.remit_acount_time,'%Y-%m-%d %H:%i:%S') as remit_acount_time
+        FROM
+        yb_settlement_detail a
+        INNER JOIN b_trades b ON a.trades_id = b.trades_id
+        <where>
+            1 = 1
+            <if test="tradesId!=null and tradesId!=''">
+                AND b.trades_id LIKE concat('%',#{tradesId},'%')
+            </if>
+            <if test="sellerId!=null and sellerId!=''">
+                AND b.seller_id LIKE concat('%',#{sellerId},'%')
+            </if>
+            <if test="sellerName!=null and sellerName!=''">
+                AND b.seller_nick LIKE concat('%',#{sellerName},'%')
+            </if>
+            <if test="payStyle!=null and payStyle!=''">
+                AND b.pay_style = #{payStyle}
+            </if>
+            <if test="accountCheckingStatus!=null and accountCheckingStatus!=''">
+                AND a.account_checking_status = #{accountCheckingStatus}
+            </if>
+            <if test="payCheckingStatus!=null and payCheckingStatus!=''">
+                AND a.account_status = #{payCheckingStatus}
+            </if>
+            <if test="refundCheckingStatus!=null and refundCheckingStatus!=''">
+                AND a.refund_checking_status = #{refundCheckingStatus}
+            </if>
+        </where>
+        ORDER BY a.create_time DESC
+    </select>
+
+<sql id="SettlementDetailForSelect">
+    a.site_id,
+        a.trades_id,
+        ifnull(a.pay_number, '') pay_number,
+        case when a.pay_style = 'wx' then '微信'
+             when a.pay_style = 'cash' then '现金'
+             when a.pay_style = 'ali' then '支付宝'
+             when a.pay_style = 'health_insurance' then '医保'
+             when a.pay_style = 'unionPay' then '银联'
+             else '其他'
+        end pay_style_desc,
+        case when a.is_refund=100 THEN '退款中'
+             when a.is_refund=110 THEN '拒绝退款'
+             when a.is_refund=120 then '退款成功'
+             else '---'
+        end refundstatuss,
+        CASE
+            WHEN a.trades_status = 110 THEN '等侍买家付款'
+            WHEN a.trades_status = 120 THEN '等待卖家发货'
+            WHEN a.trades_status = 130 THEN '等侍买家确认收货'
+            WHEN a.trades_status = 140 THEN '买家已签收，货到付款专用'
+            WHEN a.trades_status = 150 THEN '交易成功'
+            WHEN a.trades_status = 160 THEN '用户未付款主动关闭'
+            WHEN a.trades_status = 170 THEN'超时未付款，系统关闭'
+            WHEN a.trades_status = 180 THEN '商家关闭订单'
+            WHEN a.trades_status = 200 THEN '待取货|待自提，直购和自提专用'
+            WHEN a.trades_status = 210 THEN '已取货|已自提 直购和自提专用'
+            WHEN a.trades_status = 900 THEN '已退款'
+            WHEN a.trades_status = 220 THEN '用户确认收货'
+            WHEN a.trades_status = 230 THEN '门店确认收货'
+            WHEN a.trades_status = 800 THEN '系统确认收货'
+            WHEN a.trades_status = 240 THEN '已取消【门店自提待自提后可取消订单】'
+            ELSE a.trades_status
+        END trades_status,
+        date_format(a.create_time,'%Y-%m-%d %H:%i:%S') as order_time,
+        date_format(a.pay_time,'%Y-%m-%d %H:%i:%S') as pay_time,
+        '' as platform_trade_id,
+        case
+            WHEN b.account_checking_status = 0 THEN '未对账'
+            WHEN b.account_checking_status = 2 THEN '对账失败'
+            WHEN b.account_checking_status = 1 THEN '对账成功'
+            else ''
+        end pay_ac_status,
+        case when b.refund_fee > 0 then b.create_time
+        else '' end as pay_ac_time,
+        format(b.platform_service_fee/100,2) platform_service_fee,
+        case
+            when (b.account_checking_status=0 OR b.account_checking_status IS NULL) then '未对账'
+            when ((b.account_checking_status=1 and b.refund_checking_status=-1 and a.is_refund!=120) or (b.refund_checking_status=1)
+              or (b.account_checking_status=1 and b.refund_checking_status=1 and a.is_refund=120)) then '对账成功'
+            ELSE '对账失败'
+        end platform_status,
+        case when b.refund_checking_status=-1 then '未对账'
+             when b.refund_checking_status=0 then '对账失败'
+             when b.refund_checking_status=1 then '对账成功'
+             else ''
+        end refund_ac_status,
+        '' platform_refund_status,
+        case
+            when (b.account_checking_status=0 OR b.account_checking_status IS NULL) then '未对账'
+            when ((b.account_checking_status=1 and b.refund_checking_status=-1 and a.deal_finish_status=1 and a.is_refund=0)
+                or (b.refund_checking_status=1)
+                or (b.account_checking_status=1 and b.refund_checking_status=-1 and a.deal_finish_status=1 and a.is_refund=110)
+                or (b.account_checking_status=1 and b.refund_checking_status=1 and a.deal_finish_status=1 and a.is_refund=120))
+              then '对账成功'
+            ELSE '对账失败'
+        end general_ac_status,
+        ifnull(date_format(b.create_time,'%Y-%m-%d %H:%i:%S'),'') as settle_time
+</sql>
+
+    <!--财务对账查询sql-->
+    <select id="queryOrderSettleDetail" parameterType="map" resultType="com.jk51.model.settle.FinancialSettleDetail">
+      (SELECT
+            format(a.real_pay /100,2) real_pay,
+            CASE WHEN (a.finance_no!=a.finance_no_refund OR a.finance_no_refund ='') AND a.finance_no!='' THEN 0.00 ELSE round(a.refund_fee /100,2) END refund_fee,
+            CASE WHEN a.pay_style IN ('cash','health_insurance') THEN 0.00 ELSE round(b.platform_payment_amount/100,2) END platform_payment_amount,
+            CASE WHEN (a.finance_no!=a.finance_no_refund OR a.finance_no_refund ='') AND a.finance_no!='' THEN 0.00 ELSE round(b.platform_refund_fee/100,2) END platform_refund_fee,
+            ifnull(a.finance_no,'---') financenos,
+            <include refid="SettlementDetailForSelect"/>
+        FROM b_trades a
+        LEFT JOIN yb_settlement_detail b ON a.trades_id = b.trades_id
+        WHERE
+            1=1
+            <include refid="SettlementDetailForWhere"/>
+            <if test="financesNos!=null">
+                AND a.finance_no in
+                <foreach collection="financesNos" open="(" separator="," item="items" close=")">
+                    #{items}
+                </foreach>
+            </if>
+        )
+UNION ALL
+    (SELECT
+            '0.00' real_pay,
+            CASE WHEN a.is_refund=120 THEN round(a.refund_fee /100,2) ELSE 0.00 END refund_fee,
+            '0.00' platform_payment_amount,
+            CASE WHEN a.is_refund=120 THEN round(b.platform_refund_fee/100,2) ELSE 0.00 END platform_refund_fee,
+            ifnull(a.finance_no_refund,'---') financenos,
+          <include refid="SettlementDetailForSelect"/>
+        FROM b_trades a
+        LEFT JOIN yb_settlement_detail b ON a.trades_id = b.trades_id
+        WHERE
+            1=1
+            AND a.finance_no_refund !=''
+            AND a.finance_no_refund != a.finance_no
+            <include refid="SettlementDetailForWhere"/>
+            <if test="financesNos!=null">
+                AND a.finance_no_refund in
+                <foreach collection="financesNos" open="(" separator="," item="items" close=")">
+                    #{items}
+                </foreach>
+            </if>
+        )
+    </select>
+
+    <sql id="SettlementDetailForWhere">
+        <if test="tradesId!=null and tradesId!=''">
+            AND a.trades_id = #{tradesId}
+        </if>
+        <if test="sellerId!=null and sellerId!=''">
+            AND a.site_id = #{sellerId}
+        </if>
+        <if test="payStyle!=null and payStyle!=''">
+            AND a.pay_style = #{payStyle}
+        </if>
+        <!-- 付款时间 -->
+        <if test="payTimeStart != null and payTimeStart != ''">
+            AND a.pay_time <![CDATA[ >= ]]> str_to_date(#{payTimeStart},'%Y-%m-%d')
+        </if>
+        <if test="payTimeEnd != null and payTimeEnd != ''">
+            AND a.pay_time <![CDATA[ <= ]]> str_to_date(#{payTimeEnd},'%Y-%m-%d')
+        </if>
+        <if test="payCheckingStatus!=null and payCheckingStatus!=''">
+            AND b.account_checking_status = #{payCheckingStatus}
+        </if>
+        <if test="refundCheckingStatus!=null and refundCheckingStatus!=''">
+            AND b.refund_checking_status = #{refundCheckingStatus}
+        </if>
+        <if test="accountCheckingStatus==0 ">
+            AND (b.account_checking_status=0 or b.account_checking_status  IS NULL)
+        </if>
+        <if test="accountCheckingStatus==1 ">
+            AND ((b.account_checking_status=1 and b.refund_checking_status=-1 and a.deal_finish_status=1 and a.is_refund=0)
+            or (b.account_checking_status=1 and b.refund_checking_status=-1 and a.deal_finish_status=1 and a.is_refund=110)
+            or (b.refund_checking_status=1)
+            or (b.account_checking_status=1 and b.refund_checking_status=1 and a.deal_finish_status=1 and a.is_refund=120))
+        </if>
+        <if test="accountCheckingStatus==2 ">
+            AND((b.account_checking_status=0 and b.refund_checking_status=0)
+            or (b.account_checking_status=1 and b.refund_checking_status=0)
+            or(b.account_checking_status=1 and b.refund_checking_status=-1 and a.deal_finish_status=1 and a.is_refund=120)
+            or (b.account_checking_status=2 and  b.refund_checking_status=-1)
+            or(b.account_checking_status=2 and  b.refund_checking_status=1)
+            )
+        </if>
+    </sql>
+
+    <select id="queryTotalOrderSettleDetail" parameterType="map" resultType="long">
+        SELECT COUNT(1) FROM
+        b_trades a
+        LEFT  join yb_settlement_detail b on a.trades_id = b.trades_id
+
+        <where>
+            1 = 1
+            <if test="tradesId!=null and tradesId!=''">
+                AND a.trades_id = #{tradesId}
+            </if>
+            <if test="merchantId!=null and merchantId!=''">
+                AND a.site_id = #{merchantId}
+            </if>
+            <if test="financesNos!=null">
+                AND a.finance_no in
+                <foreach collection="financesNos" index="index" open="(" separator="," close=")" item="item">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="sellerId!=null and sellerId!=''">
+                AND a.site_id  = #{sellerId}
+            </if>
+            <if test="payStyle!=null and payStyle!=''">
+                AND a.pay_style = #{payStyle}
+            </if>
+            <!-- 付款时间 -->
+            <if test="payTimeStart != null and payTimeStart != ''">
+                AND a.pay_time <![CDATA[ >= ]]> str_to_date(#{payTimeStart},'%Y-%m-%d')
+            </if>
+            <if test="payTimeEnd != null and payTimeEnd != ''">
+                AND a.pay_time <![CDATA[ <= ]]> str_to_date(#{payTimeEnd},'%Y-%m-%d')
+            </if>
+            <if test="payCheckingStatus!=null and payCheckingStatus!=''">
+                AND b.account_checking_status = #{payCheckingStatus}
+            </if>
+            <if test="refundCheckingStatus!=null and refundCheckingStatus!=''">
+                AND b.refund_checking_status = #{refundCheckingStatus}
+            </if>
+            <if test=" accountCheckingStatus==0 ">
+                AND (b.account_checking_status=0 or b.account_checking_status  IS NULL)
+            </if>
+            <if test="accountCheckingStatus==1 ">
+                AND ((b.account_checking_status=1 and b.refund_checking_status=-1 and a.deal_finish_status=1 and a.is_refund=0)
+                or (b.account_checking_status=1 and b.refund_checking_status=-1 and a.deal_finish_status=1 and a.is_refund=110)
+                or (b.refund_checking_status=1)
+                or (b.account_checking_status=1 and b.refund_checking_status=1 and a.deal_finish_status=1 and a.is_refund=120))
+            </if>
+            <if test=" accountCheckingStatus==2 ">
+                AND((b.account_checking_status=0 and b.refund_checking_status=0)
+                or (b.account_checking_status=1 and b.refund_checking_status=0)
+                or(b.account_checking_status=1 and b.refund_checking_status=-1 and a.deal_finish_status=1 and a.is_refund=120)
+                or (b.account_checking_status=2 and  b.refund_checking_status=-1)
+                or(b.account_checking_status=2 and  b.refund_checking_status=1)
+                )
+            </if>
+        </where>
+        ORDER BY a.create_time DESC
+    </select>
+
+
+    <select id="queryOrderSettleDetailForExport" parameterType="map" resultType="java.util.Map">
+        SELECT
+        a.site_id,
+        a.trades_id,
+        ifnull(a.pay_number, '') pay_number,
+        case when a.pay_style = 'wx' then '微信'
+        when a.pay_style = 'cash' then '现金'
+        when a.pay_style = 'ali' then '支付宝'
+        when a.pay_style = 'health_insurance' then '医保'
+        when  a.pay_style = 'unionPay' then '银联'
+        else '其他' end pay_style_desc,
+        case when a.is_refund=100 THEN '退款中'
+        when a.is_refund=110 THEN '拒绝退款'
+        when a.is_refund=120 then '退款成功'
+        else '---' end refundstatuss,
+        CASE
+        WHEN a.trades_status = 110 THEN '等侍买家付款'
+        WHEN a.trades_status = 120 THEN '等待卖家发货'
+        WHEN a.trades_status = 130 THEN '等侍买家确认收货'
+        WHEN a.trades_status = 140 THEN '买家已签收，货到付款专用'
+        WHEN a.trades_status = 150 THEN '交易成功'
+        WHEN a.trades_status = 160 THEN '用户未付款主动关闭'
+        WHEN a.trades_status = 170 THEN'超时未付款，系统关闭'
+        WHEN a.trades_status = 180 THEN '商家关闭订单'
+        WHEN a.trades_status = 200 THEN '待取货|待自提，直购和自提专用'
+        WHEN a.trades_status = 210 THEN '已取货|已自提 直购和自提专用'
+        WHEN a.trades_status = 900 THEN '已退款'
+        WHEN a.trades_status = 220 THEN '用户确认收货'
+        WHEN a.trades_status = 230  THEN '门店确认收货'
+        WHEN a.trades_status = 800 THEN '系统确认收货'
+        WHEN a.trades_status = 240 THEN '已取消【门店自提待自提后可取消订单】'
+        ELSE a.trades_status
+        END trades_status,
+        date_format(a.create_time,'%Y-%m-%d %H:%i:%S') as order_time,
+        date_format(a.pay_time,'%Y-%m-%d %H:%i:%S') as pay_time,
+        format(a.real_pay /100,2) real_pay,
+        <!-- 支付平台订单号 -->
+        <!-- ifnull(e.business_order_sn,'') platform_trade_id, -->
+        '' as platform_trade_id,
+        case
+        WHEN b.account_checking_status = 0 THEN
+        '未对账'
+        WHEN b.account_checking_status = 2 THEN
+        '对账失败'
+        WHEN b.account_checking_status = 1 THEN
+        '对账成功'
+        else ''
+        end pay_ac_status,
+        <!-- 付款对账时间 -->
+        case when b.refund_fee > 0 then b.create_time
+        else '' end as pay_ac_time,
+        format(b.platform_service_fee/100,2) platform_service_fee,
+        <!-- 支付平台金额 -->
+        format(b.platform_payment_amount/100,2) platform_payment_amount,
+        <!-- 支付平台状态 -->
+        <!-- if(length(e.trades_id) > 0,'成功','未知') platform_status, -->
+        case when b.account_checking_status = 1 and (b.refund_fee is null or b.refund_fee = 0) then '对账成功'
+        when b.refund_fee > 0 and b.refund_checking_status = 1 then '对账成功'
+        when b.account_checking_status = 0 and (b.refund_fee is null or b.refund_fee = 0) then '对账失败'
+        when b.refund_fee > 0 and b.refund_checking_status = 0 then '对账失败'
+        else '未对账'
+        end as platform_status,
+        case when b.refund_checking_status=-1 then '未对账'
+        when b.refund_checking_status=0 then '对账失败'
+        when b.refund_checking_status=1 then '对账成功'
+        else '' end refund_ac_status,
+        format(b.platform_refund_fee/100,2) platform_refund_fee,
+        <!-- 支付平台退款时间 -->
+        /*        ifnull(date_format(d.refund_time,'%Y-%m-%d %H:%i:%S'),'') platform_refund_time,*/
+        <!-- 支付平台退款状态，目前没有，就先取退款状态 -->
+        '' platform_refund_status,
+        <!-- 总对账状态，先判断是否退款，如果是退款既要看退款对账状态也要看付款对账状态 -->
+        case when b.account_checking_status = 1 and (b.refund_fee is null or b.refund_fee = 0) then '对账成功'
+        when b.refund_fee > 0 and b.refund_checking_status = 1 then '对账成功'
+        when b.account_checking_status = 0 and (b.refund_fee is null or b.refund_fee = 0) then '对账失败'
+        when b.refund_fee > 0 and b.refund_checking_status = 0 then '对账失败'
+        when b.account_checking_status=1 and b.refund_checking_status = 0 then '对账失败'
+        else '未对账'
+        end as general_ac_status,
+        case
+        when b.account_checking_status =0 then '未对账'
+        when b.account_checking_status =1 and (b.refund_checking_status=-1 or b.refund_checking_status=1) then '对账成功'
+        when b.account_checking_status =2 or (b.account_checking_status=1 and b.refund_checking_status=0)then '对账失败'
+        ELSE '未对账'
+        end account_statuss,
+        ifnull(date_format(b.create_time,'%Y-%m-%d %H:%i:%S'),'') as settle_time
+        FROM
+        b_trades a
+        LEFT JOIN yb_settlement_detail b ON a.trades_id = b.trades_id
+
+
+        <!-- left join yb_pay_data_import e on a.trades_id = e.trades_id -->
+        <where>
+            1 = 1
+            <if test="account_params.tradesId!=null and account_params.tradesId!=''">
+                AND a.trades_id = #{account_params.tradesId}
+            </if>
+            <if test="account_params.sellerId!=null and account_params.sellerId!=''">
+                AND a.site_id  = #{account_params.sellerId}
+            </if>
+            <if test="account_params.payStyle!=null and account_params.payStyle!=''">
+                AND a.pay_style = #{account_params.payStyle}
+            </if>
+            <!-- 付款时间 -->
+            <if test="account_params.payTimeStart != null and account_params.payTimeStart != ''">
+                AND  a.pay_time  <![CDATA[ >= ]]> str_to_date(#{account_params.payTimeStart},'%Y-%m-%d')
+            </if>
+            <if test="account_params.payTimeEnd != null and account_params.payTimeEnd != ''">
+                AND   a.pay_time <![CDATA[ <= ]]> str_to_date(#{account_params.payTimeEnd},'%Y-%m-%d')
+            </if>
+            <if test="account_params.payCheckingStatus!=null and account_params.payCheckingStatus!=''">
+                AND b.account_checking_status = #{account_params.payCheckingStatus}
+            </if>
+            <if test="account_params.refundCheckingStatus!=null and account_params.refundCheckingStatus!=''">
+                AND b.refund_checking_status = #{account_params.refundCheckingStatus}
+            </if>
+            <if test="account_params.accountCheckingStatus==0 ">
+                AND (b.account_checking_status=0 or b.account_checking_status  IS NULL)
+            </if>
+            <if test="account_params.accountCheckingStatus==1 ">
+                AND b.account_checking_status=1
+                AND (b.refund_checking_status = -1 OR b.refund_checking_status = 1)
+            </if>
+            <if test=" account_params.accountCheckingStatus==2 ">
+                AND((b.account_checking_status=1 and b.refund_checking_status=0)
+                or b.account_checking_status=2)
+            </if>
+            <if test="financesNos!=null">
+                AND a.finance_no in
+                <foreach collection="financesNos" index="index" open="(" separator="," close=")" item="item">
+                    #{item}
+                </foreach>
+            </if>
+
+
+        </where>
+        ORDER BY a.create_time DESC
+    </select>
+
+
+    <select id="findSettlementLog" parameterType="com.jk51.model.account.requestParams.QuerySettlementLog" resultType="java.util.Map">
+        SELECT
+        a.finance_no,
+        a.seller_id,
+        f.merchant_name seller_name,
+        CASE a.is_charge_off
+        WHEN 0 THEN '正常'
+        WHEN 1 THEN '异常' END is_charge_off,
+        a.settlement_start_date,
+        a.settlement_end_date,
+        a.pay_day,
+        IFNULL(date_format(e.create_time,'%Y-%m-%d'),'') create_times,
+        a.status,
+        IFNULL(date_format(e.create_time,'%Y-%m-%d %H:%i:%S'),'') create_time,
+        t.jy_count,
+        t.jy_amount,
+        IFNULL(t.ch_amount,0) ch_amount,
+        IFNULL(dzs.dz_count,0) dz_count,
+        IFNULL(dzs.dz_amount,0) dz_amount,
+        IFNULL(dzf.dz_fail_count,0) dz_fail_count,
+        IFNULL(dzf.dz_fail_amount,0) dz_fail_amount,
+        e.operation_name,
+        e.remark
+        FROM
+        yb_finance_audit_log e
+        LEFT JOIN yb_finances a ON a.finance_no = e.finance_no
+        LEFT JOIN yb_merchant f ON a.seller_id=f.merchant_id
+        LEFT JOIN (SELECT finance_no,COUNT(0) jy_count,SUM(real_pay) jy_amount,sum(case when pay_style in('cash','health_insurance') then real_pay end) ch_amount
+        FROM b_trades WHERE finance_no!='' AND finance_no IS NOT NULL GROUP BY finance_no) t ON t.finance_no=e.finance_no
+        LEFT JOIN (SELECT t.finance_no,COUNT(IFNULL(d.id,0)) dz_count,SUM(IFNULL(d.platform_payment_amount,0)) dz_amount
+        FROM yb_settlement_detail d  LEFT JOIN b_trades t ON t.trades_id=d.trades_id
+        WHERE t.finance_no!='' AND t.finance_no IS NOT NULL
+        AND ((d.account_checking_status=1 AND t.is_refund!=120 AND d.refund_checking_status=-1)OR(d.account_checking_status=1 AND t.is_refund=120 AND d.refund_checking_status=1))
+        GROUP BY t.finance_no
+        )dzs  ON e.finance_no=dzs.finance_no
+        LEFT JOIN (SELECT t.finance_no,COUNT(IFNULL(d.id,0)) dz_fail_count,SUM(IFNULL(d.platform_refund_fee,0)) dz_fail_amount
+        FROM  b_trades t  LEFT JOIN yb_settlement_detail d ON t.trades_id=d.trades_id
+        WHERE t.finance_no!='' AND t.finance_no IS NOT NULL
+        AND (d.account_checking_status!=1 OR d.account_checking_status IS NULL OR(d.account_checking_status=1 AND t.is_refund=120 AND d.refund_checking_status!=1))
+        GROUP BY t.finance_no
+        )dzf ON dzf.finance_no=e.finance_no
+        <where>
+            1 = 1
+            <if test="sellerId!=null and sellerId!=''">
+                AND a.seller_id LIKE concat('%',#{sellerId},'%')
+            </if>
+            <if test="sellerName!=null and sellerName!=''">
+                AND f.merchant_name LIKE concat('%',#{sellerName},'%')
+            </if>
+            <if test="executeStatus!=null and executeStatus!=''">
+                AND a.is_charge_off = #{executeStatus}
+            </if>
+            <if test="siteId!=null and siteId!=''">
+                AND a.seller_id = #{siteId}
+            </if>
+            <if test="financeNo!=null and financeNo!=''">
+                AND a.finance_no LIKE concat('%',#{financeNo},'%')
+            </if>
+            <choose>
+                <when test="sOutDate!=null and eOutDate!=null">
+                    AND  e.create_time &gt;= #{sOutDate} AND  e.create_time &lt;= ADDDATE(#{eOutDate},1)
+                </when>
+                <when test="sOutDate!=null">
+                    AND  e.create_time &gt;= #{sOutDate}
+                </when>
+                <when test="eOutDate!=null">
+                    AND  e.create_time &lt;= ADDDATE(#{eOutDate},1)
+                </when>
+            </choose>
+        </where>
+        ORDER BY a.create_time DESC
+    </select>
+
+    <select id="findDetails" resultType="java.util.Map">
+        SELECT
+        a.*, b.*, c.`name` AS storeName,d.`name` AS cuxiaoyuan,
+        ifnull(date_format(a.create_time,'%Y-%m-%d %H:%i:%S'),'0000-00-00 00:00:00') AS xiadanshijian,
+        ifnull(date_format(a.consign_time,'%Y-%m-%d %H:%i:%S'),'0000-00-00 00:00:00') AS fahuoshijian,
+        ifnull(date_format(a.pay_time,'%Y-%m-%d %H:%i:%S'),'0000-00-00 00:00:00') AS jiaoyichenggong,
+        ifnull(date_format(a.confirm_goods_time,'%Y-%m-%d %H:%i:%S'),'0000-00-00 00:00:00') AS jiaoyichenggongs,
+        ifnull(date_format(a.end_time,'%Y-%m-%d %H:%i:%S'),'0000-00-00 00:00:00') AS jiaoyijieshu,
+        CASE a.trades_status
+        WHEN '110'THEN '等侍买家付款'
+        WHEN '120'THEN '等待卖家发货'
+        WHEN '130'THEN '等侍买家确认收货'
+        WHEN '140'THEN '买家已签收，货到付款专用'
+        WHEN '150'THEN '交易成功'
+        WHEN '160'THEN '用户未付款主动关闭'
+        WHEN '170'THEN '超时未付款，系统关闭'
+        WHEN '180'THEN '商家关闭订单'
+        WHEN '200'THEN '待取货|待自提，直购和自提专用'
+        WHEN '210'THEN '已取货|已自提 直购和自提专用'
+        WHEN '900'THEN '已退款'
+        WHEN '220'THEN '用户确认收货'
+        WHEN '230'THEN '门店确认收货'
+        WHEN '800'THEN '系统确认收货'
+        WHEN '240'THEN '已取消'
+        ELSE '其他' end jiaoyizhuangtai,
+        case  a.pay_style
+        WHEN 'wx' THEN '微信'
+        when 'cash' then '现金'
+        when 'ali' then '支付宝'
+        when 'health_insurance' then '医保'
+        when  'unionPay' then '银联'
+        else '其他' end zhifufangshi,
+        case when format(a.real_pay/100,2) is null then '0.00' else format(a.real_pay/100,2) end AS zhifujine,
+        e.refund_serial_no AS tuikuanliushuihao,
+        case when format(e.real_refund_money/100,2) is null then '0.00' else format(e.real_refund_money/100,2) end AS tuikuanjine,
+        ifnull(date_format(e.refund_time,'%Y-%m-%d %H:%i:%S'),'0000-00-00 00:00:00') AS tuikuanshijian,
+        CASE
+        WHEN a.settlement_status = '100' THEN '不结算'
+        WHEN a.settlement_status = '150' OR a.settlement_status = '200' THEN '待结算'
+        WHEN a.settlement_status = '250' and f.STATUS > 100 THEN '已结算'
+        WHEN a.settlement_status = '250' and (f.STATUS &lt;= 100 OR f.STATUS IS NULL) THEN '待结算'
+        ELSE '其他'
+        END settlement_statuss,
+        format(ifnull(a.O2O_freight,0)/100,2) AS peisongfei,
+        format(IFNULL(a.trades_split,0)/100,2) AS yongjin,
+        format(IFNULL(a.plat_split,0)/100,2) AS daishoushouxufei,
+        format((IFNULL(a.real_pay,0)-IFNULL(e.real_refund_money,0)-IFNULL(a.plat_split,0)-IFNULL(a.trades_split,0)-IFNULL(a.O2O_freight,0))/100,2) yingshouxiaoji,
+        case when
+        case  a.pay_style
+        WHEN 'wx' THEN   format(a.real_pay/100,2)
+        when 'ali' then  format(a.real_pay/100,2)
+        when  'unionPay' then format(a.real_pay/100,2)
+        end is null then '0.00' else
+        case  a.pay_style
+        WHEN 'wx' THEN   format(a.real_pay/100,2)
+        when 'ali' then  format(a.real_pay/100,2)
+        when  'unionPay' then format(a.real_pay/100,2)
+        end end	pingtaidaishou,
+
+        case when
+        case  a.pay_style
+        WHEN 'wx' THEN   format(e.real_refund_money/100,2)
+        when 'ali' then  format(e.real_refund_money/100,2)
+        when  'unionPay' then format(e.real_refund_money/100,2)
+        end is null then '0.00' else
+        case  a.pay_style
+        WHEN 'wx' THEN   format(e.real_refund_money/100,2)
+        when 'ali' then  format(e.real_refund_money/100,2)
+        when  'unionPay' then format(e.real_refund_money/100,2)
+        end end  pingtaidaitui,
+        IFNULL(m.create_time,'0000-00-00 00:00:00') transfer_time
+
+        FROM
+        b_trades a
+        LEFT JOIN `yb_settlement_detail` b ON (a.trades_id = b.trades_id)
+        LEFT JOIN b_stores c ON (a.trades_store = c.id AND a.site_id = c.site_id)
+        LEFT JOIN b_store_adminext d ON (a.store_user_id = d.id AND a.site_id = d.site_id)
+        LEFT JOIN b_refund e on (a.trades_id = e.trade_id and e.status=120)
+        LEFT JOIN yb_finances f on a.finance_no = f.finance_no
+        LEFT JOIN b_migrate m ON a.site_id=m.site_id
+        WHERE
+        a.trades_id = #{0} AND a.site_id = #{1}
+    </select>
+
+    <select id="findUserNameById" resultType="java.util.Map">
+
+        SELECT a.trades_store,
+        b.NAME AS songhuoyuan,
+        c.NAME AS yaoqingyuan,
+        d.NAME AS shouyinyuan,
+        e.NAME AS beihuoyuan,
+        f.NAME AS cuxiaoyuan,
+        h.NAME AS xiadanyuan,
+        #be.NAME AS guanzhuyuan,
+        j.NAME AS xiadanmendian,
+        g.NAME AS zhucemendian,
+        s.NAME AS fuwumendian
+        #IFNULL(be.store_name, '') AS guanzhumendian
+        FROM b_trades a
+        LEFT JOIN b_store_adminext b
+        ON a.store_shipping_clerk_id = b.storeadmin_id AND a.site_id = b.site_id
+        LEFT JOIN b_store_adminext c ON a.recommend_user_id = c.storeadmin_id AND a.site_id = c.site_id
+        LEFT JOIN b_store_adminext d ON a.cashier_id = d.storeadmin_id AND a.site_id = d.site_id
+        LEFT JOIN b_store_adminext e ON a.stockup_user_id = e.storeadmin_id AND a.site_id = e.site_id
+        LEFT JOIN b_store_adminext f ON a.store_user_id = f.storeadmin_id AND a.site_id = f.site_id
+        LEFT JOIN b_member m ON a.buyer_id = m.buyer_id AND a.site_id = m.site_id
+        LEFT JOIN b_stores g on m.register_stores = g.id and m.site_id = g.site_id and g.is_del = 1
+        LEFT JOIN b_store_adminext h ON m.register_clerks = h.storeadmin_id AND a.site_id = h.site_id
+        LEFT JOIN b_member_info i on i.member_id = m.buyer_id and i.site_id = m.site_id
+        LEFT JOIN b_store_adminext x on right(i.invite_code,5) = right(x.clerk_invitation_code,5) and i.site_id = x.site_id
+        LEFT JOIN b_stores j ON x.store_id = j.id AND a.site_id = j.site_id
+        LEFT JOIN b_stores s
+        ON a.assigned_stores = s.id AND a.site_id = s.site_id
+
+
+        WHERE
+        a.trades_id = #{0}
+        AND a.site_id = #{1}
+        limit 1
+    </select>
+
+
+    <select id="findsSettlementListExcel" parameterType="com.jk51.model.account.requestParams.QueryStatement" resultType="java.util.Map">
+        SELECT
+        a.id,
+        a.finance_no,
+        a.seller_id,
+        e.merchant_name seller_name,
+        CONCAT(a.settlement_start_date,'/',a.settlement_end_date) AS zhouqi,
+        a.settlement_start_date,
+        a.settlement_end_date,
+        a.pay_day,
+        a.post_total,
+        format((a.total_pay-a.refund_total)/100,2) as total_pay,
+        a.finance_checking_total,
+        a.platform_total,
+        a.commission_total,
+        format(a.need_pay/100,2) as need_pay,
+        format(a.real_pay/100,2) as real_pay,
+        format((IFNULL(a.platform_total,0)+IFNULL(a.commission_total,0)+IFNULL(a.post_total,0))/100,2) as spendingacount,
+        case when a.invoice='0' then '未开票'
+        when a.invoice='1' then '已开票'
+        else a.invoice end invoice,
+
+        date_format(
+        a.invoice_time,
+        '%Y-%m-%d %H:%i:%S'
+        ) AS invoice_time,
+        format( a.invoice_value/100,2) as invoice_value,
+        case when a.status='0' then '未处理'
+        when a.status='100' then '未支付'
+        when a.status='110' then '延期支付'
+        when a.status='200' then '支付部分'
+        when a.status='900' then '已结清'
+        else a.status end status,
+
+        a.remark,
+        case when a.audit_status='0' then '审核中'
+        when a.audit_status='120' then '审核失败'
+        when a.audit_status='130' then '商家已确认'
+        when a.audit_status='140' then '商家未确认'
+        when a.audit_status='110' then '审核成功'
+        else a.audit_status end audit_status,
+        a.audit_remark,
+        a.refund_total,
+        a.is_charge_off,
+        a.create_time,
+        a.update_time,
+        a.pay_date,
+        a.invoice_number,
+        a.express_number,
+        a.express_type,
+        date_format(
+        a.change_130_time,
+        '%Y-%m-%d %H:%i:%S'
+        ) AS change_130_time,
+        a.operator_name,
+        date_format(
+        date_add(a.pay_day, INTERVAL 3 DAY),
+        '%Y-%m-%d'
+        ) AS contract_date,
+        case when b.set_type = '0' then '日结'
+        when b.set_type = '1' then '周结'
+        when b.set_type = '2' then '月结'
+        else '其他' end
+        AS type
+        FROM
+        yb_finances a
+        INNER JOIN yb_settlementday_config b ON a.seller_id = b.site_id
+        LEFT JOIN yb_merchant e ON a.seller_id = e.merchant_id
+        <where>
+            1 = 1
+            <if test="merchantNum!=null and merchantNum!=''" >
+                AND a.seller_id = #{merchantNum}
+            </if>
+            <if test="name!=null and name!=''" >
+                AND a.seller_name = #{name}
+            </if>
+            <if test="bilStatus!=null">
+                AND a.invoice = #{bilStatus}
+            </if>
+            <if test="examineStatus!=null">
+                AND a.audit_status = #{examineStatus}
+            </if>
+            <if test="bilNum!=null and bilNum!=''">
+                AND a.finance_no = #{bilNum}
+            </if>
+            <if test="settlementStatus==0">
+                AND a.audit_status !=130
+            </if>
+            <if test="settlementStatus==100">
+                AND a.audit_status =130 AND a.status &lt;= 100
+            </if>
+            <if test="settlementStatus>100">
+                AND a.status = #{settlementStatus}
+            </if>
+
+            <choose>
+                <when test="sPayment!=null and ePayment!=null">
+                    AND a.total_pay &gt;= date_format(#{sPayment},'%Y-%m-%d') AND a.total_pay &lt;= date_format(#{ePayment},'%Y-%m-%d')
+                </when>
+                <when test="sPayment!=null and ePayment==null">
+                    AND a.total_pay &gt;= date_format(#{sPayment},'%Y-%m-%d')
+                </when>
+                <when test="ePayment!=null and sPayment==null">
+                    AND a.total_pay &lt;= date_format(#{ePayment},'%Y-%m-%d')
+                </when>
+            </choose>
+            <choose>
+                <when test="sActualDate!=null and eActualDate!=null">
+                    AND a.pay_date &gt;= date_format(#{sActualDate},'%Y-%m-%d') AND a.pay_date &lt;= date_format(#{eActualDate},'%Y-%m-%d')
+                </when>
+                <when test="sActualDate!=null">
+                    AND a.pay_date &gt;= date_format(#{sActualDate},'%Y-%m-%d')
+                </when>
+                <when test="eActualDate!=null">
+                    AND a.pay_date &lt;= date_format(#{eActualDate},'%Y-%m-%d')
+                </when>
+            </choose>
+            <choose>
+                <when test="sOutDate!=null and eOutDate!=null">
+                    AND a.pay_day &gt;= date_format(#{sOutDate},'%Y-%m-%d') AND a.pay_day &lt;= date_format(#{eOutDate},'%Y-%m-%d')
+                </when>
+                <when test="sOutDate!=null">
+                    AND a.pay_day &gt;= date_format(#{sOutDate},'%Y-%m-%d')
+                </when>
+                <when test="eOutDate!=null">
+                    AND a.pay_day &lt;= date_format(#{eOutDate},'%Y-%m-%d')
+                </when>
+            </choose>
+            <if test="financeDate!=null">
+                AND a.pay_day &gt;= date_format(#{financeDate},'%Y-%m-%d')
+            </if>
+            <if test="financeDateEnd!=null">
+                AND a.pay_day &lt;= date_format(#{financeDateEnd},'%Y-%m-%d')
+            </if>
+            <if test="settlementType!=null">
+                AND b.set_type = #{settlementType}
+            </if>
+        </where>
+        ORDER BY a.create_time DESC
+    </select>
+    <select id="findSettlementDetailsByFinancesId" parameterType="string" resultType="com.jk51.model.account.models.SettlementDetail">
+        SELECT * FROM yb_settlement_detail WHERE finance_no=#{financesNo}
+    </select>
+
+    <select id="findTradesByFinance" parameterType="string" resultType="com.jk51.model.account.models.SettlementDetail">
+        SELECT
+        a.trades_id,
+        CASE
+        WHEN b.account_checking_status =1 and b.refund_checking_status=-1 and a.is_refund !=120  THEN'对账成功'
+        WHEN b.account_checking_status =1 and b.refund_checking_status=1  and a.is_refund=120 THEN'对账成功'
+        WHEN b.refund_checking_status=1 THEN'对账成功'
+        ELSE '异常' END AS isChargeOff
+        FROM
+        b_trades a
+        LEFT JOIN yb_settlement_detail b ON a.trades_id = b.trades_id
+        WHERE
+        a.finance_no = #{financeNo} OR a.finance_no_refund = #{financeNo}
+    </select>
+    <update id="updateStatusByTradesId" parameterType="map">
+        UPDATE yb_settlement_detail
+        <if test="type=='pay' ">
+            SET account_checking_status=#{checking_status}
+        </if>
+        <if test="type=='refund' ">
+            SET refund_checking_status=#{checking_status}
+        </if>
+        WHERE trades_id=#{trades_id}
+    </update>
+    <update id="updateSettlementByRemitData">
+        update yb_settlement_detail set update_time=CURRENT_TIMESTAMP(),
+        remit_service_fee=#{settlementDetail.remit_service_fee},
+        rate=#{settlementDetail.rate},
+        remit_account_status=#{settlementDetail.remit_account_status},
+        remit_acount_time=#{settlementDetail.remit_acount_time}
+        where trades_id=#{settlementDetail.trades_id}
+    </update>
+    <select id="findCheckedMoney" parameterType="string" resultType="com.jk51.model.account.models.ClassifiedStatistic">
+        SELECT	a.pay_style,#{financeNo} finance_no,
+        SUM(CASE WHEN  a.finance_no_refund = #{financeNo} THEN IFNULL(b.refund_fee,0)
+						 ELSE 0
+				END) refund_total,
+        SUM(CASE WHEN  a.finance_no_refund = #{financeNo} THEN IFNULL(b.platform_refund_fee,0)
+						 ELSE 0
+				END) refund_checking_total,
+        SUM(CASE WHEN a.finance_no!=a.finance_no_refund AND a.finance_no_refund = #{financeNo} THEN 0
+						 ELSE IFNULL(c.platform_payment_amount,0)
+				END) finance_checking_total
+        FROM
+        b_trades a
+        LEFT JOIN yb_settlement_detail b ON a.trades_id = b.trades_id AND b.refund_checking_status=1
+        LEFT JOIN yb_settlement_detail c ON a.trades_id = c.trades_id AND c.account_checking_status=1
+        WHERE
+        a.finance_no =#{financeNo} OR a.finance_no_refund = #{financeNo}
+        GROUP BY a.pay_style
+    </select>
+
+    <select id="selectTradesByMigrate" resultType="com.jk51.model.order.Trades">
+        select * from b_trades a LEFT JOIN b_migrate b on a.seller_id=b.site_id
+        where a.create_time >b.create_time
+    </select>
+
+    <insert id="addAccountException" parameterType="com.jk51.model.account.models.AccountCheckException" useGeneratedKeys="true">
+        INSERT INTO yb_account_exception
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="accountcheckException.site_id!=null ">
+                `site_id`,
+            </if>
+            <if test="accountcheckException.trades_id!=null">
+                `trades_id`,
+            </if>
+            <if test="accountcheckException.pay_style!=null and accountcheckException.pay_style!=''">
+                `pay_style`,
+            </if>
+            <if test="accountcheckException.error_code!=null ">
+                `error_code`,
+            </if>
+            <if test="accountcheckException.settlement_type!=null ">
+                `settlement_type`,
+            </if>
+            <if test="accountcheckException.is_payment!=null ">
+                `is_payment`,
+            </if>
+            <if test="accountcheckException.order_time!=null ">
+                `order_time`,
+            </if>
+            <if test="accountcheckException.pay_time!=null ">
+                `pay_time`,
+            </if>
+            <if test="accountcheckException.end_time!=null ">
+                `end_time`,
+            </if>
+            <if test="accountcheckException.consign_time!=null ">
+                `consign_time`,
+            </if>
+            <if test="accountcheckException.real_pay!=null ">
+                `real_pay`,
+            </if>
+            <if test="accountcheckException.refund_fee!=null ">
+                `refund_fee`,
+            </if>
+            <if test="accountcheckException.plat_split!=null ">
+                `plat_split`,
+            </if>
+            <if test="accountcheckException.trades_split!=null ">
+                `trades_split`,
+            </if>
+            <if test="accountcheckException.O2O_freight!=null ">
+                `O2O_freight`,
+            </if>
+            <if test="accountcheckException.trades_status!=null ">
+                `trades_status`,
+            </if>
+            <if test="accountcheckException.deal_finish_status!=null ">
+                `deal_finish_status`,
+            </if>
+            `creat_time`,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="accountcheckException.site_id!=null ">
+                #{accountcheckException.site_id},
+            </if>
+            <if test="accountcheckException.trades_id!=null ">
+                #{accountcheckException.trades_id},
+            </if>
+            <if test="accountcheckException.pay_style!=null and accountcheckException.pay_style!=''">
+                #{accountcheckException.pay_style},
+            </if>
+            <if test="accountcheckException.error_code!=null ">
+                #{accountcheckException.error_code},
+            </if>
+            <if test="accountcheckException.settlement_type!=null ">
+                #{accountcheckException.settlement_type},
+            </if>
+            <if test="accountcheckException.is_payment!=null ">
+                #{accountcheckException.is_payment},
+            </if>
+            <if test="accountcheckException.order_time!=null ">
+                #{accountcheckException.order_time},
+            </if>
+            <if test="accountcheckException.pay_time!=null ">
+                #{accountcheckException.pay_time},
+            </if>
+            <if test="accountcheckException.end_time!=null ">
+                #{accountcheckException.end_time},
+            </if>
+            <if test="accountcheckException.consign_time!=null ">
+                #{accountcheckException.consign_time},
+            </if>
+            <if test="accountcheckException.real_pay!=null ">
+                #{accountcheckException.real_pay},
+            </if>
+            <if test="accountcheckException.refund_fee!=null">
+                #{accountcheckException.refund_fee},
+            </if>
+            <if test="accountcheckException.plat_split!=null ">
+                #{accountcheckException.plat_split},
+            </if>
+            <if test="accountcheckException.trades_split!=null ">
+                #{accountcheckException.trades_split},
+            </if>
+            <if test="accountcheckException.O2O_freight!=null ">
+                #{accountcheckException.O2O_freight},
+            </if>
+            <if test="accountcheckException.trades_status!=null">
+                #{accountcheckException.trades_status},
+            </if>
+            <if test="accountcheckException.deal_finish_status!=null ">
+                #{accountcheckException.deal_finish_status},
+            </if>
+            CURRENT_TIMESTAMP(),
+        </trim>
+    </insert>
+
+    <select id="queryOrderSettleDetailByobj" parameterType="com.jk51.model.settle.FinancialSettleDetail" resultType="java.util.Map">
+      (SELECT
+        format(a.real_pay /100,2) real_pay,
+        CASE WHEN (a.finance_no!=a.finance_no_refund OR a.finance_no_refund IS NULL) AND a.finance_no!='' THEN 0.00 ELSE format(a.refund_fee /100,2) END refund_fee,
+        CASE WHEN a.pay_style IN ('cash','health_insurance') THEN 0.00 ELSE format(b.platform_payment_amount/100,2) END platform_payment_amount,
+        CASE WHEN (a.finance_no!=a.finance_no_refund OR a.finance_no_refund IS NULL) AND a.finance_no!='' THEN 0.00 ELSE format(b.platform_refund_fee/100,2) END platform_refund_fee,
+        ifnull(a.finance_no,'---') financenos,
+        <include refid="SettlementDetailForSelect"/>
+        FROM b_trades a
+        LEFT JOIN yb_settlement_detail b ON a.trades_id = b.trades_id
+        WHERE
+        1=1
+        <include refid="SettlementDetailForWhere"/>
+        <if test="financesNos!=null">
+            AND a.finance_no in
+            <foreach collection="financesNos" open="(" separator="," item="items" close=")">
+                #{items}
+            </foreach>
+        </if>
+        )
+  UNION ALL
+      (SELECT
+        '0.00' real_pay,
+        CASE WHEN a.is_refund=120 THEN format(a.refund_fee /100,2) ELSE 0.00 END refund_fee,
+        '0.00' platform_payment_amount,
+        CASE WHEN a.is_refund=120 THEN format(b.platform_refund_fee/100,2) ELSE 0.00 END platform_refund_fee,
+        ifnull(a.finance_no_refund,'---') financenos,
+        <include refid="SettlementDetailForSelect"/>
+        FROM b_trades a
+        LEFT JOIN yb_settlement_detail b ON a.trades_id = b.trades_id
+        WHERE
+        1=1
+        AND a.finance_no_refund !=''
+        AND a.finance_no_refund != a.finance_no
+        <include refid="SettlementDetailForWhere"/>
+        <if test="financesNos!=null">
+            AND a.finance_no_refund in
+            <foreach collection="financesNos" open="(" separator="," item="items" close=")">
+                #{items}
+            </foreach>
+        </if>
+        )
+    </select>
+
+    <select id="selectRefunCheckStatus" resultType="com.jk51.model.account.models.SettlementDetail">
+        SELECT * from yb_settlement_detail where pay_style in ('wx','ali') and refund_checking_status=-1 and trades_id in (
+        SELECT trade_id from b_refund
+        ) and create_time >'2017-08-15 03:00:00';
+    </select>
+    <select id="queryOrderSettleDetailStastic" resultType="map">
+        SELECT  round(sum(r.real_pay) /100,2) real_pay,
+                round(sum(r.refund_fee) /100,2) refund_fee,
+                round(sum(r.platform_service_fee)/100,2) platform_service_fee,
+                round(sum(r.platform_payment_amount)/100,2)-round(sum(r.platform_refund_fee)/100,2) platform_payment_amount,
+                round(sum(r.platform_refund_fee)/100,2) platform_refund_fee
+        FROM (
+				(SELECT a.trades_id,a.finance_no,a.finance_no_refund,
+						a.real_pay ,
+						CASE WHEN ((a.finance_no!=a.finance_no_refund OR a.finance_no_refund ='') AND a.finance_no!='')OR a.pay_style IN ('cash','health_insurance')
+                                    THEN 0.00 ELSE IFNULL(a.refund_fee,0)
+                        END refund_fee,
+						b.platform_service_fee,
+                        CASE WHEN a.pay_style IN ('cash','health_insurance') THEN 0.00 ELSE IFNULL(b.platform_payment_amount,0.00) END platform_payment_amount,
+						CASE WHEN ((a.finance_no!=a.finance_no_refund OR a.finance_no_refund ='') AND a.finance_no!='') OR a.pay_style IN ('cash','health_insurance')
+                                    THEN 0.00 ELSE IFNULL(b.platform_refund_fee,0)
+                        END platform_refund_fee
+				FROM b_trades a
+				LEFT JOIN yb_settlement_detail b ON a.trades_id = b.trades_id
+				WHERE 1=1
+				    <include refid="orderSettleDetailStasticForWhere"/>
+                    <if test="financesNos!=null">
+                        AND a.finance_no in
+                        <foreach collection="financesNos" index="index" open="(" separator="," close=")" item="item">
+                            #{item}
+                        </foreach>
+                    </if>
+				)
+	  UNION ALL
+				(SELECT a.trades_id,a.finance_no,a.finance_no_refund,
+				        0.00 real_pay ,
+						CASE WHEN a.is_refund=120 AND a.pay_style IN ('wx','ali') THEN IFNULL(a.refund_fee,0) ELSE 0.00 END refund_fee,
+						b.platform_service_fee,
+						0.00 platform_payment_amount,
+						CASE WHEN a.is_refund=120 AND a.pay_style IN ('wx','ali') THEN IFNULL(b.platform_refund_fee,0) ELSE 0.00 END platform_refund_fee
+				FROM b_trades a
+				LEFT JOIN yb_settlement_detail b ON a.trades_id = b.trades_id
+				WHERE 1=1
+						AND a.finance_no_refund !=''
+						AND a.finance_no_refund != a.finance_no
+                        <include refid="orderSettleDetailStasticForWhere"/>
+                        <if test="financesNos!=null">
+                            AND a.finance_no_refund in
+                            <foreach collection="financesNos" index="index" open="(" separator="," close=")" item="item">
+                                #{item}
+                            </foreach>
+                        </if>
+				)
+        ) r
+    </select>
+    <sql id="orderSettleDetailStasticForWhere">
+        <if test="tradesId!=null and tradesId!=''">
+            AND a.trades_id = #{tradesId}
+        </if>
+        <if test="sellerId!=null and sellerId!=''">
+            AND a.site_id = #{sellerId}
+        </if>
+        <if test="payStyle!=null and payStyle!=''">
+            AND a.pay_style = #{payStyle}
+        </if>
+        <!-- 付款时间 -->
+        <if test="payTimeStart != null and payTimeStart != ''">
+            AND a.pay_time <![CDATA[ >= ]]> str_to_date(#{payTimeStart},'%Y-%m-%d')
+        </if>
+        <if test="payTimeEnd != null and payTimeEnd != ''">
+            AND a.pay_time <![CDATA[ <= ]]> str_to_date(#{payTimeEnd},'%Y-%m-%d')
+        </if>
+        <if test="payCheckingStatus!=null and payCheckingStatus!=''">
+            AND b.account_checking_status = #{payCheckingStatus}
+        </if>
+        <if test="refundCheckingStatus!=null and refundCheckingStatus!=''">
+            AND b.refund_checking_status = #{refundCheckingStatus}
+        </if>
+        <if test="accountCheckingStatus==0 ">
+            AND (b.account_checking_status=0 or b.account_checking_status  IS NULL)
+        </if>
+        <if test="accountCheckingStatus==1 ">
+            AND ((b.account_checking_status=1 and b.refund_checking_status=-1 and a.deal_finish_status=1 and a.is_refund=0)
+            or (b.account_checking_status=1 and b.refund_checking_status=-1 and a.deal_finish_status=1 and a.is_refund=110)
+            or (b.refund_checking_status=1)
+            or (b.account_checking_status=1 and b.refund_checking_status=1 and a.deal_finish_status=1 and a.is_refund=120))
+        </if>
+        <if test="accountCheckingStatus==2 ">
+            AND((b.account_checking_status=0 and b.refund_checking_status=0)
+            or (b.account_checking_status=1 and b.refund_checking_status=0)
+            or(b.account_checking_status=1 and b.refund_checking_status=-1 and a.deal_finish_status=1 and a.is_refund=120)
+            or (b.account_checking_status=2 and  b.refund_checking_status=-1)
+            or(b.account_checking_status=2 and  b.refund_checking_status=1)
+            )
+        </if>
+    </sql>
+
+    <select id="queryImportDataStastic" resultType="map">
+        select round(sum(e.spending_amount)/100,2) as spending_amount
+        from b_trades a
+        LEFT JOIN yb_settlement_detail b ON a.trades_id = b.trades_id
+        LEFT JOIN yb_pay_data_import e ON a.trades_id = e.trades_id
+        <where>
+            1 = 1 and e.data_type = 1
+            <if test="tradesId!=null and tradesId!=''">
+                AND a.trades_id = #{tradesId}
+            </if>
+            <if test="sellerId!=null and sellerId!=''">
+                AND a.site_id = #{sellerId}
+            </if>
+            <if test="financesNos!=null">
+                AND a.finance_no in
+                <foreach collection="financesNos" index="index" open="(" separator="," close=")" item="item">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="payStyle!=null and payStyle!=''">
+                AND a.pay_style = #{payStyle}
+            </if>
+            <!-- 付款时间 -->
+            <if test="payTimeStart != null and payTimeStart != ''">
+                AND a.pay_time <![CDATA[ >= ]]> str_to_date(#{payTimeStart},'%Y-%m-%d')
+            </if>
+            <if test="payTimeEnd != null and payTimeEnd != ''">
+                AND a.pay_time <![CDATA[ <= ]]> str_to_date(#{payTimeEnd},'%Y-%m-%d')
+            </if>
+            <if test="payCheckingStatus!=null and payCheckingStatus!=''">
+                AND b.account_checking_status = #{payCheckingStatus}
+            </if>
+            <if test="refundCheckingStatus!=null and refundCheckingStatus!=''">
+                AND b.refund_checking_status = #{refundCheckingStatus}
+            </if>
+            <if test="accountCheckingStatus==0 ">
+                AND (b.account_checking_status=0 or b.account_checking_status  IS NULL)
+            </if>
+            <if test="accountCheckingStatus==1 ">
+                AND ((b.account_checking_status=1 and b.refund_checking_status=-1 and a.deal_finish_status=1 and a.is_refund=0)
+                or (b.account_checking_status=1 and b.refund_checking_status=-1 and a.deal_finish_status=1 and a.is_refund=110)
+                or (b.refund_checking_status=1)
+                or (b.account_checking_status=1 and b.refund_checking_status=1 and a.deal_finish_status=1 and a.is_refund=120))
+            </if>
+            <if test="accountCheckingStatus==2 ">
+                AND((b.account_checking_status=0 and b.refund_checking_status=0)
+                or (b.account_checking_status=1 and b.refund_checking_status=0)
+                or(b.account_checking_status=1 and b.refund_checking_status=-1 and a.deal_finish_status=1 and a.is_refund=120)
+                or (b.account_checking_status=2 and  b.refund_checking_status=-1)
+                or(b.account_checking_status=2 and  b.refund_checking_status=1)
+                )
+            </if>
+        </where>
+    </select>
+    <select id="queryImportSettleDataStastic" resultType="java.util.Map">
+        select round(sum(case when e.trades_status != '服务费' and e.data_type =0 and e.trades_id not in (select distinct trades_id from yb_pay_data_import where data_type = 1)  then e.income_amount else 0 end)/100,2)
+                - round(sum(case when e.data_type = 1 then e.spending_amount else 0 end)/100,2)
+                + round(sum(case when e.data_type = 1 then e.income_amount else 0 end)/100,2) as income_amount
+        from b_trades a
+        LEFT JOIN yb_settlement_detail b ON a.trades_id = b.trades_id
+        LEFT JOIN yb_pay_data_import e ON a.trades_id = e.trades_id
+        <where>
+            1 = 1 and e.data_type in (0,1)
+            <if test="tradesId!=null and tradesId!=''">
+                AND a.trades_id = #{tradesId}
+            </if>
+            <if test="sellerId!=null and sellerId!=''">
+                AND a.site_id = #{sellerId}
+            </if>
+            <if test="financesNos!=null">
+                AND a.finance_no in
+                <foreach collection="financesNos" index="index" open="(" separator="," close=")" item="item">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="payStyle!=null and payStyle!=''">
+                AND a.pay_style = #{payStyle}
+            </if>
+            <!-- 付款时间 -->
+            <if test="payTimeStart != null and payTimeStart != ''">
+                AND a.pay_time <![CDATA[ >= ]]> str_to_date(#{payTimeStart},'%Y-%m-%d')
+            </if>
+            <if test="payTimeEnd != null and payTimeEnd != ''">
+                AND a.pay_time <![CDATA[ <= ]]> str_to_date(#{payTimeEnd},'%Y-%m-%d')
+            </if>
+            <if test="payCheckingStatus!=null and payCheckingStatus!=''">
+                AND b.account_checking_status = #{payCheckingStatus}
+            </if>
+            <if test="refundCheckingStatus!=null and refundCheckingStatus!=''">
+                AND b.refund_checking_status = #{refundCheckingStatus}
+            </if>
+            <if test="accountCheckingStatus==0 ">
+                AND (b.account_checking_status=0 or b.account_checking_status  IS NULL)
+            </if>
+            <if test="accountCheckingStatus==1 ">
+                AND ((b.account_checking_status=1 and b.refund_checking_status=-1 and a.deal_finish_status=1 and a.is_refund=0)
+                or (b.account_checking_status=1 and b.refund_checking_status=-1 and a.deal_finish_status=1 and a.is_refund=110)
+                or (b.refund_checking_status=1)
+                or (b.account_checking_status=1 and b.refund_checking_status=1 and a.deal_finish_status=1 and a.is_refund=120))
+            </if>
+            <if test="accountCheckingStatus==2 ">
+                AND((b.account_checking_status=0 and b.refund_checking_status=0)
+                or (b.account_checking_status=1 and b.refund_checking_status=0)
+                or(b.account_checking_status=1 and b.refund_checking_status=-1 and a.deal_finish_status=1 and a.is_refund=120)
+                or (b.account_checking_status=2 and  b.refund_checking_status=-1)
+                or(b.account_checking_status=2 and  b.refund_checking_status=1)
+                )
+            </if>
+        </where>
+    </select>
+
+    <update id="updateRefunCheckStatus" >
+        update  yb_settlement_detail set refund_checking_status=0 where trades_id=#{trades_id}
+    </update>
+
+</mapper>
+

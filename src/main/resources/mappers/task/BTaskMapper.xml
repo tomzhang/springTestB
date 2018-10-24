@@ -1,0 +1,630 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.task.mapper.BTaskMapper">
+  <resultMap id="BaseResultMap" type="com.jk51.model.task.BTask">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="site_id" jdbcType="INTEGER" property="siteId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="target_id" jdbcType="INTEGER" property="targetId" />
+    <result column="type_ids" jdbcType="VARCHAR" property="typeIds" />
+    <result column="time_type" jdbcType="TINYINT" property="timeType" />
+    <result column="object" jdbcType="TINYINT" property="object" />
+    <result column="reward_type" jdbcType="TINYINT" property="rewardType" />
+    <result column="reward_detail" jdbcType="VARCHAR" property="rewardDetail" />
+    <result column="explain" jdbcType="VARCHAR" property="explain" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="admin_type" jdbcType="TINYINT" property="adminType" />
+    <result column="admin_id" jdbcType="INTEGER" property="adminId" />
+    <result column="admin_name" jdbcType="VARCHAR" property="adminName" />
+    <result column="reward_limit" jdbcType="INTEGER" property="rewardLimit" />
+    <result column="reward_total" jdbcType="INTEGER" property="rewardTotal" />
+    <result column="low_target" jdbcType="INTEGER" property="lowTarget" />
+    <result column="punish" jdbcType="INTEGER" property="punish" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, site_id, `name`, target_id, type_ids, time_type, object, reward_type, reward_detail,
+    `explain`, `status`, admin_type, admin_id, admin_name, reward_limit, reward_total, low_target,
+    punish, create_time, update_time
+  </sql>
+  <select id="selectByExample" parameterType="com.jk51.model.task.BTaskExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from b_task
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limit != null">
+      <if test="offset != null">
+        limit ${offset}, ${limit}
+      </if>
+      <if test="offset == null">
+        limit ${limit}
+      </if>
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from b_task
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from b_task
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jk51.model.task.BTaskExample">
+    delete from b_task
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jk51.model.task.BTask">
+    insert into b_task (id, site_id, name, 
+      target_id, type_ids, time_type, 
+      object, reward_type, reward_detail, 
+      `explain`, status, admin_type,
+      admin_id, admin_name, reward_limit, 
+      reward_total, low_target, punish, 
+      create_time, update_time)
+    values (#{id,jdbcType=INTEGER}, #{siteId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+      #{targetId,jdbcType=INTEGER}, #{typeIds,jdbcType=VARCHAR}, #{timeType,jdbcType=TINYINT}, 
+      #{object,jdbcType=TINYINT}, #{rewardType,jdbcType=TINYINT}, #{rewardDetail,jdbcType=VARCHAR}, 
+      #{explain,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, #{adminType,jdbcType=TINYINT},
+      #{adminId,jdbcType=INTEGER}, #{adminName,jdbcType=VARCHAR}, #{rewardLimit,jdbcType=INTEGER}, 
+      #{rewardTotal,jdbcType=INTEGER}, #{lowTarget,jdbcType=INTEGER}, #{punish,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jk51.model.task.BTask" useGeneratedKeys="true" keyProperty="id">
+    insert into b_task
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="siteId != null">
+        site_id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="targetId != null">
+        target_id,
+      </if>
+      <if test="typeIds != null">
+        type_ids,
+      </if>
+      <if test="timeType != null">
+        time_type,
+      </if>
+      <if test="object != null">
+        object,
+      </if>
+      <if test="rewardType != null">
+        reward_type,
+      </if>
+      <if test="rewardDetail != null">
+        reward_detail,
+      </if>
+      <if test="explain != null">
+        `explain`,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="adminType != null">
+        admin_type,
+      </if>
+      <if test="adminId != null">
+        admin_id,
+      </if>
+      <if test="adminName != null">
+        admin_name,
+      </if>
+      <if test="rewardLimit != null">
+        reward_limit,
+      </if>
+      <if test="rewardTotal != null">
+        reward_total,
+      </if>
+      <if test="lowTarget != null">
+        low_target,
+      </if>
+      <if test="taskSource != null">
+        task_source,
+      </if>
+      <if test="punish != null">
+        punish,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="siteId != null">
+        #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="targetId != null">
+        #{targetId,jdbcType=INTEGER},
+      </if>
+      <if test="typeIds != null">
+        #{typeIds,jdbcType=VARCHAR},
+      </if>
+      <if test="timeType != null">
+        #{timeType,jdbcType=TINYINT},
+      </if>
+      <if test="object != null">
+        #{object,jdbcType=TINYINT},
+      </if>
+      <if test="rewardType != null">
+        #{rewardType,jdbcType=TINYINT},
+      </if>
+      <if test="rewardDetail != null">
+        #{rewardDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="explain != null">
+        #{explain,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="adminType != null">
+        #{adminType,jdbcType=TINYINT},
+      </if>
+      <if test="adminId != null">
+        #{adminId,jdbcType=INTEGER},
+      </if>
+      <if test="adminName != null">
+        #{adminName,jdbcType=VARCHAR},
+      </if>
+      <if test="rewardLimit != null">
+        #{rewardLimit,jdbcType=INTEGER},
+      </if>
+      <if test="rewardTotal != null">
+        #{rewardTotal,jdbcType=INTEGER},
+      </if>
+      <if test="lowTarget != null">
+        #{lowTarget,jdbcType=INTEGER},
+      </if>
+      <if test="taskSource != null">
+        #{taskSource,jdbcType=INTEGER},
+      </if>
+      <if test="punish != null">
+        #{punish,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jk51.model.task.BTaskExample" resultType="java.lang.Long">
+    select count(*) from b_task
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    ORDER BY a.create_time DESC
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update b_task
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.siteId != null">
+        site_id = #{record.siteId,jdbcType=INTEGER},
+      </if>
+      <if test="record.name != null">
+        name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.targetId != null">
+        target_id = #{record.targetId,jdbcType=INTEGER},
+      </if>
+      <if test="record.typeIds != null">
+        type_ids = #{record.typeIds,jdbcType=VARCHAR},
+      </if>
+      <if test="record.timeType != null">
+        time_type = #{record.timeType,jdbcType=TINYINT},
+      </if>
+      <if test="record.object != null">
+        object = #{record.object,jdbcType=TINYINT},
+      </if>
+      <if test="record.rewardType != null">
+        reward_type = #{record.rewardType,jdbcType=TINYINT},
+      </if>
+      <if test="record.rewardDetail != null">
+        reward_detail = #{record.rewardDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="record.explain != null">
+        `explain` = #{record.explain,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=TINYINT},
+      </if>
+      <if test="record.adminType != null">
+        admin_type = #{record.adminType,jdbcType=TINYINT},
+      </if>
+      <if test="record.adminId != null">
+        admin_id = #{record.adminId,jdbcType=INTEGER},
+      </if>
+      <if test="record.adminName != null">
+        admin_name = #{record.adminName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.rewardLimit != null">
+        reward_limit = #{record.rewardLimit,jdbcType=INTEGER},
+      </if>
+      <if test="record.rewardTotal != null">
+        reward_total = #{record.rewardTotal,jdbcType=INTEGER},
+      </if>
+      <if test="record.lowTarget != null">
+        low_target = #{record.lowTarget,jdbcType=INTEGER},
+      </if>
+      <if test="record.punish != null">
+        punish = #{record.punish,jdbcType=INTEGER},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update b_task
+    set id = #{record.id,jdbcType=INTEGER},
+      site_id = #{record.siteId,jdbcType=INTEGER},
+      name = #{record.name,jdbcType=VARCHAR},
+      target_id = #{record.targetId,jdbcType=INTEGER},
+      type_ids = #{record.typeIds,jdbcType=VARCHAR},
+      time_type = #{record.timeType,jdbcType=TINYINT},
+      object = #{record.object,jdbcType=TINYINT},
+      reward_type = #{record.rewardType,jdbcType=TINYINT},
+      reward_detail = #{record.rewardDetail,jdbcType=VARCHAR},
+      `explain` = #{record.explain,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=TINYINT},
+      admin_type = #{record.adminType,jdbcType=TINYINT},
+      admin_id = #{record.adminId,jdbcType=INTEGER},
+      admin_name = #{record.adminName,jdbcType=VARCHAR},
+      reward_limit = #{record.rewardLimit,jdbcType=INTEGER},
+      reward_total = #{record.rewardTotal,jdbcType=INTEGER},
+      low_target = #{record.lowTarget,jdbcType=INTEGER},
+      punish = #{record.punish,jdbcType=INTEGER},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.task.BTask">
+    update b_task
+    <set>
+      <if test="siteId != null">
+        site_id = #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="targetId != null">
+        target_id = #{targetId,jdbcType=INTEGER},
+      </if>
+      <if test="typeIds != null">
+        type_ids = #{typeIds,jdbcType=VARCHAR},
+      </if>
+      <if test="timeType != null">
+        time_type = #{timeType,jdbcType=TINYINT},
+      </if>
+      <if test="object != null">
+        object = #{object,jdbcType=TINYINT},
+      </if>
+      <if test="rewardType != null">
+        reward_type = #{rewardType,jdbcType=TINYINT},
+      </if>
+      <if test="rewardDetail != null">
+        reward_detail = #{rewardDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="explain != null">
+        `explain` = #{explain,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="adminType != null">
+        admin_type = #{adminType,jdbcType=TINYINT},
+      </if>
+      <if test="adminId != null">
+        admin_id = #{adminId,jdbcType=INTEGER},
+      </if>
+      <if test="adminName != null">
+        admin_name = #{adminName,jdbcType=VARCHAR},
+      </if>
+      <if test="rewardLimit != null">
+        reward_limit = #{rewardLimit,jdbcType=INTEGER},
+      </if>
+      <if test="rewardTotal != null">
+        reward_total = #{rewardTotal,jdbcType=INTEGER},
+      </if>
+      <if test="lowTarget != null">
+        low_target = #{lowTarget,jdbcType=INTEGER},
+      </if>
+      <if test="punish != null">
+        punish = #{punish,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jk51.model.task.BTask">
+    update b_task
+    set site_id = #{siteId,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},
+      target_id = #{targetId,jdbcType=INTEGER},
+      type_ids = #{typeIds,jdbcType=VARCHAR},
+      time_type = #{timeType,jdbcType=TINYINT},
+      object = #{object,jdbcType=TINYINT},
+      reward_type = #{rewardType,jdbcType=TINYINT},
+      reward_detail = #{rewardDetail,jdbcType=VARCHAR},
+      `explain` = #{explain,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      admin_type = #{adminType,jdbcType=TINYINT},
+      admin_id = #{adminId,jdbcType=INTEGER},
+      admin_name = #{adminName,jdbcType=VARCHAR},
+      reward_limit = #{rewardLimit,jdbcType=INTEGER},
+      reward_total = #{rewardTotal,jdbcType=INTEGER},
+      low_target = #{lowTarget,jdbcType=INTEGER},
+      punish = #{punish,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <!--单个任务显示-->
+  <select id="taskDetail" resultType="java.util.Map">
+    SELECT
+      a.name,
+      a.target_id AS targetId,
+      a.task_source as taskSource,
+      b.`name` AS quotaName,
+      a.type_ids AS typeIds,
+      a.reward_detail AS rewardDetail,
+      a.reward_limit AS rewardLimit,
+      a.low_target as lowTarget,
+      a.punish,
+      CASE a.reward_type
+      WHEN 10 THEN '人民币'
+      WHEN 20 THEN '绩效'
+      WHEN 30 THEN '健康豆'
+      WHEN 0 THEN '无奖励'
+      END AS rewardType,
+      CASE a.time_type
+      WHEN 10 THEN '自然日'
+      WHEN 20 THEN '自然周'
+      WHEN 30 THEN '自然月'
+      END AS timeType,
+      CASE a.object
+      WHEN 10 THEN '门店'
+      WHEN 20 THEN '店员'
+      END AS object,
+      a.`explain`,
+      a.admin_name AS adminName,
+      DATE_FORMAT(a.create_time,'%Y-%m-%d %H:%i:%S') AS createTime,
+      bl.id AS blodId,
+      bl.goods_id AS goodsId,
+      bl.is_all AS isAll,
+      bl.examination_id AS examinationId
+    FROM b_task AS a
+    LEFT JOIN t_quota AS b ON a.`target_id`=b.`id`
+    LEFT JOIN b_task_blob AS bl ON bl.`task_id` = a.`id`
+    WHERE a.id=#{id}
+
+  </select>
+
+  <!--列表查询-->
+  <select id="queryTaskList" resultType="java.util.Map">
+    SELECT
+      a.id,
+      a.name,
+      a.target_id as targetId,
+      a.task_source as taskSource,
+      b.`name` AS quotaName,
+      a.type_ids AS typeIds,
+      CASE a.time_type
+        WHEN 10 THEN '自然日'
+        WHEN 20 THEN '自然周'
+        WHEN 30 THEN '自然月'
+      END AS timeType,
+      CASE a.object
+        WHEN 10 THEN '门店'
+        WHEN 20 THEN '店员'
+        END AS object,
+      CASE a.reward_type
+        WHEN 10 THEN '人民币'
+        WHEN 20 THEN '绩效'
+        WHEN 30 THEN '健康豆'
+        WHEN 0 THEN '无奖励'
+        END AS rewardType,
+      a.reward_detail AS rewardDetail,
+      a.reward_limit AS rewardLimit,
+      a.low_target as lowTarget,
+      a.punish,
+      CASE a.status
+        WHEN 10 THEN '未开始'
+        WHEN 20 THEN '进行中'
+        WHEN 30 THEN '已结束'
+        WHEN 40 THEN '已删除'
+        END AS STATUS,
+      DATE_FORMAT(a.create_time,'%Y-%m-%d %H:%i:%S') AS createTime
+    FROM b_task AS a
+    LEFT JOIN t_quota AS b ON a.`target_id`=b.`id`
+    WHERE site_id=#{siteId}
+    AND a.status <![CDATA[ <> ]]> 40
+    <if test="id != null and id!=''">
+      AND a.id = #{id,jdbcType=INTEGER}
+    </if>
+    <if test="name != null and name!=''">
+      AND binary a.name = #{name,jdbcType=VARCHAR}
+    </if>
+    <if test="targetId != null and targetId != ''">
+      AND a.target_id = #{targetId,jdbcType=INTEGER}
+    </if>
+    <if test="adminType != null and adminType != ''">
+      AND admin_type = #{adminType,jdbcType=INTEGER}
+    </if>
+    <if test="storeId != null and storeId != ''">
+      AND admin_id IN (
+        SELECT id FROM b_store_admin WHERE store_id = #{storeId}
+      )
+    </if>
+    <if test="startTime != null and startTime != ''">
+      AND a.create_time <![CDATA[ >= ]]>  #{startTime}
+    </if>
+    <if test="endTime != null and endTime != ''">
+      AND a.create_time <![CDATA[ <= ]]>  #{endTime}
+    </if>
+    ORDER BY a.id DESC
+  </select>
+
+  <update id="updateByPrimaryKeyNotOverflowLimit">
+      UPDATE b_task
+      SET reward_total = reward_total + #{rewardValue}
+      WHERE
+          id = #{taskId}
+      AND (
+          reward_limit = 0 OR reward_limit >= reward_total + #{rewardValue}
+      )
+  </update>
+
+    <!--查询我的奖励-->
+    <select id="queryMyRewards" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT site_id siteId, task_name taskName, join_type joinType, reward_type rewardType, reward reward, update_time updateTime
+        FROM b_taskreward
+        WHERE site_id = #{siteId}
+        <if test="joinId != null and joinId  != ''">
+            and join_id = #{joinId}
+        </if>
+        ORDER BY update_time desc
+        <!--<if test="joinType != null and joinType != ''">
+            and a.join_type = #{joinType}
+        </if>-->
+    </select>
+
+    <!--查询店员头像-->
+    <select id="queryAdminHead" resultType="java.util.Map">
+        SELECT avatar FROM b_store_adminext WHERE
+        site_id = #{siteId} AND storeadmin_id = #{joinId}
+    </select>
+  <select id="queryTaskListByIds" resultType="map">
+    SELECT IFNULL(SUM(count_value),0) total FROM b_task t1
+    left join b_taskcount t2 on t1.id = t2.task_id
+    where t1.site_id = #{siteId}
+    <if test="taskIds != null">
+      <foreach collection="taskIds" open="(" separator="," close=")" item="taskId">
+        and t1.id in #{taskId}
+      </foreach>
+    </if>
+    <if test="complete != null and complete != ''">
+      t2.complete=#{complete}
+    </if>
+      GROUP BY t1.id
+  </select>
+  
+  <select id="findById" resultMap="BaseResultMap">
+    SELECT * FROM b_task WHERE id=#{id}
+  </select>
+
+  <select id="queryTypeRewardTotal" parameterType="com.jk51.model.task.BTaskExample" resultType="map">
+    select ifnull(sum(reward_total),0) reward_total,reward_type from b_task
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    group by reward_type
+  </select>
+
+  <select id="checkExaminationInTask" resultType="java.lang.Integer">
+    SELECT DISTINCT TB.`examination_id` FROM b_task AS T LEFT JOIN b_task_blob AS TB ON T.id=TB.`task_id` WHERE  T.`status` <![CDATA[ <> ]]> 40 AND T.`target_id`=8
+  </select>
+
+</mapper>

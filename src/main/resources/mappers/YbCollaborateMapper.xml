@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.official.mapper.YbCollaborateMapper">
+  <resultMap id="BaseResultMap" type="com.jk51.model.official.YbCollaborate">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="company_name" jdbcType="VARCHAR" property="companyName" />
+    <result column="company_addr" jdbcType="VARCHAR" property="companyAddr" />
+    <result column="manage_province" jdbcType="VARCHAR" property="manageProvince" />
+    <result column="store_num" jdbcType="INTEGER" property="storeNum" />
+    <result column="direct_store_num" jdbcType="INTEGER" property="directStoreNum" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="status" jdbcType="BIT" property="status" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, company_name, company_addr, manage_province, store_num, direct_store_num, name, 
+    phone, status, remark, create_time, update_time
+  </sql>
+
+  <select id="queryById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yb_collaborate
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+
+  <insert id="add" parameterType="com.jk51.model.official.YbCollaborate">
+    insert into yb_collaborate
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="companyName != null">
+        company_name,
+      </if>
+      <if test="companyAddr != null">
+        company_addr,
+      </if>
+      <if test="manageProvince != null">
+        manage_province,
+      </if>
+      <if test="storeNum != null">
+        store_num,
+      </if>
+      <if test="directStoreNum != null">
+        direct_store_num,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="phone != null">
+        phone,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      create_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="companyName != null">
+        #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="companyAddr != null">
+        #{companyAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="manageProvince != null">
+        #{manageProvince,jdbcType=VARCHAR},
+      </if>
+      <if test="storeNum != null">
+        #{storeNum,jdbcType=INTEGER},
+      </if>
+      <if test="directStoreNum != null">
+        #{directStoreNum,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=BIT},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      CURRENT_TIMESTAMP()
+    </trim>
+  </insert>
+
+
+
+  <update id="updateById" parameterType="com.jk51.model.official.YbCollaborate">
+    update yb_collaborate
+    <set>
+      <if test="companyName != null">
+        company_name = #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="companyAddr != null">
+        company_addr = #{companyAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="manageProvince != null">
+        manage_province = #{manageProvince,jdbcType=VARCHAR},
+      </if>
+      <if test="storeNum != null">
+        store_num = #{storeNum,jdbcType=INTEGER},
+      </if>
+      <if test="directStoreNum != null">
+        direct_store_num = #{directStoreNum,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=BIT},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="queryList" resultMap="BaseResultMap" parameterType="com.jk51.model.official.YbCollaborate">
+    SELECT *
+    from yb_collaborate
+    <where>
+      1=1
+      <if test="companyName != null and companyName !='' ">
+        and company_name LIKE CONCAT(CONCAT('%',#{companyName},'%'))
+      </if>
+      <if test="name != null and name !='' ">
+        AND name LIKE CONCAT(CONCAT('%',#{name},'%'))
+      </if>
+      <if test="phone != null and phone !='' ">
+        AND phone =#{phone}
+      </if>
+      <choose>
+        <when test="createTime!=null and endTime!=null">
+          AND create_time &gt;= #{createTime} AND create_time &lt;= #{endTime}
+        </when>
+        <when test="createTime!=null">
+          AND create_time &gt;= #{createTime}
+        </when>
+        <when test="endTime!=null">
+          AND create_time &lt;= #{endTime}
+        </when>
+      </choose>
+    </where>
+    ORDER BY update_time DESC
+
+  </select>
+
+
+
+</mapper>

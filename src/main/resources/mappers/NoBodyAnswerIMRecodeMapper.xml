@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.im.mapper.NoBodyAnswerIMRecodeMapper">
+
+    <insert id="insertSelective" parameterType="com.jk51.model.NoBodyAnswerIMRecode">
+    INSERT into b_noBody_answer_im_recode
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="site_id != null">
+            site_id,
+        </if>
+        <if test="app_id != null and app_id!=''">
+            app_id,
+        </if>
+        <if test="sender != null and sender!=''">
+            sender,
+        </if>
+        <if test="msgContent != null and msgContent!=''">
+            msgContent,
+        </if>
+        create_time,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+        <if test="site_id != null">
+            #{site_id},
+        </if>
+        <if test="app_id != null and app_id!=''">
+            #{app_id},
+        </if>
+        <if test="sender != null and sender!=''">
+            #{sender},
+        </if>
+        <if test="msgContent != null and msgContent!=''">
+            #{msgContent},
+        </if>
+        CURRENT_TIMESTAMP,
+    </trim>
+    </insert>
+</mapper>

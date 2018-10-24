@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.health.mapper.YbMemberHealthLogMapper">
+  <resultMap id="BaseResultMap" type="com.jk51.model.health.YbMemberHealthLog">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="cardNo" jdbcType="VARCHAR" property="cardNo" />
+    <result column="functioncode" jdbcType="INTEGER" property="functioncode" />
+    <result column="icpcode" jdbcType="INTEGER" property="icpcode" />
+    <result column="checkdate" jdbcType="DATE" property="checkdate" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.jk51.model.health.YbMemberHealthLog">
+    <result column="xml" jdbcType="LONGVARCHAR" property="xml" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, cardNo, functioncode, icpcode, checkdate
+  </sql>
+  <sql id="Blob_Column_List">
+    xml
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.jk51.model.health.YbMemberHealthLogExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from yb_member_health_log
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.jk51.model.health.YbMemberHealthLogExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from yb_member_health_log
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limit != null">
+      <if test="offset != null">
+        limit ${offset}, ${limit}
+      </if>
+      <if test="offset == null">
+        limit ${limit}
+      </if>
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from yb_member_health_log
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from yb_member_health_log
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jk51.model.health.YbMemberHealthLogExample">
+    delete from yb_member_health_log
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jk51.model.health.YbMemberHealthLog">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into yb_member_health_log (cardNo, functioncode, icpcode, 
+      checkdate, xml)
+    values (#{cardNo,jdbcType=VARCHAR}, #{functioncode,jdbcType=INTEGER}, #{icpcode,jdbcType=INTEGER}, 
+      #{checkdate,jdbcType=DATE}, #{xml,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jk51.model.health.YbMemberHealthLog">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into yb_member_health_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="cardNo != null">
+        cardNo,
+      </if>
+      <if test="functioncode != null">
+        functioncode,
+      </if>
+      <if test="icpcode != null">
+        icpcode,
+      </if>
+      <if test="checkdate != null">
+        checkdate,
+      </if>
+      <if test="xml != null">
+        xml,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="cardNo != null">
+        #{cardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="functioncode != null">
+        #{functioncode,jdbcType=INTEGER},
+      </if>
+      <if test="icpcode != null">
+        #{icpcode,jdbcType=INTEGER},
+      </if>
+      <if test="checkdate != null">
+        #{checkdate,jdbcType=DATE},
+      </if>
+      <if test="xml != null">
+        #{xml,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jk51.model.health.YbMemberHealthLogExample" resultType="java.lang.Long">
+    select count(*) from yb_member_health_log
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update yb_member_health_log
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.cardNo != null">
+        cardNo = #{record.cardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.functioncode != null">
+        functioncode = #{record.functioncode,jdbcType=INTEGER},
+      </if>
+      <if test="record.icpcode != null">
+        icpcode = #{record.icpcode,jdbcType=INTEGER},
+      </if>
+      <if test="record.checkdate != null">
+        checkdate = #{record.checkdate,jdbcType=DATE},
+      </if>
+      <if test="record.xml != null">
+        xml = #{record.xml,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update yb_member_health_log
+    set id = #{record.id,jdbcType=INTEGER},
+      cardNo = #{record.cardNo,jdbcType=VARCHAR},
+      functioncode = #{record.functioncode,jdbcType=INTEGER},
+      icpcode = #{record.icpcode,jdbcType=INTEGER},
+      checkdate = #{record.checkdate,jdbcType=DATE},
+      xml = #{record.xml,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update yb_member_health_log
+    set id = #{record.id,jdbcType=INTEGER},
+      cardNo = #{record.cardNo,jdbcType=VARCHAR},
+      functioncode = #{record.functioncode,jdbcType=INTEGER},
+      icpcode = #{record.icpcode,jdbcType=INTEGER},
+      checkdate = #{record.checkdate,jdbcType=DATE}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.health.YbMemberHealthLog">
+    update yb_member_health_log
+    <set>
+      <if test="cardNo != null">
+        cardNo = #{cardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="functioncode != null">
+        functioncode = #{functioncode,jdbcType=INTEGER},
+      </if>
+      <if test="icpcode != null">
+        icpcode = #{icpcode,jdbcType=INTEGER},
+      </if>
+      <if test="checkdate != null">
+        checkdate = #{checkdate,jdbcType=DATE},
+      </if>
+      <if test="xml != null">
+        xml = #{xml,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.jk51.model.health.YbMemberHealthLog">
+    update yb_member_health_log
+    set cardNo = #{cardNo,jdbcType=VARCHAR},
+      functioncode = #{functioncode,jdbcType=INTEGER},
+      icpcode = #{icpcode,jdbcType=INTEGER},
+      checkdate = #{checkdate,jdbcType=DATE},
+      xml = #{xml,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jk51.model.health.YbMemberHealthLog">
+    update yb_member_health_log
+    set cardNo = #{cardNo,jdbcType=VARCHAR},
+      functioncode = #{functioncode,jdbcType=INTEGER},
+      icpcode = #{icpcode,jdbcType=INTEGER},
+      checkdate = #{checkdate,jdbcType=DATE}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

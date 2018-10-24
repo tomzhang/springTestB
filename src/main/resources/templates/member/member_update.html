@@ -1,0 +1,33 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>用户会员测试页面</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+<p>这个是修改会员列表的页面。</p>
+    <form id="memberAddForm" th:action="@{/member/update}" th:method="post" th:object="${member}">
+        <input type="hidden" name="ID" value="${member.member_id}" th:field="*{member_id}"/>
+        <table border="1">
+            <tr>
+                <th>会员ID</th>
+                <th>姓名</th>
+                <th>手机号码</th>
+                <th>门店ID</th>
+            </tr>
+            <tr>
+                <td><input type="text" name="会员ID" value="${member.buyer_id}" th:field="*{buyer_id}"/></td>
+                <td><input type="text" name="姓名" value="${member.name}" th:field="*{name}"/></td>
+                <td><input type="text" name="手机号码" value="${member.mobile}" th:field="*{mobile}"/></td>
+                <td><input type="text" name="门店ID" value="${member.register_stores}" th:field="*{register_stores}"/></td>
+                <td><input type="submit" value="提交"/></td>
+            </tr>
+        </table>
+    </form>
+</body>
+
+</html>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.goods.mapper.CategoryMapper">
+
+    <resultMap id="CateResultMap" type="com.jk51.model.goods.Category">
+       <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="cate_id" jdbcType="INTEGER" property="cateId"/>
+        <result column="parent_id" jdbcType="INTEGER" property="parentId"/>
+        <result column="cate_code" jdbcType="VARCHAR" property="cateCode"/>
+        <result column="cate_name" jdbcType="VARCHAR" property="cateName"/>
+       <!-- <result column="cate_sort" jdbcType="INTEGER" property="cateSort"/>-->
+        <result column="img_hash" jdbcType="VARCHAR" property="imgHash"/>
+        <!--<result column="cate_ishow" jdbcType="INTEGER" property="cateIshow"/>
+        <result column="yb_cateid" jdbcType="INTEGER" property="ybCateid"/>
+        <result column="del_tag" jdbcType="INTEGER" property="delTag"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>-->
+    </resultMap>
+
+    <select id="getListByPid" resultMap="CateResultMap" useCache="false" parameterType="Map">
+        select cate_id,parent_id,cate_code,cate_name,img_hash from b_category where site_id = #{siteId} and parent_id = #{parentId} and del_tag = 0
+    </select>
+
+    <select id="getList" resultMap="CateResultMap" useCache="false" parameterType="Map">
+        select cate_id,parent_id,cate_code,cate_name,img_hash from b_category where site_id = #{siteId} and del_tag = 0
+    </select>
+
+    <select id="getByCateId" resultMap="CateResultMap" useCache="false" parameterType="Map">
+    select * from b_category b where site_id = #{siteId} and cate_id = #{cateId} and del_tag = 0
+</select>
+
+
+    <select id="getCodeIncrease" resultType="String" useCache="false" parameterType="Map">
+        select max(cate_code)+1 as cate_code from b_category b where site_id = #{siteId} and parent_id = #{pid} and
+        del_tag = 0
+    </select>
+
+    <select id="getByCateCode" resultMap="CateResultMap" useCache="false" parameterType="Map">
+        select * from b_category  where site_id = #{siteId} and cate_code = #{cateCode} and del_tag = 0
+    </select>
+
+    <insert id="insert" parameterType="com.jk51.model.goods.Category">
+        insert into b_category
+        (parent_id,cate_name,cate_code,create_time,update_time,site_id)
+        values
+        (#{parentId},#{cateName},#{cateCode},CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,#{siteId})
+    </insert>
+
+    <update id="update" parameterType="com.jk51.model.goods.Category">
+        update b_category set cate_name=#{cateName} where site_id = #{siteId} and cate_id=#{cateId}
+    </update>
+
+    <update id="del" parameterType="Map">
+        update b_category set del_tag =1 where site_id = #{siteId} and cate_id=#{cateId}
+    </update>
+
+    <update id="updateGoodsCate" parameterType="Map">
+        update b_goods set user_cateid=#{cateCode} where site_id = #{siteId} and goods_id in
+        <foreach collection="gIdList" separator="," open="(" close=")" item="goodsId">
+            #{goodsId}
+        </foreach>
+    </update>
+    <select id="getByCateName" resultMap="CateResultMap" useCache="false" parameterType="Map">
+        select * from b_category b where site_id = #{siteId} and cate_name = #{cateName} and del_tag = 0 limit 1
+    </select>
+
+    <select id="queryGoodsImgExtra" resultType="String" useCache="false" parameterType="Map">
+        select hash from b_images_attr t1 inner join b_goods t2  on t1.goods_id = t2.goods_id where t1.site_id = #{siteId}
+        and t1.goods_id = (select goods_id from b_goods where site_id = #{siteId} and user_cateid like concat('%', #{cateCode}, '%') order by update_time desc limit 1) and t1.is_default = 1 and t1.flag = 0 limit 1
+    </select>
+
+    <update id="updateCategoryImg" parameterType="Map">
+        update b_category set img_hash =#{imgHash} where site_id = #{siteId} and cate_code=#{cateCode} and del_tag =0
+    </update>
+
+    <update id="delCategoryImg" parameterType="Map">
+        update b_category set img_hash ='' where site_id = #{siteId} and cate_code=#{cateCode} and del_tag =0
+    </update>
+
+    <select id="querGoodsHashImg" resultType="String" useCache="false">
+        SELECT a.`hash`from (SELECT goods_id,site_id FROM b_goods WHERE site_id = #{siteId} and user_cateid = #{cateCode} order by update_time desc limit 1) g INNER JOIN b_images_attr a on g.goods_id = a.goods_id and a.flag=0 and a.is_default=1 and a.site_id = #{siteId} where g.site_id = #{siteId} limit 1
+    </select>
+
+    <select id="getCategoryDefault" resultType="java.lang.String">
+        SELECT cate_code FROM b_category WHERE site_id = #{siteId} ORDER BY cate_id ASC LIMIT 1
+    </select>
+</mapper>

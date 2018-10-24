@@ -1,0 +1,1 @@
+ALTER TABLE `d_distributor` ADD INDEX `idx_owner` (`owner`, `user_name`) ;

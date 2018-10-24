@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.esn.mapper.GoodsEsMapper">
+
+    <select id="queryGoodsDetail" resultType="com.jk51.modules.esn.entity.GoodsInfo" useCache="false" parameterType="String">
+        select t.goods_id,e.adverse_reactioins,e.browse_number,t.cost_price,e.forpeople_desc,e.goods_action,e.goods_batch_no,t.goods_code,e.goods_contd,e.goods_deposit,e.goods_desc,e.goods_description,e.goods_indications,e.goods_note,e.goods_usage,e.main_ingredient,e.product_date,e.qualification,t.wx_purchase_way,t.drug_name,t.com_name,t.specif_cation,t.barnd_id,t.drug_category,t.goods_property,t.goods_use,t.goods_forts,t.goods_forpeople,t.user_cateid,t.goods_title,t.goods_tagsid,t.market_price,t.shop_price,t.discount_price,t.in_stock,t.goods_weight,t.control_num,t.app_goods_status,t.goods_status,t.freight_payer,t.list_time,t.delist_time,t.postage_id,t.create_time,t.update_time,t.detail_tpl,t.purchase_way,t.is_medicare,t.medicare_code,t.medicare_top_price,t.bar_code,t.mnemonic_code,e.goods_use_method,t.approval_number,t.goods_company,t.goods_validity,t.gross_profit,t.is_main_push,e.trans_mumber,e.shopping_number,e.goodsextd_id,b.barnd_name,b.barnd_desc,c.parent_id,c.cate_name,c.cate_ishow,c.cate_code,a.goods_num
+        from b_goods t left join b_goodsextd e on t.goods_id = e.goods_id and t.site_id = e.site_id
+        left join b_barnd b on t.barnd_id = b.barnd_id and t.site_id = b.site_id
+        left join b_category c on t.user_cateid = c.cate_code and t.site_id = c.site_id
+        left join b_orders a on t.site_id = a.site_id and t.goods_id = a.goods_id
+        where t.site_id = #{siteId}
+        <if test="goodsId !='' and goodsId !=null ">
+            and t.goods_id = #{goodsId}
+        </if>
+        GROUP BY t.goods_id
+    </select>
+
+    <select id="queryGoodsDetail4erp" resultType="com.jk51.modules.esn.entity.GoodsInfo" useCache="false" parameterType="String">
+        select t.goods_id,e.adverse_reactioins,e.browse_number,t.cost_price,e.forpeople_desc,
+        e.goods_action,e.goods_batch_no,t.goods_code,e.goods_contd,e.goods_deposit,e.goods_desc,
+        e.goods_description,e.goods_indications,e.goods_note,e.goods_usage,e.main_ingredient,
+        e.product_date,e.qualification,t.wx_purchase_way,t.drug_name,t.com_name,t.specif_cation,
+        t.barnd_id,t.drug_category,t.goods_property,t.goods_use,t.goods_forts,t.goods_forpeople,t.user_cateid,t.goods_title,t.goods_tagsid,t.market_price,
+        t.erp_price, t.shop_price,
+        t.discount_price,t.in_stock,t.goods_weight,t.control_num,t.goods_status,t.freight_payer,t.list_time,t.delist_time,t.postage_id,t.create_time,t.update_time,t.detail_tpl,t.purchase_way,t.is_medicare,t.medicare_code,t.medicare_top_price,t.bar_code,t.mnemonic_code,e.goods_use_method,t.approval_number,t.goods_company,t.goods_validity,e.trans_mumber,e.shopping_number,e.goodsextd_id,b.barnd_name,b.barnd_desc,c.parent_id,c.cate_name,c.cate_ishow,c.cate_code,a.goods_num
+        from b_goods t left join b_goodsextd e on t.goods_id = e.goods_id and t.site_id = e.site_id
+        left join b_barnd b on t.barnd_id = b.barnd_id and t.site_id = b.site_id
+        left join b_category c on t.user_cateid = c.cate_code and t.site_id = c.site_id
+        left join b_orders a on t.site_id = a.site_id and t.goods_id = a.goods_id
+        where t.site_id = #{siteId}
+        <if test="goodsId !='' and goodsId !=null ">
+            and t.goods_id = #{goodsId}
+        </if>
+        GROUP by t.goods_id
+    </select>
+
+    <select id="queryDistribute" resultType="int" useCache="false" parameterType="String">
+        select count(*) from b_goods_distribute where site_id = #{siteId} and goods_id = #{goodsId}
+    </select>
+
+    <select id="queryGoodsPrimaryImage" resultType="String" useCache="false" parameterType="String">
+        SELECT hash FROM b_images_attr where flag=0 AND site_id = #{siteId} and goods_id = #{goodsId} and is_default = 1
+        LIMIT 1
+    </select>
+
+    <select id="queryGoodsImageBySiteId" resultType="com.jk51.modules.esn.entity.ImageInfo" useCache="false" parameterType="String">
+        SELECT goods_id,host_id,hash,is_default FROM b_images_attr where flag=0 AND site_id = #{siteId}
+    </select>
+
+    <select id="queryDistributeBySiteId" resultType="com.jk51.modules.esn.entity.GoodsInfo" useCache="false" parameterType="String">
+        select goods_id from b_goods_distribute where site_id = #{siteId}
+    </select>
+
+    <select id="querySuggestGoods" resultType="com.jk51.modules.esn.entity.GoodsInfo" useCache="false">
+        select g.drug_name,g.goods_company, g.shop_price from b_goods g
+          where g.site_id = #{siteId} and g.goods_status=1
+    </select>
+
+    <select id="queryActivityCoupon" resultType="java.util.Map">
+      SELECT a.coupon_type,a.goods_rule, b.promotions_rule, b.promotions_type FROM b_coupon_rule a LEFT JOIN b_promotions_rule b on a.site_id = b.site_id
+      WHERE a.site_id = #{siteId} AND a.end_time <![CDATA[ > ]]> now() OR a.end_time IS NULL
+    </select>
+
+    <select id="queryMerchantIds" resultType="java.lang.String">
+        SELECT merchant_id FROM yb_merchant
+    </select>
+
+    <insert id="insertLog">
+        insert into b_es_log (site_id,param,result) values (#{siteId},#{param},#{result})
+    </insert>
+
+    <select id="queryCategoryCode" resultType="java.lang.String">
+        SELECT cate_code FROM b_category WHERE site_id = #{siteId}
+        <if test="userCateid != null and userCateid != ''">
+            AND cate_name like concat('%',#{userCateid},'%' )
+        </if>
+        LIMIT 1
+    </select>
+
+    <select id="queryGoodsDetailByCateId" resultType="com.jk51.modules.esn.entity.GoodsInfo" useCache="false" parameterType="String">
+        SELECT DISTINCT t.goods_id,e.adverse_reactioins,e.browse_number,t.cost_price,e.forpeople_desc,e.goods_action,e.goods_batch_no,t.goods_code,e.goods_contd,e.goods_deposit,e.goods_desc,e.goods_description,e.goods_indications,e.goods_note,e.goods_usage,e.main_ingredient,e.product_date,e.qualification,t.wx_purchase_way,t.drug_name,t.com_name,t.specif_cation,t.barnd_id,t.drug_category,t.goods_property,t.goods_use,t.goods_forts,t.goods_forpeople,t.user_cateid,t.goods_title,t.goods_tagsid,t.market_price,t.shop_price,t.discount_price,t.in_stock,t.goods_weight,t.control_num,t.goods_status,t.freight_payer,t.list_time,t.delist_time,t.postage_id,t.create_time,t.update_time,t.detail_tpl,t.purchase_way,t.is_medicare,t.medicare_code,t.medicare_top_price,t.bar_code,t.mnemonic_code,e.goods_use_method,t.approval_number,t.goods_company,t.goods_validity,e.trans_mumber,e.shopping_number,e.goodsextd_id,b.barnd_name,b.barnd_desc,c.parent_id,c.cate_name,c.cate_ishow,c.cate_code
+        FROM b_goods t LEFT JOIN b_goodsextd e ON t.goods_id = e.goods_id AND t.site_id = e.site_id
+        LEFT JOIN b_barnd b ON t.barnd_id = b.barnd_id AND t.site_id = b.site_id
+        LEFT JOIN b_category c ON t.user_cateid = c.cate_code AND t.site_id = c.site_id
+        LEFT JOIN b_orders a ON t.site_id = a.site_id AND t.goods_id = a.goods_id
+        WHERE t.site_id = #{siteId}
+            <if test="cateCodes !='' and cateCodes !=null ">
+                AND (
+                <trim suffixOverrides="OR">
+                    <foreach item="item" index="index" collection="cateCodes" >
+                        t.user_cateid LIKE concat(#{item},'%' ) OR
+                    </foreach>
+                </trim>
+                )
+            </if>
+        GROUP BY t.goods_id
+    </select>
+
+
+    <select id="querySuggestGoodsByCateId" resultType="com.jk51.modules.esn.entity.GoodsInfo" useCache="false">
+        SELECT g.drug_name,g.goods_company, g.goods_id FROM b_goods g
+        LEFT JOIN b_category c ON g.site_id = c.site_id AND g.user_cateid = c.cate_code
+        WHERE g.site_id = #{siteId} AND g.goods_status=1
+            <if test="cateCodes !='' and cateCodes !=null ">
+                AND (
+                <trim suffixOverrides="OR">
+                    <foreach item="item" index="index" collection="cateCodes" >
+                        g.user_cateid LIKE concat(#{item},'%' ) OR
+                    </foreach>
+                </trim>
+                )
+            </if>
+    </select>
+
+    
+    <select id="queryCateCodeByCateId" resultType="java.lang.String">
+      SELECT cate_code FROM b_category WHERE site_id = #{siteId}
+        <if test="cateIds !='' and cateIds !=null ">
+            AND cate_id IN
+            <foreach item="item" index="index" collection="cateIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="queryAppGoodsPrice" resultType="java.util.Map">
+            SELECT
+            site_id,
+            store_id,
+            goods_id,
+            goods_price,
+            discount_price
+        FROM
+            (
+            SELECT
+                site_id,
+                store_id,
+                goods_id,
+                goods_price,
+                discount_price
+            FROM
+                yb_stores_goods_price
+            WHERE
+                site_id = #{siteId} AND store_id = #{storeId} AND del_tag = 0
+                AND goods_id IN
+                <foreach collection="goodsIds" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            ORDER BY update_time DESC
+        ) a
+        GROUP BY goods_id
+    </select>
+
+    <select id="queryGoodsIdsByUserPay" parameterType="com.jk51.modules.es.entity.GoodsInfosAdminReq" resultType="integer">
+        SELECT DISTINCT bo.goods_id from b_trades bs
+            LEFT JOIN b_orders  bo
+            on bs.site_id = bo.site_id and bs.trades_id = bo.trades_id
+            where bs.site_id = #{siteId} and bs.is_payment = 1 and bs.buyer_id = (SELECT buyer_id
+            FROM b_member WHERE site_id =#{siteId} and mobile= #{mobile})
+    </select>
+
+</mapper>

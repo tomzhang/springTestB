@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.im.mapper.RaceAnswerRecodeMapper">
+
+    <select id="getRaceAnswerRecode" parameterType="java.lang.String" resultType="com.jk51.model.RaceAnswerRecode">
+        SELECT *
+        from b_race_answer_recode
+        WHERE
+          sender = #{sender}
+          AND
+          msg = #{msg}
+          AND
+          isGet = "Y"
+          AND
+          isBreak = "N"
+    </select>
+    <select id="getByPrimarykey" resultType="com.jk51.model.RaceAnswerRecode">
+        SELECT *
+        from b_race_answer_recode
+        WHERE
+          id = #{msg_id}
+          AND
+          isGet = "Y"
+          AND
+          isBreak = "N"
+    </select>
+    <insert id="insertSelective" parameterType="com.jk51.model.RaceAnswerRecode">
+        INSERT into b_race_answer_recode
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="appid != null and appid!=''">
+                appid,
+            </if>
+            <if test="receiver != null and receiver!=''">
+                receiver,
+            </if>
+            <if test="sender != null and sender!=''">
+                sender,
+            </if>
+            <if test="msg != null and msg!=''">
+                msg,
+            </if>
+            <if test="isGet != null and isGet!=''">
+                isGet,
+            </if>
+            <if test="isBreak != null and isBreak!=''">
+                isBreak,
+            </if>
+            create_time,
+            <if test="send_race_answer_recode_time != null">
+                send_race_answer_recode_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="appid != null and appid!=''">
+                #{appid},
+            </if>
+            <if test="receiver != null and receiver!=''">
+                #{receiver},
+            </if>
+            <if test="sender != null and sender!=''">
+                #{sender},
+            </if>
+            <if test="msg != null and msg!=''">
+                #{msg},
+            </if>
+            <if test="isGet != null and isGet!=''">
+                #{isGet},
+            </if>
+            <if test="isBreak != null and isBreak!=''">
+                #{isBreak},
+            </if>
+            CURRENT_TIMESTAMP,
+            <if test="send_race_answer_recode_time != null">
+                #{send_race_answer_recode_time},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="getRaceAnswerRecodeByReceiver" resultType="com.jk51.model.RaceAnswerRecode">
+        SELECT *
+        from b_race_answer_recode
+        WHERE
+          receiver = #{user_name}
+          and
+          create_time between #{beforeTime} and #{now}
+
+    </select>
+    <select id="getRaceAnswerRecodeByOneDay" resultType="com.jk51.model.RaceAnswerRecode">
+        SELECT *
+        from b_race_answer_recode
+        WHERE
+        receiver = #{user_name}
+        and
+        create_time between #{beforeTime} and #{now}
+        and isGet = "Y"
+
+    </select>
+    <select id="getRaceAnswerRecodeBytime" resultType="com.jk51.model.RaceAnswerRecode">
+         SELECT *
+        from b_race_answer_recode
+        WHERE
+        create_time between #{beforeTime} and #{now}
+        and isGet = "Y"
+    </select>
+
+</mapper>

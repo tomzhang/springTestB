@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.treat.mapper.FewMapper">
+
+    <select id="findSettlementday" resultType="com.jk51.model.treat.YbSettlementdayConfig">
+        SELECT c.*,IFNULL(m.create_time,'0000-00-00 00:00:00') transfer_time
+          FROM yb_settlementday_config c LEFT JOIN b_migrate m ON c.site_id=m.site_id
+        WHERE
+        c.site_id = #{siteId}
+    </select>
+
+    <select id="findDatetimeSetting" resultType="java.util.Map">
+        SELECT meta_key,meta_val
+        FROM yb_meta
+        WHERE
+        site_id = #{siteId}
+    </select>
+
+    <select id="getCommissionRatById" parameterType="Integer" resultType="com.jk51.model.account.models.AccountCommissionRate">
+        SELECT * FROM yb_accout_commission_rate WHERE site_id=#{siteId}
+    </select>
+
+    <select id="getPayPlatformById" resultType="com.jk51.model.account.models.PayPlatform">
+        SELECT * FROM yb_pay_platform WHERE site_id=#{site_id}
+    </select>
+
+    <select id="getWeChatTradesAll" resultType="java.lang.Integer">
+        SELECT count(0) FROM b_trades WHERE site_id=#{siteId} and buyer_id=#{buyerId}
+    </select>
+
+    <!-- 插入并且获取-->
+    <insert id="insertAndGet" useGeneratedKeys="true" keyProperty="iconId" parameterType="com.jk51.model.treat.IconLib">
+        insert into b_iconlib (icon_id, site_id, icon_img_url,
+        icon_is_system, create_time, update_time
+        )
+        values (#{iconId,jdbcType=INTEGER}, #{siteId,jdbcType=INTEGER}, #{iconImgUrl,jdbcType=VARCHAR},
+        #{iconIsSystem,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <insert id="initCategory" parameterType="String">
+        insert into b_category
+            select ${siteId} as site_id
+                            ,cate_id
+                            ,parent_id
+                            ,cate_code
+                    ,cate_name
+                            ,cate_sort
+                            ,'' as img_hash
+                            ,cate_ishow
+                    ,0 as yb_cateid
+                    ,del_tag
+                    ,0 as is_del
+                    ,create_time
+                    ,update_time
+            from yb_category
+    </insert>
+
+    <insert id="insertQrLog" parameterType="Map">
+      insert into b_qrcode_log (site_id,openid,event_key) values (#{siteId},#{openid},#{eventkey})
+    </insert>
+
+    <select id="queryStore" resultType="Map">
+        select stores_number as uid from b_stores where site_id = #{siteId} and stores_status = 1
+    </select>
+
+    <select id="queryGoods" resultType="Map">
+        select goods_code as goodsno from b_goods where site_id = #{siteId} and goods_status = 1
+    </select>
+
+    <select id="queryBDErpMember" resultType="Map">
+        select ifnull(a.name,'') as name,ifnull(a.sex,'') as sex ,ifnull(b.birthday,'') as birthday,ifnull(a.mobile,'') as mobile,
+        ifnull(a.idcard_number,'') as idcard_number,ifnull(b.address,'') as address,ifnull(b.tag,'') as tag,ifnull(a.offline_integral,'') as offline_integral,
+        ifnull(b.case_history,'') as case_history,ifnull(b.allergies,'') as allergies
+         from b_member a left join b_member_info b
+        on a.site_id=b.site_id and a.buyer_id=b.member_id where a.site_id = #{siteId}  and a.mobile = #{mobile} limit 1
+    </select>
+
+    <select id="queryBDErpMemberByMobile" resultType="Map">
+        select buyer_id,member_id from b_member where site_id = #{siteId} and mobile = #{mobile} limit 1
+    </select>
+
+    <update id="updateBDMember" parameterType="com.jk51.model.order.SBMember">
+
+        UPDATE b_member
+        <set>
+            sex = #{sex,jdbcType=INTEGER},
+            idcard_number = #{idcard_number,jdbcType=VARCHAR},
+            name = #{name,jdbcType=VARCHAR},
+            offline_integral = #{offline_integral},
+        </set>
+            where site_id = #{site_id} and buyer_id = #{buyer_id}
+    </update>
+
+    <update id="updateBDMemberInfo" parameterType="com.jk51.model.order.SBMemberInfo">
+
+        UPDATE b_member_info
+        <set>
+            birthday = #{birthday,jdbcType=DATE},
+            address = #{address,jdbcType=VARCHAR},
+            tag = #{tag,jdbcType=LONGVARCHAR},
+            case_history = #{case_history,jdbcType=VARCHAR},
+            allergies = #{allergies,jdbcType=VARCHAR},
+        </set>
+            where site_id = #{site_id} AND member_id = #{member_id}
+
+    </update>
+</mapper>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+        <!DOCTYPE mapper
+                PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+                "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.account.mapper.FinanceAuditLogMapper">
+    <insert id="addFinanceAuditLogList" parameterType="com.jk51.model.account.models.FinanceAuditLog">
+        insert into yb_finance_audit_log (operation_id,operation_name,finance_no,finance_id,create_time,remark)
+        values (#{financeAuditLog.operation_id},#{financeAuditLog.operation_name},#{financeAuditLog.finance_no},
+        #{financeAuditLog.finance_id},CURRENT_TIMESTAMP(),#{financeAuditLog.remark});
+    </insert>
+</mapper>

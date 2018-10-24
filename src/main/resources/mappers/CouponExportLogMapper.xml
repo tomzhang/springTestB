@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.coupon.mapper.CouponExportLogMapper">
+    <resultMap id="couponExportResultMap" type="com.jk51.model.coupon.CouponExportLog">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="rule_id" jdbcType="INTEGER" property="ruleId"/>
+        <result column="start_coupon_no" jdbcType="INTEGER" property="startCouponNo"/>
+        <result column="end_coupon_no" jdbcType="INTEGER" property="endCouponNo"/>
+        <result column="is_export" jdbcType="INTEGER" property="isExport"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="createTimeInfo" jdbcType="VARCHAR" property="createTimeInfo"/>
+        <result column="updateTimeInfo" jdbcType="VARCHAR" property="updateTimeInfo"/>
+    </resultMap>
+
+    <insert id="addCouponExportDetail" keyProperty="id" useGeneratedKeys="true"
+            parameterType="com.jk51.model.coupon.CouponExportLog">
+        insert into b_coupon_export_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="ruleId != null">
+                rule_id,
+            </if>
+            <if test="startCouponNo != null">
+                start_coupon_no,
+            </if>
+            <if test="endCouponNo != null">
+                end_coupon_no,
+            </if>
+            <if test="isExport != null">
+                is_export,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="ruleId != null">
+                #{ruleId,jdbcType=INTEGER},
+            </if>
+            <if test="startCouponNo != null">
+                #{startCouponNo,jdbcType=INTEGER},
+            </if>
+            <if test="endCouponNo != null">
+                #{endCouponNo,jdbcType=INTEGER},
+            </if>
+            <if test="isExport != null">
+                #{isExport,jdbcType=TINYINT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateCouponExportDetail" parameterType="com.jk51.model.coupon.CouponExportLog">
+
+        update b_coupon_export_log
+        <set>
+            <if test="startCouponNo != null">
+                start_coupon_no = #{startCouponNo,jdbcType=INTEGER},
+            </if>
+            <if test="endCouponNo != null">
+                end_coupon_no = #{endCouponNo,jdbcType=INTEGER},
+            </if>
+            update_time = now()
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+        and site_id = #{siteId,jdbcType=INTEGER}
+    </update>
+
+    <select id="findCouponExportLog" resultMap="couponExportResultMap"
+            parameterType="com.jk51.model.coupon.CouponExportLog">
+        select
+          log.*,
+          date_format(log.create_time,'%Y-%m-%d %H:%i:%S') as createTimeInfo,
+          date_format(log.update_time,'%Y-%m-%d %H:%i:%S') as updateTimeInfo
+        from
+          b_coupon_export_log as log
+        <where>
+            <if test="ruleId != null">
+                and rule_id=#{ruleId,jdbcType=INTEGER}
+            </if>
+        </where>
+        order by id asc
+    </select>
+
+
+</mapper>

@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.persistence.mapper.SChPharmacistMapper" >
+  <resultMap id="BaseResultMap" type="com.jk51.model.order.SChPharmacist" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="amount" property="amount" jdbcType="BIGINT" />
+    <result column="site_id" property="siteId" jdbcType="INTEGER" />
+    <result column="store_id" property="storeId" jdbcType="INTEGER" />
+    <result column="store_user_id" property="storeUserId" jdbcType="INTEGER" />
+    <result column="store_name" property="storeName" jdbcType="VARCHAR" />
+    <result column="lng" property="lng" jdbcType="VARCHAR" />
+    <result column="lat" property="lat" jdbcType="VARCHAR" />
+    <result column="is_online" property="isOnline" jdbcType="TINYINT" />
+    <result column="is_remind" property="isRemind" jdbcType="TINYINT" />
+    <result column="is_active" property="isActive" jdbcType="TINYINT" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, user_id, amount, site_id, store_id, store_user_id, store_name, lng, lat, is_online, 
+    is_remind, is_active, created_at, updated_at
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ch_pharmacist
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <update id="updateOnlineByPharmacistId">
+    UPDATE ch_pharmacist
+    set is_online = #{num}
+    WHERE
+      id = #{pharmacist_id}
+  </update>
+  <select id="findChPharmacistByUserId" parameterType="com.jk51.model.order.SChPharmacist">
+    SELECT *
+    FROM ch_pharmacist
+    WHERE
+      user_id = #{user_id}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from ch_pharmacist
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.jk51.model.order.SChPharmacist" >
+    insert into ch_pharmacist (id, user_id, amount, 
+      site_id, store_id, store_user_id, 
+      store_name, lng, lat, 
+      is_online, is_remind, is_active, 
+      created_at, updated_at)
+    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{amount,jdbcType=BIGINT}, 
+      #{siteId,jdbcType=INTEGER}, #{storeId,jdbcType=INTEGER}, #{storeUserId,jdbcType=INTEGER}, 
+      #{storeName,jdbcType=VARCHAR}, #{lng,jdbcType=VARCHAR}, #{lat,jdbcType=VARCHAR}, 
+      #{isOnline,jdbcType=TINYINT}, #{isRemind,jdbcType=TINYINT}, #{isActive,jdbcType=TINYINT}, 
+      #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jk51.model.order.SChPharmacist" >
+    insert into ch_pharmacist
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="siteId != null" >
+        site_id,
+      </if>
+      <if test="storeId != null" >
+        store_id,
+      </if>
+      <if test="storeUserId != null" >
+        store_user_id,
+      </if>
+      <if test="storeName != null" >
+        store_name,
+      </if>
+      <if test="lng != null" >
+        lng,
+      </if>
+      <if test="lat != null" >
+        lat,
+      </if>
+      <if test="isOnline != null" >
+        is_online,
+      </if>
+      <if test="isRemind != null" >
+        is_remind,
+      </if>
+      <if test="isActive != null" >
+        is_active,
+      </if>
+      <if test="createdAt != null" >
+        created_at,
+      </if>
+      <if test="updatedAt != null" >
+        updated_at,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=BIGINT},
+      </if>
+      <if test="siteId != null" >
+        #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="storeId != null" >
+        #{storeId,jdbcType=INTEGER},
+      </if>
+      <if test="storeUserId != null" >
+        #{storeUserId,jdbcType=INTEGER},
+      </if>
+      <if test="storeName != null" >
+        #{storeName,jdbcType=VARCHAR},
+      </if>
+      <if test="lng != null" >
+        #{lng,jdbcType=VARCHAR},
+      </if>
+      <if test="lat != null" >
+        #{lat,jdbcType=VARCHAR},
+      </if>
+      <if test="isOnline != null" >
+        #{isOnline,jdbcType=TINYINT},
+      </if>
+      <if test="isRemind != null" >
+        #{isRemind,jdbcType=TINYINT},
+      </if>
+      <if test="isActive != null" >
+        #{isActive,jdbcType=TINYINT},
+      </if>
+      <if test="createdAt != null" >
+        #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null" >
+        #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.order.SChPharmacist" >
+    update ch_pharmacist
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=BIGINT},
+      </if>
+      <if test="siteId != null" >
+        site_id = #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="storeId != null" >
+        store_id = #{storeId,jdbcType=INTEGER},
+      </if>
+      <if test="storeUserId != null" >
+        store_user_id = #{storeUserId,jdbcType=INTEGER},
+      </if>
+      <if test="storeName != null" >
+        store_name = #{storeName,jdbcType=VARCHAR},
+      </if>
+      <if test="lng != null" >
+        lng = #{lng,jdbcType=VARCHAR},
+      </if>
+      <if test="lat != null" >
+        lat = #{lat,jdbcType=VARCHAR},
+      </if>
+      <if test="isOnline != null" >
+        is_online = #{isOnline,jdbcType=TINYINT},
+      </if>
+      <if test="isRemind != null" >
+        is_remind = #{isRemind,jdbcType=TINYINT},
+      </if>
+      <if test="isActive != null" >
+        is_active = #{isActive,jdbcType=TINYINT},
+      </if>
+      <if test="createdAt != null" >
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null" >
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jk51.model.order.SChPharmacist" >
+    update ch_pharmacist
+    set user_id = #{userId,jdbcType=INTEGER},
+      amount = #{amount,jdbcType=BIGINT},
+      site_id = #{siteId,jdbcType=INTEGER},
+      store_id = #{storeId,jdbcType=INTEGER},
+      store_user_id = #{storeUserId,jdbcType=INTEGER},
+      store_name = #{storeName,jdbcType=VARCHAR},
+      lng = #{lng,jdbcType=VARCHAR},
+      lat = #{lat,jdbcType=VARCHAR},
+      is_online = #{isOnline,jdbcType=TINYINT},
+      is_remind = #{isRemind,jdbcType=TINYINT},
+      is_active = #{isActive,jdbcType=TINYINT},
+      created_at = #{createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="queryPharmacistByUserId" resultType="com.jk51.model.order.SChPharmacist">
+    SELECT *
+    FROM ch_pharmacist
+    WHERE
+    user_id = #{user_id} limit 1;
+  </select>
+  <update id="updateRemind">
+    UPDATE ch_pharmacist
+    set is_remind = #{is_remind}
+    WHERE
+      id = #{pharmacistId}
+      and
+      site_id = #{siteId}
+  </update>
+</mapper>

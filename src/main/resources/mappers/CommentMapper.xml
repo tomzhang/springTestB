@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.comment.mapper.CommentMapper">
+    <resultMap type="com.jk51.model.Comments" id="commentRM" autoMapping="true">
+        <id property="commentId" column="comment_id"/>
+        <id property="siteId" column="site_id"/>
+        <result column="comment_rank" jdbcType="INTEGER" property="commentRank" />
+        <result column="comment_content" jdbcType="VARCHAR" property="commentContent" />
+        <result column="buyer_nick" jdbcType="VARCHAR" property="buyerNick" />
+        <result column="trades_id" jdbcType="VARCHAR" property="tradesId" />
+        <result column="goods_id" jdbcType="INTEGER" property="goodsId" />
+        <result column="drug_name" jdbcType="VARCHAR" property="drugName"/>
+        <result column="trades_rank" jdbcType="TINYINT" property="tradesRank" />
+        <result column="is_show" jdbcType="INTEGER" property="isShow" />
+        <result column="goods_code" jdbcType="VARCHAR" property="goodsCode" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="goods_title" jdbcType="VARCHAR" property="goodsTitle"/>
+    </resultMap>
+    <select id="findCommentsList" resultMap="commentRM" useCache="false" timeout="180" parameterType="java.util.Map">
+            select m.*,n.goods_title,n.drug_name,n.goods_code,y.trades_rank from b_trades_comments m,b_goods n,b_trades y
+            <where>
+                m.goods_id = n.goods_id
+                and m.trades_id = y.trades_id
+                and m.site_id=n.site_id and n.site_id=y.site_id
+                and m.site_id=#{siteId}
+                <if test="commentContent != null and commentContent !=''">and comment_content like  concat('%',#{commentContent},'%' ) </if>
+                <if test="commentRank != null and commentRank !=''">and comment_rank = #{commentRank}</if>
+                <if test="isShow != null and isShow !=''">and is_show = #{isShow} </if>
+                <if test="startTime != null and startTime !='' ">and m.create_time >= #{startTime,jdbcType=TIMESTAMP} </if>
+                <if test="endTime != null and endTime !=''">and #{endTime,jdbcType=TIMESTAMP}  >=  m.create_time </if>
+            </where>
+            order by m.create_time DESC
+    </select>
+
+    <update id="updateState" flushCache="true" parameterType="com.jk51.model.Comments">
+        update b_trades_comments set is_show = #{isShow} where site_id = #{siteId} and  comment_id  in
+          <foreach collection="commentIds" item="commentId" separator= "," open= "(" close= ")">
+              #{commentId}
+          </foreach>
+
+    </update>
+
+    <select id="findItemComments" resultType="java.util.Map">
+        <!-- select comment_rank, comment_content, create_time, buyer_nick from b_trades_comments where site_id = #{siteId} and goods_id = #{goodsId} AND is_show=1  order by create_time DESC -->
+        SELECT c.comment_rank commentRank, c.comment_content commentContent, c.create_time createTime, c.buyer_nick buyerNick, m.avatar
+        FROM b_trades_comments c
+        LEFT JOIN b_trades t ON c.site_id=t.site_id AND c.trades_id=t.trades_id
+        LEFT JOIN b_member_info m ON m.site_id=t.site_id AND m.member_id=t.buyer_id
+        WHERE c.site_id = #{siteId} AND c.goods_id = #{goodsId} AND c.is_show=1 ORDER BY c.create_time DESC
+    </select>
+
+    <select id="findOrderComments"  resultMap="commentRM" useCache="false" timeout="180">
+        select * from b_trades_comments  where trades_id = #{tradesId}
+    </select>
+
+    <insert id="addServiceComment" parameterType="Map" >
+        insert into b_service_comment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">site_id,</if>
+            <if test="commentRank != null">comment_rank,</if>
+            <if test="commentContext != null">comment_context,</if>
+            <if test="chatEnter != null">chat_enter,</if>
+            <if test="chatTerr != null">chat_terr,</if>
+            <if test="clientName != null">client_name,</if>
+            <if test="clientPhone != null">client_phone,</if>
+            <if test="serviceName != null">service_name,</if>
+            <if test="servicePhone != null">service_phone,</if>
+            create_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">#{siteId},</if>
+            <if test="commentRank != null">#{commentRank},</if>
+            <if test="commentContext != null">#{commentContext},</if>
+            <if test="chatEnter != null">#{chatEnter},</if>
+            <if test="chatTerr != null">#{chatTerr},</if>
+            <if test="clientName != null">#{clientName},</if>
+            <if test="clientPhone != null">#{clientPhone},</if>
+            <if test="serviceName != null">#{serviceName},</if>
+            <if test="servicePhone != null">#{servicePhone},</if>
+            CURRENT_TIMESTAMP,
+        </trim>
+    </insert>
+
+    <insert id="addTradeComment" parameterType="com.jk51.model.Comments" >
+        insert into b_trades_comments
+        (site_id,comment_rank,comment_content,buyer_nick,trades_id,goods_id,is_show)
+        values
+        <foreach collection="list" item="item" index="index"
+                 separator=",">
+            (#{item.siteId,jdbcType=INTEGER},#{item.commentRank,jdbcType=INTEGER},#{item.commentContent,jdbcType=VARCHAR},
+            #{item.buyerNick,jdbcType=VARCHAR},#{item.tradesId,jdbcType=VARCHAR},#{item.goodsId,jdbcType=INTEGER},#{item.isShow,jdbcType=INTEGER})
+        </foreach>
+    </insert>
+    <update id="updateComments" parameterType="Map">
+        update b_trades_comments set is_show = #{isShow} where site_id = #{siteId} and  goods_id = #{goodsId} and trades_id = #{tradesId}
+    </update>
+
+</mapper>

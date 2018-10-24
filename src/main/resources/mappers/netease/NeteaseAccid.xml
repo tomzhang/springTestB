@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.im.netease.mapper.NeteaseAccidMapper">
+
+
+    <insert id="inseart" parameterType="com.jk51.model.netease.NeteaseAccid">
+        insert  into b_netease_accid (accid,token) value (#{accid},#{token})
+    </insert>
+
+    <select id="findByAccid" resultType="com.jk51.model.netease.NeteaseAccid" parameterType="java.lang.String">
+        select id,accid,token,create_time createTime,update_time updateTime
+        from b_netease_accid
+        where accid = #{accid} and active = 0
+    </select>
+</mapper>

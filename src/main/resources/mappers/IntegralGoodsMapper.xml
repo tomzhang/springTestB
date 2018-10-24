@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.integral.mapper.IntegralGoodsMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.order.Store">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <id column="site_id" property="siteId" jdbcType="INTEGER"/>
+        <result column="stores_number" property="storesNumber" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="is_qjd" property="isQjd" jdbcType="BIT"/>
+        <result column="type" property="type" jdbcType="BIT"/>
+        <result column="city_id" property="cityId" jdbcType="INTEGER"/>
+        <result column="region_id" property="regionId" jdbcType="INTEGER"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="baidu_lat" property="baiduLat" jdbcType="VARCHAR"/>
+        <result column="baidu_lng" property="baiduLng" jdbcType="VARCHAR"/>
+        <result column="gaode_lng" property="gaodeLng" jdbcType="VARCHAR"/>
+        <result column="gaode_lat" property="gaodeLat" jdbcType="VARCHAR"/>
+        <result column="map_flag" property="mapFlag" jdbcType="BIT"/>
+        <result column="tel" property="tel" jdbcType="VARCHAR"/>
+        <result column="business_time" property="businessTime" jdbcType="VARCHAR"/>
+        <result column="feature" property="feature" jdbcType="VARCHAR"/>
+        <result column="summary" property="summary" jdbcType="VARCHAR"/>
+        <result column="qr_code_img" property="qrCodeImg" jdbcType="VARCHAR"/>
+        <result column="qr_code_type" property="qrCodeType" jdbcType="BIT"/>
+        <result column="stores_status" property="storesStatus" jdbcType="BIT"/>
+        <result column="is_del" property="isDel" jdbcType="BIT"/>
+        <result column="province" property="province" jdbcType="VARCHAR"/>
+        <result column="city" property="city" jdbcType="VARCHAR"/>
+        <result column="service_support" property="serviceSupport" jdbcType="VARCHAR"/>
+        <result column="self_token_time" property="selfTokenTime" jdbcType="VARCHAR"/>
+        <result column="delivery_time" property="deliveryTime" jdbcType="VARCHAR"/>
+        <result column="remind_mobile" property="remindMobile" jdbcType="VARCHAR"/>
+        <result column="country" property="country" jdbcType="VARCHAR"/>
+        <result column="own_pricing_type" property="ownPricingType" jdbcType="TINYINT"/>
+        <result column="own_promotion_type" property="ownPromotionType" jdbcType="TINYINT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <resultMap id="ResultMapstoresGroupByCity" type="com.jk51.model.CityHasStores">
+        <id column="cityId" property="cityId" jdbcType="INTEGER"/>
+        <result column="cityName" property="cityName" jdbcType="VARCHAR"/>
+        <collection property="bStores" ofType="com.jk51.model.order.Store">
+            <id column="id" property="id" jdbcType="INTEGER"/>
+            <id column="site_id" property="siteId" jdbcType="INTEGER"/>
+            <result column="stores_number" property="storesNumber" jdbcType="VARCHAR"/>
+            <result column="name" property="name" jdbcType="VARCHAR"/>
+            <result column="is_qjd" property="isQjd" jdbcType="BIT"/>
+            <result column="type" property="type" jdbcType="BIT"/>
+            <result column="city_id" property="cityId" jdbcType="INTEGER"/>
+            <result column="region_id" property="regionId" jdbcType="INTEGER"/>
+            <result column="address" property="address" jdbcType="VARCHAR"/>
+            <result column="baidu_lat" property="baiduLat" jdbcType="VARCHAR"/>
+            <result column="baidu_lng" property="baiduLng" jdbcType="VARCHAR"/>
+            <result column="gaode_lng" property="gaodeLng" jdbcType="VARCHAR"/>
+            <result column="gaode_lat" property="gaodeLat" jdbcType="VARCHAR"/>
+            <result column="map_flag" property="mapFlag" jdbcType="BIT"/>
+            <result column="tel" property="tel" jdbcType="VARCHAR"/>
+            <result column="business_time" property="businessTime" jdbcType="VARCHAR"/>
+            <result column="feature" property="feature" jdbcType="VARCHAR"/>
+            <result column="summary" property="summary" jdbcType="VARCHAR"/>
+            <result column="qr_code_img" property="qrCodeImg" jdbcType="VARCHAR"/>
+            <result column="qr_code_type" property="qrCodeType" jdbcType="BIT"/>
+            <result column="stores_status" property="storesStatus" jdbcType="BIT"/>
+            <result column="is_del" property="isDel" jdbcType="BIT"/>
+            <result column="province" property="province" jdbcType="VARCHAR"/>
+            <result column="city" property="city" jdbcType="VARCHAR"/>
+            <result column="service_support" property="serviceSupport" jdbcType="VARCHAR"/>
+            <result column="self_token_time" property="selfTokenTime" jdbcType="VARCHAR"/>
+            <result column="delivery_time" property="deliveryTime" jdbcType="VARCHAR"/>
+            <result column="remind_mobile" property="remindMobile" jdbcType="VARCHAR"/>
+            <result column="country" property="country" jdbcType="VARCHAR"/>
+            <result column="own_pricing_type" property="ownPricingType" jdbcType="TINYINT"/>
+            <result column="own_promotion_type" property="ownPromotionType" jdbcType="TINYINT"/>
+            <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+            <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        </collection>
+    </resultMap>
+    <select id="queryIntegralGoods" parameterType="map" resultType="java.util.Map">
+        SELECT
+        i.id,
+        i.site_id,
+        i.goods_id,
+        i.num,
+        i.intrgral_exchanges,
+        i.store_ids,
+        i.status,
+        date_format(i.start_time, '%Y-%m-%d %H:%i') AS start_time,
+        date_format(i.end_time, '%Y-%m-%d %H:%i') AS end_time,
+        g.drug_name,
+        ia. HASH,
+        ia.width,
+        ia.height,
+        ia.size,
+        ia.type
+        FROM
+        `b_integral_goods` AS i
+        RIGHT JOIN b_goods as g on i.goods_id=g.goods_id and i.site_id=g.site_id
+        LEFT  JOIN (
+        SELECT
+        *
+        FROM
+        b_images_attr
+        WHERE
+        site_id = #{siteId}
+        AND flag = 0
+        AND is_default = 1
+        GROUP BY goods_id, is_default
+        )  AS ia ON (i.site_id = ia.site_id AND i.goods_id = ia.goods_id)
+        <where>
+            1 = 1
+            <!--AND ia.is_default = 1
+            AND ia.flag = 0-->
+            <if test="siteId!=null and siteId!=''" >
+                AND i.site_id = #{siteId}
+            </if>
+            <if test="drugname!=null and drugname!=''" >
+                AND  (g.drug_name like concat('%',#{drugname},'%' ) or g.com_name like concat('%',#{drugname},'%' ))
+            </if>
+            <if test="status==9" >
+                and (( DATE_ADD(start_time,INTERVAL 1 DAY) <![CDATA[ > ]]> NOW()
+                and DATE_ADD(start_time,INTERVAL -3 DAY) <![CDATA[ < ]]> NOW())
+                or (start_time <![CDATA[ < ]]> NOW() AND  end_time <![CDATA[ > ]]> NOW() )
+                or (start_time <![CDATA[ < ]]> NOW() AND  end_time='0000-00-00 00:00:00'))
+            </if>
+            <if test="status==0" >
+                and DATE_ADD(start_time,INTERVAL 1 DAY) <![CDATA[ > ]]> NOW()
+                and DATE_ADD(start_time,INTERVAL -3 DAY) <![CDATA[ < ]]> NOW()
+            </if>
+            <if test="status==1" >
+                AND DATE_ADD(start_time,INTERVAL -1 day) <![CDATA[ < ]]> NOW() AND start_time <![CDATA[ > ]]> NOW()
+            </if>
+            <if test="status==10" >
+               AND start_time <![CDATA[ < ]]> NOW() AND end_time <![CDATA[ > ]]> NOW()
+                or end_time='0000-00-00 00:00:00'
+--                 AND status=10
+            </if>
+            <if test="status==2" >
+                AND DATE_ADD(end_time,INTERVAL -1 day) &lt; NOW() AND NOW() &lt; end_time
+            </if>
+            <if test="status==20" >
+                 AND end_time &lt; NOW() AND end_time <![CDATA[ <> ]]> '0000-00-00 00:00:00'
+            </if>
+            AND i.is_del=1
+            AND g.goods_status =1
+            <!--<if test="goodsStatus!=null and goodsStatus!=''" >
+                AND g.goods_status=#{goodsStatus}
+            </if>-->
+        </where>
+        ORDER BY i.update_time DESC
+    </select>
+
+    <update id="deleteIntegralGoods">
+        UPDATE
+        `b_integral_goods`
+
+        SET  is_del=0
+
+        <where>
+            id=#{id}
+        </where>
+    </update>
+
+    <update id="updateIntegralGoodsNum">
+        UPDATE
+        `b_integral_goods`
+
+        SET  num=#{num}+1
+
+        <where>
+            id=#{id}
+        </where>
+    </update>
+
+    <update id="updateIntegralGoods">
+        UPDATE
+        `b_integral_goods`
+        <set>
+            <if test="intrgralexchanges != null">
+                intrgral_exchanges=#{intrgralexchanges},
+            </if>
+            <if test="starttime != null">
+                start_time=#{starttime},
+            </if>
+            <if test="endtime != null">
+                end_time=#{endtime},
+            </if>
+            <if test="status != null">
+                status=#{status}
+            </if>
+        </set>
+
+        <where>
+            id=#{id}
+        </where>
+    </update>
+    
+    <select id="getIntegralGoodsByGoodsId" resultType="com.jk51.modules.integral.model.IntegralGoodsDetail">
+        SELECT
+          big.site_id AS siteId,
+          big.goods_id AS goodsId,
+          big.start_time AS startTime,
+          big.end_time AS endTime,
+          TIMESTAMPDIFF(SECOND, NOW(), big.start_time) AS startTimeInterval,
+          TIMESTAMPDIFF(SECOND, NOW(), big.end_time) AS endTimeInterval,
+          bg.drug_name AS drugName,
+          bg.com_name AS comName,
+          bg.goods_title AS goodsTitle,
+          bge.goods_desc AS goodsDesc
+        FROM
+            b_integral_goods AS big
+            left JOIN b_goods AS bg ON big.goods_id = bg.goods_id and big.site_id = bg.site_id
+            left JOIN b_goodsextd AS bge ON  big.goods_id = bge.goods_id and big.site_id = bge.site_id
+        WHERE
+          bg.site_id = #{site_id} AND bg.goods_id = #{goods_id}
+    </select>
+
+    <select id="queryIntegralGoodsByGoodsId" resultType="java.util.Map">
+        SELECT * FROM b_integral_goods
+        WHERE
+        site_id = #{site_id} AND goods_id = #{goods_id}
+    </select>
+
+
+    <select id="getStoresBySiteId"  resultType="com.jk51.model.order.Store">
+        SELECT site_id siteId,
+        id,
+        stores_number storesNumber,
+        name,
+        is_qjd isQjd,
+        type,
+        city_id cityId,
+        region_id regionId,
+        address,
+        baidu_lat baiduLat,
+        baidu_lng baiduLng,
+        gaode_lng gaodeLng,
+        gaode_lat gaodeLat,
+        map_flag mapFlag,
+        store_imgs storeImgs,
+        tel,
+        business_time businessTime,
+        feature,
+        summary,
+        qr_code_img qrCodeImg,
+        qr_code_type qrCodeType,
+        stores_status storesStatus,
+        is_del isDel,
+        province,
+        city,
+        service_support serviceSupport,
+        self_token_time selfTokenTime,
+        delivery_time deliveryTime,
+        remind_mobile remindMobile,
+        country,
+        own_pricing_type ownPricingType,
+        own_promotion_type ownPromotionType,
+        create_time createTime,
+        update_time updateTime
+
+        FROM b_stores t
+        where t.site_id = #{siteId}
+        and t.stores_status = 1
+        <!--<if test="cityId != null and cityId != ''">-->
+            <!--and t.city_id = #{cityId}-->
+        <!--</if>-->
+
+        and t.id in
+        <foreach item="item" index="index" collection="storeIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="GroupStoresByCityAndServiceSupport" resultMap="ResultMapstoresGroupByCity">
+        select city_id as cityId, city as cityName,bstores.*  from b_stores bstores where site_id=#{site_id} and stores_status=1
+        and service_support LIKE CONCAT(CONCAT('%', #{serviceSupport}), '%') AND id in
+        <foreach item="item" index="index" collection="storeIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+        ORDER BY city
+    </select>
+
+    <select id="selectStoresByCityAndServiceSupport" resultMap="BaseResultMap">
+        select *  from b_stores bstores where site_id=#{site_id} and stores_status=1 and  city_id=#{cityId}
+        and service_support LIKE CONCAT(CONCAT('%', #{serviceSupport}), '%') AND id in
+        <foreach item="item" index="index" collection="storeIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </select>
+
+
+    <select id="getConvertibility" resultType="java.lang.Integer">
+        SELECT IFNULL(SUM(o.goods_num),0)
+        from b_orders o
+        LEFT JOIN b_integral_goods i
+        on o.goods_id=i.goods_id
+        and o.site_id=i.site_id
+        LEFT JOIN b_trades t
+        on o.trades_id=t.trades_id
+        and o.site_id=t.site_id
+        where t.buyer_id=#{buyerId}
+        and o.goods_id=#{goodsId}
+        and o.site_id=#{siteId}
+
+    </select>
+
+    <select id="getStores"  resultType="com.jk51.model.order.Store">
+        SELECT site_id siteId,
+        id,
+        stores_number storesNumber,
+        name,
+        is_qjd isQjd,
+        type,
+        city_id cityId,
+        region_id regionId,
+        address,
+        baidu_lat baiduLat,
+        baidu_lng baiduLng,
+        gaode_lng gaodeLng,
+        gaode_lat gaodeLat,
+        map_flag mapFlag,
+        store_imgs storeImgs,
+        tel,
+        business_time businessTime,
+        feature,
+        summary,
+        qr_code_img qrCodeImg,
+        qr_code_type qrCodeType,
+        stores_status storesStatus,
+        is_del isDel,
+        province,
+        city,
+        service_support serviceSupport,
+        self_token_time selfTokenTime,
+        delivery_time deliveryTime,
+        remind_mobile remindMobile,
+        country,
+        own_pricing_type ownPricingType,
+        own_promotion_type ownPromotionType,
+        create_time createTime,
+        update_time updateTime
+
+        FROM b_stores t
+        where t.site_id = #{siteId}
+        and t.stores_status = 1
+    </select>
+
+    <select id="GroupStoresByCity" resultMap="ResultMapstoresGroupByCity">
+        select city_id as cityId, city as cityName,bstores.*  from b_stores bstores where site_id=#{site_id} and stores_status=1
+        and service_support LIKE CONCAT(CONCAT('%', #{serviceSupport}), '%')
+        ORDER BY city
+    </select>
+
+    <select id="selectStoresByCity" resultMap="BaseResultMap">
+        select *  from b_stores bstores where site_id=#{site_id} and stores_status=1 and  city_id=#{cityId}
+        and service_support LIKE CONCAT(CONCAT('%', #{serviceSupport}), '%')
+    </select>
+</mapper>

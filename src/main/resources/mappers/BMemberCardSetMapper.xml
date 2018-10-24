@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.merchant.mapper.MemberCardSetMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.merchant.MemberCardSet">
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="bg_img" jdbcType="VARCHAR" property="bgImg"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="mk_words" jdbcType="VARCHAR" property="mkWords"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        site_id, id, bg_img, title, mk_words, create_time, update_time
+    </sql>
+
+    <select id="getBySiteId" parameterType="int" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM b_member_card_set WHERE site_id=#{siteId}
+    </select>
+
+    <insert id="addCardSet" parameterType="com.jk51.model.merchant.MemberCardSet" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO b_member_card_set (site_id, bg_img, title, mk_words, create_time, update_time)
+        VALUES (#{siteId}, #{bgImg}, #{title}, #{mkWords}, now(), now())
+    </insert>
+
+    <update id="updCardSet" parameterType="com.jk51.model.merchant.MemberCardSet">
+        UPDATE b_member_card_set
+        <set>
+            <if test="bgImg != null and bgImg != ''">
+                bg_img = #{bgImg},
+            </if>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="mkWords != null and mkWords != ''">
+                mk_words = #{mkWords},
+            </if>
+        </set>
+        WHERE site_id=#{siteId} AND id= #{id}
+    </update>
+
+    <!--查询分类列表,用做连接显示全部分类-->
+    <select id="queryCategoryList" resultType="java.util.Map">
+        SELECT
+            a.site_id siteId,
+            a.cate_code cateCode,
+            a.cate_name cateName,
+            b.relevance_classify relevanceClassify,
+            b.relevance_reson relevanceReson,
+            b.is_pause isPause
+        FROM
+          b_category a
+        LEFT JOIN b_relevance_sale b ON a.site_id = b.site_id
+        AND a.cate_code = b.cate_code
+        WHERE
+        a.site_id = #{siteId}
+        AND a.del_tag = 0
+        AND LENGTH(a.cate_code) > 8
+        <if test="cateCode != null and cateCode != ''">
+            AND a.cate_code = #{cateCode}
+        </if>
+        <if test="isRelevance != null and isRelevance != ''">
+            AND b.is_relevance = #{isRelevance}
+        </if>
+        <if test="cateName != null and cateName != ''">
+            AND a.cate_name LIKE concat('%',#{cateName},'%')
+        </if>
+    </select>
+
+    <!--插入或更新之前查询单条记录-->
+    <select id="queryCategoryLog" resultType="java.util.Map">
+        SELECT
+            site_id siteId,
+            cate_code cateCode,
+            cate_name cateName,
+            relevance_classify relevanceClassify,
+            relevance_reson relevanceReson
+        FROM b_relevance_sale
+        WHERE site_id = #{siteId}
+        AND is_delete = 0
+        AND cate_code = #{cateCode}
+    </select>
+
+
+    <!--插入关联分类-->
+    <insert id="insertClassifyLog">
+        INSERT INTO b_relevance_sale (
+            site_id,
+            cate_code,
+            cate_name,
+            relevance_classify,
+            relevance_reson,
+            is_relevance,
+            is_pause,
+            is_delete,
+            update_time,
+            create_time
+        )
+        VALUES
+            (
+            #{siteId},
+            #{cateCode},
+            #{cateName},
+            #{relevanceList},
+            #{relevanceReson},
+            #{isRelevance},
+            #{isPause},
+            #{isDelete},
+            CURRENT_TIMESTAMP,
+            CURRENT_TIMESTAMP
+		);
+    </insert>
+
+    <!--更新关联分类-->
+    <update id="updateClassifyLog">
+        UPDATE b_relevance_sale
+        SET relevance_classify = #{relevanceList},
+            relevance_reson = #{relevanceReson},
+            is_relevance = #{isRelevance},
+            is_pause =#{isPause},
+            is_delete = #{isDelete},
+            update_time = CURRENT_TIMESTAMP
+        WHERE
+        site_id = #{siteId} AND cate_code = #{cateCode}
+    </update>
+
+
+    <select id="queryAlreadyExist" resultType="java.util.Map">
+        SELECT
+            cate_code cateCode,
+            cate_name cateName,
+            relevance_classify relevanceClassify,
+            relevance_reson relevanceReson,
+            is_relevance isRelevance,
+            is_pause isPause,
+            is_delete isDelete
+        FROM
+            b_relevance_sale
+        WHERE
+            site_id = #{siteId}
+    </select>
+
+    <!--批量插入-->
+    <insert id="addClassifyList">
+        <foreach collection="newRelevanceList" item="item" index="index" separator=";" open="" close="">
+            INSERT INTO b_relevance_sale
+            (site_id, cate_code, cate_name, relevance_classify, relevance_reson, is_relevance, is_pause, is_delete, update_time, create_time) VALUES
+            (#{item.siteId}, #{item.cateCode}, #{item.cateName}, #{item.relevanceList}, #{item.relevanceReson}, #{item.isRelevance}, #{item.isPause}, #{item.isDelete}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        </foreach>
+    </insert>
+
+    <!--批量更新-->
+    <update id="updateClassifyList">
+        <foreach collection="newRelevanceList" item="item" index="index" separator=";" open="" close="">
+            UPDATE b_relevance_sale
+            <set>
+                <if test="item.relevanceList != '' and item.relevanceList != null and item.relevanceList != 'null'">
+                    relevance_classify = #{item.relevanceList},
+                </if>
+                <if test="item.relevanceReson != '' and item.relevanceReson != null and item.relevanceReson != 'null'">
+                    relevance_reson = #{item.relevanceReson},
+                </if>
+                <if test="item.relevanceList != '' and item.relevanceList != null and item.relevanceList != 'null'">
+                    is_relevance = #{item.isRelevance},
+                </if>
+                update_time = CURRENT_TIMESTAMP
+            </set>
+            WHERE site_id = #{item.siteId} AND cate_code = #{item.cateCode}
+        </foreach>
+    </update>
+
+    <update id="clearRelevanceLog" parameterType="java.util.Map">
+        UPDATE b_relevance_sale SET
+          relevance_classify = '',
+          relevance_reson = '',
+          is_relevance = 0,
+          update_time = CURRENT_TIMESTAMP
+        WHERE
+	      site_id = #{siteId} AND cate_code = #{cateCode}
+    </update>
+
+    <select id="selectCateName" resultType="java.util.Map">
+        SELECT
+            cate_code cateCode,
+            cate_name cateName
+        FROM
+            b_category
+        WHERE
+            site_id = #{siteId}
+            AND del_tag = 0
+            AND cate_name LIKE concat('%',#{cateName},'%')
+            AND LENGTH(cate_code) > 8
+    </select>
+
+    <select id="selectClassifyByName">
+        SELECT
+            cate_code,
+            cate_name
+        FROM
+            b_category
+        WHERE
+            del_tag = 0
+        AND site_id = #{siteId}
+        AND LENGTH(cate_code) > 8
+        AND cate_name = #{cateName}
+        LIMIT 1
+    </select>
+
+    <update id="pauseOrStart" parameterType="java.util.Map">
+        UPDATE b_relevance_sale
+        SET is_pause = #{isPause}, update_time = CURRENT_TIMESTAMP
+        WHERE site_id = #{siteId} AND cate_code = #{cateCode}
+    </update>
+</mapper>

@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.marketing.mapper.BMarketingPlanMapper" >
+  <resultMap id="BaseResultMap" type="com.jk51.model.BMarketingPlan" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <id column="site_id" property="siteId" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="style" property="style" jdbcType="INTEGER" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="default_num" property="defaultNum" jdbcType="INTEGER" />
+    <result column="add_condition" property="addCondition" jdbcType="INTEGER" />
+    <result column="add_condition_info" property="addConditionInfo" jdbcType="VARCHAR" />
+    <result column="add_num" property="addNum" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="stop" property="stop" jdbcType="BIT" />
+    <result column="is_del" property="isDel" jdbcType="BIT" />
+    <result column="coupon_activity_id" property="couponActivityId" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <collection property="prizesSettingList" ofType="com.jk51.model.BMarketingPlan$PrizesSetting" >
+        <id column="extId" property="id" jdbcType="INTEGER" />
+        <result column="extType" property="type" jdbcType="INTEGER" />
+        <result column="type_id" property="typeId" jdbcType="INTEGER" />
+        <result column="type_info" property="typeInfo" jdbcType="VARCHAR" />
+        <result column="chances" property="chances" jdbcType="REAL" />
+        <result column="ceiling" property="ceiling" jdbcType="INTEGER" />
+        <result column="receive" property="receive" jdbcType="INTEGER" />
+    </collection>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, site_id, name, description, type, style, start_time, end_time, default_num, add_condition,
+    add_condition_info, add_num, status, stop, is_del, coupon_activity_id, create_time, update_time
+  </sql>
+
+
+  <select id="getExistPlanList" resultMap="BaseResultMap" >
+      SELECT * FROM b_marketing_plan WHERE site_id = #{siteId} AND is_del!=1 AND `status`!=300 AND (#{startTime} BETWEEN start_time AND end_time OR #{endTime} BETWEEN start_time AND end_time)
+      <if test="planId != null" >
+          AND id != #{planId}
+      </if>
+  </select>
+
+  <select id="selectById" resultMap="BaseResultMap" >
+    SELECT plan.*, ext.id extId, ext.type extType, ext.type_id, ext.type_info, ext.chances, ext.ceiling, ext.receive
+    FROM b_marketing_plan plan LEFT JOIN b_marketing_plan_ext ext ON plan.site_id=ext.site_id AND plan.id=ext.marketing_plan_id AND ext.is_del!=1
+    WHERE plan.site_id = #{siteId} AND plan.id = #{id} AND plan.is_del!=1
+  </select>
+
+    <select id="selectAllById" resultMap="BaseResultMap" >
+        SELECT plan.*, ext.id extId, ext.type extType, ext.type_id, ext.type_info, ext.chances, ext.ceiling, ext.receive
+        FROM b_marketing_plan plan LEFT JOIN b_marketing_plan_ext ext ON plan.site_id=ext.site_id AND plan.id=ext.marketing_plan_id
+        WHERE plan.site_id = #{siteId} AND plan.id = #{id}
+    </select>
+
+
+    <resultMap id="MarketingPlanResultMap" type="com.jk51.model.BMarketingPlan" extends="BaseResultMap" >
+        <collection property="prizesSettingList" javaType="ArrayList" ofType="com.jk51.model.BMarketingPlan$PrizesSetting" column="{siteId=site_id,planId=id}" select="getPlanListExt" />
+    </resultMap>
+    <select id="getPlanList" resultMap="MarketingPlanResultMap" >
+        SELECT * FROM b_marketing_plan
+        WHERE site_id = #{bMarketingPlan.siteId} AND is_del!=1
+        <if test="bMarketingPlan.flag != null and 'wx'.equals(bMarketingPlan.flag)">
+            AND `status`=200 AND CURRENT_TIMESTAMP &lt; end_time
+        </if>
+        ORDER BY
+        CASE WHEN start_time - CURRENT_TIMESTAMP &gt;= 0 THEN 10000000 + TIMESTAMPDIFF(HOUR, CURRENT_TIMESTAMP, start_time)
+        WHEN end_time - CURRENT_TIMESTAMP &gt;= 0 THEN 20000000 + TIMESTAMPDIFF(HOUR, CURRENT_TIMESTAMP, end_time)
+        ELSE 30000000 END
+    </select>
+    <select id="getPlanListExt" resultType="com.jk51.model.BMarketingPlan$PrizesSetting" >
+        SELECT id, type, type_id typeId, type_info typeInfo, chances, ceiling, receive
+        FROM b_marketing_plan_ext
+        WHERE site_id = #{siteId} AND marketing_plan_id =#{planId} AND is_del!=1
+    </select>
+
+
+    <update id="deleteById" >
+        UPDATE b_marketing_plan SET is_del=1 WHERE site_id = #{siteId} AND id = #{id} AND is_del!=1
+    </update>
+
+    <update id="startOrStop" >
+        UPDATE b_marketing_plan SET stop = #{stop} WHERE site_id = #{siteId} AND id = #{id} AND is_del!=1
+    </update>
+
+    <update id="updateTypeById" >
+        UPDATE b_marketing_plan SET `type` = #{type} <if test="style != null" >,style=#{style}</if> WHERE site_id = #{siteId} AND id = #{id} AND is_del!=1
+    </update>
+
+    <update id="updateStatusById" >
+        UPDATE b_marketing_plan SET `status` = #{status} WHERE site_id = #{siteId} AND id = #{planId} AND is_del!=1
+    </update>
+
+
+    <select id="getWinnersSum" resultType="java.lang.Integer" >
+        SELECT COUNT(DISTINCT m.member_id)
+        FROM b_marketing_member m JOIN b_marketing_member_ext e ON m.site_id=e.site_id AND m.id=e.marketing_member_id AND e.type!=0
+        WHERE m.site_id = #{siteId} AND m.marketing_plan_id = #{planId}
+    </select>
+
+    <select id="getWinnersByPlanId" resultType="com.jk51.modules.marketing.request.Winner" >
+        SELECT INSERT(me.mobile, 4, 4, '****') mobile, me.`name`, CASE e.type WHEN 0 THEN '谢谢惠顾' WHEN 1 THEN '优惠券' WHEN 2 THEN '积分' ELSE '' END tName,
+                e.type, e.type_id typeId, e.type_info typeInfo, e.tag, e.create_time createTime
+        FROM b_marketing_member_ext e
+        LEFT JOIN b_marketing_member m ON m.site_id=e.site_id AND m.id=e.marketing_member_id
+        LEFT JOIN b_member me ON m.site_id=me.site_id AND m.member_id=me.buyer_id
+        WHERE m.site_id = #{siteId} AND m.marketing_plan_id = #{planId} AND e.type!=0 ORDER BY e.id DESC LIMIT 50
+    </select>
+
+    <update id="updateCouponActivityId" >
+        UPDATE b_marketing_plan SET coupon_activity_id = #{couponActivityId} WHERE site_id = #{siteId} AND id = #{planId} AND is_del!=1
+    </update>
+
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.BMarketingPlan" >
+        update b_marketing_plan
+        <set>
+            <if test="name != null" >
+                `name` = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null" >
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null" >
+                `type` = #{type,jdbcType=INTEGER},
+            </if>
+            <if test="style != null" >
+                style = #{style,jdbcType=INTEGER},
+            </if>
+            <if test="startTime != null" >
+                start_time = #{startTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null" >
+                end_time = #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="defaultNum != null" >
+                default_num = #{defaultNum,jdbcType=INTEGER},
+            </if>
+            <if test="addCondition != null" >
+                add_condition = #{addCondition,jdbcType=INTEGER},
+            </if>
+            <if test="addConditionInfo != null" >
+                add_condition_info = #{addConditionInfo,jdbcType=VARCHAR},
+            </if>
+            <if test="addNum != null" >
+                add_num = #{addNum,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER} and site_id = #{siteId,jdbcType=INTEGER}
+    </update>
+
+  <insert id="insertSelective" parameterType="com.jk51.model.BMarketingPlan" useGeneratedKeys="true" keyProperty="id" >
+    insert into b_marketing_plan
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="siteId != null" >
+        site_id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="style != null" >
+        style,
+      </if>
+      <if test="startTime != null" >
+        start_time,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="defaultNum != null" >
+        default_num,
+      </if>
+      <if test="addCondition != null" >
+        add_condition,
+      </if>
+      <if test="addConditionInfo != null" >
+        add_condition_info,
+      </if>
+      <if test="addNum != null" >
+        add_num,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="isDel != null" >
+        is_del,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="siteId != null" >
+        #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="style != null" >
+        #{style,jdbcType=INTEGER},
+      </if>
+      <if test="startTime != null" >
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="defaultNum != null" >
+        #{defaultNum,jdbcType=INTEGER},
+      </if>
+      <if test="addCondition != null" >
+        #{addCondition,jdbcType=INTEGER},
+      </if>
+      <if test="addConditionInfo != null" >
+        #{addConditionInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="addNum != null" >
+        #{addNum,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="isDel != null" >
+        #{isDel,jdbcType=BIT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+</mapper>

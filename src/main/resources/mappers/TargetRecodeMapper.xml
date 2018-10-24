@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.index.mapper.TargetRecodeMapper">
+
+    <select id="getTargetRecodeByStoreadminIdAndSiteId" parameterType="java.lang.Integer" resultType="com.jk51.model.TargetRecode">
+        select * ,max(create_time) from b_target_record where storeadmin_id = #{storeadmin_id} and site_id = #{site_id}
+    </select>
+
+    <insert id="batchInsertSelective" parameterType="java.util.List">
+
+        <foreach collection="list" item="item" index="index" separator=";" >
+            INSERT into b_target_record
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                site_id ,
+                storeadmin_id ,
+                target_record  ,
+                create_time,
+                update_time,
+            </trim>
+            <trim prefix="values (" suffix=")" suffixOverrides=",">
+                #{item.site_id},
+                #{item.storeadmin_id},
+                #{item.indexJson},
+                CURRENT_TIMESTAMP,
+                CURRENT_TIMESTAMP,
+            </trim>
+        </foreach>
+    </insert>
+    <insert id="insertSelective" >
+        INSERT into b_target_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            site_id ,
+            storeadmin_id ,
+            target_record  ,
+            create_time,
+            update_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{site_id},
+            #{storeadmin_id},
+            #{indexJson},
+            CURRENT_TIMESTAMP,
+            CURRENT_TIMESTAMP,
+        </trim>
+    </insert>
+
+    <select id="getTargetRecodeforMaxCreatTime" resultType="com.jk51.model.TargetRecode">
+      select * ,max(create_time) from b_target_record  GROUP BY storeadmin_id,site_id
+    </select>
+</mapper>

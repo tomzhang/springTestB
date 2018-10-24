@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.appInterface.mapper.ChMemberMapper" >
+
+    <select id="selectByPrimaryKey" resultType="com.jk51.model.ChMember">
+        SELECT *
+        FROM ch_member
+        WHERE
+          id = #{memberId}
+    </select>
+    <select id="selectByOpenId" resultType="com.jk51.model.ChMember">
+        SELECT *
+        FROM ch_member
+        WHERE
+          open_id = #{openId}
+    </select>
+
+    <select id="getMemberInfo" resultType="java.util.Map">
+        select m.mobile as phone,m.name as nickname,DATE_FORMAT(m.create_time,"%Y-%m-%d %T") as createdAt,DATE_FORMAT(m.update_time,"%Y-%m-%d %T") as updatedAt
+
+       from yb_member as y
+          LEFT JOIN b_member as m on m.buyer_id = y.member_id
+          where y.member_id = #{ybmemberId} and site_id = #{siteId}
+
+       limit 1
+    </select>
+</mapper>

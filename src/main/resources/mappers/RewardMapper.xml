@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.distribution.mapper.RewardMapper">
+    <select id="getRewardList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT A.id,A.distributor_id,A.order_id orderId,format(A.order_price/100,2) orderPrice,format(A.real_pay/100,2) realPay,format(A.level_1_award/100,2) levelAward1,
+        format(A.level_2_award/100,2) levelAward2,format(A.level_3_award/100,2) levelAward3,format(A.total_award/100,2) totalAward,A.create_time createTime,
+        A.order_status orderStauts,
+        A.reward_status rewardStatus,
+        B.user_name,
+        C.trades_id
+        FROM d_reward A
+        LEFT JOIN (SELECT id,user_name FROM d_distributor WHERE owner=#{siteId}) B ON A.`distributor_id` = B.`id`
+        LEFT JOIN (SELECT trades_id FROM b_trades WHERE site_id=#{siteId}) C ON A.order_id=C.trades_id
+        <where>
+            A.owner = #{siteId} AND C.trades_id IS NOT NULL
+            <if test="distributor != null and distributor != ''" >
+                AND B.user_name = #{distributor}
+            </if>
+            <if test="order_id != null" >
+                AND order_id = #{order_id}
+            </if>
+            <if test="reward_status != null" >
+                AND reward_status = #{reward_status}
+            </if>
+            <if test="start_time != null">
+                AND A.create_time <![CDATA[ >= ]]>  #{start_time}
+            </if>
+            <if test="end_time != null">
+                AND A.create_time <![CDATA[ <= ]]>  #{end_time}
+            </if>
+            <if test="orderStatusList != null" >
+                AND order_status IN
+                <foreach collection="orderStatusList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY id  desc
+    </select>
+
+    <select id="receviedMoney" resultType="java.lang.Integer">
+        SELECT
+          SUM(total_award) recevied_money
+        FROM  d_reward A
+        LEFT JOIN (SELECT trades_id FROM b_trades WHERE site_id=#{siteId}) B
+          ON A.`order_id`=B.`trades_id`
+        WHERE OWNER=#{siteId} AND order_status=2 AND reward_status= 1 AND B.`trades_id` IS NOT NULL
+    </select>
+
+    <select id="payMoney" resultType="java.lang.Integer">
+        SELECT
+          SUM(payMoney)
+        FROM
+            (
+                SELECT
+                  SUM(total_award) payMoney
+                FROM  d_reward A
+                LEFT JOIN (SELECT trades_id FROM b_trades WHERE site_id=#{siteId}) B
+                ON A.`order_id`=B.`trades_id`
+                WHERE owner=#{siteId} AND order_status=2 AND reward_status= 0 AND B.`trades_id` IS NOT NULL
+                UNION
+                SELECT
+                  SUM(total_award) payMoney
+                FROM  d_reward A
+                LEFT JOIN (SELECT trades_id FROM b_trades WHERE site_id=#{siteId}) B
+                ON A.`order_id`=B.`trades_id`
+                WHERE owner=#{siteId} AND order_status=1 AND reward_status= 0 AND B.`trades_id` IS NOT NULL
+            ) A
+
+    </select>
+    
+    <select id="queryMinMoney" resultType="java.lang.Integer">
+      SELECT min_money FROM `d_withdraw_cash_setting` WHERE owner=#{siteId}
+    </select>
+
+    <update id="updateMinMoney">
+        UPDATE `d_withdraw_cash_setting` SET min_money=#{minMoney} WHERE owner=#{siteId}
+    </update>
+
+    <insert id="insertSelective" parameterType="com.jk51.model.distribute.Reward" >
+        insert into d_reward
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="order_id != null" >
+                order_id,
+            </if>
+            <if test="owner != null" >
+                owner,
+            </if>
+            <if test="distributor_id != null" >
+                distributor_id,
+            </if>
+            <if test="distributor_father_id">
+                distributor_father_id,
+            </if>
+            <if test="distributor_grandfather_id">
+                distributor_grandfather_id,
+            </if>
+            <if test="order_price != null" >
+                order_price,
+            </if>
+            <if test="real_pay != null" >
+                real_pay,
+            </if>
+            <if test="level_1_award != null" >
+                level_1_award,
+            </if>
+            <if test="level_2_award != null" >
+                level_2_award,
+            </if>
+            <if test="level_3_award != null" >
+                level_3_award,
+            </if>
+            <if test="total_award != null" >
+                total_award,
+            </if>
+            <if test="order_status != null" >
+                order_status,
+            </if>
+            <if test="reward_status != null" >
+                reward_status,
+            </if>
+            <if test="buyer_id != null" >
+                buyer_id,
+            </if>
+            <if test="refund_id != null" >
+                refund_id,
+            </if>
+            <if test="create_time != null" >
+                create_time,
+            </if>
+            <if test="update_time != null" >
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="order_id != null" >
+                #{order_id,jdbcType=BIGINT},
+            </if>
+            <if test="owner != null" >
+                #{owner,jdbcType=INTEGER},
+            </if>
+            <if test="distributor_id != null" >
+                #{distributor_id,jdbcType=INTEGER},
+            </if>
+            <if test="distributor_father_id">
+                #{distributor_father_id,jdbcType=INTEGER},
+            </if>
+            <if test="distributor_grandfather_id">
+                #{distributor_grandfather_id,jdbcType=INTEGER},
+            </if>
+            <if test="order_price != null" >
+                #{order_price,jdbcType=INTEGER},
+            </if>
+            <if test="real_pay != null" >
+                #{real_pay,jdbcType=INTEGER},
+            </if>
+            <if test="level_1_award != null" >
+                #{level_1_award,jdbcType=INTEGER},
+            </if>
+            <if test="level_2_award != null" >
+                #{level_2_award,jdbcType=INTEGER},
+            </if>
+            <if test="level_3_award != null" >
+                #{level_3_award,jdbcType=INTEGER},
+            </if>
+            <if test="total_award != null" >
+                #{total_award,jdbcType=INTEGER},
+            </if>
+            <if test="order_status != null" >
+                #{order_status,jdbcType=INTEGER},
+            </if>
+            <if test="reward_status != null" >
+                #{reward_status,jdbcType=TINYINT},
+            </if>
+            <if test="buyer_id != null" >
+                #{buyer_id,jdbcType=BIGINT},
+            </if>
+            <if test="refund_id != null" >
+                #{refund_id,jdbcType=INTEGER},
+            </if>
+            <if test="create_time != null" >
+                #{create_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="update_time != null" >
+                #{update_time,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="selectRewardById" resultType="com.jk51.model.distribute.Reward">
+
+        SELECT
+         dw.*
+        FROM d_reward dw
+        LEFT JOIN b_trades br on br.site_id =dw.`owner` and br.trades_id = dw.order_id
+        <where>
+            dw.owner = #{siteId}
+            AND dw.id = #{id}
+            <if test="distributorId != null" >
+                AND dw.distributor_id = #{distributorId}
+            </if>
+            AND trades_status IN (210,220,230,800,240)
+            AND deal_finish_status = 1 AND is_refund<![CDATA[ <> ]]>100
+        </where>
+
+    </select>
+
+    <update id="updateOrderStatus">
+        UPDATE d_reward SET order_status = #{orderStatus}, update_time=CURRENT_TIMESTAMP()
+          WHERE order_id = #{tradesId} AND owner = #{siteId} AND distributor_id = #{distributorId};
+    </update>
+
+
+    <update id="updateRewardRealPay">
+        UPDATE d_reward SET real_pay = #{realPay}, update_time=CURRENT_TIMESTAMP()
+        WHERE  owner = #{siteId} AND id = #{id}
+    </update>
+
+    <update id="updateRewardStatus">
+        UPDATE d_reward SET reward_status = #{rewardStatus}, update_time=CURRENT_TIMESTAMP(),order_status=2
+        WHERE  owner = #{siteId} AND id = #{id}
+    </update>
+
+    <select id="selectRewardByOrderId" resultType="com.jk51.model.distribute.Reward">
+        SELECT * from d_reward WHERE order_id = #{tradesId} AND owner = #{siteId} limit 1;
+    </select>
+</mapper>

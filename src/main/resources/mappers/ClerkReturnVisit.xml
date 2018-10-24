@@ -1,0 +1,632 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.merchant.mapper.ClerkReturnVisitMapper">
+
+    <sql id="visitlist">
+        bcv.id, bcv.site_id siteId, bcv.store_admin_id storeAdminId, bcv.admin_name adminName, bcv.store_id storeId, bcv.store_name storeName,
+        bcv.buyer_id buyerId, bcv.buyer_name buyerName, bcv.buyer_mobile buyerMobile, bcv.activity_ids activityIds, bcv.visit_time visitTime,
+        bcv.real_visit_time realVisitTime, bcv.remark, bcv.status
+    </sql>
+
+    <sql id="visit_log_column">
+        id,site_id,clerk_visit_id,pre_store_id,pre_admin_id,pre_admin_name,store_id,admin_id,admin_name,operator_id,operator_name,create_time,update_time
+    </sql>
+
+    <!--获取回访记录-->
+    <select id="getVisitList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT <include refid="visitlist"/>, bvd.pre_store_id preStoreId,bcv.goods_ids goodsId ,bvd.pre_admin_id preAdminId,
+        bvd.pre_admin_name preAdminName, bvd.store_id bvdStoreId, bvd.admin_id adminId, bvd.admin_name adminName,bvd.operator_id operatorId,
+        bvd.operator_name operatorName, bvd.create_time bvdCreateTime,bvf.content,bs.major_activity_ids majorActivityIds,bcv.bvs_id bvsId
+        FROM b_clerk_visit bcv
+        LEFT JOIN (SELECT <include refid="visit_log_column"/> FROM(
+        SELECT <include refid="visit_log_column"/> FROM b_visit_deploy WHERE site_id = #{siteId} ORDER BY create_time DESC ) tt GROUP BY clerk_visit_id
+        )bvd ON bcv.site_id = bvd.site_id AND bcv.id = bvd.clerk_visit_id
+        LEFT JOIN b_visit_feedback bvf ON  bcv.id=bvf.visit_id
+        LEFT JOIN b_visit_statistics bs on bs.site_id =bcv.site_id and bs.id =bcv.bvs_id
+        <where>
+            bcv.site_id = #{siteId}
+            <if test="storeId != null and storeId != '' and storeId != 0">
+                AND bcv.store_id = #{storeId}
+            </if>
+            <if test="buyerName != null and buyerName != ''">
+                AND bcv.buyer_name LIKE concat('%',#{buyerName},'%')
+            </if>
+            <if test="buyerMobile != null and buyerMobile != ''">
+                AND bcv.buyer_mobile LIKE concat('%',#{buyerMobile},'%')
+            </if>
+            <if test="adminName != null and adminName != ''">
+                AND bcv.admin_name LIKE concat('%',#{adminName},'%')
+            </if>
+            <if test="status != null and status != '' and status != 0">
+                AND bcv.status = #{status}
+            </if>
+
+            <if test="storeName != null and storeName != ''">
+                AND bcv.store_name LIKE concat('%',#{storeName},'%')
+            </if>
+            <if test="storeId != null and storeId != '' and storeId != 0">
+                AND bcv.store_id = #{storeId}
+            </if>
+            <if test="visitTime1 != null and visitTime1 != ''">
+                AND bcv.visit_time <![CDATA[ >= ]]>  #{visitTime1}
+            </if>
+            <if test="visitTime2 != null and visitTime2 != ''">
+                AND bcv.visit_time <![CDATA[ <= ]]>  #{visitTime2}
+            </if>
+            <if test="bvsId != null">
+                AND bcv.bvs_id=#{bvsId}
+            </if>
+        </where>
+    </select>
+
+    <update id="changeVisitStatus" parameterType="java.util.Map">
+        UPDATE b_clerk_visit SET status = IF (NOW()>DATE_ADD(date_format(visit_time,'%Y-%m-%d'),interval 1 day), 50, 30),real_visit_time=CURRENT_TIMESTAMP WHERE site_id = #{siteId}
+        <if test="idsList != null and idsList != ''">
+            AND id IN
+            <foreach collection="idsList" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+    </update>
+
+    <!--查询店员列表-->
+    <select id="getMerchantClerkList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT bsat.id,bsat.name clerkName,bsat.mobile,bs.name storeName, bsat.store_id storeId, bsat.storeadmin_id storeadminId FROM b_store_adminext bsat
+        LEFT JOIN b_stores bs ON bs.site_id = bsat.site_id AND bs.id = bsat.store_id
+        <where>
+            bsat.site_id = #{siteId}
+            AND bsat.is_del = 0 AND bsat.storeadmin_status = 1
+            <if test="storeName != null and storeName != ''">
+                AND bs.name LIKE concat('%',#{storeName},'%')
+            </if>
+            <if test="clerkName != null and clerkName != ''">
+                AND bsat.name LIKE concat('%',#{clerkName},'%')
+            </if>
+            <if test="clerkMobile != null and clerkMobile != ''">
+                AND bsat.mobile LIKE concat('%',#{clerkMobile},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="getadminInfo" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT id,store_admin_id storeAdminId,admin_name adminName,goods_ids goodIds,
+        activity_ids activityIds,buyer_id buyerId,buyer_name buyerName, store_id storeId,status FROM b_clerk_visit
+        WHERE id IN
+        <foreach collection="userIds" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <!--插入调配记录-->
+    <insert id="addChangeClerkLog" parameterType="java.util.Map">
+        INSERT INTO b_visit_deploy (id, site_id, clerk_visit_id, pre_store_id, pre_admin_id, pre_admin_name, store_id, admin_id, admin_name,operator_id, operator_name, create_time, update_time)
+        VALUES (NULL ,#{siteId}, #{cvId}, #{preStoreId}, #{preClerkId}, #{preClerkName},#{nStoreId}, #{clerkId}, #{clerkName}, #{operId}, #{operName}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    </insert>
+
+    <!--回访列表-->
+    <update id="changeClerk" parameterType="java.util.Map">
+        UPDATE b_clerk_visit SET store_admin_id = #{clerkId}, admin_name = #{clerkName}, store_id = #{storeId},
+        store_name= #{storeName}
+        WHERE site_id = #{siteId} AND id IN
+        <foreach collection="userIds" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="getStoreList" resultType="java.util.Map">
+        SELECT site_id siteId, id, name FROM b_stores WHERE site_id = #{siteId} AND is_del = 1 AND stores_status = 1
+    </select>
+
+    <select id="queryGoodsInfoById" resultType="java.util.Map">
+      SELECT goods_id goodsId, drug_name drugName, shop_price shopPrice FROM b_goods
+      WHERE site_id = #{siteId} AND goods_status = 1
+        <choose>
+            <when test="goodsIdsType == 1">
+                AND goods_id IN
+                <foreach collection="goodsIds" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </when>
+            <when test="goodsIdsType == 2">
+                AND goods_id NOT IN
+                <foreach collection="goodsIds" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </when>
+        </choose>
+    </select>
+    
+    <select id="queryStoreInfo" resultType="java.util.Map">
+      SELECT stores_number, name, service_support FROM b_stores
+      WHERE site_id = #{siteId} AND id IN
+      <foreach collection="storeIds" item="item" index="index" open="(" close=")" separator=",">
+          #{item}
+      </foreach>
+    </select>
+
+    <select id="queryCoincideCustomer" resultType="java.lang.Integer">
+        SELECT COUNT(buyer_id) FROM b_member AS bm
+        WHERE bm.site_id = #{siteId}
+        <if test="memberIds != null and memberIds != ''">
+            AND bm.member_id IN
+            <foreach collection="memberIds" index="index" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        AND EXISTS (
+            SELECT
+                *
+            FROM
+                b_trades AS bt
+            INNER JOIN b_orders AS bo ON (
+                bt.site_id = bo.site_id
+                <choose>
+                    <when test="goodsType == 1">
+                        <if test="goodsIds != null and goodsIds != ''">
+                            AND bo.goods_id IN /*( 458, 549 商品ID 通过活动表获取 不关联活动表 goods_id 条件根据选择可以省略 )*/
+                            <foreach collection="goodsIds" index="index" item="id" open="(" separator="," close=")">
+                                #{id}
+                            </foreach>
+                        </if>
+                    </when>
+                    <when test="goodsType == 2">
+                        <if test="goodsIds != null and goodsIds != ''">
+                            AND bo.goods_id not IN /*( 458, 549 商品ID 通过活动表获取 不关联活动表 goods_id 条件根据选择可以省略 )*/
+                            <foreach collection="goodsIds" index="index" item="id" open="(" separator="," close=")">
+                                #{id}
+                            </foreach>
+                        </if>
+                    </when>
+                </choose>
+                AND bt.trades_id = bo.trades_id AND bt.is_payment = 1
+            )
+            WHERE
+                bt.site_id = bm.site_id
+            AND bt.buyer_id = bm.buyer_id
+            AND bt.create_time >= now() - /*默认一年*/
+            INTERVAL #{days} DAY /* X YEAR 根据选择动态SQL */
+        )
+    </select>
+
+    <select id="queryCoincideCustomerNum" resultType="java.lang.Integer">
+        SELECT COUNT(buyer_id) FROM b_member AS bm
+        WHERE bm.site_id = #{siteId}
+        <if test="memberIds != null and memberIds != ''">
+            AND bm.member_id IN
+            <foreach collection="memberIds" index="index" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        AND EXISTS (
+        SELECT
+        *
+        FROM
+        b_trades AS bt
+        INNER JOIN b_orders AS bo ON (
+        bt.site_id = bo.site_id
+        <if test="goodsIds != null and goodsIds != ''">
+            AND bo.goods_id IN /*( 458, 549 商品ID 通过活动表获取 不关联活动表 goods_id 条件根据选择可以省略 )*/
+            <foreach collection="goodsIds" index="index" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        AND bt.trades_id = bo.trades_id AND bt.is_payment = 1
+        )
+        WHERE
+        bt.site_id = bm.site_id
+        AND bt.buyer_id = bm.buyer_id
+        AND bt.create_time >= now() - /*默认一年*/
+        INTERVAL #{days} DAY /* X YEAR 根据选择动态SQL */
+        )
+    </select>
+
+    <select id="queryMemberNums" resultType="java.lang.Integer">
+        SELECT count(*) FROM b_member WHERE site_id = #{siteId}
+    </select>
+
+    <select id="getActivityList" resultType="java.util.Map">
+        SELECT  bvs.*,DATE_FORMAT(bpa.start_time,'%Y-%m-%d %H:%i:%S') start_time,DATE_FORMAT(bpa.end_time,'%Y-%m-%d %H:%i:%S') end_time FROM b_visit_statistics bvs
+        LEFT  JOIN  b_promotions_activity bpa ON  bvs.site_id=bpa.site_id AND bvs.activity_id=bpa.id
+        <where>
+            bvs.site_id = #{siteId}
+            <if test="name != null and name != ''">
+                AND bvs.activity_name LIKE concat('%',#{name},'%')
+            </if>
+            <if test="start_time != null and start_time != ''">
+                AND bpa.start_time &gt;=  #{start_time}
+            </if>
+            <if test="end_time != null and end_time != ''">
+                AND bpa.end_time &lt;=  #{end_time}
+            </if>
+        </where>
+    </select>
+
+    <select id="getActivityName" resultType="java.lang.String">
+        SELECT  title AS  activity_name FROM b_coupon_activity
+        <where>
+            site_id = #{siteId}
+            AND id IN
+            <foreach collection="activityIds" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="getAllGoodsNum" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM b_goods WHERE site_id = #{siteId} AND goods_status = 1
+    </select>
+
+    <select id="queryLeftGoodsNum">
+        SELECT COUNT (*) FROM b_goods WHERE site_id = #{siteId} AND goods_status = 1 AND goods_id NOT IN
+        <foreach collection="goodsIds" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    
+    <select id="getPIgoodsList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT goods_id goodsId, drug_name drugName, shop_price shopPrice,goods_code goodsCode,goods_title goodsTitle FROM b_goods
+        WHERE site_id = #{siteId} AND goods_status = 1
+        <if test="classify != '' and classify != null">
+            AND user_cateid like concat('%',#{classify},'%')
+        </if>
+        <if test="goodsTitle != null and goodsTitle != ''">
+            AND goods_title like concat('%',#{goodsTitle},'%')
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            AND drug_name like concat('%',#{goodsName},'%')
+        </if>
+        <if test="detailTpl != null and detailTpl != ''">
+            AND detail_tpl = #{detailTpl}
+        </if>
+        <if test="goodsCode != null and goodsCode != ''">
+            AND goods_code = #{goodsCode}
+        </if>
+        <if test="goodsPrice1 != null and goodsPrice1 != '' and goodsPrice1 != 0 and goodsPrice2 != null and goodsPrice2 != '' and goodsPrice2 != 0">
+            AND shop_price <![CDATA[>=]]> #{goodsPrice1} AND shop_price <![CDATA[<=]]> #{goodsPrice2}
+        </if>
+    </select>
+
+    <select id="getStoreClerkList" resultType="java.util.Map">
+        SELECT a.name storeAdminName,c.name storeName, c.stores_number storesNumber, a.storeadmin_id storeadminId, a.mobile, a.store_id storeId FROM b_store_adminext a
+        LEFT JOIN b_store_admin b ON b.site_id = a.site_id AND a.store_id = b.store_id AND b.id = a.storeadmin_id
+        LEFT JOIN b_stores c ON c.site_id = a.site_id AND c.id = a.store_id
+        WHERE a.site_id = #{siteId} AND c.is_del = 1 AND c.stores_status = 1 AND b.is_del = 0 AND b.status = 1 AND a.is_del = 0
+        <if test="storeCode != null and storeCode != '' and storeCode != 'all' and storeCode != 'null'">
+            AND c.stores_number = #{storeCode}
+        </if>
+        <if test="clerkName != null and clerkName != '' and clerkName != 'null'">
+            AND a.name LIKE concat('%',#{clerkName},'%')
+        </if>
+    </select>
+
+    <select id="queryMemberInfo" parameterType="java.lang.Integer" resultType="java.util.Map">
+        SELECT member_id memberId, buyer_id buyerId, mobile,name FROM b_member WHERE site_id = #{siteId}
+        <if test="memberIds != null and memberIds != '' and memberIds != 'null'">
+            AND member_id IN
+            <foreach collection="memberIds" index="index" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        and mobile IS NOT NULL
+    </select>
+
+    <select id="queryAccordMember" resultType="java.util.Map">
+        SELECT buyer_id buyerId, member_id memberId, mobile,name FROM b_member AS bm
+        WHERE bm.site_id = #{siteId}
+        <if test="memberIds != null and memberIds != ''">
+            AND bm.member_id IN
+            <foreach collection="memberIds" index="index" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        AND EXISTS (
+        SELECT
+        *
+        FROM
+        b_trades AS bt
+        INNER JOIN b_orders AS bo ON (
+        bt.site_id = bo.site_id
+        <choose>
+            <when test="goodsType == 1">
+                <if test="goodsIds != null and goodsIds != ''">
+                    AND bo.goods_id IN
+                    <foreach collection="goodsIds" index="index" item="id" open="(" separator="," close=")">
+                        #{id}
+                    </foreach>
+                </if>
+            </when>
+            <when test="goodsType == 2">
+                <if test="goodsIds != null and goodsIds != ''">
+                    AND bo.goods_id NOT IN
+                    <foreach collection="goodsIds" index="index" item="id" open="(" separator="," close=")">
+                        #{id}
+                    </foreach>
+                </if>
+            </when>
+        </choose>
+        AND bt.trades_id = bo.trades_id AND bt.is_payment = 1
+        )
+        WHERE
+        bt.site_id = bm.site_id
+        AND bt.buyer_id = bm.buyer_id
+        AND bt.create_time >= now() -
+        INTERVAL #{days} DAY
+        )
+    </select>
+
+    <select id="queryVisitLog" resultType="com.jk51.model.clerkvisit.BClerkVisit">
+        SELECT id, site_id siteId, store_admin_id storeAdminId, admin_name adminName, store_id storeId, store_name storeName, buyer_id buyerId, buyer_name buyerName, buyer_mobile buyerMobile, activity_ids activityIds, goods_ids goodsIds, visit_time visitTime, real_visit_time realVisitTime, remark, type, status, create_time createTime, update_time updateTime FROM b_clerk_visit WHERE site_id = #{siteId} AND status = 10
+    </select>
+
+    <select id="queryGoodsId" resultType="java.lang.String">
+        SELECT DISTINCT bo.goods_id FROM b_orders AS bo
+        INNER JOIN b_trades AS bt ON ( bt.site_id = bo.site_id AND bt.trades_id = bo.trades_id )
+        WHERE bo.site_id = #{siteId}
+        AND bt.buyer_id = #{buyerId}
+        AND bo.goods_id IN
+        <foreach collection="split" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        AND bt.create_time >= now() - INTERVAL #{days} DAY
+    </select>
+
+    <update id="updataVisitLog" parameterType="com.jk51.model.clerkvisit.BClerkVisit">
+        UPDATE b_clerk_visit SET store_admin_id = #{storeAdminId},admin_name = #{adminName}, store_id = #{storeId}, store_name = #{storeName}, activity_ids = #{activityIds}, goods_ids = #{goodsIds}, visit_time = #{visitTime} WHERE site_id = #{siteId} AND id = #{id}
+    </update>
+
+    <insert id="insertNewTask" parameterType="com.jk51.model.clerkvisit.BClerkVisit" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+      INSERT INTO b_clerk_visit (site_id, bvs_id, store_admin_id, admin_name, store_id, store_name, buyer_id, buyer_name, buyer_mobile, activity_ids, goods_ids, visit_time)
+       VALUES (#{siteId},#{bvsId},#{storeAdminId},#{adminName},#{storeId},#{storeName},#{buyerId},#{buyerName},#{buyerMobile},#{activityIds},#{goodsIds},#{visitTime})
+    </insert>
+
+    <insert id="insertActivityTask" parameterType="java.util.Map" useGeneratedKeys="true" keyProperty="id">
+      INSERT INTO b_visit_statistics (site_id, activity_ids, visit_name,create_user,member_source,member_source_num,activity_infos,major_activity_ids, member_num, store_num, clerk_num)
+      VALUES (#{siteId},#{activityIds},#{visitName},#{userName},#{memberSource},#{memberSourceNum},#{activityInfos},#{impotentIds},#{memberNum},#{storeNum},#{clerkNum})
+    </insert>
+    
+    <select id="getAllStores" resultType="java.util.Map">
+        SELECT name, stores_number storesNumber FROM b_stores
+        WHERE site_id = #{siteId} AND stores_status = 1 AND is_del = 1
+    </select>
+
+    <select id="queryGoodsIdsByType" resultType="java.lang.String">
+        SELECT goods_id goodsId FROM b_goods WHERE site_id = #{siteId}
+        <choose>
+            <when test="goodsType == 1">
+                <if test="gdsIds != null and gdsIds != ''">
+                    AND goods_id IN
+                    <foreach collection="gdsIds" index="index" item="id" open="(" separator="," close=")">
+                        #{id}
+                    </foreach>
+                </if>
+            </when>
+            <when test="goodsType == 2">
+                <if test="gdsIds != null and gdsIds != ''">
+                    AND goods_id NOT IN
+                    <foreach collection="gdsIds" index="index" item="id" open="(" separator="," close=")">
+                        #{id}
+                    </foreach>
+                </if>
+            </when>
+        </choose>
+    </select>
+
+    <select id="getActicityWithActivityId" resultType="java.util.Map">
+        SELECT * FROM `b_clerk_visit`
+        WHERE site_id = #{siteId} and find_in_set (#{activityId},activity_ids);
+    </select>
+
+    <update id="updataVisitDesc" parameterType="com.jk51.model.clerkvisit.BClerkVisit">
+        UPDATE b_visit_desc SET store_admin_id = #{storeAdminId}, admin_name = #{adminName}, admin_mobile = #{adminMobile}, store_id = #{storeId}, store_name = #{storeName}, buyer_id = #{buyerId}, buyer_mobile = #{buyerMobile} WHERE site_id = #{siteId} AND visit_id = #{id}
+    </update>
+
+    <insert id="insertNewLog" parameterType="com.jk51.model.clerkvisit.BClerkVisit">
+        INSERT INTO b_visit_desc (site_id, visit_id, store_admin_id, admin_name, admin_mobile, store_id, store_name, buyer_id, buyer_mobile)
+       VALUES (#{siteId},#{id},#{storeAdminId},#{adminName},#{adminMobile},#{storeId},#{storeName},#{buyerId},#{buyerMobile})
+    </insert>
+
+    <select id="getCouponNum" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM `b_clerk_visit` bcv
+        left  JOIN b_coupon_detail bcd ON (bcv.site_id=bcd.site_id AND bcv.store_admin_id=bcd.manager_id AND bcv.buyer_id=bcd.user_id)
+        where find_in_set(#{activityId},bcv.activity_ids)
+        AND  bcv.site_id=#{siteId}
+        AND  bcd.create_time <![CDATA[>=]]>  #{startTime}
+        AND  bcd.create_time <![CDATA[<=]]>  #{endTime}
+    </select>
+
+    <select id="getCouponList" resultType="java.util.Map">
+        SELECT bcv.*,bcd.status FROM `b_clerk_visit` bcv
+        left  JOIN b_coupon_detail bcd ON (bcv.site_id=bcd.site_id AND bcv.store_admin_id=bcd.manager_id AND bcv.buyer_id=bcd.user_id)
+        where find_in_set(#{activityId},bcv.activity_ids)
+        AND  bcv.site_id=#{siteId}
+        AND  bcd.create_time <![CDATA[>=]]>  #{startTime}
+        AND  bcd.create_time <![CDATA[<=]]>  #{endTime}
+    </select>
+
+    <select id="getSumForActivity" resultType="java.util.Map">
+        SELECT
+        bvs.id,
+        bvs.activity_ids as activity_id,
+        bvs.visit_name as activity_name,
+        IFNULL(bt.tradesNum,0) trade_num,
+        IFNULL(bg.goodsNum,0) goods_num,
+        bc.couponNum send_num,
+        bcy.couponUsed send_used_num,
+        bms.sendMsNum sms_num,
+        bp.openPagesNum page_open_num,
+        bv.visitNum real_member_num,
+        bpa.activityNames,
+        bgs.toVisit member_num,bgs.adminds clerk_num,bgs.storeIds store_num
+        FROM
+        b_visit_statistics bvs
+        LEFT  JOIN b_promotions_activity bpc on bpc.site_id =bvs.site_id and FIND_IN_SET(bpc.id,bvs.activity_ids)
+        LEFT JOIN (
+        SELECT
+        GROUP_CONCAT(bpa.title) AS activityNames,
+        bvs.site_id,
+        bvs.id
+        FROM
+        b_visit_statistics bvs
+        LEFT JOIN b_promotions_activity bpa ON bvs.site_id = bpa.site_id
+        AND FIND_IN_SET(bpa.id, bvs.activity_ids)
+        GROUP BY
+        bvs.site_id,
+        bvs.id
+        ) bpa ON bvs.site_id = bpa.site_id AND bvs.id = bpa.id
+        -- 回访中店员下单数
+        LEFT JOIN (
+        SELECT
+        COUNT(t.trades_id) tradesNum ,bvs.site_id,bvs.id
+        FROM
+        b_visit_statistics bvs
+        LEFT JOIN b_clerk_visit bcv on bvs.site_id =bcv.site_id and  bcv.bvs_id =bvs.id
+        LEFT JOIN b_visit_trade bt on bcv.site_id =bt.site_id and bcv.id= bt.visit_id
+        LEFT JOIN b_trades t on bt.site_id =t.site_id and bt.trades_id =t.trades_id
+        where t.site_id =#{siteId}
+        and t.is_payment=1
+        GROUP BY bvs.site_id,bvs.id
+        ) bt on bvs.id=bt.id and bvs.site_id =bt.site_id
+        LEFT JOIN (
+        SELECT
+        COUNT(bcv.buyer_id) toVisit,COUNT(DISTINCT bcv.store_admin_id) adminds,COUNT(DISTINCT bcv.store_id) storeIds,
+        bvs.site_id,
+        bvs.id
+        FROM
+        b_visit_statistics bvs
+        LEFT JOIN b_clerk_visit bcv ON bvs.site_id = bcv.site_id
+        and bcv.bvs_id =bvs.id
+        GROUP BY
+        bvs.site_id,
+        bvs.id
+        ) bgs ON bvs.id = bgs.id AND bvs.site_id = bgs.site_id
+        LEFT JOIN (
+        SELECT
+        SUM(bo.goods_num)  goodsNum ,bvs.site_id,bvs.id
+        FROM
+        b_visit_statistics bvs
+        LEFT JOIN b_clerk_visit bcv on bvs.site_id =bcv.site_id and bcv.bvs_id =bvs.id
+        LEFT JOIN b_visit_trade bt on bcv.site_id =bt.site_id and bcv.id= bt.visit_id
+        LEFT JOIN b_trades t on bt.site_id =t.site_id and bt.trades_id =t.trades_id
+        LEFT JOIN b_orders bo on bt.site_id =bo.site_id and bo.trades_id =bt.trades_id
+        where t.site_id =#{siteId}
+        and t.is_payment=1
+        GROUP BY bvs.site_id,bvs.id
+        ) bg on bvs.id=bg.id and bvs.site_id =bg.site_id
+        -- 派发优惠券
+        LEFT JOIN (
+        SELECT
+        COUNT(bcd.coupon_no) AS couponNum,
+        bvs.site_id,
+        bvs.id
+        FROM b_visit_statistics bvs
+        LEFT JOIN b_clerk_visit bc on bvs.site_id =bc.site_id and bc.bvs_id=bvs.id
+        LEFT JOIN b_member bm ON bc.buyer_id = bm.buyer_id
+        AND bc.site_id = bm.site_id
+        LEFT JOIN b_coupon_detail bcd ON bcd.site_id = bc.site_id
+        AND bcd.manager_id = bc.store_admin_id
+        and bcd.store_id= bc.store_id
+        AND bcd.user_id = bm.member_id
+        LEFT JOIN (
+        SELECT
+        MIN(bca.start_time) AS startTime,
+        MAX(bca.end_time) AS endTime,
+        bc.site_id,
+        bc.id
+        FROM
+        b_promotions_activity bca
+        LEFT JOIN b_clerk_visit bc ON bca.site_id = bc.site_id
+        AND FIND_IN_SET(bca.id, bc.activity_ids)
+        ) bj ON bj.site_id = bc.site_id
+        AND bj.id = bc.id
+        AND bcd.create_time <![CDATA[ >= ]]> bj.startTime
+        AND bcd.create_time <![CDATA[ <= ]]> bj.endTime
+        GROUP BY
+        bvs.site_id,
+        bvs.id
+        ) bc on bc.id= bvs.id and bc.site_id =bvs.site_id
+        -- 核销优惠券
+        LEFT JOIN (
+        SELECT
+        COUNT(IF(bcd.`status` =0,TRUE,NULL)) AS couponUsed,
+        bvs.site_id,
+        bvs.id
+        FROM b_visit_statistics bvs
+        LEFT JOIN b_clerk_visit bc on bvs.site_id =bc.site_id and bc.bvs_id=bvs.id
+        LEFT JOIN b_member bm ON bc.buyer_id = bm.buyer_id
+        AND bc.site_id = bm.site_id
+        LEFT JOIN b_coupon_detail bcd ON bcd.site_id = bc.site_id
+        AND bcd.manager_id = bc.store_admin_id
+        and bcd.store_id= bc.store_id
+        AND bcd.user_id = bm.member_id
+        LEFT JOIN (
+        SELECT
+        MIN(bca.start_time) AS startTime,
+        MAX(bca.end_time) AS endTime,
+        bc.site_id,
+        bc.id
+        FROM
+        b_promotions_activity bca
+        LEFT JOIN b_clerk_visit bc ON bca.site_id = bc.site_id
+        AND FIND_IN_SET(bca.id, bc.activity_ids)
+        ) bj ON bj.site_id = bc.site_id
+        AND bj.id = bc.id
+        AND bcd.create_time <![CDATA[ >= ]]> bj.startTime
+        AND bcd.create_time <![CDATA[ <= ]]> bj.endTime
+        GROUP BY
+        bvs.site_id,
+        bvs.id
+        ) bcy on bcy.id= bvs.id and bcy.site_id =bvs.site_id
+
+        LEFT JOIN (
+        SELECT
+        count(IF(bvd.sms_status = 20, TRUE, NULL)) sendMsNum,bvs.site_id,
+        bvs.id
+        FROM b_visit_statistics bvs
+        LEFT JOIN b_clerk_visit bc on bvs.site_id =bc.site_id and bc.bvs_id=bvs.id
+        LEFT JOIN b_visit_desc bvd on bc.id=bvd.visit_id and bvd.site_id =bc.site_id
+        GROUP BY
+        bvs.site_id,
+        bvs.id
+        ) bms on bms.id= bvs.id and bms.site_id =bvs.site_id
+
+        LEFT JOIN (
+        SELECT
+        count(IF(bvd.page_status = 30, TRUE, NULL)) openPagesNum,bvs.site_id,
+        bvs.id
+        FROM b_visit_statistics bvs
+        LEFT JOIN b_clerk_visit bc on bvs.site_id =bc.site_id and bc.bvs_id=bvs.id
+        LEFT JOIN b_visit_desc bvd on bc.id=bvd.visit_id and bvd.site_id =bc.site_id
+        GROUP BY
+        bvs.site_id,
+        bvs.id
+        ) bp on bp.id= bvs.id and bp.site_id =bvs.site_id
+        LEFT JOIN (
+        SELECT
+        count(IF(bc.`status` in (30,50), TRUE, NULL)) visitNum,bvs.site_id,
+        bvs.id
+        FROM b_visit_statistics bvs
+        LEFT JOIN b_clerk_visit bc on bvs.site_id =bc.site_id  and bc.bvs_id=bvs.id
+        GROUP BY
+        bvs.site_id,
+        bvs.id
+        ) bv on bv.id= bvs.id and bv.site_id =bvs.site_id
+        WHERE  bvs.site_id =#{siteId}
+        <if test="name != null and name != '' ">
+            AND  bvs.visit_name LIKE concat('%',#{name},'%')
+        </if>
+        <if test="title != null and title != ''">
+            and bpc.title LIKE concat('%',#{title},'%')
+        </if>
+        <if test="start_time != null and start_time != '' and end_time != null and end_time != ''">
+            AND DATE_FORMAT(bvs.create_time,'%y-%m-%d') <![CDATA[ >= ]]>DATE_FORMAT(#{start_time},'%y-%m-%d')
+            AND DATE_FORMAT(bvs.create_time,'%y-%m-%d') <![CDATA[ <= ]]>DATE_FORMAT(#{end_time},'%y-%m-%d')
+        </if>
+        GROUP BY bvs.site_id,bvs.id
+        order by bvs.create_time DESC
+    </select>
+
+    <select id="getSumForActivity2" resultType="java.util.Map">
+      SELECT   id,site_id,activity_id,activity_name,member_num,real_member_num,store_num,clerk_num,sms_num
+      FROM b_visit_statistics where site_id=#{siteId}  GROUP BY activity_id
+    </select>
+</mapper>

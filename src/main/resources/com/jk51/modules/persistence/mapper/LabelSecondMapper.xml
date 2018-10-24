@@ -1,0 +1,2700 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.persistence.mapper.LabelSecondMapper">
+    <insert id="insertAllLabel">
+        insert into b_member_crowdlabel
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="labelName != null">
+                label_name,
+            </if>
+            <if test="labelDescribe != null">
+                label_describe,
+            </if>
+            <if test="labelAttribute != null">
+                label_attribute,
+            </if>
+            <if test="labelType != null">
+                label_type,
+            </if>
+            <if test="labelTypeSecond != null">
+                label_type_second,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="labelName != null">
+                #{labelName,jdbcType=VARCHAR},
+            </if>
+            <if test="labelDescribe != null">
+                #{labelDescribe,jdbcType=INTEGER},
+            </if>
+            <if test="labelAttribute != null">
+                #{labelAttribute,jdbcType=VARCHAR},
+            </if>
+            <if test="labelType != null">
+                #{labelType,jdbcType=VARCHAR},
+            </if>
+            <if test="labelTypeSecond != null">
+                #{labelTypeSecond,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateAllLabel" parameterType="map">
+        update b_member_crowdlabel
+        <set>
+            <if test="labelName != null">
+                label_name = #{labelName,jdbcType=VARCHAR},
+            </if>
+            <if test="labelDescribe != null">
+                label_describe = #{labelDescribe,jdbcType=VARCHAR},
+            </if>
+            <if test="labelAttribute != null">
+                label_attribute = #{labelAttribute,jdbcType=VARCHAR},
+            </if>
+            <if test="labelType != null">
+                label_type = #{labelType,jdbcType=VARCHAR},
+            </if>
+            <if test="labelTypeSecond != null">
+                label_type_second = #{labelTypeSecond,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE site_id=#{siteId} AND id=#{id}
+    </update>
+    <update id="deleteAllLabel" parameterType="map">
+        update b_member_crowdlabel
+        SET is_del=1
+        WHERE site_id=#{siteId} AND id=#{id}
+    </update>
+    <select id="seleteAllLabel" resultType="map" parameterType="map">
+        SELECT id,label_name labelName,label_describe labelDescribe,label_attribute labelAttribute,label_type labelType FROM b_member_crowdlabel WHERE site_id=#{siteId} AND id=#{id}
+    </select>
+
+    <select id="getMemberCount" resultType="Integer" parameterType="map">
+        SELECT count(*) FROM b_member WHERE site_id=#{siteId}
+    </select>
+    <select id="selectAge" resultType="Integer" parameterType="map">
+        SELECT count(*)
+        FROM b_member bm
+        LEFT JOIN b_member_info bmi ON bm.site_id=bmi.site_id AND bm.buyer_id=bmi.member_id
+        WHERE bm.site_id=#{siteId}
+        AND bmi.birthday BETWEEN #{max} AND #{min}
+    </select>
+    <select id="selectBirthdayByDay" resultType="Integer" parameterType="map">
+        SELECT count(*)
+        FROM b_member bm
+        LEFT JOIN b_member_info bmi ON bm.site_id=bmi.site_id AND bm.buyer_id=bmi.member_id
+        WHERE bm.site_id=#{siteId}
+        AND bmi.birthday>'0000-00-00'
+        AND SUBSTRING(bmi.birthday,9,2)=#{day}
+    </select>
+    <select id="selectBirthdayByMonth" resultType="Integer" parameterType="map">
+        SELECT count(*)
+        FROM b_member bm
+        LEFT JOIN b_member_info bmi ON bm.site_id=bmi.site_id AND bm.buyer_id=bmi.member_id
+        WHERE bm.site_id=#{siteId}
+        AND bmi.birthday>'0000-00-00'
+        AND SUBSTRING(bmi.birthday,6,2)=#{month}
+    </select>
+    <select id="selectBirthdayBySection" resultType="Integer" parameterType="map">
+        SELECT count(bm.buyer_id)
+        FROM b_member bm
+        LEFT JOIN b_member_info bmi ON bm.site_id=bmi.site_id AND bm.buyer_id=bmi.member_id
+        WHERE bm.site_id=#{siteId}
+        AND bmi.birthday BETWEEN #{yearMin} AND #{yearMax}
+    </select>
+    <select id="selectRegisterOne" resultType="Integer" parameterType="map">
+        SELECT count(*)
+        FROM b_member bm
+        WHERE bm.site_id=#{siteId}
+        AND bm.create_time <![CDATA[ >= ]]> #{day}
+    </select>
+    <select id="selectRegisterTwo" resultType="Integer" parameterType="map">
+        SELECT count(*)
+        FROM b_member bm
+        WHERE bm.site_id=#{siteId}
+        AND bm.create_time BETWEEN #{registerMin} AND #{registerMax}
+    </select>
+    <select id="selectBargainMoney" resultType="Integer" parameterType="map">
+        SELECT count(distinct m.buyer_id)
+        from b_member m
+        LEFT JOIN (
+        select buyer_id,sum(real_pay) as real_pay
+        from b_trades
+        where site_id = #{siteId}
+        <if test="timeMin != null and timeMax != null">
+            AND create_time between #{timeMin} AND #{timeMax}
+        </if>
+        AND is_payment = 1
+        AND deal_finish_status=1
+        AND is_refund IN (0,110)
+        group by buyer_id
+        ) t on m.buyer_id = t.buyer_id
+        where m.site_id = #{siteId} AND t.real_pay between #{min}*100 AND #{max}*100
+    </select>
+    <select id="selectBargainCount" resultType="Integer" parameterType="map">
+        SELECT count(distinct m.buyer_id)
+        from b_member m
+        LEFT JOIN (
+        select buyer_id,count(trades_id) num
+        from b_trades
+        where site_id = #{siteId}
+        <if test="timeMin != null and timeMax != null">
+            AND create_time BETWEEN #{timeMin} AND #{timeMax}
+        </if>
+        AND is_payment = 1
+        AND deal_finish_status=1
+        AND is_refund IN (0,110)
+        group by buyer_id
+        ) t on m.buyer_id = t.buyer_id
+        where m.site_id = #{siteId} AND t.num between #{min} AND #{max}
+    </select>
+    <select id="selectPreTransaction" resultType="Integer" parameterType="map">
+        SELECT count(distinct m.buyer_id)
+        from b_member m
+        LEFT JOIN (
+        select buyer_id,sum(real_pay)/count(trades_id) num
+        from b_trades
+        where site_id = #{siteId}
+        <if test="timeMin != null and timeMax != null">
+            AND create_time BETWEEN #{timeMin} AND #{timeMax}
+        </if>
+        AND is_payment = 1
+        AND deal_finish_status=1
+        AND is_refund IN (0,110)
+        group by buyer_id
+        ) t on m.buyer_id = t.buyer_id
+        where m.site_id = #{siteId} AND t.num between #{min}*100 AND #{max}*100
+    </select>
+    <select id="selectEverBuy" resultType="Integer" parameterType="map">
+        SELECT count(DISTINCT bm.member_id)
+        FROM b_member bm
+        LEFT JOIN b_trades b ON b.site_id=bm.site_id AND bm.buyer_id=b.buyer_id
+        WHERE bm.site_id=#{siteId}
+        AND is_payment=1
+        <if test="timeMin != null and timeMax != null">
+            AND b.create_time BETWEEN #{timeMin} AND #{timeMax}
+        </if>
+    </select>
+    <select id="selecRefundProbability" resultType="Integer" parameterType="map">
+        SELECT count(distinct m.buyer_id)
+        from b_member m
+        LEFT JOIN (
+        select buyer_id,count(case when is_refund=120 then trades_id else null end) as num,count(trades_id) as num1
+        from b_trades
+        where site_id = #{siteId}
+        <if test="timeMin != null and timeMax != null">
+            AND create_time BETWEEN #{timeMin} AND #{timeMax}
+        </if>
+        AND is_payment = 1
+        AND deal_finish_status=1
+        group by buyer_id
+        ) t on m.buyer_id = t.buyer_id
+        where m.site_id = #{siteId} AND t.num/t.num1 between #{min}/100 AND #{max}/100
+    </select>
+    <select id="selectBuyPeriod" resultType="Integer" parameterType="map">
+        select count(DISTINCT buyer_id) as mem_cnt
+        from (
+        select bm.buyer_id,min(t.create_time) as sh_time,max(t.create_time) as ed_time,count(t.trades_id) as order_cnt
+        FROM b_member bm
+        LEFT JOIN b_trades t on bm.site_id = t.site_id and t.buyer_id=bm.buyer_id
+        WHERE bm.site_id=#{siteId}
+        and t.is_payment = 1
+        GROUP BY bm.buyer_id
+        ) a
+        WHERE (UNIX_TIMESTAMP(ed_time)-UNIX_TIMESTAMP(sh_time))/(60*60*24)/order_cnt BETWEEN #{min} AND  #{max}
+    </select>
+    <select id="selectResidueIntegral" resultType="Integer" parameterType="map">
+        SELECT count(DISTINCT member_id)
+        FROM b_member
+        WHERE site_id=#{siteId}
+        AND integrate BETWEEN #{min} AND #{max}
+    </select>
+    <select id="selectAddIntegral" resultType="Integer" parameterType="map">
+        select count(distinct m.buyer_id)
+        from b_member m
+        LEFT JOIN (
+        SELECT member_id,SUM(integral_add) addnum
+        FROM b_integrallog
+        WHERE site_id=#{siteId}
+        <if test="timeMin != null and timeMax != null">
+            AND create_time BETWEEN #{timeMin} AND #{timeMax}
+        </if>
+        GROUP BY member_id
+        ) t on m.buyer_id = t.member_id
+        where m.site_id = #{siteId} and t.addnum between #{min} AND #{max}
+    </select>
+    <select id="selectConsumeIntegral" resultType="Integer" parameterType="map">
+        select count(distinct m.buyer_id)
+        from b_member m
+        LEFT JOIN (
+        SELECT member_id,SUM(integral_diff) addnum
+        FROM b_integrallog
+        WHERE site_id=#{siteId}
+        <if test="timeMin != null and timeMax != null">
+            AND create_time BETWEEN #{timeMin} AND #{timeMax}
+        </if>
+        GROUP BY member_id
+        ) t on m.buyer_id = t.member_id
+        where m.site_id = #{siteId} and t.addnum BETWEEN #{min} AND #{max}
+    </select>
+    <select id="selectDisStoreActivity" resultType="Integer" parameterType="map">
+        SELECT count(*)
+        FROM(
+        SELECT bm.buyer_id buyer_id,MIN(bus.distribution_distance) dis
+        FROM b_member bm
+        LEFT JOIN b_user_stores_distance_log bus ON bm.site_id=bus.site_id AND bus.user_id=bm.member_id
+        WHERE bm.site_id=#{siteId}
+        AND bus.user_id>0
+        AND bus.create_time BETWEEN #{timeMin} AND #{timeMax}
+        GROUP BY buyer_id
+        )a
+        WHERE a.dis BETWEEN #{min} AND #{max}
+    </select>
+    <select id="getStoreCoodinate" resultType="map">
+        SELECT gaode_lng,gaode_lat FROM b_coordinate WHERE site_id=#{siteId} AND is_del=0
+    </select>
+    <select id="selectDisContendStoreActivity" resultType="Integer" parameterType="map">
+        SELECT count(*)
+        FROM(
+        SELECT bm.member_id member_id,
+        min(ROUND(6378.138 * 2 * ASIN(SQRT(POW(SIN((t.user_gaode_lat * PI() / 180 - c.gaode_lat * PI() / 180) / 2),2) + COS(t.user_gaode_lat * PI() / 180) * COS(c.gaode_lat * PI() / 180) * POW(SIN((t.user_gaode_lng * PI() / 180 - c.gaode_lng * PI() / 180) / 2),2))) * 1000
+        )) AS juli
+        FROM b_member bm
+        inner JOIN b_user_stores_distance_log t ON bm.site_id=t.site_id AND bm.member_id=t.user_id
+        inner join b_coordinate c on bm.site_id = c.site_id AND is_del=0
+        where bm.site_id = #{siteId} AND t.user_id > 0 AND t.create_time BETWEEN #{timeMin} AND #{timeMax} and c.is_del = 0
+        GROUP BY buyer_id
+        )a
+        WHERE a.juli BETWEEN #{min} and #{max}
+    </select>
+    <select id="getSiteIdAll" resultType="Integer">
+        SELECT merchant_id
+        FROM yb_merchant
+    </select>
+    <select id="getAddressList" resultType="map">
+        SELECT site_id siteId,address_id addressId, buyer_id buyerId,addr address,province,city,country
+        FROM b_address
+        WHERE site_id=#{siteId}
+    </select>
+    <select id="getAdd" resultType="String" parameterType="map">
+        SELECT GROUP_CONCAT(name)
+        FROM yb_area
+        WHERE areaid in(#{province},#{city},#{country})
+    </select>
+    <update id="updateAddressPoint" parameterType="map">
+        update b_address
+        SET addr_lng=#{lng},addr_lat=#{lat}
+        WHERE site_id=#{siteId} AND address_id=#{addressId} AND buyer_id=#{buyerId}
+    </update>
+    <select id="getStorePoint" resultType="map" parameterType="map">
+        SELECT gaode_lng,gaode_lat
+        FROM b_stores
+        WHERE site_id=#{siteId}
+        AND gaode_lng IS NOT NULL
+        AND gaode_lat IS NOT NULL
+        AND is_del=1
+    </select>
+    <select id="selectDisStoreAddress" resultType="Integer">
+        SELECT COUNT(*)FROM(
+        SELECT bm.buyer_id buyer_id,
+        min(ROUND(6378.138 * 2 * ASIN(SQRT(POW(SIN((c.addr_lat * PI() / 180 - t.gaode_lat * PI() / 180) / 2),2) + COS(c.addr_lat * PI() / 180) * COS(t.gaode_lat * PI() / 180) * POW(SIN((c.addr_lng * PI() / 180 - t.gaode_lng * PI() / 180) / 2),2))) * 1000
+        )) AS juli
+        FROM b_member bm
+        LEFT JOIN b_address c on bm.site_id = c.site_id AND bm.buyer_id=c.buyer_id
+        LEFT JOIN b_stores t ON bm.site_id=t.site_id
+        where bm.site_id = #{siteId}
+        AND c.is_default = 1
+        AND t.is_del=1
+        GROUP BY buyer_id
+        )a
+        WHERE a.juli BETWEEN #{min} and #{max}
+    </select>
+    <select id="selectDisContendStoreAddress" resultType="Integer">
+        SELECT COUNT(*)FROM(
+        SELECT bm.buyer_id buyer_id,
+        min(ROUND(6378.138 * 2 * ASIN(SQRT(POW(SIN((c.addr_lat * PI() / 180 - t.gaode_lat * PI() / 180) / 2),2) + COS(c.addr_lat * PI() / 180) * COS(t.gaode_lat * PI() / 180) * POW(SIN((c.addr_lng * PI() / 180 - t.gaode_lng * PI() / 180) / 2),2))) * 1000
+        )) AS juli
+        FROM b_member bm
+        LEFT JOIN b_address c on bm.site_id = c.site_id AND bm.buyer_id=c.buyer_id
+        LEFT JOIN b_coordinate t ON bm.site_id=t.site_id
+        where bm.site_id = #{siteId}
+        AND c.is_default = 1
+        AND t.is_del=0
+        GROUP BY buyer_id
+        )a WHERE a.juli BETWEEN #{min} and #{max}
+    </select>
+    <select id="getBuyerIdAll" resultType="Integer">
+        SELECT buyer_id FROM b_member WHERE site_id=#{siteId} AND first_order IS NOT NULL
+    </select>
+    <select id="getCreateTime" resultType="String">
+        SELECT create_time FROM b_trades WHERE site_id=#{siteId} AND buyer_id=#{buyerId} AND is_payment = 1 ORDER BY create_time DESC LIMIT 1
+    </select>
+    <update id="updateEndOrderTime" >
+        UPDATE b_member_info SET last_ordertime=#{createTime} WHERE site_id=#{siteId} AND member_id=#{buyerId}
+    </update>
+    <select id="getSexByMan" resultType="Integer" parameterType="map">
+        SELECT COUNT(*) FROM b_member WHERE site_id=#{siteId} AND sex=1
+    </select>
+    <select id="getSexByWoman" resultType="Integer" parameterType="map">
+        SELECT COUNT(*) FROM b_member WHERE site_id=#{siteId} AND sex=0
+    </select>
+    <select id="getSexByUnknow" resultType="Integer" parameterType="map">
+        SELECT COUNT(*) FROM b_member WHERE site_id=#{siteId} AND (sex=3 OR sex IS NULL)
+    </select>
+    <select id="getAgeLabel" resultType="map" parameterType="map">
+        SELECT id, label_name labelName,label_describe labelDescribe,label_attribute labelAttribute,label_type labelType FROM b_member_crowdlabel
+        WHERE site_id=#{siteId}
+        AND is_del=0
+        AND label_type='age'
+        ORDER BY update_time DESC
+    </select>
+    <select id="getBithdayLabel" resultType="map" parameterType="map">
+        SELECT id, label_name labelName,label_describe labelDescribe,label_attribute labelAttribute,label_type labelType FROM b_member_crowdlabel
+        WHERE site_id=#{siteId}
+        AND is_del=0
+        AND label_type='birthday'
+    </select>
+    <select id="getBithdayLabelByDay" resultType="map" parameterType="map">
+        SELECT
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '01' then 'one' else null end),0) as 'one',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '02' then 'two' else null end),0) as 'two',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '03' then 'three' else null end),0) as 'three',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '04' then 'fore' else null end),0) as 'fore',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '05' then 'five' else null end),0) as 'five',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '06' then 'six' else null end),0) as 'six',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '07' then 'seven' else null end),0) as 'seven',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '08' then 'eight' else null end),0) as 'eight',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '09' then 'nine' else null end),0) as 'nine',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '10' then 'ten' else null end),0) as 'ten',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '11' then 'eleven' else null end),0) as 'eleven',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '12' then 'tweleve' else null end),0) as 'tweleve',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '13' then 'thirteen' else null end),0) as 'thirteen',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '14' then 'fourteen' else null end),0) as 'fourteen',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '15' then 'fifteen' else null end),0) as 'fifteen',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '16' then 'sixteen' else null end),0) as 'sixteen',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '17' then 'seventeen' else null end),0) as 'seventeen',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '18' then 'eighteen' else null end),0) as 'eighteen',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '19' then 'nineteen' else null end),0) as 'nineteen',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '20' then 'twenty' else null end),0) as 'twenty',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '21' then 'twentyone' else null end),0) as 'twentyone',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '22' then 'twentytwo' else null end),0) as 'twentytwo',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '23' then 'twentythree' else null end),0) as 'twentythree',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '24' then 'twentyfore' else null end),0) as 'twentyfore',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '25' then 'twentyfive' else null end),0) as 'twentyfive',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '26' then 'twentysix' else null end),0) as 'twentysix',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '27' then 'twentyseven' else null end),0) as 'twentyseven',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '28' then 'twentyeight' else null end),0) as 'twentyeight',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '29' then 'twentynine' else null end),0) as 'twentynine',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '30' then 'thirty' else null end),0) as 'thirty',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,9,2) = '31' then 'thirtyone' else null end),0) as 'thirtyone'
+        FROM b_member bm
+        LEFT JOIN b_member_info bmi ON bm.site_id=bmi.site_id AND bm.buyer_id=bmi.member_id
+        WHERE bm.site_id=#{siteId}
+        AND bmi.birthday>'0000-00-00'
+    </select>
+    <select id="getXingzuoLabel" resultType="map" parameterType="map">
+        SELECT
+        IFNULL(count( case when SUBSTRING(bmi.birthday,6,5) between '01-20' and '02-18' then 'shui_ping' else null end),0) as 'shui_ping',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,6,5) between '02-19' and '03-20' then 'shuang_yu' else null end),0) as 'shuang_yu',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,6,5) between '03-21' and '04-19' then 'bai_yang' else null end),0) as 'bai_yang',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,6,5) between '04-20' and '05-20' then 'jin_niu' else null end),0) as 'jin_niu',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,6,5) between '05-21' and '06-21' then 'shuang_zi' else null end),0) as 'shuang_zi',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,6,5) between '06-22' and '07-22' then 'ju_xie' else null end),0) as 'ju_xie',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,6,5) between '07-23' and '08-22' then 'shi_zi' else null end),0) as 'shi_zi',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,6,5) between '08-23' and '09-22' then 'chu_nv' else null end),0) as 'chu_nv',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,6,5) between '09-23' and '10-23' then 'tian_ping' else null end),0) as 'tian_ping',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,6,5) between '10-24' and '11-22' then 'tian_xie' else null end),0) as 'tian_xie',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,6,5) between '11-23' and '12-21' then 'she_shou' else null end),0) as 'she_shou',
+        IFNULL(count( case when SUBSTRING(bmi.birthday,6,5) between '12-22' and '12-31' then 'mo_jie' when SUBSTRING(bmi.birthday,6,5) between '01-01' and '01-19' then 'mo_jie'  else null end),0) as 'mo_jie'
+        FROM b_member bm
+        LEFT JOIN b_member_info bmi ON bm.site_id=bmi.site_id AND bm.buyer_id=bmi.member_id
+        WHERE bm.site_id=#{siteId}
+        AND bmi.birthday>'0000-00-00'
+    </select>
+    <select id="getShengxiaoLabel" resultType="map" parameterType="map">
+        SELECT
+        IFNULL(count( case when (SUBSTRING(bmi.birthday,1,4)-1900)%12=0 then 'shu' else null end),0) as 'shu',
+        IFNULL(count( case when (SUBSTRING(bmi.birthday,1,4)-1900)%12=1 then 'niu' else null end),0) as 'niu',
+        IFNULL(count( case when (SUBSTRING(bmi.birthday,1,4)-1900)%12=2 then 'hu' else null end),0) as 'hu',
+        IFNULL(count( case when (SUBSTRING(bmi.birthday,1,4)-1900)%12=3 then 'tu' else null end),0) as 'tu',
+        IFNULL(count( case when (SUBSTRING(bmi.birthday,1,4)-1900)%12=4 then 'long' else null end),0) as 'long',
+        IFNULL(count( case when (SUBSTRING(bmi.birthday,1,4)-1900)%12=5 then 'she' else null end),0) as 'she',
+        IFNULL(count( case when (SUBSTRING(bmi.birthday,1,4)-1900)%12=6 then 'ma' else null end),0) as 'ma',
+        IFNULL(count( case when (SUBSTRING(bmi.birthday,1,4)-1900)%12=7 then 'yang' else null end),0) as 'yang',
+        IFNULL(count( case when (SUBSTRING(bmi.birthday,1,4)-1900)%12=8 then 'hou' else null end),0) as 'hou',
+        IFNULL(count( case when (SUBSTRING(bmi.birthday,1,4)-1900)%12=9 then 'ji' else null end),0) as 'ji',
+        IFNULL(count( case when (SUBSTRING(bmi.birthday,1,4)-1900)%12=10 then 'gou' else null end),0) as 'gou',
+        IFNULL(count( case when (SUBSTRING(bmi.birthday,1,4)-1900)%12=11 then 'zhu' else null end),0) as 'zhu'
+        FROM b_member bm
+        LEFT JOIN b_member_info bmi ON bm.site_id=bmi.site_id AND bm.buyer_id=bmi.member_id
+        WHERE bm.site_id=#{siteId}
+        AND bmi.birthday>'0000-00-00'
+    </select>
+    <select id="getRegisterLabel" resultType="map" parameterType="map">
+        SELECT id, label_name labelName,label_describe labelDescribe,label_attribute labelAttribute,label_type labelType FROM b_member_crowdlabel
+        WHERE site_id=#{siteId}
+        AND is_del=0
+        AND label_type='register'
+        ORDER BY update_time DESC
+    </select>
+    <select id="getBargainMoneyLabel" resultType="map" parameterType="map">
+        SELECT id, label_name labelName,label_describe labelDescribe,label_attribute labelAttribute,label_type labelType FROM b_member_crowdlabel
+        WHERE site_id=#{siteId}
+        AND is_del=0
+        AND label_type='bargain_money'
+        ORDER BY update_time DESC
+    </select>
+    <select id="getBargainCountLabel" resultType="map" parameterType="map">
+        SELECT id, label_name labelName,label_describe labelDescribe,label_attribute labelAttribute,label_type labelType FROM b_member_crowdlabel
+        WHERE site_id=#{siteId}
+        AND is_del=0
+        AND label_type='bargain_count'
+        ORDER BY update_time DESC
+    </select>
+    <select id="getPreTransactionLabel" resultType="map" parameterType="map">
+        SELECT id, label_name labelName,label_describe labelDescribe,label_attribute labelAttribute,label_type labelType FROM b_member_crowdlabel
+        WHERE site_id=#{siteId}
+        AND is_del=0
+        AND label_type='pre_transaction'
+        ORDER BY update_time DESC
+    </select>
+    <select id="getRefundProbabilityLabel" resultType="map" parameterType="map">
+        SELECT id, label_name labelName,label_describe labelDescribe,label_attribute labelAttribute,label_type labelType FROM b_member_crowdlabel
+        WHERE site_id=#{siteId}
+        AND is_del=0
+        AND label_type='refund_probability'
+        ORDER BY update_time DESC
+    </select>
+    <select id="getEverBuyLabel" resultType="map" parameterType="map">
+        SELECT id, label_name labelName,label_describe labelDescribe,label_attribute labelAttribute,label_type labelType FROM b_member_crowdlabel
+        WHERE site_id=#{siteId}
+        AND is_del=0
+        AND label_type='ever_buy'
+        ORDER BY update_time DESC
+    </select>
+    <select id="getBuyPeriodLabel" resultType="map" parameterType="map">
+        SELECT id, label_name labelName,label_describe labelDescribe,label_attribute labelAttribute,label_type labelType FROM b_member_crowdlabel
+        WHERE site_id=#{siteId}
+        AND is_del=0
+        AND label_type='buy_period'
+        ORDER BY update_time DESC
+    </select>
+    <select id="getaddIntegralLabel" resultType="map" parameterType="map">
+        SELECT id, label_name labelName,label_describe labelDescribe,label_attribute labelAttribute,label_type labelType FROM b_member_crowdlabel
+        WHERE site_id=#{siteId}
+        AND is_del=0
+        AND label_type='add_integral'
+        ORDER BY update_time DESC
+    </select>
+    <select id="getConsumeIntegralLabel" resultType="map" parameterType="map">
+        SELECT id, label_name labelName,label_describe labelDescribe,label_attribute labelAttribute,label_type labelType FROM b_member_crowdlabel
+        WHERE site_id=#{siteId}
+        AND is_del=0
+        AND label_type='consume_integral'
+        ORDER BY update_time DESC
+    </select>
+    <select id="getResidueIntegralLabel" resultType="map" parameterType="map">
+        SELECT id, label_name labelName,label_describe labelDescribe,label_attribute labelAttribute,label_type labelType FROM b_member_crowdlabel
+        WHERE site_id=#{siteId}
+        AND is_del=0
+        AND label_type='residue_integral'
+        ORDER BY update_time DESC
+    </select>
+    <select id="getDisStoreActivityLabel" resultType="map" parameterType="map">
+        SELECT id, label_name labelName,label_describe labelDescribe,label_attribute labelAttribute,label_type labelType FROM b_member_crowdlabel
+        WHERE site_id=#{siteId}
+        AND is_del=0
+        AND label_type='dis_store_activity'
+        ORDER BY update_time DESC
+    </select>
+    <select id="getDisStoreAddressLabel" resultType="map" parameterType="map">
+        SELECT id, label_name labelName,label_describe labelDescribe,label_attribute labelAttribute,label_type labelType FROM b_member_crowdlabel
+        WHERE site_id=#{siteId}
+        AND is_del=0
+        AND label_type='dis_store_address'
+        ORDER BY update_time DESC
+    </select>
+    <select id="getDisContendStoreActivityLabel" resultType="map" parameterType="map">
+        SELECT id, label_name labelName,label_describe labelDescribe,label_attribute labelAttribute,label_type labelType FROM b_member_crowdlabel
+        WHERE site_id=#{siteId}
+        AND is_del=0
+        AND label_type='dis_contend_store_activity'
+        ORDER BY update_time DESC
+    </select>
+    <select id="getDisContendStoreAddressLabel" resultType="map" parameterType="map">
+        SELECT id, label_name labelName,label_describe labelDescribe,label_attribute labelAttribute,label_type labelType FROM b_member_crowdlabel
+        WHERE site_id=#{siteId}
+        AND is_del=0
+        AND label_type='dis_contend_store_address'
+        ORDER BY update_time DESC
+    </select>
+    <select id="getHealthLabel" resultType="Integer" parameterType="map">
+        SELECT COUNT(DISTINCT bm.buyer_id)
+        FROM b_member bm
+        LEFT JOIN b_relation_label brl ON bm.site_id=brl.site_id AND bm.buyer_id=brl.buyer_id
+        WHERE bm.site_id=#{siteId}
+        AND brl.label_name=#{healthName}
+        AND brl.is_del=0
+    </select>
+    <!--    <select id="getCustomLabel" resultType="map" parameterType="map">
+            SELECT id,label_name labelName FROM b_custom_label WHERE site_id=#{siteId} AND is_del=0
+        </select>-->
+    <select id="getCustomLabel" resultType="map" parameterType="map">
+        SELECT bc.label_name name,count(DISTINCT br.buyer_id) count
+        FROM b_custom_label bc
+        LEFT JOIN b_member bm ON bm.site_id=bc.site_id
+        LEFT JOIN b_relation_label br ON bc.site_id=br.site_id AND bc.label_name=br.label_name AND bm.buyer_id=br.buyer_id AND br.label_type=1 AND br.storeadmin_count>0 AND br.is_del=0
+        WHERE bc.site_id=#{siteId}
+        AND bc.is_del=0
+        GROUP BY bc.label_name
+        ORDER BY count DESC
+    </select>
+    <select id="getCityLabelBySiteId" resultType="map">
+        SELECT s.city city_id,y.name name,COUNT(DISTINCT s.buyer_id) count
+        FROM b_address s
+        LEFT JOIN yb_area y ON s.city=y.areaid
+        where s.site_id=#{siteId}
+        AND s.is_default=1
+        group by s.city
+    </select>
+    <select id="getAreaLabelByCityId" resultType="map">
+        SELECT yb.areaid as region_id,yb.`name` as country,COUNT(DISTINCT buyer_id) count
+        FROM b_address s
+        LEFT JOIN yb_area yb ON s.country=yb.areaid
+        where s.city=#{city_id}
+        and yb.areaid is not null
+        and s.site_id=#{siteId}
+        AND is_default=1
+        group by s.country
+    </select>
+    <!--<select id="getAreaLabelByCityId" resultType="map">
+        SELECT yb.areaid region_id,yb.name country,count(DISTINCT ad.buyer_id) count
+        FROM b_stores s
+        LEFT JOIN yb_area yb ON s.region_id=yb.areaid
+        LEFT JOIN b_address ad ON s.site_id=ad.site_id  AND s.region_id=ad.country
+        where s.site_id=#{siteId}
+        and yb.areaid is not null
+        and s.city_id=#{city_id}
+        group by s.region_id
+    </select>-->
+    <select id="getHealIllLabel" resultType="map" parameterType="map">
+        SELECT id, label_name labelName,label_describe labelDescribe,label_attribute labelAttribute,label_type labelType FROM b_member_crowdlabel
+        WHERE site_id=#{siteId}
+        AND is_del=0
+        AND label_type='health'
+    </select>
+    <select id="selectHealthIll" resultType="Integer" parameterType="map">
+        SELECT count(*)
+        FROM(
+        SELECT COUNT(bm.buyer_id) count
+        FROM b_member bm
+        LEFT JOIN b_trades brt ON brt.site_id=bm.site_id AND bm.buyer_id=brt.buyer_id
+        LEFT JOIN b_orders br ON br.site_id=brt.site_id AND brt.trades_id=br.trades_id
+        LEFT JOIN b_goods bg ON bg.site_id=brt.site_id AND br.goods_id=bg.goods_id
+        WHERE bm.site_id=#{siteId}
+        AND brt.is_payment = 1
+        <if test="ill == 'health_gao_xue_ya'">
+            AND bg.drug_name REGEXP('普利|地平|洛尔|维拉帕米|可乐定|利血平|吲达帕胺|沙坦|多沙唑嗪|氢氯噻嗪|罗布麻')
+        </if>
+        <if test="ill == 'health_gao_xue_zhi'">
+            AND bg.drug_name REGEXP('普罗布考|吉非罗齐|他汀|异山梨酯|贝特')
+        </if>
+        <if test="ill == 'health_tang_niao_bing'">
+            AND bg.drug_name REGEXP('齐特|吡嗪|喹酮|双胍|波糖|美脲|列酮|列奈|米格列醇|消渴')
+        </if>
+        GROUP BY brt.buyer_id
+        )yu
+        WHERE yu.count BETWEEN #{min} AND #{max}
+    </select>
+    <select id="getHealIllLabelByGaoxueya" resultType="map" parameterType="map">
+        SELECT id, label_name labelName,label_describe labelDescribe,label_attribute labelAttribute,label_type labelType,label_type_second labelTypeSecond FROM b_member_crowdlabel
+        WHERE site_id=#{siteId}
+        AND is_del=0
+        AND label_type='health_gao_xue_ya'
+        ORDER BY update_time DESC
+    </select>
+    <select id="getHealIllLabelByGaoxuezhi" resultType="map" parameterType="map">
+        SELECT id, label_name labelName,label_describe labelDescribe,label_attribute labelAttribute,label_type labelType,label_type_second labelTypeSecond FROM b_member_crowdlabel
+        WHERE site_id=#{siteId}
+        AND is_del=0
+        AND label_type='health_gao_xue_zhi'
+        ORDER BY update_time DESC
+    </select>
+    <select id="getHealIllLabelByTangniaobing" resultType="map" parameterType="map">
+        SELECT id, label_name labelName,label_describe labelDescribe,label_attribute labelAttribute,label_type labelType,label_type_second labelTypeSecond FROM b_member_crowdlabel
+        WHERE site_id=#{siteId}
+        AND is_del=0
+        AND label_type='health_tang_niao_bing'
+        ORDER BY update_time DESC
+    </select>
+    <select id="getMemberLabelCount" resultType="Integer" parameterType="map">
+        <if test="states == 'memberCount'">
+            SELECT count(DISTINCT bm.memberids) membercount
+        </if>
+        <if test="states == 'memberIds'">
+            SELECT DISTINCT bm.memberids memberids
+        </if>
+        FROM (
+        SELECT bm.member_id memberids
+        from b_member bm
+        WHERE bm.site_id=#{siteId}
+        ) bm
+        <if test="sexList != null or ageList != null or weizhiAge != null or yizhiAge != null or weizhiBirthday != null or dayList != null or monthList != null or birthdayyizhi != null
+        or birthdayList != null or xingzuoList != null or shengxiaoList != null or registList != null or buyPeriodList != null or birthdAll != null or birthdayweizhi != null
+        or residueIntegralList != null or customList != null or disStoreAddressBuyerIdList != null or disContendStoreAddressBuyerIdList != null or disStoreAddressYizhi != null or disStoreAddressWeizhi != null
+        or residueIntegralYizhi != null or residueIntegralWeizhi != null or disStoreAddressList != null or disContendStoreAddressList != null
+        or disContendStoreAddressYizhi != null or disContendStoreAddressWeizhi != null">
+            INNER JOIN (
+            SELECT DISTINCT a.member_id memberids
+            FROM b_member a
+            <if test="ageList != null or weizhiAge != null or weizhiBirthday != null or birthdayyizhi != null or birthdayweizhi != null or birthdAll != null or dayList != null or monthList != null or birthdayList != null or xingzuoList != null or shengxiaoList != null">
+                LEFT JOIN b_member_info bmi ON a.buyer_id = bmi.member_id AND bmi.site_id = a.site_id
+            </if>
+            <if test=" buyPeriodList != null">
+                LEFT JOIN (
+                SELECT buyer_id,trades_id,count(trades_id) num,min(create_time) sh_time,max(create_time) ed_time
+                FROM b_trades
+                WHERE site_id=#{siteId}
+                AND is_payment = 1
+                GROUP BY buyer_id
+                ) td ON a.buyer_id = td.buyer_id
+            </if>
+            <if test="customList != null">
+                LEFT JOIN b_relation_label brl ON brl.site_id=a.site_id AND a.buyer_id=brl.buyer_id AND is_del=0 AND
+                label_type=1 AND storeadmin_count>0
+            </if>
+            <if test="disStoreAddressYizhi != null or disStoreAddressWeizhi != null or disContendStoreAddressYizhi != null or disContendStoreAddressWeizhi != null">
+                LEFT JOIN b_address addr ON a.site_id=addr.site_id AND a.buyer_id=addr.buyer_id
+            </if>
+            <if test="disStoreAddressList != null ">
+                LEFT JOIN (
+                SELECT bm.buyer_id buyer_id,
+                min(ROUND(6378.138 * 2 * ASIN(SQRT(POW(SIN((c.addr_lat * PI() / 180 - t.gaode_lat * PI() / 180) / 2),2) + COS(c.addr_lat * PI() / 180) * COS(t.gaode_lat * PI() / 180) * POW(SIN((c.addr_lng * PI() / 180 - t.gaode_lng * PI() / 180) / 2),2))) * 1000
+                )) AS juli
+                FROM b_member bm
+                LEFT JOIN b_address c on bm.site_id = c.site_id AND bm.buyer_id=c.buyer_id
+                LEFT JOIN b_stores t ON bm.site_id=t.site_id
+                where bm.site_id = #{siteId}
+                AND c.is_default = 1
+                AND t.is_del=1
+                GROUP BY buyer_id
+                )dsa  ON dsa.buyer_id=a.buyer_id
+            </if>
+            <if test="disContendStoreAddressList != null ">
+                LEFT JOIN (
+                SELECT bm.buyer_id buyer_id,
+                min(ROUND(6378.138 * 2 * ASIN(SQRT(POW(SIN((c.addr_lat * PI() / 180 - t.gaode_lat * PI() / 180) / 2),2) + COS(c.addr_lat * PI() / 180) * COS(t.gaode_lat * PI() / 180) * POW(SIN((c.addr_lng * PI() / 180 - t.gaode_lng * PI() / 180) / 2),2))) * 1000
+                )) AS juli
+                FROM b_member bm
+                LEFT JOIN b_address c on bm.site_id = c.site_id AND bm.buyer_id=c.buyer_id
+                LEFT JOIN b_coordinate t ON bm.site_id=t.site_id
+                where bm.site_id = #{siteId}
+                AND c.is_default = 1
+                AND t.is_del=0
+                GROUP BY buyer_id) dcsa ON dcsa.buyer_id=a.buyer_id
+            </if>
+            WHERE a.site_id=#{siteId}
+            <if test="sexList != null">
+                AND
+                <foreach item="item" collection="sexList" separator="or" open="(" close=")" index="">
+                    <if test="item.sex3 != null">
+                        a.sex=#{item.sex0} OR a.sex=#{item.sex1} OR a.sex=#{item.sex3} OR a.sex IS NULL
+                    </if>
+                    <if test="item.sex3 == null">
+                        a.sex=#{item.sex0} OR a.sex=#{item.sex1}
+                    </if>
+                </foreach>
+            </if>
+            <if test="ageList != null or weizhiAge != null or yizhiAge != null">
+                AND
+                <if test="yizhiAge != null and weizhiAge != null">
+                    (bmi.birthday > #{yizhiAge} OR bmi.birthday=#{weizhiAge} OR bmi.birthday IS NULL )
+                </if>
+                <if test="yizhiAge != null and weizhiAge == null">
+                    (bmi.birthday > #{yizhiAge})
+                </if>
+                <if test="yizhiAge == null and weizhiAge != null">
+                    <foreach item="item" collection="ageList" separator="or" open="(" close=")" index="">
+                        bmi.birthday BETWEEN #{item.ageMin} AND #{item.ageMax} OR bmi.birthday=#{weizhiAge} OR bmi.birthday IS NULL
+                    </foreach>
+                </if>
+                <if test="yizhiAge == null and weizhiAge == null">
+                    <foreach item="item" collection="ageList" separator="or" open="(" close=")" index="">
+                        bmi.birthday BETWEEN #{item.ageMin} AND #{item.ageMax}
+                    </foreach>
+                </if>
+            </if>
+            <if test="birthdayList != null or birthdayyizhi != null or birthdAll != null or birthdayweizhi != null">
+                AND
+                <if test="birthdayyizhi != null">
+                    (bmi.birthday > #{birthdayyizhi})
+                </if>
+                <if test="birthdAll != null">
+                    (bmi.birthday >= '0000-00-00' OR bmi.birthday IS NULL)
+                </if>
+                <if test="birthdayweizhi != null">
+                    (bmi.birthday = '0000-00-00' OR bmi.birthday IS NULL)
+                </if>
+                <if test="birthdayyizhi == null and birthdayList != null">
+                    (SUBSTRING(bmi.birthday,9,2) IN (
+                    <foreach item="item" collection="birthdayList" separator="," open="" close="" index="">
+                        #{item}
+                    </foreach>
+                    )
+                    <if test="birthdayListWeizhi != null">
+                        OR bmi.birthday IS NULL
+                    </if>
+                    )
+                </if>
+
+            </if>
+            <if test="xingzuoList != null">
+                AND
+                <foreach item="item" collection="xingzuoList" separator="or" open="(" close=")" index="">
+                    <if test="item == '水瓶座'">
+                        (SUBSTRING(bmi.birthday,6,5) BETWEEN '01-20' AND '02-18' AND bmi.birthday > '0000-00-01')
+                    </if>
+                    <if test="item == '双鱼座'">
+                        (SUBSTRING(bmi.birthday,6,5) BETWEEN '02-19' AND '03-20' AND bmi.birthday > '0000-00-01')
+                    </if>
+                    <if test="item == '白羊座'">
+                        (SUBSTRING(bmi.birthday,6,5) BETWEEN '03-21' AND '04-19' AND bmi.birthday > '0000-00-01')
+                    </if>
+                    <if test="item == '金牛座'">
+                        (SUBSTRING(bmi.birthday,6,5) BETWEEN '04-20' AND '05-20' AND bmi.birthday > '0000-00-01')
+                    </if>
+                    <if test="item == '双子座'">
+                        (SUBSTRING(bmi.birthday,6,5) BETWEEN '05-21' AND '06-21' AND bmi.birthday > '0000-00-01')
+                    </if>
+                    <if test="item == '巨蟹座'">
+                        (SUBSTRING(bmi.birthday,6,5) BETWEEN '06-22' AND '07-22' AND bmi.birthday > '0000-00-01')
+                    </if>
+                    <if test="item == '狮子座'">
+                        (SUBSTRING(bmi.birthday,6,5) BETWEEN '07-23' AND '08-22' AND bmi.birthday > '0000-00-01')
+                    </if>
+                    <if test="item == '处女座'">
+                        (SUBSTRING(bmi.birthday,6,5) BETWEEN '08-23' AND '09-22' AND bmi.birthday > '0000-00-01')
+                    </if>
+                    <if test="item == '天秤座'">
+                        (SUBSTRING(bmi.birthday,6,5) BETWEEN '09-23' AND '10-23' AND bmi.birthday > '0000-00-01')
+                    </if>
+                    <if test="item == '天蝎座'">
+                        (SUBSTRING(bmi.birthday,6,5) BETWEEN '10-24' AND '11-22' AND bmi.birthday > '0000-00-01')
+                    </if>
+                    <if test="item == '射手座'">
+                        (SUBSTRING(bmi.birthday,6,5) BETWEEN '11-23' AND '12-21' AND bmi.birthday > '0000-00-01')
+                    </if>
+                    <if test="item == '摩羯座'">
+                        (SUBSTRING(bmi.birthday,6,5) BETWEEN '12-22' AND '12-31' OR SUBSTRING(bmi.birthday,6,5) between
+                        '01-01' and
+                        '01-19' AND bmi.birthday > '0000-00-01')
+                    </if>
+                    <if test="item == '未知'">
+                        (bmi.birthday='0000-00-00')
+                    </if>
+                </foreach>
+            </if>
+            <if test="shengxiaoList != null">
+                AND
+                <foreach item="item" collection="shengxiaoList" separator="or" open="(" close=")" index="">
+                    <if test='item == "鼠"'>
+                        ((SUBSTRING(bmi.birthday,1,4)-1900)%12=0 AND bmi.birthday > '0000-00-01')
+                    </if>
+                    <if test='item == "牛"'>
+                        ((SUBSTRING(bmi.birthday,1,4)-1900)%12=1 AND bmi.birthday > '0000-00-01')
+                    </if>
+                    <if test='item == "虎"'>
+                        ((SUBSTRING(bmi.birthday,1,4)-1900)%12=2 AND bmi.birthday > '0000-00-01')
+                    </if>
+                    <if test='item == "兔"'>
+                        ((SUBSTRING(bmi.birthday,1,4)-1900)%12=3 AND bmi.birthday > '0000-00-01')
+                    </if>
+                    <if test='item == "龙"'>
+                        ((SUBSTRING(bmi.birthday,1,4)-1900)%12=4 AND bmi.birthday > '0000-00-01')
+                    </if>
+                    <if test='item == "蛇"'>
+                        ((SUBSTRING(bmi.birthday,1,4)-1900)%12=5 AND bmi.birthday > '0000-00-01')
+                    </if>
+                    <if test='item == "马"'>
+                        ((SUBSTRING(bmi.birthday,1,4)-1900)%12=6 AND bmi.birthday > '0000-00-01')
+                    </if>
+                    <if test='item == "羊"'>
+                        ((SUBSTRING(bmi.birthday,1,4)-1900)%12=7 AND bmi.birthday > '0000-00-01')
+                    </if>
+                    <if test='item == "猴"'>
+                        ((SUBSTRING(bmi.birthday,1,4)-1900)%12=8 AND bmi.birthday > '0000-00-01')
+                    </if>
+                    <if test='item == "鸡"'>
+                        ((SUBSTRING(bmi.birthday,1,4)-1900)%12=9 AND bmi.birthday > '0000-00-01')
+                    </if>
+                    <if test='item == "狗"'>
+                        ((SUBSTRING(bmi.birthday,1,4)-1900)%12=10 AND bmi.birthday > '0000-00-01')
+                    </if>
+                    <if test='item == "猪"'>
+                        ((SUBSTRING(bmi.birthday,1,4)-1900)%12=11 AND bmi.birthday > '0000-00-01')
+                    </if>
+                    <if test='item == "未知"'>
+                        (bmi.birthday='0000-00-00')
+                    </if>
+                </foreach>
+            </if>
+            <if test="registList != null">
+                AND
+                <foreach item="item" collection="registList" separator="or" open="(" close=")" index="">
+                    (a.
+                    create_time BETWEEN #{item.registerMin} AND #{item.registerMax})
+                </foreach>
+            </if>
+            <if test="buyPeriodList != null">
+                AND
+                <foreach item="item" collection="buyPeriodList" separator="or" open="(" close=")" index="">
+                    ((UNIX_TIMESTAMP(td.ed_time)-UNIX_TIMESTAMP(td.sh_time))/(60*60*24)/td.num BETWEEN #{item.min}
+                    AND #{item.max})
+                </foreach>
+            </if>
+            <if test="residueIntegralList != null or residueIntegralYizhi != null or residueIntegralWeizhi != null">
+
+                <if test="residueIntegralYizhi != null and residueIntegralWeizhi == null">
+                    AND a.integrate>0
+                </if>
+                <if test="residueIntegralYizhi == null and residueIntegralWeizhi != null and residueIntegralList == null">
+                    AND (a.integrate=0 OR a.integrate IS NULL)
+                </if>
+                <if test="residueIntegralYizhi == null and residueIntegralList != null">
+                    AND
+                    (
+                    <foreach item="item" collection="residueIntegralList" separator="or" open="(" close=")" index="">
+                        (a.integrate BETWEEN #{item.min} AND #{item.max})
+                    </foreach>
+                    <if test="residueIntegralWeizhi != null">
+                        OR (a.integrate=0 OR a.integrate IS NULL)
+                    </if>
+                    )
+                </if>
+            </if>
+            <if test="disStoreAddressList != null or disStoreAddressWeizhi != null or disStoreAddressYizhi != null">
+                <if test="disStoreAddressYizhi != null and disStoreAddressWeizhi == null">
+                    AND addr.is_default=1
+                </if>
+                <if test="disStoreAddressYizhi == null and disStoreAddressWeizhi != null and disStoreAddressList == null">
+                    AND  addr.buyer_id IS NULL
+                </if>
+                <if test="disStoreAddressYizhi == null and disStoreAddressList != null">
+                    AND (
+                    <foreach item="item" collection="disStoreAddressList" separator="or" open="(" close=")" index="" >
+                        dsa.juli BETWEEN #{item.min} and #{item.max}
+                    </foreach>
+                    <if test="disStoreAddressWeizhi != null">
+                        OR addr.buyer_id IS NULL
+                    </if>
+                    )
+                </if>
+            </if>
+            <if test="disContendStoreAddressList != null or disContendStoreAddressYizhi != null or disContendStoreAddressWeizhi != null">
+                <if test="disContendStoreAddressYizhi != null and disContendStoreAddressWeizhi == null">
+                    AND addr.is_default=1
+                </if>
+                <if test="disContendStoreAddressYizhi == null and disContendStoreAddressWeizhi != null and disContendStoreAddressList == null">
+                    AND  addr.buyer_id IS NULL
+                </if>
+                <if test="disContendStoreAddressYizhi == null and disContendStoreAddressList != null">
+                    AND(
+                    <foreach item="item" collection="disContendStoreAddressList" separator="or" open="(" close=")" index="" >
+                        dcsa.juli BETWEEN #{item.min} and #{item.max}
+                    </foreach>
+                    <if test="disContendStoreAddressWeizhi != null">
+                        OR addr.buyer_id IS NULL
+                    </if>
+                    )
+                </if>
+            </if>
+            <if test="customList != null">
+                AND brl.label_name IN
+                <foreach item="item" collection="customList" separator="," open="(" close=")" index="" >
+                    #{item}
+                </foreach>
+            </if>
+            )a ON a.memberids=bm.memberids
+        </if>
+        <if test="bargainYizhi != null and bargainWeizhi != null">
+            INNER JOIN (
+            SELECT DISTINCT a.mem_cnt memberids
+            FROM(
+            SELECT DISTINCT a.member_id as mem_cnt
+            FROM(
+            select m.member_id member_id
+            from b_member m
+            left join (
+            select DISTINCT buyer_id,count(trades_id) as num,GROUP_CONCAT(distinct is_refund) as is_refund
+            from b_trades
+            where site_id = #{siteId} and is_payment = 1 and deal_finish_status=1
+            group by buyer_id
+            ) t on m.buyer_id = t.buyer_id
+            where m.site_id = #{siteId}
+            and SUBSTRING_INDEX(t.is_refund,',',1) = 120
+            and SUBSTRING_INDEX(SUBSTRING_INDEX(t.is_refund,',',2),',',-1) != 0
+            and SUBSTRING_INDEX(SUBSTRING_INDEX(t.is_refund,',',2),',',-1) != 110
+            union all
+            select DISTINCT m.member_id member_id
+            from b_member m
+            LEFT JOIN b_trades t on m.site_id = t.site_id and m.buyer_id = t.buyer_id AND t.is_payment = 1 and
+            t.deal_finish_status=1 and t.is_refund IN (0,110)
+            where m.site_id = #{siteId} and t.buyer_id is null
+            union all
+            select DISTINCT m.member_id member_id
+            from b_member m
+            LEFT JOIN (
+            select buyer_id,SUM(real_pay) real_pay FROM b_trades t
+            where t.site_id = #{siteId}
+            AND t.is_payment = 1
+            and t.deal_finish_status=1
+            and t.is_refund IN (0,110)
+            GROUP BY buyer_id
+            ) a ON a.buyer_id=m.buyer_id
+            WHERE m.site_id=#{siteId}
+            AND real_pay=0
+            ) a
+            UNION ALL
+            select m.member_id mem_cnt
+            from b_member m
+            LEFT JOIN (
+            select buyer_id,SUM(real_pay) real_pay FROM b_trades t
+            where t.site_id = #{siteId}
+            AND t.is_payment = 1
+            and t.deal_finish_status=1
+            and t.is_refund IN (0,110)
+            GROUP BY buyer_id
+            ) a ON a.buyer_id=m.buyer_id
+            WHERE m.site_id=#{siteId}
+            AND real_pay>0
+            )a
+            )b ON bm.memberids=b.memberids
+        </if>
+        <if test="bargainYizhi != null and bargainWeizhi == null">
+            INNER JOIN (
+            select m.member_id memberids
+            from b_member m
+            LEFT JOIN (
+            select buyer_id,SUM(real_pay) real_pay FROM b_trades t
+            where t.site_id = #{siteId}
+            AND t.is_payment = 1
+            and t.deal_finish_status=1
+            and t.is_refund IN (0,110)
+            GROUP BY buyer_id
+            ) a ON a.buyer_id=m.buyer_id
+            WHERE m.site_id=#{siteId}
+            AND real_pay>0
+            )b ON bm.memberids=b.memberids
+        </if>
+        <if test="bargainMoneyList != null and bargainYizhi == null">
+            INNER JOIN (
+            SELECT DISTINCT a.mem_cnt memberids
+            FROM(
+            <foreach item="item" collection="bargainMoneyList" separator="UNION ALL" open="" close="" index="">
+                <if test="item.weizhi == null">
+                    SELECT DISTINCT m.member_id as mem_cnt
+                    from b_member m
+                    LEFT JOIN (
+                    select buyer_id,sum(real_pay) as real_pay
+                    from b_trades
+                    where site_id = #{siteId}
+                    AND create_time between #{item.timeMin} AND #{item.timeMax}
+                    AND is_payment = 1
+                    AND deal_finish_status=1
+                    AND is_refund IN (0,110)
+                    group by buyer_id
+                    ) t on m.buyer_id = t.buyer_id
+                    where m.site_id = #{siteId}
+                    AND real_pay > 0
+                    AND t.real_pay between #{item.min}*100 AND #{item.max}*100
+                </if>
+                <if test="item.weizhi != null and item.yizhi == null">
+                    SELECT DISTINCT a.member_id as mem_cnt
+                    FROM(
+                    select m.member_id member_id
+                    from b_member m
+                    left join (
+                    select buyer_id,count(trades_id) as num,GROUP_CONCAT(distinct is_refund) as is_refund
+                    from b_trades
+                    where site_id = #{siteId} and is_payment = 1 and deal_finish_status=1
+                    group by buyer_id
+                    ) t on m.buyer_id = t.buyer_id
+                    where m.site_id = #{siteId}
+                    and SUBSTRING_INDEX(t.is_refund,',',1) = 120
+                    and SUBSTRING_INDEX(SUBSTRING_INDEX(t.is_refund,',',2),',',-1) != 0
+                    and SUBSTRING_INDEX(SUBSTRING_INDEX(t.is_refund,',',2),',',-1) != 110
+                    union all
+                    select DISTINCT m.member_id member_id
+                    from b_member m
+                    LEFT JOIN b_trades t on m.site_id = t.site_id and m.buyer_id = t.buyer_id AND t.is_payment = 1 and
+                    t.deal_finish_status=1 and t.is_refund IN (0,110)
+                    where m.site_id = #{siteId} and t.buyer_id is null
+                    union all
+                    select m.member_id member_id
+                    from b_member m
+                    LEFT JOIN (
+                    select buyer_id,SUM(real_pay) real_pay FROM b_trades t
+                    where t.site_id = #{siteId}
+                    AND t.is_payment = 1
+                    and t.deal_finish_status=1
+                    and t.is_refund IN (0,110)
+                    GROUP BY buyer_id
+                    ) a ON a.buyer_id=m.buyer_id
+                    WHERE m.site_id=#{siteId}
+                    AND real_pay=0
+                    ) a
+                </if>
+            </foreach>
+            )a
+            )b ON b.memberids=bm.memberids
+        </if>
+        <if test="bargainCountList != null ">
+            INNER JOIN (
+            SELECT DISTINCT a.mem_cnt memberids
+            FROM(
+            <foreach item="item" collection="bargainCountList" separator="UNION ALL" open="" close="" index="">
+                <if test="item.weizhi == null">
+                    SELECT DISTINCT m.member_id as mem_cnt
+                    from b_member m
+                    LEFT JOIN (
+                    select buyer_id,count(trades_id) num
+                    from b_trades
+                    where site_id = #{siteId}
+                    AND create_time between #{item.timeMin} AND #{item.timeMax}
+                    AND is_payment = 1
+                    AND deal_finish_status=1
+                    AND is_refund IN (0,110)
+                    group by buyer_id
+                    ) t on m.buyer_id = t.buyer_id
+                    where m.site_id = #{siteId} AND t.num between #{item.min} AND #{item.max}
+                </if>
+                <if test="item.weizhi != null">
+                    SELECT DISTINCT a.member_id as mem_cnt
+                    FROM(
+                    select DISTINCT m.member_id member_id
+                    from b_member m
+                    left join (
+                    select buyer_id,count(trades_id) as num,GROUP_CONCAT(distinct is_refund) as is_refund
+                    from b_trades
+                    where site_id = #{siteId} and is_payment = 1 and deal_finish_status=1
+                    group by buyer_id
+                    ) t on m.buyer_id = t.buyer_id
+                    where m.site_id = #{siteId}
+                    and SUBSTRING_INDEX(t.is_refund,',',1) = 120
+                    and SUBSTRING_INDEX(SUBSTRING_INDEX(t.is_refund,',',2),',',-1) != 0
+                    and SUBSTRING_INDEX(SUBSTRING_INDEX(t.is_refund,',',2),',',-1) != 110
+                    union all
+                    select DISTINCT m.member_id member_id
+                    from b_member m
+                    LEFT JOIN b_trades t on m.site_id = t.site_id and m.buyer_id = t.buyer_id AND t.is_payment = 1 and
+                    t.deal_finish_status=1 and t.is_refund IN (0,110)
+                    where m.site_id = #{siteId} and t.buyer_id is null
+                    ) a
+                </if>
+            </foreach>
+            )a
+            )c ON c.memberids=bm.memberids
+        </if>
+        <if test="preTransactionList != null ">
+            INNER JOIN (
+            SELECT DISTINCT a.mem_cnt memberids
+            FROM(
+            <foreach item="item" collection="preTransactionList" separator="UNION ALL" open="" close="" index="">
+                <if test="item.weizhi == null">
+                    SELECT distinct m.member_id as mem_cnt
+                    from b_member m
+                    LEFT JOIN (
+                    select buyer_id,sum(real_pay)/count(trades_id) num
+                    from b_trades
+                    where site_id = #{siteId}
+                    AND create_time between #{item.timeMin} AND #{item.timeMax}
+                    AND is_payment = 1
+                    AND deal_finish_status=1
+                    AND is_refund IN (0,110)
+                    group by buyer_id
+                    ) t on m.buyer_id = t.buyer_id
+                    where m.site_id = #{siteId} AND t.num between #{item.min}*100 AND #{item.max}*100
+                </if>
+                <if test="item.weizhi != null">
+                    SELECT DISTINCT a.member_id as mem_cnt
+                    FROM(
+                    select DISTINCT m.member_id member_id
+                    from b_member m
+                    left join (
+                    select buyer_id,count(trades_id) as num,GROUP_CONCAT(distinct is_refund) as is_refund
+                    from b_trades
+                    where site_id = #{siteId} and is_payment = 1 and deal_finish_status=1
+                    group by buyer_id
+                    ) t on m.buyer_id = t.buyer_id
+                    where m.site_id = #{siteId}
+                    and SUBSTRING_INDEX(t.is_refund,',',1) = 120
+                    and SUBSTRING_INDEX(SUBSTRING_INDEX(t.is_refund,',',2),',',-1) != 0
+                    and SUBSTRING_INDEX(SUBSTRING_INDEX(t.is_refund,',',2),',',-1) != 110
+                    union all
+                    select m.member_id member_id
+                    from b_member m
+                    LEFT JOIN b_trades t on m.site_id = t.site_id and m.buyer_id = t.buyer_id AND t.is_payment = 1 and
+                    t.deal_finish_status=1 and t.is_refund IN (0,110)
+                    where m.site_id = #{siteId} and t.buyer_id is null
+                    union all
+                    select m.member_id member_id
+                    from b_member m
+                    LEFT JOIN (
+                    select buyer_id,SUM(real_pay) real_pay FROM b_trades t
+                    where t.site_id = #{siteId}
+                    AND t.is_payment = 1
+                    and t.deal_finish_status=1
+                    and t.is_refund IN (0,110)
+                    GROUP BY buyer_id
+                    ) a ON a.buyer_id=m.buyer_id
+                    WHERE m.site_id=#{siteId}
+                    AND real_pay=0
+                    ) a
+                </if>
+            </foreach>
+            )a
+            )d ON d.memberids=bm.memberids
+        </if>
+        <if test="refundProbabilityList != null ">
+            INNER JOIN (
+            SELECT DISTINCT a.mem_cnt memberids
+            FROM(
+            <foreach item="item" collection="refundProbabilityList" separator="UNION ALL" open="" close="" index="">
+                <if test="item.weizhi == null">
+                    SELECT distinct m.member_id as mem_cnt
+                    from b_member m
+                    LEFT JOIN (
+                    select buyer_id,count(case when is_refund=120 then trades_id else null end) as num,count(trades_id)
+                    as num1
+                    from b_trades
+                    where site_id = #{siteId}
+                    AND create_time between #{item.timeMin} AND #{item.timeMax}
+                    AND is_payment = 1
+                    AND deal_finish_status=1
+                    group by buyer_id
+                    ) t on m.buyer_id = t.buyer_id
+                    where m.site_id = #{siteId} AND t.num/t.num1 between #{item.min}/100 AND #{item.max}/100
+                </if>
+                <if test="item.weizhi != null">
+                    SELECT bm.member_id mem_cnt
+                    FROM b_member bm
+                    LEFT JOIN b_trades ts ON bm.site_id=ts.site_id AND bm.buyer_id=ts.buyer_id
+                    WHERE bm.site_id=#{siteId}
+                    and ts.is_payment = 1
+                    and ts.deal_finish_status = 1
+                    GROUP BY bm.member_id
+                    having SUM(CASE WHEN ts.is_refund =120 THEN 1 ELSE 0 END) = 0
+                </if>
+            </foreach>
+            )a
+            )e ON e.memberids=bm.memberids
+        </if>
+        <if test="everBuyList != null ">
+            INNER JOIN (
+            SELECT DISTINCT a.mem_cnt memberids
+            FROM(
+            <foreach item="item" collection="everBuyList" separator="UNION ALL" open="" close="" index="">
+                SELECT DISTINCT bm.member_id mem_cnt
+                FROM b_member bm
+                LEFT JOIN
+                b_trades b ON b.site_id=bm.site_id AND bm.buyer_id=b.buyer_id
+                WHERE bm.site_id=#{siteId}
+                AND is_payment=1
+                <if test="item.timeMin != null and item.timeMax != null">
+                    AND b.create_time BETWEEN #{item.timeMin} AND #{item.timeMax}
+                </if>
+            </foreach>
+            )a
+            ) f ON f.memberids=bm.memberids
+        </if>
+        <if test="addIntegralYizhi != null and addIntegralWeizhi != null">
+            INNER JOIN (
+            SELECT DISTINCT bm.member_id memberids
+            FROM b_member bm
+            WHERE  site_id=#{siteId}
+            )g ON g.memberids=bm.memberids
+        </if>
+        <if test="addIntegralYizhi != null and addIntegralWeizhi == null">
+            INNER JOIN (
+            select distinct bm.member_id memberids
+            from b_member bm
+            WHERE bm.site_id=#{siteId} AND bm.total_get_integrate>0
+            )g ON g.memberids=bm.memberids
+        </if>
+        <if test="addIntegralWeizhi != null and addIntegralYizhi == null and addIntegralList == null">
+            INNER JOIN (
+            select distinct bm.member_id memberids
+            from b_member bm
+            WHERE bm.site_id=#{siteId} AND (bm.total_get_integrate=0 OR bm.total_get_integrate IS NULL)
+            )g ON g.memberids=bm.memberids
+        </if>
+        <if test="addIntegralList != null and addIntegralYizhi == null">
+            INNER JOIN (
+            SELECT DISTINCT a.mem_cnt memberids
+            FROM(
+            <foreach item="item" collection="addIntegralList" separator="UNION ALL" open="" close="" index="">
+                select distinct m.member_id as mem_cnt
+                from b_member m
+                LEFT JOIN (
+                SELECT member_id,
+                SUM(integral_add) addnum
+                FROM b_integrallog
+                WHERE site_id=#{siteId}
+                AND create_time between #{item.timeMin} AND #{item.timeMax}
+                GROUP BY member_id
+                ) t on m.buyer_id = t.member_id
+                where m.site_id = #{siteId} and t.addnum between #{item.min} AND #{item.max}
+            </foreach>
+            <if test="addIntegralWeizhi != null ">
+                UNION ALL
+                select distinct bm.member_id mem_cnt
+                from b_member bm
+                WHERE bm.site_id=#{siteId} AND (bm.total_get_integrate=0 OR bm.total_get_integrate IS NULL)
+            </if>
+            )a
+            )g ON g.memberids=bm.memberids
+        </if>
+        <if test="consumeIntegralYizhi != null and consumeIntegralWeizhi != null">
+            INNER JOIN (
+            SELECT DISTINCT bm.member_id memberids
+            FROM b_member bm
+            WHERE  site_id=#{siteId}
+            )h ON h.memberids=bm.memberids
+        </if>
+        <if test="consumeIntegralYizhi != null and consumeIntegralWeizhi == null">
+            INNER JOIN (
+            select distinct bm.member_id memberids
+            from b_member bm
+            WHERE bm.site_id=#{siteId} AND bm.total_consume_integrate>0
+            )h ON h.memberids=bm.memberids
+        </if>
+        <if test="consumeIntegralWeizhi != null and consumeIntegralYizhi == null and consumeIntegralList == null">
+            INNER JOIN (
+            select distinct bm.member_id memberids
+            from b_member bm
+            WHERE bm.site_id=#{siteId} AND (bm.total_consume_integrate=0 OR bm.total_consume_integrate IS NULL)
+            )h ON h.memberids=bm.memberids
+        </if>
+        <if test="consumeIntegralList != null and consumeIntegralYizhi == null">
+            INNER JOIN (
+            SELECT DISTINCT a.mem_cnt memberids
+            FROM(
+            <foreach item="item" collection="consumeIntegralList" separator="UNION ALL" open="" close="" index="">
+                select distinct m.member_id as mem_cnt
+                from b_member m
+                LEFT JOIN (
+                SELECT member_id,SUM(integral_diff) addnum
+                FROM b_integrallog
+                WHERE site_id=#{siteId}
+                AND create_time between #{item.timeMin} AND #{item.timeMax}
+                GROUP BY member_id
+                ) t on m.buyer_id = t.member_id
+                where m.site_id = #{siteId} and t.addnum between #{item.min} AND #{item.max}
+            </foreach>
+            <if test="consumeIntegralWeizhi != null ">
+                UNION ALL
+                select distinct bm.member_id mem_cnt
+                from b_member bm
+                WHERE bm.site_id=#{siteId} AND (bm.total_consume_integrate=0 OR bm.total_consume_integrate IS NULL)
+            </if>
+            )a
+            ) h ON h.memberids=bm.memberids
+        </if>
+        <if test="healthGaoXueYaList != null ">
+            INNER JOIN (
+            SELECT DISTINCT a.mem_cnt memberids
+            FROM(
+            <foreach item="item" collection="healthGaoXueYaList" separator="UNION ALL" open="" close="" index="">
+                <if test='item.gaoxueya != "gaoxueya"'>
+                    SELECT bm.member_id mem_cnt
+                    FROM b_member bm
+                    LEFT JOIN(
+                    SELECT brt.buyer_id buyer_id,COUNT(brt.buyer_id) count
+                    FROM b_trades brt
+                    LEFT JOIN b_orders br ON br.site_id=brt.site_id AND brt.trades_id=br.trades_id
+                    LEFT JOIN b_goods bg ON bg.site_id=brt.site_id AND br.goods_id=bg.goods_id
+                    WHERE brt.site_id=#{siteId}
+                    AND brt.is_payment = 1
+                    AND bg.drug_name REGEXP('普利|地平|洛尔|维拉帕米|可乐定|利血平|吲达帕胺|沙坦|多沙唑嗪|氢氯噻嗪|罗布麻')
+                    GROUP BY brt.buyer_id
+                    )a ON bm.buyer_id=a.buyer_id
+                    WHERE bm.site_id=#{siteId} AND a.count BETWEEN #{item.min} AND #{item.max}
+                </if>
+                <if test='item.gaoxueya == "gaoxueya"'>
+                    SELECT DISTINCT a.member_id mem_cnt
+                    FROM b_member a
+                    LEFT JOIN b_relation_label brl ON brl.site_id=a.site_id AND a.buyer_id=brl.buyer_id AND is_del=0
+                    WHERE a.site_id=#{siteId}
+                    AND (brl.label_name='高血压')
+                </if>
+            </foreach>
+            )a
+            )j ON j.memberids=bm.memberids
+        </if>
+        <if test="healthGaoXueZhiList != null ">
+            INNER JOIN (
+            SELECT DISTINCT a.mem_cnt memberids
+            FROM(
+            <foreach item="item" collection="healthGaoXueZhiList" separator="UNION ALL" open="" close="" index="">
+                <if test='item.gaoxuezhi != "gaoxuezhi"'>
+                    SELECT bm.member_id mem_cnt
+                    FROM b_member bm
+                    LEFT JOIN(
+                    SELECT brt.buyer_id buyer_id,COUNT(brt.buyer_id) count
+                    FROM b_trades brt
+                    LEFT JOIN b_orders br ON br.site_id=brt.site_id AND brt.trades_id=br.trades_id
+                    LEFT JOIN b_goods bg ON bg.site_id=brt.site_id AND br.goods_id=bg.goods_id
+                    WHERE brt.site_id=#{siteId}
+                    AND brt.is_payment = 1
+                    AND bg.drug_name REGEXP('普罗布考|吉非罗齐|他汀|异山梨酯|贝特')
+                    GROUP BY brt.buyer_id
+                    )a ON bm.buyer_id=a.buyer_id
+                    WHERE bm.site_id=#{siteId} AND a.count BETWEEN #{item.min} AND #{item.max}
+                </if>
+                <if test='item.gaoxuezhi == "gaoxuezhi"'>
+                    SELECT DISTINCT a.member_id mem_cnt
+                    FROM b_member a
+                    LEFT JOIN b_relation_label brl ON brl.site_id=a.site_id AND a.buyer_id=brl.buyer_id AND is_del=0
+                    WHERE a.site_id=#{siteId}
+                    AND (brl.label_name='高血脂')
+                </if>
+            </foreach>
+            )a
+            ) k ON k.memberids=bm.memberids
+        </if>
+        <if test="healthTangNiaoBingList != null ">
+            INNER JOIN (
+            SELECT DISTINCT a.mem_cnt memberids
+            FROM(
+            <foreach item="item" collection="healthTangNiaoBingList" separator="UNION ALL" open="" close="" index="">
+                <if test='item.tangniaobing != "tangniaobing"'>
+                    SELECT bm.member_id mem_cnt
+                    FROM b_member bm
+                    LEFT JOIN(
+                    SELECT brt.buyer_id buyer_id,COUNT(brt.buyer_id) count
+                    FROM b_trades brt
+                    LEFT JOIN b_orders br ON br.site_id=brt.site_id AND brt.trades_id=br.trades_id
+                    LEFT JOIN b_goods bg ON bg.site_id=brt.site_id AND br.goods_id=bg.goods_id
+                    WHERE brt.site_id=#{siteId}
+                    AND brt.is_payment = 1
+                    AND bg.drug_name REGEXP('齐特|吡嗪|喹酮|双胍|波糖|美脲|列酮|列奈|米格列醇|消渴')
+                    GROUP BY brt.buyer_id
+                    )a ON bm.buyer_id=a.buyer_id
+                    WHERE bm.site_id=#{siteId} AND a.count BETWEEN #{item.min} AND #{item.max}
+                </if>
+                <if test='item.tangniaobing == "tangniaobing"'>
+                    SELECT DISTINCT a.member_id mem_cnt
+                    FROM b_member a
+                    LEFT JOIN b_relation_label brl ON brl.site_id=a.site_id AND a.buyer_id=brl.buyer_id AND is_del=0
+                    WHERE a.site_id=#{siteId}
+                    AND (brl.label_name='糖尿病')
+                </if>
+            </foreach>
+            )a
+            )l ON l.memberids=bm.memberids
+        </if>
+        <if test="areaYizhiList != null ">
+            INNER JOIN (
+            SELECT DISTINCT a.member_id memberids
+            FROM (
+            SELECT DISTINCT bm.member_id member_id
+            FROM b_member bm
+            LEFT JOIN b_member_info s ON bm.site_id=s.site_id AND bm.buyer_id=s.member_id
+            where bm.site_id=#{siteId} and s.area > 0
+            UNION ALL
+            SELECT DISTINCT bm.member_id member_id
+            FROM b_member bm
+            inner JOIN b_address bmi ON bm.site_id=bmi.site_id AND bm.buyer_id=bmi.buyer_id
+            WHERE bm.site_id=#{siteId}
+            AND bmi.is_default=1
+            AND bmi.del_tag=0
+            AND bmi.city>0
+            )a
+            )m ON m.memberids=bm.memberids
+        </if>
+        <if test="areaAll != null ">
+            INNER JOIN (
+            SELECT DISTINCT member_id memberids
+            FROM b_member
+            WHERE site_id=#{siteId}
+            )n ON n.memberids=bm.memberids
+        </if>
+        <if test="areaWeiizhiList != null ">
+            INNER JOIN (
+            SELECT DISTINCT b.member_id memberids FROM (
+            SELECT DISTINCT bm.member_id member_id
+            FROM b_member bm
+            LEFT JOIN b_member_info s ON bm.site_id=s.site_id AND bm.buyer_id=s.member_id
+            where bm.site_id=#{siteId}
+            and (s.area=0 or s.city=0 OR s.area IS NULL)
+            )b
+            INNER JOIN(
+            SELECT DISTINCT bm.member_id member_id
+            FROM b_member bm
+            LEFT JOIN b_address bmi ON bm.site_id=bmi.site_id AND bm.buyer_id=bmi.buyer_id
+            WHERE bm.site_id=#{siteId}
+            AND bmi.buyer_id IS NULL
+            )a ON b.member_id=a.member_id
+            )o ON o.memberids=bm.memberids
+        </if>
+        <if test="areaList != null ">
+            INNER JOIN (
+            SELECT DISTINCT a.memberids memberids
+            FROM (
+            SELECT DISTINCT member_id memberids
+            FROM b_member
+            WHERE site_id=#{siteId}
+            AND buyer_id IN
+            <foreach item="item" collection="areaList" separator="," open="(" close=")" index="">
+                #{item}
+            </foreach>
+            <if test="areaWeiizhiArea != null ">
+                UNION ALL
+                SELECT DISTINCT b.member_id memberids
+                FROM (
+                SELECT DISTINCT bm.member_id member_id
+                FROM b_member bm
+                LEFT JOIN b_member_info s ON bm.site_id=s.site_id AND bm.buyer_id=s.member_id
+                where bm.site_id=#{siteId}
+                and (s.area=0 OR s.area=0 OR s.area IS NULL)
+                )b
+                INNER JOIN(
+                SELECT DISTINCT bm.member_id member_id
+                FROM b_member bm
+                LEFT JOIN b_address bmi ON bm.site_id=bmi.site_id AND bm.buyer_id=bmi.buyer_id
+                WHERE bm.site_id=#{siteId}
+                AND bmi.buyer_id IS NULL
+                )a ON b.member_id=a.member_id
+            </if>
+            )a
+            )p ON p.memberids=bm.memberids
+        </if>
+        <if test="disContendStoreActivityWeizhi != null and disContendStoreActivityYizhi != null">
+            INNER JOIN (
+            SELECT DISTINCT bm.member_id memberids
+            FROM b_member bm
+            WHERE  site_id=#{siteId}
+            )q ON q.memberids=bm.memberids
+        </if>
+        <if test="disContendStoreActivityWeizhi == null and disContendStoreActivityYizhi != null">
+            INNER JOIN (
+            SELECT DISTINCT bm.member_id memberids
+            FROM b_member bm
+            INNER JOIN b_user_stores_distance bsd ON bsd.site_id=bm.site_id AND bm.member_id=bsd.user_id AND bsd.user_id>0
+            WHERE  bm.site_id=#{siteId}
+            )q ON q.memberids=bm.memberids
+        </if>
+        <if test="disContendStoreActivityWeizhi != null and disContendStoreActivityYizhi == null and disContendStoreActivityList == null">
+            INNER JOIN (
+            SELECT DISTINCT bm.member_id memberids
+            FROM b_member bm
+            LEFT JOIN b_user_stores_distance bus ON bus.site_id=bm.site_id AND bus.user_id=bm.member_id
+            WHERE bm.site_id=#{siteId}
+            AND bus.user_id IS NULL
+            )q ON q.memberids=bm.memberids
+        </if>
+        <if test="disContendStoreActivityList != null and disContendStoreActivityYizhi == null">
+            INNER JOIN (
+            SELECT DISTINCT a.memberids memberids
+            FROM (
+            <foreach item="item" collection="disContendStoreActivityList" separator="UNION ALL" open="" close="" index="">
+                SELECT a.member_id memberids
+                FROM(
+                SELECT bm.member_id member_id,
+                min(ROUND(6378.138 * 2 * ASIN(SQRT(POW(SIN((t.user_gaode_lat * PI() / 180 - c.gaode_lat * PI() / 180) / 2),2) + COS(t.user_gaode_lat * PI() / 180) * COS(c.gaode_lat * PI() / 180) * POW(SIN((t.user_gaode_lng * PI() / 180 - c.gaode_lng * PI() / 180) / 2),2))) * 1000
+                )) AS juli
+                FROM b_member bm
+                inner JOIN b_user_stores_distance_log t ON bm.site_id=t.site_id AND bm.member_id=t.user_id
+                inner join b_coordinate c on bm.site_id = c.site_id AND is_del=0
+                where bm.site_id = #{siteId} AND t.user_id > 0 AND t.create_time BETWEEN #{item.timeMin} AND #{item.timeMax} and c.is_del = 0
+                GROUP BY buyer_id
+                )a
+                WHERE a.juli BETWEEN #{item.min} and #{item.max}
+            </foreach>
+            <if test="disContendStoreActivityWeizhi != null">
+                UNION ALL
+                SELECT DISTINCT bm.member_id memberids
+                FROM b_member bm
+                LEFT JOIN b_user_stores_distance bus ON bus.site_id=bm.site_id AND bus.user_id=bm.member_id
+                WHERE bm.site_id=#{siteId}
+                AND bus.user_id IS NULL
+            </if>
+            )a
+            )q ON q.memberids=bm.memberids
+        </if>
+        <if test="disStoreActivityYizhi != null and disStoreActivityWeizhi != null">
+            INNER JOIN (
+            SELECT DISTINCT bm.member_id memberids
+            FROM b_member bm
+            WHERE  site_id=#{siteId}
+            )r ON r.memberids=bm.memberids
+        </if>
+        <if test="disStoreActivityYizhi != null and disStoreActivityWeizhi == null">
+            INNER JOIN (
+            SELECT DISTINCT bm.member_id memberids
+            FROM b_member bm
+            INNER JOIN b_user_stores_distance bsd ON bsd.site_id=bm.site_id AND bm.member_id=bsd.user_id AND bsd.user_id>0
+            WHERE  bm.site_id=#{siteId}
+            )r ON r.memberids=bm.memberids
+        </if>
+        <if test="disStoreActivityYizhi == null and disStoreActivityWeizhi != null and disStoreActivityList == null">
+            INNER JOIN (
+            SELECT DISTINCT bm.member_id memberids
+            FROM b_member bm
+            LEFT JOIN b_user_stores_distance bus ON bus.site_id=bm.site_id AND bus.user_id=bm.member_id
+            WHERE bm.site_id=#{siteId}
+            AND bus.user_id IS NULL
+            )r ON r.memberids=bm.memberids
+        </if>
+        <if test="disStoreActivityList != null and disStoreActivityYizhi == null">
+            INNER JOIN (
+            SELECT DISTINCT a.memberids memberids
+            FROM (
+            <foreach item="item" collection="disStoreActivityList" separator="UNION ALL" open="" close="" index="">
+                SELECT a.member_id memberids
+                FROM(
+                SELECT bm.member_id member_id,MIN(bus.distribution_distance) dis
+                FROM b_member bm
+                LEFT JOIN b_user_stores_distance_log bus ON bm.site_id=bus.site_id AND bus.user_id=bm.member_id
+                WHERE bm.site_id=#{siteId}
+                AND bus.user_id>0
+                AND bus.create_time BETWEEN #{item.timeMin} AND #{item.timeMax}
+                GROUP BY member_id
+                )a
+                WHERE a.dis BETWEEN #{item.min} and #{item.max}
+            </foreach>
+            <if test="disStoreActivityWeizhi != null">
+                UNION ALL
+                SELECT DISTINCT bm.member_id memberids
+                FROM b_member bm
+                LEFT JOIN b_user_stores_distance bus ON bus.site_id=bm.site_id AND bus.user_id=bm.member_id
+                WHERE bm.site_id=#{siteId}
+                AND bus.user_id IS NULL
+            </if>
+            )a
+            )r ON r.memberids=bm.memberids
+        </if>
+    </select>
+    <insert id="insertMemberLabel" parameterType="map">
+        insert into b_member_label
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="crowdName != null">
+                crowd_name,
+            </if>
+            <if test="storeIds != null">
+                store_ids,
+            </if>
+            <if test="crowdSort != null">
+                crowd_sort,
+            </if>
+            <if test="crowdType != null">
+                crowd_type,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="labelCount != null">
+                count,
+            </if>
+            <if test="labelSort != null">
+                label_sort,
+            </if>
+            <if test="scene != null">
+                scene,
+            </if>
+            <if test="labelGroup != null">
+                label_group,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="crowdName != null">
+                #{crowdName,jdbcType=VARCHAR},
+            </if>
+            <if test="storeIds != null">
+                #{storeIds,jdbcType=VARCHAR},
+            </if>
+            <if test="crowdSort != null">
+                #{crowdSort,jdbcType=INTEGER},
+            </if>
+            <if test="crowdType != null">
+                #{crowdType,jdbcType=INTEGER},
+            </if>
+            <if test="description != null">
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="labelCount != null">
+                #{labelCount,jdbcType=INTEGER},
+            </if>
+            <if test="labelSort != null">
+                #{labelSort,jdbcType=INTEGER},
+            </if>
+            <if test="scene != null">
+                #{scene,jdbcType=VARCHAR},
+            </if>
+            <if test="labelGroup != null">
+                #{labelGroup,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <select id="getBooleanByName" resultType="Integer" parameterType="map">
+        select count(*)
+        from b_member_label
+        where site_id=#{siteId}
+        and crowd_name=#{crowdName}
+        AND is_del=0
+    </select>
+    <update id="updateMemberLabel" parameterType="map">
+        update b_member_label
+        <set>
+            <if test="crowdName != null">
+                crowd_name = #{crowdName,jdbcType=VARCHAR},
+            </if>
+            <if test="storeIds != null">
+                store_ids = #{storeIds,jdbcType=VARCHAR},
+            </if>
+            <if test="labelCount != null">
+                count = #{labelCount,jdbcType=INTEGER},
+            </if>
+            <if test="labelSort != null">
+                label_sort = #{labelSort,jdbcType=INTEGER},
+            </if>
+            description = #{description,jdbcType=VARCHAR},
+            scene = #{scene,jdbcType=VARCHAR},
+            label_group = #{labelGroup,jdbcType=VARCHAR},
+        </set>
+        where id = #{id,jdbcType=INTEGER} and site_id=#{siteId,jdbcType=INTEGER}
+    </update>
+    <update id="deleteMemberLabel" parameterType="map">
+        update b_member_label
+        SET is_del = 1
+        where site_id=#{siteId,jdbcType=INTEGER} and id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="selectAllMemberLabel" resultType="map" parameterType="map">
+        SELECT id,crowd_name crowdName,description,count,label_group labelGroup,create_time,crowd_type
+        FROM b_member_label
+        WHERE site_id=#{siteId}
+        <if test="crowdName != null">
+            AND crowd_name LIKE CONCAT('%',#{crowdName},'%')
+        </if>
+        <if test="id != null">
+            AND id = #{id}
+        </if>
+        AND is_del=0
+        ORDER BY update_time DESC
+    </select>
+    <select id="getAllSiteId" resultType="Integer" >
+        SELECT site_id
+        FROM b_member_label
+        WHERE site_id != 0
+        AND is_del=0
+        GROUP BY site_id
+    </select>
+    <select id="getStrList" resultType="String" >
+        SELECT label_group
+        FROM b_member_label
+        WHERE site_id=#{siteId}
+        AND is_del=0
+    </select>
+    <select id="getInfoListMap" parameterType="map" resultType="map" >
+        SELECT DISTINCT bm.buyer_id buyerId,bmi.city city,y.`name` name
+        FROM b_member bm
+        LEFT JOIN b_member_info bmi ON bm.site_id=bmi.site_id AND bm.buyer_id=bmi.member_id
+        LEFT JOIN yb_area y ON bmi.city=y.areaid
+        WHERE bm.site_id=#{siteId}
+        AND bmi.city>0
+    </select>
+    <select id="getAddrListMap" parameterType="map" resultType="map" >
+        SELECT DISTINCT bm.buyer_id buyerId,bmi.city city,y.`name` name
+        FROM b_member bm
+        LEFT JOIN b_address bmi ON bm.site_id=bmi.site_id AND bm.buyer_id=bmi.buyer_id
+        LEFT JOIN yb_area y ON bmi.city=y.areaid
+        WHERE bm.site_id=#{siteId}
+        AND bmi.is_default=1
+        AND bmi.del_tag=0
+        AND bmi.city>0
+    </select>
+    <select id="getBooleanNameByClassType" parameterType="map" resultType="Integer" >
+        SELECT count(*) FROM b_member_crowdlabel
+        WHERE site_id=#{siteId}
+        AND label_name=#{labelName}
+        AND label_type=#{labelType}
+        AND is_del=0
+    </select>
+    <select id="getInfoListMapArea" parameterType="map" resultType="map" >
+        SELECT DISTINCT bm.buyer_id buyerId,yb.areaid as city,yb.`name` name
+        FROM b_member bm
+        LEFT JOIN b_member_info s ON bm.site_id=s.site_id AND bm.buyer_id=s.member_id
+        LEFT JOIN yb_area yb ON s.area=yb.areaid
+        where bm.site_id=#{siteId}
+        and yb.areaid is not null
+        and s.city=#{city}
+    </select>
+    <select id="getAddrListMapAddr" parameterType="map" resultType="map" >
+        SELECT yb.areaid as city,yb.`name` name,bm.buyer_id buyerId
+        FROM b_member bm
+        LEFT JOIN b_address s ON bm.site_id=s.site_id AND bm.buyer_id=s.buyer_id
+        LEFT JOIN yb_area yb ON s.country=yb.areaid
+        where s.city=#{city}
+        and yb.areaid is not null
+        and bm.site_id=#{siteId}
+        AND s.is_default=1
+        AND s.del_tag=0
+        group by bm.buyer_id
+    </select>
+    <select id="getWeizhiAge" parameterType="map" resultType="Integer" >
+        SELECT count(*)
+        FROM b_member bm
+        INNER JOIN b_member_info bmi ON bm.site_id=bmi.site_id AND bm.buyer_id=bmi.member_id
+        WHERE bm.site_id=#{siteId}
+        AND (bmi.birthday = '0000-00-00' OR bmi.birthday IS NULL )
+    </select>
+    <select id="getbargainMoneyCount" parameterType="map" resultType="Integer" >
+        SELECT count(distinct a.member_id)
+        FROM(
+        select m.member_id member_id
+        from b_member m
+        left join (
+        select buyer_id,count(trades_id) as num,GROUP_CONCAT(distinct is_refund) as is_refund
+        from b_trades
+        where site_id = #{siteId} and is_payment = 1 and deal_finish_status=1
+        group by buyer_id
+        ) t on m.buyer_id = t.buyer_id
+        where m.site_id = #{siteId}
+        and SUBSTRING_INDEX(t.is_refund,',',1) = 120
+        and SUBSTRING_INDEX(SUBSTRING_INDEX(t.is_refund,',',2),',',-1) != 0
+        and SUBSTRING_INDEX(SUBSTRING_INDEX(t.is_refund,',',2),',',-1) != 110
+        union all
+        select m.member_id member_id
+        from b_member m
+        LEFT JOIN b_trades t on m.site_id = t.site_id and m.buyer_id = t.buyer_id AND t.is_payment = 1 and t.deal_finish_status=1 and t.is_refund IN (0,110)
+        where m.site_id = #{siteId} and t.buyer_id is null
+        union all
+        select m.member_id member_id
+        from b_member m
+        LEFT JOIN (
+        select buyer_id,SUM(real_pay) real_pay FROM b_trades t
+        where t.site_id = #{siteId}
+        AND t.is_payment = 1
+        and t.deal_finish_status=1
+        and t.is_refund IN (0,110)
+        GROUP BY buyer_id
+        ) a ON a.buyer_id=m.buyer_id
+        WHERE m.site_id=#{siteId}
+        AND real_pay=0
+        ) a
+    </select>
+    <select id="getbargainMoneyCountCount" parameterType="map" resultType="Integer" >
+        SELECT count(distinct a.member_id)
+        FROM(
+        select m.member_id member_id
+        from b_member m
+        left join (
+        select buyer_id,count(trades_id) as num,GROUP_CONCAT(distinct is_refund) as is_refund
+        from b_trades
+        where site_id = #{siteId} and is_payment = 1 and deal_finish_status=1
+        group by buyer_id
+        ) t on m.buyer_id = t.buyer_id
+        where m.site_id = #{siteId}
+        and SUBSTRING_INDEX(t.is_refund,',',1) = 120
+        and SUBSTRING_INDEX(SUBSTRING_INDEX(t.is_refund,',',2),',',-1) != 0
+        and SUBSTRING_INDEX(SUBSTRING_INDEX(t.is_refund,',',2),',',-1) != 110
+        union all
+        select m.member_id member_id
+        from b_member m
+        LEFT JOIN b_trades t on m.site_id = t.site_id and m.buyer_id = t.buyer_id AND t.is_payment = 1 and t.deal_finish_status=1 and t.is_refund IN (0,110)
+        where m.site_id = #{siteId} and t.buyer_id is null
+        ) a
+    </select>
+    <select id="getZeroRefundCount" parameterType="map" resultType="Integer" >
+        SELECT COUNT(DISTINCT buyer_id)
+        FROM (
+        SELECT bm.buyer_id
+        FROM b_member bm
+        LEFT JOIN b_trades ts ON bm.site_id=ts.site_id AND bm.buyer_id=ts.buyer_id
+        WHERE bm.site_id=#{siteId}
+        and ts.is_payment = 1
+        and ts.deal_finish_status = 1
+        GROUP BY buyer_id
+        having SUM(CASE WHEN ts.is_refund =120 THEN 1 ELSE 0 END) = 0
+        ) a
+    </select>
+    <select id="getNameById" parameterType="map" resultType="String" >
+        SELECT label_name FROM b_member_crowdlabel WHERE site_id=#{siteId} AND id=#{id}
+    </select>
+    <select id="getListByType" parameterType="map" resultType="map" >
+        SELECT id,label_group
+        FROM b_member_label
+        WHERE site_id=#{siteId}
+        AND is_del=0
+        AND crowd_type=1
+    </select>
+    <update id="updateParamsNameById">
+        update b_member_label
+        SET label_group=#{labelsMap}
+        where id = #{id}
+    </update>
+    <select id="getDisStoreAddressBuyerIdList" parameterType="map" resultType="Integer" >
+        SELECT DISTINCT t.buyer_id
+        FROM b_member bm
+        LEFT JOIN b_address t ON bm.site_id=t.site_id AND bm.buyer_id=t.buyer_id
+        LEFT JOIN b_stores bst ON bst.site_id=t.site_id
+        where bm.site_id = #{siteId}
+        AND t.buyer_id > 0
+        AND bst.is_del=1
+        AND t.is_default=1
+        AND
+        <foreach item="item" collection="disStoreAddressList" separator="or" open="(" close=")" index="" >
+            (round(6378.138*2*asin(sqrt(pow(sin( (bst.gaode_lat*pi()/180-addr_lat*pi()/180)/2),2)+cos(bst.gaode_lat*pi()/180)*cos(addr_lat*pi()/180)* pow(sin( (bst.gaode_lng*pi()/180-addr_lng*pi()/180)/2),2)))*1000)
+            BETWEEN #{item.min} and #{item.max} )
+        </foreach>
+    </select>
+    <select id="getDisContendStoreActivityBuyerIdList" parameterType="map" resultType="Integer" >
+        SELECT DISTINCT bm.buyer_id
+        FROM b_member bm
+        LEFT JOIN b_user_stores_distance_log t ON bm.site_id=t.site_id AND bm.member_id=t.user_id
+        LEFT JOIN b_coordinate bst ON bst.site_id=t.site_id
+        where t.site_id = #{siteId}
+        AND t.user_id > 0
+        AND bst.is_del=1
+        AND
+        <foreach item="item" collection="disContendStoreActivityList" separator="or" open="(" close=")" index="" >
+            (t.create_time BETWEEN #{item.timeMin} AND #{item.timeMax}
+            AND round(6378.138*2*asin(sqrt(pow(sin(
+            (bst.gaode_lat*pi()/180-t.user_gaode_lat*pi()/180)/2),2)+cos(bst.gaode_lat*pi()/180)*cos(t.user_gaode_lat*pi()/180)*
+            pow(sin( (bst.gaode_lng*pi()/180-t.user_gaode_lng*pi()/180)/2),2)))*1000)
+            )BETWEEN #{item.min} and #{item.max}
+        </foreach>
+    </select>
+    <select id="getDisContendStoreAddressBuyerIdList" parameterType="map" resultType="Integer" >
+        SELECT DISTINCT t.buyer_id
+        FROM b_member bm
+        LEFT JOIN b_address t ON bm.site_id=t.site_id AND bm.buyer_id=t.buyer_id
+        LEFT JOIN b_coordinate bst ON bst.site_id=t.site_id
+        where bm.site_id = #{siteId}
+        AND t.buyer_id > 0
+        AND bst.is_del=0
+        AND t.is_default=1
+        AND
+        <foreach item="item" collection="disContendStoreAddressList" separator="or" open="(" close=")" index="" >
+            (round(6378.138*2*asin(sqrt(pow(sin( (bst.gaode_lat*pi()/180-addr_lat*pi()/180)/2),2)+cos(bst.gaode_lat*pi()/180)*cos(addr_lat*pi()/180)* pow(sin( (bst.gaode_lng*pi()/180-addr_lng*pi()/180)/2),2)))*1000)
+            BETWEEN #{item.min} and #{item.max})
+        </foreach>
+    </select>
+    <select id="getInfoListMap2" parameterType="map" resultType="map" >
+        SELECT DISTINCT bm.buyer_id buyerId,s.city city,ybc.`name` cityname,s.area as area,yb.`name` areaname
+        FROM b_member bm
+        LEFT JOIN b_member_info s ON bm.site_id=s.site_id AND bm.buyer_id=s.member_id
+        LEFT JOIN yb_area yb ON s.area=yb.areaid
+        LEFT JOIN yb_area ybc ON s.city=ybc.areaid
+        where bm.site_id=#{siteId}
+        and yb.areaid > 0
+    </select>
+    <select id="getAddrListMap2" parameterType="map" resultType="map" >
+        SELECT DISTINCT bm.buyer_id buyerId,bmi.city city,y.`name` cityname,bmi.country as area,ya.`name` areaname
+        FROM b_member bm
+        LEFT JOIN b_address bmi ON bm.site_id=bmi.site_id AND bm.buyer_id=bmi.buyer_id
+        LEFT JOIN yb_area y ON bmi.city=y.areaid
+        LEFT JOIN yb_area ya ON bmi.country=ya.areaid
+        WHERE bm.site_id=#{siteId}
+        AND bmi.is_default=1
+        AND bmi.del_tag=0
+        AND bmi.city>0
+    </select>
+    <select id="getAllLabel" parameterType="map" resultType="map" >
+        SELECT crowd_name name,label_group labelGroup,count
+        FROM b_member_label
+        WHERE site_id=#{siteId}
+        AND crowd_type=1
+        AND is_del=0
+    </select>
+    <select id="getShuxing" resultType="String" >
+        SELECT label_attribute
+        FROM b_member_crowdlabel
+        WHERE site_id=#{siteId}
+        AND label_name in
+        <foreach item="item" collection="labName" separator="," open="(" close=")" index="" >
+            #{item}
+        </foreach>
+        AND label_type=#{key}
+        AND is_del=0
+    </select>
+    <update id="updateLabelGroup" parameterType="map">
+        UPDATE b_member_label SET label_group=#{labelGroup},count=#{labelCount},scene=#{memberIds} WHERE site_id=#{siteId} AND crowd_name=#{labelNameTwo} AND is_del=0
+    </update>
+    <select id="getLabelGroupByName" resultType="map" parameterType="map">
+        SELECT label_group labelGroup
+        FROM b_member_label
+        WHERE site_id=#{siteId}
+        AND  crowd_name=#{labelNameTwo}
+        AND crowd_type=1
+        AND is_del=0
+    </select>
+    <update id="updateCountByName" >
+        UPDATE b_member_label SET count=#{labelCountTwo},scene=#{memberIds} WHERE site_id=#{siteId} AND crowd_name=#{labelNameTwo} AND is_del=0
+    </update>
+    <select id="bargainMoneyBuyerId" resultType="Integer" parameterType="map">
+        SELECT DISTINCT a.mem_cnt
+        FROM(
+        <foreach item="item" collection="bargainMoneyList" separator="UNION ALL" open="" close="" index="">
+            <if test="item.weizhi == null">
+                SELECT m.member_id as mem_cnt
+                from b_member m
+                LEFT JOIN (
+                select buyer_id,sum(real_pay) as real_pay
+                from b_trades
+                where site_id = #{siteId}
+                AND create_time between #{item.timeMin} AND #{item.timeMax}
+                AND is_payment = 1
+                AND deal_finish_status=1
+                AND is_refund IN (0,110)
+                group by buyer_id
+                ) t on m.buyer_id = t.buyer_id
+                where m.site_id = #{siteId} AND t.real_pay between #{item.min}*100 AND #{item.max}*100
+            </if>
+            <if test="item.weizhi != null">
+                SELECT a.member_id as mem_cnt
+                FROM(
+                select m.member_id member_id
+                from b_member m
+                left join (
+                select buyer_id,count(trades_id) as num,GROUP_CONCAT(distinct is_refund) as is_refund
+                from b_trades
+                where site_id = #{siteId} and is_payment = 1 and deal_finish_status=1
+                group by buyer_id
+                ) t on m.buyer_id = t.buyer_id
+                where m.site_id = #{siteId}
+                and SUBSTRING_INDEX(t.is_refund,',',1) = 120
+                and SUBSTRING_INDEX(SUBSTRING_INDEX(t.is_refund,',',2),',',-1) != 0
+                and SUBSTRING_INDEX(SUBSTRING_INDEX(t.is_refund,',',2),',',-1) != 110
+                union all
+                select m.member_id member_id
+                from b_member m
+                LEFT JOIN b_trades t on m.site_id = t.site_id and m.buyer_id = t.buyer_id AND t.is_payment = 1 and t.deal_finish_status=1 and t.is_refund IN (0,110)
+                where m.site_id = #{siteId} and t.buyer_id is null
+                union all
+                select m.member_id member_id
+                from b_member m
+                LEFT JOIN b_trades t on m.site_id = t.site_id and m.buyer_id = t.buyer_id
+                where m.site_id = #{siteId} and t.real_pay = 0 AND t.is_payment = 1 and t.deal_finish_status=1 and t.is_refund IN (0,110)
+                ) a
+            </if>
+        </foreach>
+        )a
+    </select>
+    <select id="bargainCountBuyerId" resultType="Integer" parameterType="map">
+        SELECT DISTINCT a.mem_cnt
+        FROM(
+        <foreach item="item" collection="bargainCountList" separator="UNION ALL" open="" close="" index="">
+            <if test="item.weizhi == null">
+                SELECT m.member_id as mem_cnt
+                from b_member m
+                LEFT JOIN (
+                select buyer_id,count(trades_id) num
+                from b_trades
+                where site_id = #{siteId}
+                AND create_time between #{item.timeMin} AND #{item.timeMax}
+                AND is_payment = 1
+                AND deal_finish_status=1
+                AND is_refund IN (0,110)
+                group by buyer_id
+                ) t on m.buyer_id = t.buyer_id
+                where m.site_id = #{siteId} AND t.num between #{item.min} AND #{item.max}
+            </if>
+            <if test="item.weizhi != null">
+                SELECT a.member_id as mem_cnt
+                FROM(
+                select m.member_id member_id
+                from b_member m
+                left join (
+                select buyer_id,count(trades_id) as num,GROUP_CONCAT(distinct is_refund) as is_refund
+                from b_trades
+                where site_id = #{siteId} and is_payment = 1 and deal_finish_status=1
+                group by buyer_id
+                ) t on m.buyer_id = t.buyer_id
+                where m.site_id = #{siteId}
+                and SUBSTRING_INDEX(t.is_refund,',',1) = 120
+                and SUBSTRING_INDEX(SUBSTRING_INDEX(t.is_refund,',',2),',',-1) != 0
+                and SUBSTRING_INDEX(SUBSTRING_INDEX(t.is_refund,',',2),',',-1) != 110
+                union all
+                select m.member_id member_id
+                from b_member m
+                LEFT JOIN b_trades t on m.site_id = t.site_id and m.buyer_id = t.buyer_id AND t.is_payment = 1 and t.deal_finish_status=1 and t.is_refund IN (0,110)
+                where m.site_id = #{siteId} and t.buyer_id is null
+                ) a
+            </if>
+        </foreach>
+        )a
+    </select>
+    <select id="preTransactionBuyerId" resultType="Integer" parameterType="map">
+        SELECT DISTINCT a.mem_cnt
+        FROM(
+        <foreach item="item" collection="preTransactionList" separator="UNION ALL" open="" close="" index="">
+            <if test="item.weizhi == null">
+                SELECT distinct m.member_id as mem_cnt
+                from b_member m
+                LEFT JOIN (
+                select buyer_id,sum(real_pay)/count(trades_id) num
+                from b_trades
+                where site_id = #{siteId}
+                AND create_time between #{item.timeMin} AND #{item.timeMax}
+                AND is_payment = 1
+                AND deal_finish_status=1
+                AND is_refund IN (0,110)
+                group by buyer_id
+                ) t on m.buyer_id = t.buyer_id
+                where m.site_id = #{siteId} AND t.num between #{item.min}*100 AND #{item.max}*100
+            </if>
+            <if test="item.weizhi != null">
+                SELECT a.member_id as mem_cnt
+                FROM(
+                select m.member_id member_id
+                from b_member m
+                left join (
+                select buyer_id,count(trades_id) as num,GROUP_CONCAT(distinct is_refund) as is_refund
+                from b_trades
+                where site_id = #{siteId} and is_payment = 1 and deal_finish_status=1
+                group by buyer_id
+                ) t on m.buyer_id = t.buyer_id
+                where m.site_id = #{siteId}
+                and SUBSTRING_INDEX(t.is_refund,',',1) = 120
+                and SUBSTRING_INDEX(SUBSTRING_INDEX(t.is_refund,',',2),',',-1) != 0
+                and SUBSTRING_INDEX(SUBSTRING_INDEX(t.is_refund,',',2),',',-1) != 110
+                union all
+                select m.member_id member_id
+                from b_member m
+                LEFT JOIN b_trades t on m.site_id = t.site_id and m.buyer_id = t.buyer_id AND t.is_payment = 1 and t.deal_finish_status=1 and t.is_refund IN (0,110)
+                where m.site_id = #{siteId} and t.buyer_id is null
+                union all
+                select m.member_id member_id
+                from b_member m
+                LEFT JOIN b_trades t on m.site_id = t.site_id and m.buyer_id = t.buyer_id
+                where m.site_id = #{siteId} and t.real_pay = 0 AND t.is_payment = 1 and t.deal_finish_status=1 and t.is_refund IN (0,110)
+                ) a
+            </if>
+        </foreach>
+        )a
+    </select>
+    <select id="refundProbabilityBuyerId" resultType="Integer" parameterType="map">
+        SELECT DISTINCT a.mem_cnt
+        FROM(
+        <foreach item="item" collection="refundProbabilityList" separator="UNION ALL" open="" close="" index="">
+            <if test="item.weizhi == null">
+                SELECT distinct m.member_id as mem_cnt
+                from b_member m
+                LEFT JOIN (
+                select buyer_id,count(case when is_refund=120 then trades_id else null end) as num,count(trades_id) as num1
+                from b_trades
+                where site_id = #{siteId}
+                AND create_time between #{item.timeMin} AND #{item.timeMax}
+                AND is_payment = 1
+                AND deal_finish_status=1
+                group by buyer_id
+                ) t on m.buyer_id = t.buyer_id
+                where m.site_id = #{siteId} AND t.num/t.num1 between #{item.min}/100 AND #{item.max}/100
+            </if>
+            <if test="item.weizhi != null">
+                SELECT bm.member_id mem_cnt
+                FROM b_member bm
+                LEFT JOIN b_trades ts ON bm.site_id=ts.site_id AND bm.buyer_id=ts.buyer_id
+                WHERE bm.site_id=#{siteId}
+                and ts.is_payment = 1
+                and ts.deal_finish_status = 1
+                GROUP BY bm.member_id
+                having SUM(CASE WHEN ts.is_refund =120 THEN 1 ELSE 0 END) = 0
+            </if>
+        </foreach>
+        )a
+    </select>
+    <select id="addIntegralBuyerId" resultType="Integer" parameterType="map">
+        SELECT DISTINCT a.mem_cnt
+        FROM(
+        <foreach item="item" collection="addIntegralList" separator="UNION ALL" open="" close="" index="">
+            select distinct m.member_id as mem_cnt
+            from b_member m
+            LEFT JOIN (
+            SELECT member_id,SUM(integral_add) addnum
+            FROM b_integrallog
+            WHERE site_id=#{siteId}
+            AND create_time between #{item.timeMin} AND #{item.timeMax}
+            GROUP BY member_id
+            ) t on m.buyer_id = t.member_id
+            where m.site_id = #{siteId} and t.addnum between #{item.min} AND #{item.max}
+        </foreach>
+        )a
+    </select>
+    <select id="consumeIntegralBuyerId" resultType="Integer" parameterType="map">
+        SELECT DISTINCT a.mem_cnt
+        FROM(
+        <foreach item="item" collection="consumeIntegralList" separator="UNION ALL" open="" close="" index="">
+            select distinct m.member_id as mem_cnt
+            from b_member m
+            LEFT JOIN (
+            SELECT member_id,SUM(integral_diff) addnum
+            FROM b_integrallog
+            WHERE site_id=#{siteId}
+            AND create_time between #{item.timeMin} AND #{item.timeMax}
+            GROUP BY member_id
+            ) t on m.buyer_id = t.member_id
+            where m.site_id = #{siteId} and t.addnum between #{item.min} AND #{item.max}
+        </foreach>
+        )a
+    </select>
+    <select id="getLabelAttribute" resultType="String">
+        SELECT label_attribute FROM b_member_crowdlabel WHERE site_id=#{siteId} AND label_name=#{name} AND label_type=#{labelKey} AND is_del=0
+    </select>
+    <select id="getAreaName" resultType="String">
+        SELECT name FROM yb_area WHERE areaid IN(
+        <foreach item="item" collection="areaList" separator="," open="" close="" index="">
+            #{item}
+        </foreach>
+        )
+    </select>
+    <select id="getEverBuyBuyerIdList" resultType="Integer" parameterType="map">
+        SELECT DISTINCT a.mem_cnt
+        FROM(
+        <foreach item="item" collection="everBuyList" separator="UNION ALL" open="" close="" index="">
+            SELECT DISTINCT bm.member_id mem_cnt
+            FROM b_member bm
+            LEFT JOIN b_trades b ON b.site_id=bm.site_id AND bm.buyer_id=b.buyer_id
+            WHERE bm.site_id=#{siteId}
+            AND is_payment=1
+            <if test="item.timeMin != null and item.timeMax != null">
+                AND b.create_time BETWEEN #{item.timeMin} AND #{item.timeMax}
+            </if>
+        </foreach>
+        )a
+    </select>
+    <select id="getHealthGaoXueYaBuyerIdList" resultType="Integer" >
+        SELECT DISTINCT a.mem_cnt
+        FROM(
+        <foreach item="item" collection="healthGaoXueYaList" separator="UNION ALL" open="" close="" index="">
+            <if test="item.gaoxueya == null">
+                SELECT bm.member_id mem_cnt
+                FROM b_member bm
+                LEFT JOIN(
+                SELECT brt.buyer_id buyer_id,COUNT(brt.buyer_id) count
+                FROM b_trades brt
+                LEFT JOIN b_orders br ON br.site_id=brt.site_id AND brt.trades_id=br.trades_id
+                LEFT JOIN b_goods bg ON bg.site_id=brt.site_id AND br.goods_id=bg.goods_id
+                WHERE brt.site_id=#{siteId}
+                AND brt.is_payment = 1
+                AND bg.drug_name REGEXP('普利|地平|洛尔|维拉帕米|可乐定|利血平|吲达帕胺|沙坦|多沙唑嗪|氢氯噻嗪|罗布麻')
+                GROUP BY brt.buyer_id
+                )a ON bm.buyer_id=a.buyer_id
+                WHERE bm.site_id=#{siteId} AND a.count BETWEEN #{item.min} AND #{item.max}
+            </if>
+            <if test="item.gaoxueya != null">
+                SELECT DISTINCT a.member_id mem_cnt
+                FROM b_member a
+                LEFT JOIN b_relation_label brl ON brl.site_id=a.site_id AND a.buyer_id=brl.buyer_id AND is_del=0
+                WHERE a.site_id=#{siteId}
+                AND (brl.label_name='高血压')
+            </if>
+        </foreach>
+        )a
+    </select>
+    <select id="getHealthGaoXueZhiBuyerIdList" resultType="Integer" >
+        SELECT DISTINCT a.mem_cnt
+        FROM(
+        <foreach item="item" collection="healthGaoXueZhiList" separator="UNION ALL" open="" close="" index="">
+            <if test="item.gaoxuezhi == null">
+                SELECT bm.member_id mem_cnt
+                FROM b_member bm
+                LEFT JOIN(
+                SELECT brt.buyer_id buyer_id,COUNT(brt.buyer_id) count
+                FROM b_trades brt
+                LEFT JOIN b_orders br ON br.site_id=brt.site_id AND brt.trades_id=br.trades_id
+                LEFT JOIN b_goods bg ON bg.site_id=brt.site_id AND br.goods_id=bg.goods_id
+                WHERE brt.site_id=#{siteId}
+                AND brt.is_payment = 1
+                AND bg.drug_name REGEXP('普罗布考|吉非罗齐|他汀|异山梨酯|贝特')
+                GROUP BY brt.buyer_id
+                )a ON bm.buyer_id=a.buyer_id
+                WHERE bm.site_id=#{siteId} AND a.count BETWEEN #{item.min} AND #{item.max}
+            </if>
+            <if test="item.gaoxuezhi != null">
+                SELECT DISTINCT a.member_id mem_cnt
+                FROM b_member a
+                LEFT JOIN b_relation_label brl ON brl.site_id=a.site_id AND a.buyer_id=brl.buyer_id AND is_del=0
+                WHERE a.site_id=#{siteId}
+                AND (brl.label_name='高血脂')
+            </if>
+        </foreach>
+        )a
+    </select>
+    <select id="getHealthTangniaobingBuyerIdList" resultType="Integer" >
+        SELECT DISTINCT a.mem_cnt
+        FROM(
+        <foreach item="item" collection="healthTangNiaoBingList" separator="UNION ALL" open="" close="" index="">
+            <if test="item.tangniaobing == null">
+                SELECT bm.member_id mem_cnt
+                FROM b_member bm
+                LEFT JOIN(
+                SELECT brt.buyer_id buyer_id,COUNT(brt.buyer_id) count
+                FROM b_trades brt
+                LEFT JOIN b_orders br ON br.site_id=brt.site_id AND brt.trades_id=br.trades_id
+                LEFT JOIN b_goods bg ON bg.site_id=brt.site_id AND br.goods_id=bg.goods_id
+                WHERE brt.site_id=#{siteId}
+                AND brt.is_payment = 1
+                AND bg.drug_name REGEXP('齐特|吡嗪|喹酮|双胍|波糖|美脲|列酮|列奈|米格列醇|消渴')
+                GROUP BY brt.buyer_id
+                )a ON bm.buyer_id=a.buyer_id
+                WHERE bm.site_id=#{siteId} AND a.count BETWEEN #{item.min} AND #{item.max}
+            </if>
+            <if test="item.tangniaobing != null">
+                SELECT DISTINCT a.member_id mem_cnt
+                FROM b_member a
+                LEFT JOIN b_relation_label brl ON brl.site_id=a.site_id AND a.buyer_id=brl.buyer_id AND is_del=0
+                WHERE a.site_id=#{siteId}
+                AND (brl.label_name='糖尿病')
+            </if>
+        </foreach>
+        )a
+    </select>
+    <select id="getLou" resultType="map" >
+        SELECT address_id,province,city,country,addr FROM b_address WHERE addr_lat=''
+    </select>
+    <update id="updateAddressPointByLou">
+        update b_address
+        SET addr_lng=#{lng},addr_lat=#{lat}
+        WHERE address_id=#{address_id}
+    </update>
+    <insert id="initInsertLabel">
+        insert into b_member_crowdlabel (site_id,label_name,label_describe,label_attribute,label_type) VALUES
+        <foreach item="item" collection="initList" separator="," open="" close="" index="">
+            (#{item.siteId},#{item.labelName},#{item.labelDescribe},#{item.labelAttribute},#{item.labelType})
+        </foreach>
+    </insert>
+    <select id="getYizhiAge" resultType="Integer" parameterType="map">
+        SELECT count(distinct bm.member_id)
+        FROM b_member bm
+        LEFT JOIN b_member_info bmi ON bm.site_id=bmi.site_id AND bm.buyer_id=bmi.member_id
+        WHERE bm.site_id=#{siteId}
+        AND bmi.birthday>'0000-00-01'
+    </select>
+    <select id="getyizhiBargainMoneyCount" resultType="Integer" parameterType="map">
+        select count(distinct m.member_id) member_id
+        from b_member m
+        LEFT JOIN (
+        select buyer_id,SUM(real_pay) real_pay FROM b_trades t
+        where t.site_id = #{siteId}
+        AND t.is_payment = 1
+        and t.deal_finish_status=1
+        and t.is_refund IN (0,110)
+        GROUP BY buyer_id
+        ) a ON a.buyer_id=m.buyer_id
+        WHERE m.site_id=#{siteId}
+        AND real_pay>0
+    </select>
+    <select id="getWeizhiAddIntegrateCount" resultType="Integer" parameterType="map">
+        select count(distinct bm.member_id)
+        from b_member bm
+        WHERE bm.site_id=#{siteId} AND (bm.total_get_integrate=0 OR bm.total_get_integrate IS NULL)
+    </select>
+    <select id="getyizhiAddIntegrateCount" resultType="Integer" parameterType="map">
+        select count(distinct bm.member_id)
+        from b_member bm
+        WHERE bm.site_id=#{siteId} AND bm.total_get_integrate>0
+    </select>
+
+    <select id="getWeizhiConsumeIntegrateCount" resultType="Integer" parameterType="map">
+        select count(distinct bm.member_id)
+        from b_member bm
+        WHERE bm.site_id=#{siteId} AND (bm.total_consume_integrate=0 OR bm.total_consume_integrate IS NULL)
+    </select>
+    <select id="getyizhiConsumeIntegrateCount" resultType="Integer" parameterType="map">
+        select count(distinct bm.member_id)
+        from b_member bm
+        WHERE bm.site_id=#{siteId} AND bm.total_consume_integrate>0
+    </select>
+    <select id="getWeizhiResidueIntegrateCount" resultType="Integer" parameterType="map">
+        select count(distinct bm.buyer_id)
+        from b_member bm
+        WHERE bm.site_id=#{siteId} AND bm.integrate=0
+    </select>
+    <select id="getyizhiResidueIntegrateCount" resultType="Integer" parameterType="map">
+        select count(distinct bm.member_id)
+        from b_member bm
+        WHERE bm.site_id=#{siteId} AND bm.integrate>0
+    </select>
+    <select id="getWeizhiDisStoreActivityCount" resultType="Integer" parameterType="map">
+        SELECT COUNT(bm.member_id) cnt
+        FROM b_member bm
+        LEFT JOIN b_user_stores_distance bus ON bus.site_id=bm.site_id AND bus.user_id=bm.member_id
+        WHERE bm.site_id=#{siteId}
+        AND bus.user_id IS NULL
+    </select>
+    <select id="getyizhiDisStoreActivityCount" resultType="Integer" parameterType="map">
+        SELECT COUNT(DISTINCT bm.member_id)
+        FROM b_member bm
+        INNER JOIN b_user_stores_distance bus ON bus.site_id=bm.site_id AND bus.user_id=bm.member_id
+        WHERE bm.site_id=#{siteId}
+    </select>
+    <select id="getweizhiDisStoreAddressCount" resultType="Integer" parameterType="map">
+        SELECT COUNT(bm.member_id) cnt
+        FROM b_member bm
+        LEFT JOIN b_address bas ON bas.site_id=bm.site_id AND bas.buyer_id=bm.buyer_id
+        WHERE bm.site_id=#{siteId}
+        AND bas.buyer_id IS NULL
+    </select>
+    <select id="getyizhiDisStoreAddressCount" resultType="Integer" parameterType="map">
+        SELECT COUNT(DISTINCT bm.member_id)
+        FROM b_member bm
+        INNER JOIN b_address bas ON bas.site_id=bm.site_id AND bas.buyer_id=bm.buyer_id
+        WHERE bm.site_id=#{siteId}
+    </select>
+    <select id="getAreaYizhi" parameterType="map" resultType="Integer" >
+        SELECT count(DISTINCT a.buyerId) FROM (
+        SELECT DISTINCT bm.buyer_id buyerId
+        FROM b_member bm
+        LEFT JOIN b_member_info s ON bm.site_id=s.site_id AND bm.buyer_id=s.member_id
+        where bm.site_id=#{siteId} and s.area > 0
+        UNION ALL
+        SELECT DISTINCT bm.buyer_id buyerId
+        FROM b_member bm
+        inner JOIN b_address bmi ON bm.site_id=bmi.site_id AND bm.buyer_id=bmi.buyer_id
+        WHERE bm.site_id=#{siteId}
+        AND bmi.is_default=1
+        AND bmi.del_tag=0
+        AND bmi.city>0
+        )a
+    </select>
+    <select id="getAreaWeizhi" parameterType="map" resultType="Integer" >
+        SELECT count(DISTINCT b.buyer_id) FROM (
+            SELECT DISTINCT bm.buyer_id buyer_id
+            FROM b_member bm
+            LEFT JOIN b_member_info s ON bm.site_id=s.site_id AND bm.buyer_id=s.member_id
+            where bm.site_id=#{siteId}
+            and (s.area=0 or s.city=0 OR s.area IS NULL)
+		)b
+		INNER JOIN(
+            SELECT DISTINCT bm.buyer_id buyer_id
+            FROM b_member bm
+            LEFT JOIN b_address bmi ON bm.site_id=bmi.site_id AND bm.buyer_id=bmi.buyer_id
+            WHERE bm.site_id=#{siteId}
+            AND bmi.buyer_id IS NULL
+        )a ON b.buyer_id=a.buyer_id
+    </select>
+    <select id="getallCount" parameterType="map" resultType="Integer" >
+        SELECT count(*) FROM b_member WHERE site_id=#{siteId}
+    </select>
+    <select id="getBufenWeizhiBargainMoney" parameterType="map" resultType="Integer" >
+        SELECT count(distinct a.member_id)
+        FROM(
+        select m.member_id member_id
+        from b_member m
+        left join (
+        select buyer_id,count(trades_id) as num,GROUP_CONCAT(distinct is_refund) as is_refund
+        from b_trades
+        where site_id = #{siteId} and is_payment = 1 and deal_finish_status=1
+        group by buyer_id
+        ) t on m.buyer_id = t.buyer_id
+        where m.site_id = #{siteId}
+        and SUBSTRING_INDEX(t.is_refund,',',1) = 120
+        and SUBSTRING_INDEX(SUBSTRING_INDEX(t.is_refund,',',2),',',-1) != 0
+        and SUBSTRING_INDEX(SUBSTRING_INDEX(t.is_refund,',',2),',',-1) != 110
+        union all
+        select m.member_id member_id
+        from b_member m
+        LEFT JOIN (
+        select buyer_id,SUM(real_pay) real_pay FROM b_trades t
+        where t.site_id = #{siteId}
+        AND t.is_payment = 1
+        and t.deal_finish_status=1
+        and t.is_refund IN (0,110)
+        GROUP BY buyer_id
+        ) a ON a.buyer_id=m.buyer_id
+        WHERE m.site_id=#{siteId}
+        AND real_pay=0
+        ) a
+    </select>
+    <select id="selectAddIntegralTotal" parameterType="map" resultType="Integer" >
+        select count(distinct bm.buyer_id)
+        from b_member bm
+        WHERE bm.site_id=#{siteId} AND bm.total_get_integrate BETWEEN #{min} AND #{max}
+    </select>
+    <select id="selectConsumeIntegralTotal" parameterType="map" resultType="Integer" >
+        select count(distinct bm.buyer_id)
+        from b_member bm
+        WHERE bm.site_id=#{siteId} AND bm.total_consume_integrate BETWEEN #{min} AND #{max}
+    </select>
+    <select id="getPeriodList" resultType="map" >
+        select
+        <foreach item="item" collection="chaList" separator="," open="" close="" index="index">
+            count(DISTINCT case when (UNIX_TIMESTAMP(ed_time)-UNIX_TIMESTAMP(sh_time))/(60*60*24)/order_cnt BETWEEN #{item.min} AND  #{item.max} then buyer_id else null end) as #{item.typeCoude}
+        </foreach>
+        from (
+        select bm.buyer_id,min(t.create_time) as sh_time,max(t.create_time) as ed_time,count(t.trades_id) as order_cnt
+        FROM b_member bm
+        LEFT JOIN b_trades t on bm.site_id = t.site_id and t.buyer_id=bm.buyer_id
+        WHERE bm.site_id=#{siteId}
+        and t.is_payment = 1
+        GROUP BY bm.buyer_id
+        ) a
+    </select>
+
+    <select id="getBargainMoneyList" resultType="map" >
+        select
+        <foreach item="item" collection="chaList" separator="," open="" close="" index="index">
+            count(DISTINCT case when t.real_pay between #{item.min}*100 AND  #{item.max}*100 then buyer_id else null end) as #{item.typeCoude}
+        </foreach>
+        from (
+        select bm.buyer_id,sum(t.real_pay) as real_pay
+        from b_member bm
+        LEFT JOIN b_trades t ON bm.site_id=t.site_id AND bm.buyer_id=t.buyer_id
+        where bm.site_id = #{siteId}
+        AND t.is_payment = 1
+        AND t.deal_finish_status=1
+        AND t.is_refund IN (0,110)
+        group by bm.buyer_id
+        ) t
+    </select>
+    <select id="getBargainCountList" resultType="map" >
+        select
+        <foreach item="item" collection="chaList" separator="," open="" close="" index="index">
+            count(DISTINCT case when t.num between #{item.min} AND  #{item.max} then buyer_id else null end) as #{item.typeCoude}
+        </foreach>
+        from (
+        select bm.buyer_id,count(t.trades_id) as num
+        from b_member bm
+        LEFT JOIN b_trades t ON bm.site_id=t.site_id AND bm.buyer_id=t.buyer_id
+        where bm.site_id = #{siteId}
+        AND t.is_payment = 1
+        AND t.deal_finish_status=1
+        AND t.is_refund IN (0,110)
+        group by bm.buyer_id
+        ) t
+    </select>
+    <select id="getTransactionList" resultType="map" >
+        select
+        <foreach item="item" collection="chaList" separator="," open="" close="" index="index">
+            count(DISTINCT case when t.num between #{item.min}*100 AND  #{item.max}*100 then buyer_id else null end) as #{item.typeCoude}
+        </foreach>
+        from (
+        select m.buyer_id,sum(b.real_pay)/count(b.trades_id) num
+        from b_member m
+        LEFT JOIN b_trades b ON b.site_id=m.site_id AND b.buyer_id=m.buyer_id
+        where m.site_id = #{siteId}
+        AND b.is_payment = 1
+        AND b.deal_finish_status=1
+        AND b.is_refund IN (0,110)
+        group by m.buyer_id
+        ) t
+    </select>
+    <select id="getRefundProbabilityList" resultType="map" >
+        select
+        <foreach item="item" collection="chaList" separator="," open="" close="" index="index">
+            count(DISTINCT case when t.num/t.num1 between #{item.min}/100 AND  #{item.max}/100 then buyer_id else null end) as #{item.typeCoude}
+        </foreach>
+        from (
+        select m.buyer_id,count(case when is_refund=120 then trades_id else null end) as num,count(trades_id) as num1
+        from b_member m
+        LEFT JOIN b_trades b ON b.site_id=m.site_id AND b.buyer_id=m.buyer_id
+        where m.site_id = #{siteId}
+        AND b.is_payment = 1
+        AND b.deal_finish_status=1
+        group by m.buyer_id
+        ) t
+    </select>
+    <select id="getEverBuyList" resultType="map" >
+        select
+        <foreach item="item" collection="chaList" separator="," open="" close="" index="index">
+            count(DISTINCT case when b.create_time BETWEEN #{item.timeMin} AND #{item.timeMax} then bm.buyer_id else null end) as #{item.typeCoude}
+        </foreach>
+        FROM b_member bm
+        LEFT JOIN b_trades b ON b.site_id=bm.site_id AND bm.buyer_id=b.buyer_id
+        WHERE bm.site_id=#{siteId}
+        AND is_payment=1
+    </select>
+    <select id="getAgeList" resultType="map" >
+        select
+        <foreach item="item" collection="chaList" separator="," open="" close="" index="index">
+            count(DISTINCT case when bmi.birthday BETWEEN #{item.max} AND #{item.min} then bm.buyer_id else null end) as #{item.typeCoude}
+        </foreach>
+        FROM b_member bm
+        LEFT JOIN b_member_info bmi ON bm.site_id=bmi.site_id AND bm.buyer_id=bmi.member_id
+        WHERE bm.site_id=#{siteId}
+    </select>
+    <select id="getRegisterList" resultType="map" >
+        select
+        <foreach item="item" collection="chaList" separator="," open="" close="" index="index">
+            count(DISTINCT case when bm.create_time BETWEEN #{item.registerMin} AND #{item.registerMax} then bm.buyer_id else null end) as #{item.typeCoude}
+        </foreach>
+        FROM b_member bm
+        WHERE bm.site_id=#{siteId}
+    </select>
+    <select id="getaddIntegraList" resultType="map" >
+        select
+        <foreach item="item" collection="chaList" separator="," open="" close="" index="index">
+            count(DISTINCT case when bm.total_get_integrate between #{item.min} AND #{item.max} then buyer_id else null end) as #{item.typeCoude}
+        </foreach>
+        FROM b_member bm
+        WHERE bm.site_id=#{siteId}
+    </select>
+    <select id="getconsumeIntegralList" resultType="map" >
+        select
+        <foreach item="item" collection="chaList" separator="," open="" close="" index="index">
+            count(DISTINCT case when bm.total_consume_integrate between #{item.min} AND #{item.max} then buyer_id else null end) as #{item.typeCoude}
+        </foreach>
+        FROM b_member bm
+        WHERE bm.site_id=#{siteId}
+    </select>
+    <select id="getresidueIntegralList" resultType="map" >
+        select
+        <foreach item="item" collection="chaList" separator="," open="" close="" index="index">
+            count(DISTINCT case when bm.integrate between #{item.min} AND #{item.max} then buyer_id else null end) as #{item.typeCoude}
+        </foreach>
+        FROM b_member bm
+        WHERE bm.site_id=#{siteId}
+    </select>
+    <select id="getDisStoreActivityList" resultType="map" >
+        select
+        <foreach item="item" collection="chaList" separator="," open="" close="" index="index">
+            count(DISTINCT case when a.dis between #{item.min} AND #{item.max} then buyer_id else null end) as #{item.typeCoude}
+        </foreach>
+        FROM
+        (
+        SELECT bm.buyer_id buyer_id,MIN(bus.distribution_distance) dis
+        FROM b_member bm
+        LEFT JOIN b_user_stores_distance_log bus ON bm.site_id=bus.site_id AND bus.user_id=bm.member_id
+        WHERE bm.site_id=#{siteId}
+        AND bus.user_id>0
+        AND bus.create_time BETWEEN #{timeNineten} AND #{curentTime}
+        GROUP BY buyer_id
+        ) a
+    </select>
+    <select id="getDisContendStoreActivityList" resultType="map" >
+        SELECT
+        <foreach item="item" collection="chaList" separator="," open="" close="" index="index">
+            count(DISTINCT case when a.juli between #{item.min} AND #{item.max} then buyer_id else null end) as #{item.typeCoude}
+        </foreach>
+        FROM (
+        SELECT bm.buyer_id buyer_id,
+        min(ROUND(6378.138 * 2 * ASIN(SQRT(POW(SIN((t.user_gaode_lat * PI() / 180 - c.gaode_lat * PI() / 180) / 2),2) + COS(t.user_gaode_lat * PI() / 180) * COS(c.gaode_lat * PI() / 180) * POW(SIN((t.user_gaode_lng * PI() / 180 - c.gaode_lng * PI() / 180) / 2),2))) * 1000
+        )) AS juli
+        FROM b_member bm
+        inner JOIN b_user_stores_distance_log t ON bm.site_id=t.site_id AND bm.member_id=t.user_id
+        inner join b_coordinate c on bm.site_id = c.site_id AND is_del=0
+        where bm.site_id = #{siteId} AND t.user_id > 0 AND t.create_time BETWEEN #{timeNineten} AND #{curentTime} and c.is_del = 0
+        GROUP BY buyer_id
+        )a
+    </select>
+    <select id="getdDsContendStoreAddressList" resultType="map" >
+        SELECT
+        <foreach item="item" collection="chaList" separator="," open="" close="" index="index">
+            count(DISTINCT case when a.juli between #{item.min} AND #{item.max} then buyer_id else null end) as #{item.typeCoude}
+        </foreach>
+        FROM (
+        SELECT bm.buyer_id buyer_id,
+        min(ROUND(6378.138 * 2 * ASIN(SQRT(POW(SIN((c.addr_lat * PI() / 180 - t.gaode_lat * PI() / 180) / 2),2) + COS(c.addr_lat * PI() / 180) * COS(t.gaode_lat * PI() / 180) * POW(SIN((c.addr_lng * PI() / 180 - t.gaode_lng * PI() / 180) / 2),2))) * 1000
+        )) AS juli
+        FROM b_member bm
+        LEFT JOIN b_address c on bm.site_id = c.site_id AND bm.buyer_id=c.buyer_id
+        LEFT JOIN b_coordinate t ON bm.site_id=t.site_id
+        where bm.site_id = #{siteId}
+        AND c.is_default = 1
+        AND t.is_del=0
+        GROUP BY buyer_id
+        )a
+    </select>
+    <select id="getdDisStoreAddressList" resultType="map" >
+        SELECT
+        <foreach item="item" collection="chaList" separator="," open="" close="" index="index">
+            count(DISTINCT case when a.juli between #{item.min} AND #{item.max} then buyer_id else null end) as #{item.typeCoude}
+        </foreach>
+        FROM (
+        SELECT bm.buyer_id buyer_id,
+        min(ROUND(6378.138 * 2 * ASIN(SQRT(POW(SIN((c.addr_lat * PI() / 180 - t.gaode_lat * PI() / 180) / 2),2) + COS(c.addr_lat * PI() / 180) * COS(t.gaode_lat * PI() / 180) * POW(SIN((c.addr_lng * PI() / 180 - t.gaode_lng * PI() / 180) / 2),2))) * 1000
+        )) AS juli
+        FROM b_member bm
+        LEFT JOIN b_address c on bm.site_id = c.site_id AND bm.buyer_id=c.buyer_id
+        LEFT JOIN b_stores t ON bm.site_id=t.site_id
+        where bm.site_id = #{siteId}
+        AND c.is_default = 1
+        AND t.is_del=1
+        GROUP BY buyer_id
+        )a
+    </select>
+    <select id="memberIdsByNameAndSiteId" resultType="String">
+        SELECT scene FROM b_member_label WHERE site_id=#{siteId} AND crowd_name=#{labelName} AND is_del=0
+    </select>
+
+    <select id="getBaseLabel" resultType="map">
+        SELECT bmi.birthday birthday,bm.create_time create_time,a1.name province,a2.name city,a3.name area
+        FROM b_member bm
+        LEFT JOIN b_member_info bmi ON bm.site_id=bmi.site_id AND bm.buyer_id=bmi.member_id
+        LEFT JOIN yb_area a1 ON bmi.province=a1.areaid
+        LEFT JOIN yb_area a2 ON bmi.city=a2.areaid
+        LEFT JOIN yb_area a3 ON bmi.area=a3.areaid
+        WHERE bm.site_id=#{siteId}
+        AND bm.buyer_id=#{buyerId}
+    </select>
+    <select id="getXingzuo" resultType="String" >
+        SELECT
+        case
+        when SUBSTRING(bmi.birthday,6,5) between '01-20' and '02-18' then '水瓶座'
+        when SUBSTRING(bmi.birthday,6,5) between '02-19' and '03-20' then '双鱼座'
+        when SUBSTRING(bmi.birthday,6,5) between '03-21' and '04-19' then '白羊座'
+        when SUBSTRING(bmi.birthday,6,5) between '04-20' and '05-20' then '金牛座'
+        when SUBSTRING(bmi.birthday,6,5) between '05-21' and '06-21' then '双子座'
+        when SUBSTRING(bmi.birthday,6,5) between '06-22' and '07-22' then '巨蟹座'
+        when SUBSTRING(bmi.birthday,6,5) between '07-23' and '08-22' then '狮子座'
+        when SUBSTRING(bmi.birthday,6,5) between '08-23' and '09-22' then '处女座'
+        when SUBSTRING(bmi.birthday,6,5) between '09-23' and '10-23' then '天秤座'
+        when SUBSTRING(bmi.birthday,6,5) between '10-24' and '11-22' then '天蝎座'
+        when SUBSTRING(bmi.birthday,6,5) between '11-23' and '12-21' then '射手座'
+        when SUBSTRING(bmi.birthday,6,5) between '12-22' and '12-31' then '摩羯座' when SUBSTRING(bmi.birthday,6,5) between '01-01' and '01-19' then '摩羯座'
+        else null end
+        FROM b_member bm
+        LEFT JOIN b_member_info bmi ON bm.site_id=bmi.site_id AND bm.buyer_id=bmi.member_id
+        WHERE bm.site_id=#{siteId}
+        AND bm.buyer_id=#{buyerId}
+        AND bmi.birthday>'0000-00-00'
+    </select>
+    <select id="getPeriodLabelForDimensionality" resultType="map" >
+        SELECT bm.buyer_id,min(t.create_time) as sh_time,max(t.create_time) as ed_time,count(t.trades_id) as order_cnt
+        FROM b_member bm
+        LEFT JOIN b_trades t on bm.site_id = t.site_id and t.buyer_id=bm.buyer_id
+        WHERE bm.site_id=#{siteId}
+        AND bm.buyer_id=#{buyerId}
+        AND t.is_payment = 1
+    </select>
+    <select id="getStrListForDimensionality" resultType="map" >
+        SELECT label_name,label_attribute
+        FROM b_member_crowdlabel
+        WHERE site_id=#{siteId}
+        AND label_type=#{label_type}
+        AND is_del=0
+    </select>
+    <select id="getLastTimeForDimensionality" resultType="Date" >
+        SELECT MAX(create_time)
+        FROM b_trades
+        WHERE bm.site_id=#{siteId}
+        AND bm.buyer_id=#{buyerId}
+        AND is_payment=1
+    </select>
+    <select id="getAddIntegrateForDimensionality" resultType="Integer" >
+        SELECT total_get_integrate
+        FROM b_member
+        WHERE bm.site_id=#{siteId}
+        AND bm.buyer_id=#{buyerId}
+    </select>
+    <select id="getConsumeIntegrateForDimensionality" resultType="Integer" >
+        SELECT total_consume_integrate
+        FROM b_member
+        WHERE bm.site_id=#{siteId}
+        AND bm.buyer_id=#{buyerId}
+    </select>
+
+</mapper>

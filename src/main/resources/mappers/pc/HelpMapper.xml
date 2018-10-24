@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.pc.mapper.HelpMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.pc.Help">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="fir_title" jdbcType="VARCHAR" property="firTitle"/>
+        <result column="sec_title" jdbcType="VARCHAR" property="secTitle"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="is_show" jdbcType="INTEGER" property="isShow"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+
+    <sql id="base_column_list">
+        id, site_id, fir_title, sec_title, content, is_show, create_time, update_time
+    </sql>
+
+    <select id="getLstByFirTitle" resultMap="BaseResultMap">
+        SELECT <include refid="base_column_list"/> FROM pc_help WHERE site_id=#{siteId} AND fir_title=#{firTitle}
+    </select>
+
+    <select id="getBySecTitle" resultMap="BaseResultMap">
+        SELECT <include refid="base_column_list"/> FROM pc_help WHERE site_id=#{siteId} AND fir_title=#{firTitle} AND sec_title=#{secTitle} AND is_show=0 limit 1
+    </select>
+
+    <select id="getLst" parameterType="int" resultMap="BaseResultMap">
+        SELECT <include refid="base_column_list"/> FROM pc_help WHERE site_id=#{siteId} GROUP BY fir_title
+    </select>
+
+    <insert id="add" parameterType="com.jk51.model.pc.Help" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO pc_help (site_id, fir_title, sec_title, content, is_show, create_time, update_time)
+        VALUES (#{siteId}, #{firTitle}, #{secTitle}, #{content}, #{isShow}, now(), now())
+    </insert>
+
+    <update id="upd" parameterType="com.jk51.model.pc.Help">
+        UPDATE pc_help SET content=#{content},is_show=#{isShow} WHERE site_id=#{siteId} AND id=#{id}
+    </update>
+
+</mapper>

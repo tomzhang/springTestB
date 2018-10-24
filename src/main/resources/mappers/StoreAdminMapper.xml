@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.index.mapper.StoreAdminMapper">
+
+    <resultMap id="BaseResultMap" type="com.jk51.model.StoreAdmin">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="site_id"/>
+        <result column="store_id" jdbcType="INTEGER" property="store_id"/>
+        <result column="user_name" jdbcType="VARCHAR" property="user_name"/>
+        <result column="user_pwd" jdbcType="VARCHAR" property="user_pwd"/>
+        <result column="user_type" jdbcType="INTEGER" property="user_type"/>
+        <result column="is_del" jdbcType="BIT" property="is_del"/>
+        <result column="status" jdbcType="BIT" property="status"/>
+        <result column="last_login_time" jdbcType="TIMESTAMP" property="last_login_time"/>
+        <result column="login_count" jdbcType="INTEGER" property="login_count"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="create_time"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="update_time"/>
+        <result column="countIndex" jdbcType="DOUBLE" property="countIndex"/>
+    </resultMap>
+    <resultMap id="infoMap" type="com.jk51.model.ClerkInfo">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="employee_number" jdbcType="VARCHAR" property="employee_number"/>
+        <result column="user_name" jdbcType="VARCHAR" property="user_name"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="clerk_job" jdbcType="VARCHAR" property="clerk_job"/>
+        <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="last_login_time" jdbcType="TIMESTAMP" property="last_login_time"/>
+        <result column="login_count" jdbcType="INTEGER" property="login_count"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <collection property="role_name" ofType="java.lang.String">
+            <constructor>
+                <idArg column="rolename" jdbcType="VARCHAR"/>
+            </constructor>
+        </collection>
+        <collection property="group_name" ofType="java.lang.String">
+            <constructor>
+                <arg column="groupname" jdbcType="VARCHAR"/>
+            </constructor>
+        </collection>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, site_id, store_id, user_name, user_pwd, user_type, is_del, status, last_login_time,
+        login_count, create_time, update_time, countIndex
+    </sql>
+
+    <update id="updatePassword">
+        UPDATE b_store_admin
+        set user_pwd = #{user_pwd}
+        WHERE
+        site_id = #{site_id,jdbcType=INTEGER}
+        AND
+        id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="findStoreAdmin" resultType="com.jk51.model.StoreAdmin">
+        select *
+        from b_store_admin
+        where user_name = #{phone}
+        and
+        is_del = 0
+        limit 1
+    </select>
+    <resultMap id="userInfoResultMap" type="java.util.Map">
+        <id column="siteId" jdbcType="INTEGER" property="siteId" javaType="java.lang.Integer"/>
+        <id column="userId" jdbcType="INTEGER" property="userId" javaType="java.lang.Integer"/>
+        <result column="pharmacistId" jdbcType="INTEGER" property="pharmacistId" javaType="java.lang.Integer"/>
+        <result column="storeId" jdbcType="INTEGER" property="storeId" javaType="java.lang.Integer"/>
+        <result column="storeUserId" jdbcType="INTEGER" property="storeUserId" javaType="java.lang.Integer"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone" javaType="java.lang.String"/>
+    </resultMap>
+    <select id="findStoreAdminByPhoneAndPassword" resultMap="userInfoResultMap">
+        select admin.site_id as siteId,chp.id as pharmacistId,adminExt.store_id as storeId,adminExt.id as storeUserId,chuser.phone,admin.id as storeAdminId,admin.user_type as userType,
+        chuser.created_at as createdAt,chuser.deleted_at as deletedAt ,chuser.gender,chuser.has_password as hasPassword,chuser.head_img_url as headImgUrl ,chp.is_active as isActive ,chp.is_online as isOnline,
+        chp.is_remind as isRemind,chp.lat,chp.lng,adminExt.`name` as nickname,chuser.real_name as realName ,chuser.remark,s.name as storeName,chuser.id as userId,chuser.city,chuser.country,chuser.province,
+        chuser.source,chuser.deleted_at as deletedAt ,chuser.updated_at as updatedAt,chp.amount,adminExt.avatar as avatar
+
+        from b_store_admin as admin
+        LEFT JOIN b_store_adminext as adminExt on admin.id = adminExt.storeadmin_id and admin.site_id = adminExt.site_id
+        LEFT JOIN ch_pharmacist as chp on chp.store_user_id = adminExt.id and adminExt.site_id = chp.site_id
+        LEFT JOIN ch_user as chuser on chuser.id = chp.user_id
+        LEFT JOIN b_stores as s on s.site_id = admin.site_id and s.id = admin.store_id
+        WHERE
+        admin.user_name = #{phone}
+        AND
+        adminExt.is_del = 0
+        AND
+        admin.is_del = 0
+        and
+        admin.user_pwd = #{password}
+        limit 1
+    </select>
+    <select id="selectAll" parameterType="java.lang.Integer" resultType="com.jk51.model.StoreAdmin">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from b_store_admin
+        where site_id = #{site_id,jdbcType=INTEGER}
+        AND store_id = #{store_id,jdbcType=INTEGER}
+    </select>
+    <select id="selectByName" resultMap="BaseResultMap">
+        SELECT
+        sa.id,
+        sa.site_id,
+        sa.store_id,
+        sa.user_name,
+        sa.user_pwd,
+        sa.user_type,
+        sa.is_del,
+        sa.STATUS,
+        sa.last_login_time,
+        sa.login_count,
+        sa.create_time,
+        sa.update_time,
+        sa.countIndex
+        FROM
+        b_store_admin sa
+        LEFT JOIN b_stores bs ON
+        sa.site_id=bs.site_id AND sa.store_id=bs.id
+        WHERE
+        sa.site_id = #{site_id,jdbcType=INTEGER}
+        AND sa.user_name =#{user_name,jdbcType=VARCHAR}
+        AND sa.user_pwd =#{password,jdbcType=VARCHAR}
+    </select>
+    <select id="selectClerkDetail" resultType="com.jk51.model.ClerkDetail">
+        SELECT
+        st.`name` storeName,
+        ext.mobile mobile,
+        ext.`name` clerkName,
+        ext.sex sex,
+        ext.employee_number employee_number,
+        ext.clerk_invitation_code invocation_code,
+        ext.idcard_number id_card_num,
+        ext.birthday birthday,
+        ext.email email,
+        ext.qq qq,
+        ext.clerk_job clerk_job,
+        ext.memo memo,
+        sta.`status` status
+        FROM
+        b_store_admin sta
+        LEFT JOIN b_stores st ON sta.store_id=st.id and sta.site_id=st.site_id
+        LEFT JOIN b_store_adminext ext ON sta.id = ext.storeadmin_id and sta.site_id=ext.site_id
+        WHERE
+        sta.site_id = #{site_id,jdbcType=INTEGER}
+        AND sta.id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectClerkInfo" parameterType="java.lang.Integer" resultMap="infoMap">
+        SELECT
+        sa.id,
+        sa.site_id,
+        sae.employee_number,
+        sa.user_name,
+        sae.`name`,
+        sae.clerk_job,
+        sae.mobile,
+        sae.email,
+        sa.last_login_time,
+        sa.login_count,
+        sa.`status`,
+        br.name rolename,
+        cg.group_name groupname
+        FROM
+        b_store_admin sa
+        INNER JOIN b_store_adminext sae ON sa.site_id = sae.site_id
+        AND sa.id = sae.storeadmin_id
+        INNER JOIN b_manager_has_role mhr ON sa.site_id = mhr.site_id
+        AND sa.id = mhr.manager_id
+        INNER JOIN b_role br ON mhr.site_id = br.site_id
+        AND mhr.role_id = br.id
+        INNER JOIN ch_group_member gm ON sa.site_id = gm.site_id
+        AND sa.id = gm.store_admin_id
+        INNER JOIN ch_group cg ON gm.group_id=cg.id and gm.site_id = cg.site_id
+        WHERE
+        sa.site_id = #{siteId,jdbcType=INTEGER}
+        AND sa.store_id = #{storeId,jdbcType=INTEGER}
+        and br.is_active=1
+        <if test="username!=null and username!=''">
+            AND sa.user_name like concat('%',#{username,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="realname!=null and realname!=''">
+            AND sae.name LIKE concat('%',#{realname,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="active!=null">
+            AND sa.status = #{active,jdbcType=INTEGER}
+        </if>
+    </select>
+
+    <select id="selectByUsername" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from b_store_admin
+        where user_name = #{mobile,jdbcType=VARCHAR}
+        and site_id = #{site_id,jdbcType=INTEGER}
+    </select>
+    <select id="selectByMobile" resultType="com.jk51.model.StoreAdmin" >
+        SELECT * FROM b_store_admin
+        where
+        user_name = #{mobile,jdbcType=VARCHAR} AND is_del=0
+        limit 1
+    </select>
+    <select id="selectStatue" resultType="java.util.Map">
+        SELECT
+        sa.`status` saStu,s.stores_status sStu,m.is_frozen mStu
+        FROM
+        b_store_admin sa
+        LEFT JOIN b_stores s ON sa.site_id = s.site_id
+        AND sa.store_id = s.id
+        LEFT JOIN yb_merchant m ON sa.site_id =m.merchant_id
+        WHERE sa.site_id=#{siteId} and sa.id=#{id}
+    </select>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from b_store_admin
+        where id = #{id,jdbcType=INTEGER}
+        and site_id = #{site_id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from b_store_admin
+        where id = #{id,jdbcType=INTEGER}
+        and site_id = #{site_id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.jk51.model.StoreAdmin" useGeneratedKeys="true" keyProperty="id">
+        insert into b_store_admin (id, site_id, store_id,
+        user_name, user_pwd, user_type,
+        is_del, status, last_login_time,
+        login_count, create_time, update_time,
+        countIndex)
+        values (#{id,jdbcType=INTEGER}, #{site_id,jdbcType=INTEGER}, #{store_id,jdbcType=INTEGER},
+        #{user_name,jdbcType=VARCHAR}, #{user_pwd,jdbcType=VARCHAR}, #{user_type,jdbcType=INTEGER},
+        #{is_del,jdbcType=BIT}, #{status,jdbcType=BIT}, #{last_login_time,jdbcType=TIMESTAMP},
+        #{login_count,jdbcType=INTEGER}, #{create_time,jdbcType=TIMESTAMP}, #{update_time,jdbcType=TIMESTAMP},
+        #{countIndex,jdbcType=DOUBLE})
+    </insert>
+    <insert id="insertSelective" parameterType="com.jk51.model.StoreAdmin" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into b_store_admin
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="site_id != null">
+                site_id,
+            </if>
+            <if test="store_id != null">
+                store_id,
+            </if>
+            <if test="user_name != null">
+                user_name,
+            </if>
+            <if test="user_pwd != null">
+                user_pwd,
+            </if>
+            <if test="user_type != null">
+                user_type,
+            </if>
+            <if test="is_del != null">
+                is_del,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="last_login_time != null">
+                last_login_time,
+            </if>
+            <if test="login_count != null">
+                login_count,
+            </if>
+            <if test="create_time != null">
+                create_time,
+            </if>
+            <if test="update_time != null">
+                update_time,
+            </if>
+            <if test="countIndex != null">
+                countIndex,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="site_id != null">
+                #{site_id,jdbcType=INTEGER},
+            </if>
+            <if test="store_id != null">
+                #{store_id,jdbcType=INTEGER},
+            </if>
+            <if test="user_name != null">
+                #{user_name,jdbcType=VARCHAR},
+            </if>
+            <if test="user_pwd != null">
+                #{user_pwd,jdbcType=VARCHAR},
+            </if>
+            <if test="user_type != null">
+                #{user_type,jdbcType=INTEGER},
+            </if>
+            <if test="is_del != null">
+                #{is_del,jdbcType=BIT},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=BIT},
+            </if>
+            <if test="last_login_time != null">
+                #{last_login_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="login_count != null">
+                #{login_count,jdbcType=INTEGER},
+            </if>
+            <if test="create_time != null">
+                #{create_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="update_time != null">
+                #{update_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="countIndex != null">
+                #{countIndex,jdbcType=DOUBLE},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.StoreAdmin">
+        update b_store_admin
+        <set>
+            <if test="store_id != null">
+                store_id = #{store_id,jdbcType=INTEGER},
+            </if>
+            <if test="user_name != null">
+                user_name = #{user_name,jdbcType=VARCHAR},
+            </if>
+            <if test="user_pwd != null">
+                user_pwd = #{user_pwd,jdbcType=VARCHAR},
+            </if>
+            <if test="user_type != null">
+                user_type = #{user_type,jdbcType=INTEGER},
+            </if>
+            <if test="is_del != null">
+                is_del = #{is_del,jdbcType=BIT},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=BIT},
+            </if>
+            <if test="last_login_time != null">
+                last_login_time = #{last_login_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="login_count != null">
+                login_count = #{login_count,jdbcType=INTEGER},
+            </if>
+            <if test="create_time != null">
+                create_time = #{create_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="update_time != null">
+                update_time = #{update_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="countIndex != null">
+                countIndex = #{countIndex,jdbcType=DOUBLE},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+        and site_id = #{site_id,jdbcType=INTEGER}
+    </update>
+    <update id="updateStoreIdByPrimaryKey">
+        UPDATE b_store_admin a,
+        b_store_adminext b
+        SET a.store_id = #{new_store_id,jdbcType=INTEGER},
+        b.store_id = #{new_store_id,jdbcType=INTEGER},
+        b.clerk_invitation_code = #{clerk_invitation_code}
+        WHERE
+        a.site_id = #{site_id,jdbcType=INTEGER}
+        AND a.id = #{id,jdbcType=INTEGER}
+        AND b.site_id = #{site_id,jdbcType=INTEGER}
+        AND b.storeadmin_id = #{id,jdbcType=INTEGER};
+    </update>
+    <update id="deleteClerkByPrimaryKey" parameterType="java.lang.Integer">
+        UPDATE b_store_admin a,
+        b_store_adminext b
+        SET a.is_del=1,
+        b.is_del=1
+        WHERE
+        a.site_id = #{site_id,jdbcType=INTEGER}
+        AND a.id = #{id,jdbcType=INTEGER}
+        AND b.site_id = #{site_id,jdbcType=INTEGER}
+        AND b.storeadmin_id = #{id,jdbcType=INTEGER};
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.jk51.model.StoreAdmin">
+        update b_store_admin
+        set store_id = #{store_id,jdbcType=INTEGER},
+        user_name = #{user_name,jdbcType=VARCHAR},
+        user_pwd = #{user_pwd,jdbcType=VARCHAR},
+        user_type = #{user_type,jdbcType=INTEGER},
+        is_del = #{is_del,jdbcType=BIT},
+        status = #{status,jdbcType=BIT},
+        last_login_time = #{last_login_time,jdbcType=TIMESTAMP},
+        login_count = #{login_count,jdbcType=INTEGER},
+        create_time = #{create_time,jdbcType=TIMESTAMP},
+        update_time = #{update_time,jdbcType=TIMESTAMP},
+        countIndex = #{countIndex,jdbcType=DOUBLE}
+        where id = #{id,jdbcType=INTEGER}
+        and site_id = #{site_id,jdbcType=INTEGER}
+    </update>
+    <select id="selectbysiteandstore" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select * from b_store_admin where site_id=#{site_id} and store_id=#{store_id} and user_type=1 and is_del=0 limit 1
+    </select>
+    <update id="changePwd">
+        update b_store_admin set user_pwd =#{user_pwd} where site_id=#{site_id,jdbcType=INTEGER}
+        and id=#{id}
+    </update>
+    <select id="selectShopWxUrlBySiteId" parameterType="java.lang.Integer" resultType="java.lang.String">
+        SELECT SHOPWX_URL FROM yb_merchant WHERE merchant_id = #{merchant_id}
+    </select>
+    <update id="updateLoginCount">
+        update b_store_admin set login_count=login_count+1,last_login_time=CURRENT_TIMESTAMP  where user_name=#{user_name} and user_pwd=#{user_pwd}
+    </update>
+
+    <select id="getStoreAdminIdsByStore" resultType="java.lang.String">
+        SELECT id FROM `b_store_admin` WHERE site_id=#{siteId} AND store_id=#{storeId} AND is_del=0 AND `status`=1
+    </select>
+
+    <select id="getNameById" resultType="java.lang.String">
+        SELECT ae.name FROM b_store_admin a JOIN b_store_adminext ae ON a.site_id=ae.site_id AND a.id=ae.storeadmin_id WHERE a.site_id=#{siteId} AND a.id=#{id} AND a.is_del='0' AND a.status='1'
+    </select>
+
+    <select id="getAllStoreAdminIndexList" resultType="com.jk51.model.packageEntity.StoreAdminIndex">
+          SELECT storeAdmin.site_id,storeAdmin.id as storeadmin_id,storeAdminExt.mobile as mobile, storeAdmin.store_id,storeAdminExt.clerk_job,concat("helper_",storeAdmin.site_id,"_",storeAdmin.id) as user_name,t.target_record_id
+          from
+            b_store_admin as storeAdmin
+            left join b_store_adminext as storeAdminExt on storeAdmin.site_id = storeAdminExt.site_id and storeAdmin.id = storeAdminExt.storeadmin_id
+            left join  (SELECT target_record_id,max(create_time),site_id,storeadmin_id from b_target_record GROUP BY site_id,storeadmin_id) as t on  storeAdmin.id = t.storeadmin_id and storeAdmin.site_id = t.site_id
+            WHERE
+            countIndex is null
+			and
+            storeAdmin.is_del =0
+            AND storeAdmin.status = 1
+
+
+    </select>
+
+    <update id="batchUpdateCountIndex" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            update b_store_admin
+            <set>
+                countIndex=${item.countIndex},
+                update_time = CURRENT_DATE
+            </set>
+            where
+            site_id = #{item.site_id}
+            AND
+            id = #{item.storeadmin_id}
+
+        </foreach>
+    </update>
+
+    <select id="getStoreAdminList" resultType="com.jk51.model.StoreAdmin">
+        SELECT * FROM b_store_admin WHERE site_id=#{siteId} AND id=#{storeAdminId} AND is_del='0' AND status='1'
+    </select>
+
+    <update id="updateCountIndex" >
+        UPDATE b_store_admin
+        set countIndex = #{countIndex}
+        WHERE
+          site_id = #{site_id}
+          AND
+          id = #{storeadmin_id}
+    </update>
+
+    <select id="getStoreClerkQuantityList" resultType="java.util.Map" >
+        SELECT site_id, store_id, quantity FROM (SELECT bsa.site_id, bsa.store_id, COUNT(*) AS quantity FROM b_store_admin AS bsa INNER JOIN b_stores AS bs ON bsa.site_id=bs.site_id AND bsa.store_id=bs.id WHERE bs.stores_status='1' AND bs.is_del='1' AND bsa.is_del='0' AND bsa.`status`='1' GROUP BY bsa.site_id, bsa.store_id) AS t ORDER BY t.quantity DESC
+    </select>
+
+    <select id="findStoreAdminBySiteId" parameterType="java.lang.Integer" resultType="com.jk51.model.StoreAdmin">
+       SELECT distinct a.mobile,a.* from ( SELECT storeAdmin.*, storeAdminExt.mobile as mobile
+        FROM b_store_admin as storeAdmin
+					left join b_store_adminext as storeAdminExt on storeAdmin.id = storeAdminExt.storeadmin_id and storeAdmin.site_id = storeAdminExt.site_id
+                   left join ch_pharmacist as p on  storeAdminExt.id = p.store_user_id and storeAdmin.site_id = p.site_id
+        WHERE
+        storeAdmin.site_id = #{site_id}
+		and chat = 1
+	    and p.is_online = 1
+        AND
+        storeAdmin.is_del =0
+        AND
+        storeAdmin.status = 1
+        and
+        storeAdminExt.mobile is not null
+				and storeAdminExt.mobile != ''
+	    and chat = 1
+	    and p.is_online = 1
+	    order by storeAdmin.create_time desc
+	    limit 100
+              ) as a
+
+    </select>
+    <select id="findUserAndPasswordByStoreId" resultType="com.jk51.model.StoreAdmin" useCache="false">
+        select * from b_manager where site_id=#{0} and username=#{1} and password=#{2};
+    </select>
+
+    <select id="selectStoreAdminByStoreId" parameterType="java.lang.Integer" resultType="com.jk51.model.StoreAdmin">
+        SELECT storeAdmin.*
+        FROM b_store_admin as storeAdmin
+					left join b_stores as stores on storeAdmin.store_id = stores.id and storeAdmin.site_id = stores.site_id
+        WHERE
+        storeAdmin.site_id = #{0}
+		AND stores.id =#{1}
+        AND storeAdmin.is_del =0
+        AND storeAdmin.status = 1
+        AND stores.tel is not null
+		AND stores.tel != '';
+    </select>
+
+    <select id="selectStoreAdminIdsByStoreId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        SELECT id
+        FROM b_store_admin
+        WHERE
+        site_id = #{siteId}
+        AND store_id =#{storeId}
+    </select>
+
+    <select id="selectAllStoreAdmin" parameterType="java.lang.Integer" resultType="com.jk51.model.StoreAdmin">
+        SELECT storeAdmin.*
+        FROM b_store_admin as storeAdmin
+        left join b_stores as stores on storeAdmin.store_id = stores.id and storeAdmin.site_id = stores.site_id
+        WHERE
+        storeAdmin.site_id = #{0}
+        AND storeAdmin.is_del =0
+        AND storeAdmin.status = 1
+        AND stores.tel is not null
+        AND stores.tel != '';
+    </select>
+    <select id="findBySiteIdAndName" resultType="com.jk51.modules.im.service.iMRecode.response.Clerk">
+        SELECT storeadmin_id storeAdminId,CONCAT(`name`,mobile) `name`
+        from b_store_adminext
+        where
+          site_id = #{site_id}
+          <if test="name!='' and name != null">
+          AND
+          `name` LIKE CONCAT("%",#{name},"%")
+          </if>
+    </select>
+
+    <select id="findBySiteNum" resultType="java.lang.Integer">
+      SELECT count(*)
+      from b_store_adminext
+      where site_id = #{site_id}
+      and is_del = 0
+    </select>
+
+    <select id="queryAdminInfoAllByStore" resultType="map">
+        select t1.*,t2.avatar,t2.mobile
+        from  b_store_admin t1
+        LEFT join b_store_adminext t2 on t1.id = t2.storeadmin_id and t1.site_id =t2.site_id
+        where t1.site_id = #{siteId} and t1.store_id = #{storeId}
+    </select>
+
+    <select id="selectStoreNameAndStoreIdByManagerId" resultType="map">
+        SELECT sa.store_id,s.name FROM b_store_admin sa
+        LEFT JOIN b_stores s ON sa.store_id=s.id AND sa.site_id=s.site_id WHERE sa.site_id=#{siteId} AND sa.id=#{userId}
+    </select>
+
+    <select id="selectSimpleInfo" resultType="com.jk51.model.JKHashMap">
+        SELECT
+            t1.id, t1.store_id, t1.user_name, t2.name, t3.clerk_invitation_code
+        FROM
+            b_store_admin AS t1
+            LEFT JOIN b_stores AS t2 ON ( t1.site_id = t2.site_id AND t1.store_id = t2.id )
+            LEFT JOIN b_store_adminext AS t3 ON ( t1.site_id = t3.site_id AND t1.id = t3.storeadmin_id )
+        WHERE
+            t1.site_id = #{siteId}
+            AND t1.id = #{storeAdminId}
+    </select>
+
+    <select id="queryStoreAdminIds" resultType="java.lang.Integer">
+      SELECT id from b_store_admin where site_id=#{siteId}
+        and is_del =0 and `status` =1
+    </select>
+</mapper>

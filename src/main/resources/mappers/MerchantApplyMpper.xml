@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.merchant.mapper.MerchantApplyMapper">
+    <!--<resultMap id="BaseResultMap" type="com.jk51.model.merchant.MerchantApply">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="merchant_id" jdbcType="INTEGER" property="merchant_id"/>
+        <result column="applicant_id" jdbcType="INTEGER" property="applicant_id"/>
+        <result column="business_category" jdbcType="VARCHAR" property="business_category"/>
+        <result column="taxpayer_qualification" jdbcType="VARCHAR" property="taxpayer_qualification"/>
+        <result column="industry_qualification" jdbcType="VARCHAR" property="industry_qualification"/>
+        <result column="store_layout" jdbcType="VARCHAR" property="store_layout"/>
+        <result column="front_id_card" jdbcType="VARCHAR" property="front_id_card"/>
+        <result column="back_id_card" jdbcType="VARCHAR" property="back_id_card"/>
+        <result column="bank_open_account_permit" jdbcType="VARCHAR" property="bank_open_account_permit"/>
+        <result column="invoice_recipient_name" jdbcType="VARCHAR" property="invoice_recipient_name"/>
+        <result column="express_address" jdbcType="INTEGER" property="express_address"/>
+        <result column="contact_number" jdbcType="VARCHAR" property="contact_number"/>
+        <result column="docking_email" jdbcType="VARCHAR" property="docking_email"/>
+        <result column="agent_code" jdbcType="VARCHAR" property="agent_code"/>
+        <result column="open_stand_way" jdbcType="INTEGER" property="open_stand_way"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="create_time"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="update_time"/>
+    </resultMap>
+-->
+    <sql id="Base_Column_List">
+    id, merchant_id, applicant_id, business_category, taxpayer_qualification, industry_qualification, store_layout,
+    front_id_card, back_id_card, bank_open_account_permit,bank_id,taxpayer_number, invoice_recipient_name,express_area, express_address, contact_number,
+    docking_email, agent_code, open_stand_way, create_time, update_time
+  </sql>
+
+    <select id="getList" resultType="com.jk51.model.merchant.MerchantApply">
+        select <include refid="Base_Column_List"/> from yb_merchant_apply
+    </select>
+
+    <select id="getById" resultType="com.jk51.model.merchant.MerchantApply" >
+        SELECT <include refid="Base_Column_List"/> FROM yb_merchant_apply WHERE id=#{id}
+    </select>
+
+    <select id="getByMerchantId" resultType="com.jk51.model.merchant.MerchantApply" >
+        SELECT <include refid="Base_Column_List"/> FROM yb_merchant_apply WHERE merchant_id=#{merchant_id}
+    </select>
+
+    <select id="getByApplicantId" resultType="com.jk51.model.merchant.MerchantApply">
+        SELECT <include refid="Base_Column_List"/> FROM yb_merchant_apply WHERE applicant_id=#{applicant_id}
+    </select>
+
+    <insert id="save" parameterType="com.jk51.model.merchant.MerchantApply" >
+        insert into yb_merchant_apply ( merchant_id, applicant_id, business_category, taxpayer_qualification, industry_qualification, store_layout,
+    front_id_card, back_id_card, bank_open_account_permit,bank_id,taxpayer_number, invoice_recipient_name, express_area,express_address, contact_number,
+     docking_email, agent_code, open_stand_way, create_time, update_time) values ( #{merchant_id}, #{applicant_id}, #{business_category}, #{taxpayer_qualification}, #{industry_qualification}, #{store_layout},
+    #{front_id_card}, #{back_id_card}, #{bank_open_account_permit},#{bank_id},#{taxpayer_number}, #{invoice_recipient_name},#{express_area}, #{express_address}, #{contact_number},
+     #{docking_email}, #{agent_code}, #{open_stand_way}, #{create_time}, #{update_time})
+    </insert>
+
+    <update id="update" parameterType="com.jk51.model.merchant.MerchantApply">
+    update yb_merchant_apply set merchant_id = #{merchant_id},
+      applicant_id = #{applicant_id},
+      business_category = #{business_category},
+      taxpayer_qualification = #{taxpayer_qualification},
+      industry_qualification = #{industry_qualification},
+      store_layout = #{store_layout},
+      front_id_card =  #{front_id_card},
+      back_id_card = #{back_id_card},
+      bank_open_account_permit = #{bank_open_account_permit},
+      invoice_recipient_name = #{invoice_recipient_name},
+      bank_id = #{bank_id},
+      taxpayer_number = #{taxpayer_number},
+      express_area = #{express_area},
+      express_address = #{express_address},
+      contact_number = #{contact_number},
+      docking_email = #{docking_email},
+      agent_code = #{agent_code},
+      open_stand_way = #{open_stand_way},
+      update_time = #{update_time}
+    where id = #{#id}
+    </update>
+</mapper>

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.authority.mapper.PermissionTypeMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.role.PermissionType">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="platform" jdbcType="SMALLINT" property="platform"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="permission_desc" jdbcType="VARCHAR" property="permissionDesc"/>
+        <result column="deleted_at" jdbcType="TIMESTAMP" property="deletedAt"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createtime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updatetime"/>
+        <result column="is_del" jdbcType="TINYINT" property="isDel"></result>
+        <result column="reorder" jdbcType="INTEGER" property="reorder"></result>
+        <collection property="permissions" ofType="com.jk51.model.role.Permission">
+            <id column="per_id" jdbcType="INTEGER" property="id"/>
+            <result column="type_id" jdbcType="INTEGER" property="typeId"/>
+            <result column="p_platform" jdbcType="SMALLINT" property="platform"/>
+            <result column="p_name" jdbcType="VARCHAR" property="name"/>
+            <result column="action" jdbcType="VARCHAR" property="action"/>
+            <result column="p_permission_desc" jdbcType="VARCHAR" property="permissionDesc"/>
+            <result column="p_deleted_at" jdbcType="TIMESTAMP" property="deletedAt"/>
+            <result column="p_create_time" jdbcType="TIMESTAMP" property="createtime"/>
+            <result column="p_update_time" jdbcType="TIMESTAMP" property="updatetime"/>
+            <result column="p_is_del" jdbcType="INTEGER" property="isDel"></result>
+        </collection>
+    </resultMap>
+    <sql id="BaseColumnList">
+        id,platform,name,permission_desc, deleted_at, create_time, update_time,is_del,reorder
+    </sql>
+    <insert id="insertSelective" parameterType="com.jk51.model.role.PermissionType">
+        insert into yb_permission_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="platform != null">
+                platform,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="permissionDesc != null">
+                permission_desc,
+            </if>
+            <if test="deletedAt != null">
+                deleted_at,
+            </if>
+            <if test="createtime != null">
+                create_time,
+            </if>
+            <if test="updatetime != null">
+                update_time,
+            </if>
+            <if test="isDel != null">
+                is_del,
+            </if>
+            <if test="reorder != null">
+                reorder,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="platform != null">
+                #{platform,jdbcType=SMALLINT},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="permissionDesc != null">
+                #{permissionDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="deletedAt != null">
+                #{deletedAt,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createtime != null">
+                #{createtime},
+            </if>
+            <if test="updatetime != null">
+                #{updatetime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDel != null">
+                #{isDel,jdbcType=BIT},
+            </if>
+            <if test="reorder != null">
+                #{reorder},
+            </if>
+        </trim>
+    </insert>
+    <select id="selectByPlatform" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT
+	      DISTINCT t.*
+        FROM
+      	yb_permission_type t LEFT JOIN yb_permission p on t.id=p.type_id AND t.platform = p.platform
+        WHERE
+    	t.platform = #{platform}
+        AND t.is_del != 1
+       order by t.reorder asc;
+    </select>
+
+    <select id="selectTypes" resultMap="BaseResultMap">
+        select
+        t.* , p.id per_id,p.type_id,p.platform p_platform,p.`name` p_name,p.action,p.permission_desc
+        p_permission_desc,p.deleted_at p_deleted_at,p.create_time p_create_time,p.update_time p_update_time,p.is_del
+        p_is_del
+        from yb_permission_type t LEFT JOIN yb_permission p ON t.id=p.type_id
+        <where>
+            <if test="permission_name != null and permission_name!=''">
+                p.name LIKE concat(concat('%',#{permission_name,jdbcType=VARCHAR}),'%')
+            </if>
+            <if test="platform!=null">
+                AND t.platform = #{platform,jdbcType=INTEGER}
+            </if>
+            <if test="id!=null">
+                AND t.id=#{id,jdbcType=INTEGER}
+            </if>
+            and t.is_del!=1
+            AND (p.is_del!=1 or p.is_del is null)
+        </where>
+        order by t.create_time desc
+    </select>
+    <select id="selectTypesPermissions" resultType="Map">
+        select
+        t.* , p.id per_id,p.type_id,p.platform p_platform,p.`name` p_name,p.action,p.permission_desc
+        p_permission_desc,p.deleted_at p_deleted_at,p.create_time p_create_time,p.update_time p_update_time,p.is_del
+        p_is_del,p.reorder p_reorder
+        from yb_permission_type t LEFT JOIN yb_permission p ON t.id=p.type_id and p.platform=t.platform
+        <where>
+            1=1
+            <if test="permission_name != null and permission_name!=''">
+                AND p.name LIKE concat(concat('%',#{permission_name,jdbcType=VARCHAR}),'%')
+            </if>
+            <if test="platform!=null">
+                AND t.platform = #{platform,jdbcType=INTEGER}
+            </if>
+            <if test="id!=null">
+                AND t.id=#{id,jdbcType=INTEGER}
+            </if>
+            and t.is_del !=1
+            AND p.is_del !=1
+        </where>
+        order BY p.type_id
+    </select>
+
+    <select id="selectTypeInfo" parameterType="java.lang.Integer" resultType="com.jk51.model.role.TypeModel">
+        select id,name,platform from yb_permission_type
+        <where>
+            1=1
+            <if test="platform!=null">
+                AND platform=#{platform,jdbcType=INTEGER}
+            </if>
+            and is_del !=1
+        </where>
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT
+        <include refid="BaseColumnList"/>
+        from yb_permission_type
+        where id=#{id,jdbcType=INTEGER}
+    </select>
+
+    <update id="updatePermissionType" parameterType="com.jk51.model.role.PermissionType">
+        update yb_permission_type
+        <set>
+            <if test="platform != null">
+                platform = #{platform,jdbcType=SMALLINT},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="permissionDesc != null">
+                permission_desc = #{permissionDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="deletedAt != null">
+                deleted_at = #{deletedAt,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createtime != null">
+                create_time = #{createtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatetime != null">
+                update_time = #{updatetime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDel != null">
+                is_del=#{isDel,jdbcType=INTEGER},
+            </if>
+            <if test="reorder != null">
+                reorder=#{reorder,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="deletePermissionType" parameterType="java.lang.Integer">
+        update yb_permission_type SET is_del=1 where id=#{id,jdbcType=INTEGER}
+    </update>
+</mapper>

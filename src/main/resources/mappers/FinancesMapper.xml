@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.account.mapper.FinancesMapper">
+    <insert id="addFinances" parameterType="com.jk51.model.account.models.Finances">
+        insert into yb_finances (finance_no,seller_id,seller_name,settlement_start_date,settlement_end_date,pay_day,total_pay,
+        finance_checking_total,platform_total,post_total,commission_total,need_pay,real_pay,refund_total,refund_checking_total,
+        is_charge_off,invoice_value,create_time,update_time)
+        values (#{finances.finance_no},#{finances.seller_id},#{finances.seller_name},#{finances.settlement_start_date},#{finances.settlement_end_date},
+        #{finances.pay_day},#{finances.total_pay},#{finances.finance_checking_total},#{finances.platform_total},#{finances.post_total},
+        #{finances.commission_total}, #{finances.need_pay}, #{finances.real_pay},#{finances.refund_total},
+        #{finances.refund_checking_total}, #{finances.is_charge_off},#{finances.invoice_value},CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
+    </insert>
+    <select id="getStartDay" resultType="com.jk51.model.account.models.Finances" useCache="false">
+        select max(settlement_end_date) as settlement_end_date
+        from yb_finances where seller_id=#{seller_id}
+    </select>
+    <select id="getStartDayAndEndDay" resultType="com.jk51.model.account.models.Finances" useCache="false">
+        select * from yb_finances
+        where seller_id = #{seller_id} and settlement_start_date=#{start_time} and settlement_end_date=#{end_time} limit 1
+    </select>
+    <select id="findByFinancesNo" resultType="java.util.Map">
+        SELECT
+            a.*, b.bank_name,
+            (IFNULL(a.platform_total, 0) + IFNULL(a.commission_total, 0) + IFNULL(a.post_total, 0)) spendingAcount,
+            b.seller_name seller_names,
+            b.bank_id,
+            b.beneficiary_party,
+            c.service_mobile,
+            c.legal_mobile,
+            c.merchant_name,
+            c.shop_address
+        FROM
+            `yb_finances` a
+        LEFT JOIN yb_seller_beneficiary b ON a.seller_id = b.seller_id
+        LEFT JOIN yb_merchant c ON a.seller_id = c.merchant_id
+        WHERE a.finance_NO = #{1} AND a.seller_id = #{0}
+    </select>
+
+    <select id="findBeforeData" resultType="java.util.Map">
+        SELECT
+        need_pay,real_pay
+        FROM
+        yb_finances
+        WHERE
+        seller_id = #{0}
+        AND create_time &lt; #{1}
+        ORDER BY create_time DESC LIMIT 1
+    </select>
+
+    <select id="findStatisticById" resultType="java.util.Map">
+        SELECT
+        id,finance_no,seller_id,seller_name,pay_style,settlement_start_date,settlement_end_date,
+        finance_checking_total,refund_checking_total,
+        create_time,update_time,total_pay total_payA,refund_total refund_totalA,
+            /*CASE  WHEN pay_style='cash' OR pay_style='health_insurance' THEN 0
+                                                    ELSE platform_total END platform_total,*/
+            CASE  WHEN pay_style='cash' OR pay_style='health_insurance' THEN 0
+                                                    ELSE total_pay END total_pay,
+            CASE  WHEN pay_style='cash' OR pay_style='health_insurance' THEN 0
+										ELSE refund_total END refund_total,
+			IFNULL(commission_total, 0) commission_total,IFNULL(platform_total, 0) platform_total,IFNULL(post_total, 0) post_total
+        FROM
+            `yb_classified_statistic`
+        WHERE
+            finance_no = #{1}
+        AND seller_id = #{0}
+    </select>
+
+    <select id="findSettlementDetailByTradeId" resultType="java.util.LinkedHashMap">
+                                  SELECT
+                           IFNULL( a.trades_id,'---' ) tradesId,
+                           IFNULL( date_format(
+                                a.create_time,
+                                '%Y-%m-%d %H:%i:%S'
+                            )
+                             ,'---' )AS orderTime,
+                            CASE
+                        WHEN a.trades_status = '110' THEN
+                            '等侍买家付款'
+                        WHEN a.trades_status = '120' THEN
+                            '等待卖家发货'
+                        WHEN a.trades_status = '130' THEN
+                            '等侍买家确认收货'
+                        WHEN a.trades_status = '140' THEN
+                            '买家已签收，货到付款专用'
+                        WHEN a.trades_status = '150' THEN
+                            '交易成功'
+                        WHEN a.trades_status = '160' THEN
+                            '用户未付款主动关闭'
+                        WHEN a.trades_status = '170' THEN
+                            '超时未付款，系统关闭'
+                        WHEN a.trades_status = '180' THEN
+                            '商家关闭订单'
+                        WHEN a.trades_status = '200' THEN
+                            '待取货|待自提，直购和自提专用'
+                        WHEN a.trades_status = '210' THEN
+                            '已取货|已自提 直购和自提专用'
+                        WHEN a.trades_status = '220' THEN
+                            '用户确认收货'
+                        WHEN a.trades_status = '230' THEN
+                            '门店确认收货'
+                        WHEN a.trades_status = '800' THEN
+                            '系统确认收货'
+                        WHEN a.trades_status = '240' THEN
+                            '已取消'
+                        WHEN a.trades_status = '900' THEN
+                            '已退款'
+                        ELSE
+                            '其他'
+                        END tradeStatus,
+                         date_format(
+                            a.end_time,
+                            '%Y-%m-%d %H:%i:%S'
+                        ) AS endTime,
+                         CASE
+                        WHEN a.settlement_status = '100' THEN
+                            '不结算'
+                        WHEN a.settlement_status = '200' THEN
+                            '待结算'
+                        WHEN a.settlement_status = '250' THEN
+                            '已结算'
+                        ELSE
+                            '其他'
+                        END settlementStatus,
+                         CASE
+                        WHEN a.pay_style = 'ali' THEN
+                            '支付宝'
+                        WHEN a.pay_style = 'wx' THEN
+                            '微信'
+                        WHEN a.pay_style = 'bil' THEN
+                            '快钱'
+                        WHEN a.pay_style = 'unionPay' THEN
+                            '银联'
+                        WHEN a.pay_style = 'health_insurance' THEN
+                            '医保'
+                        WHEN a.pay_style = 'cash' THEN
+                            '现金'
+                        ELSE
+                            '其他'
+                        END payStyle,
+                         a.pay_number AS payNumber,
+                         format(a.real_pay / 100, 2) realPay,
+                         IFNULL(
+                            format(b.real_refund_money / 100, 2),
+                            0.00
+                        ) refundMoney,
+                         IFNULL(
+                            format(a.plat_split / 100, 2),
+                            0.00
+                        ) shouxufei,
+                         IFNULL(
+                            format(a.trades_split / 100, 2),
+                            0.00
+                        ) yongjin,
+                         IFNULL(
+                            format(a.O2O_freight / 100, 2),
+                            0.00
+                        ) peisongfei,
+                         a.finance_no financeNo,
+                          IFNULL(
+                         format(
+                            c.platform_payment_amount / 100,
+                            2
+                        ) ,
+                            0.00
+                        )platformPaymentAmount,
+                         format(
+                            c.platform_refund_fee / 100,
+                            2
+                        ) platformRefundFee,
+                         date_format(
+                            a.pay_time,
+                            '%Y-%m-%d %H:%i:%S'
+                        ) payTime,
+                         IFNULL(b.refund_serial_no, '---') refundNo,
+                         IFNULL(
+                            date_format(
+                                b.refund_time,
+                                '%Y-%m-%d %H:%i:%S'
+                            ),
+                            '---'
+                        ) refundTime,
+                         IFNULL(
+                         date_format(
+                            c.create_time,
+                            '%Y-%m-%d %H:%i:%S'
+                        ),'---'
+                         )fkdzTime,
+                         IFNULL(
+                         date_format(
+                            c.update_time,
+                            '%Y-%m-%d %H:%i:%S'
+                        ) ,'---'
+                         )tkdzTime,
+
+                         CASE ifnull(c.account_checking_status,0)
+                        WHEN 0 THEN
+                            '未对账'
+                        WHEN 1 THEN
+                            '对账成功'
+                        WHEN 2 THEN
+                            '对账失败'
+                        END account_checking_status,
+					  CASE ifnull(c.refund_checking_status,-1)
+                        WHEN - 1 THEN
+                            '未对账'
+                        WHEN 0 THEN
+                            '对账失败'
+                        WHEN 1 THEN
+                            '对账成功'
+												END refund_checking_status,
+                         IFNULL(
+                            format( c.platform_service_fee / 100, 2),
+                            0.00
+                        ) platform_service_fee,
+                         IFNULL(c.account_status, '---') account_status,
+                         IFNULL(
+                            format( c.refund_fee / 100, 2),
+                            0.00
+                        ) refund_fee,
+                         a.post_fee,
+                         CASE IFNULL(b. STATUS, '---')
+                        WHEN 100 THEN
+                            '申请退款'
+                        WHEN 110 THEN
+                            '拒绝退款'
+                        WHEN 120 THEN
+                            '退款成功'
+                        ELSE
+                            '---'
+                        END statuss
+                        FROM
+                            b_trades a
+                        LEFT JOIN b_refund b ON a.trades_id = b.trade_id
+                        AND a.site_id = b.site_id
+                        LEFT JOIN yb_settlement_detail c ON a.trades_id = c.trades_id
+                                        WHERE
+                    a.trades_id = #{1}
+                    AND a.site_id = #{0}
+    </select>
+
+    <select id="getOfficialAccount" resultType="java.util.Map">
+        select max(finance_no) as finance_no,max(settlement_start_date) as settlement_start_date,max(settlement_end_date) as settlement_end_date,
+        max(pay_day) as pay_day,max(is_charge_off) as is_charge_off,
+        sum(case when account_checking_status =-1 then 1 else 0 end) no_count,
+        sum(case when account_checking_status =1 and (refund_checking_status=-1 or refund_checking_status=1) then 1 else 0 end) acs_count,
+        sum(case when account_checking_status = 2 and (refund_checking_status=0 or refund_checking_status=-1) then 1 else 0 end) rcs_count,
+        count(1) as order_total,
+        m.merchant_name,
+        m.merchant_id
+        from (
+        select f.seller_id,f.finance_no,f.settlement_start_date,f.settlement_end_date,f.pay_day,f.is_charge_off,
+        s.account_checking_status,s.refund_checking_status
+         from yb_finances f,
+        yb_settlement_detail s where
+        f.finance_no = s.finance_no
+        and f.seller_id=#{0}
+        order by f.pay_day desc
+        ) t
+        LEFT JOIN yb_merchant m on t.seller_id=m.merchant_id
+
+    </select>
+
+    <update id="updateFinanceByNo" parameterType="com.jk51.model.account.models.Finances">
+        UPDATE yb_finances
+        <trim prefix="set" suffixOverrides=",">
+            <if test="real_pay!=null">
+                real_pay=#{real_pay},
+            </if>
+            <if test="invoice!=null">
+                invoice=#{invoice},
+            </if>
+            <if test="invoice_value!=null">
+                invoice_value=#{invoice_value},
+            </if>
+            <if test="status!=null">
+                status=#{status},
+            </if>
+            <if test="remark!=null">
+                remark=#{remark},
+            </if>
+            <if test="audit_status!=null">
+                audit_status=#{audit_status},
+            </if>
+            <if test="audit_remark!=null">
+                audit_remark=#{audit_remark},
+            </if>
+            <if test="refund_total!=null">
+                refund_total=#{refund_total},
+            </if>
+            <if test="refund_checking_total!=null">
+                refund_checking_total=#{refund_checking_total},
+            </if>
+            <if test="finance_checking_total!=null">
+                finance_checking_total=#{finance_checking_total},
+            </if>
+            <if test="is_charge_off!=null">
+                is_charge_off=#{is_charge_off},
+            </if>
+            <if test="pay_date!=null">
+                pay_date=#{pay_date},
+            </if>
+            <if test="invoice_time!=null">
+                invoice_time=#{invoice_time},
+            </if>
+            <if test="invoice_number!=null">
+                invoice_number=#{invoice_number},
+            </if>
+            <if test="express_number!=null">
+                express_number=#{express_number},
+            </if>
+            <if test="express_type!=null">
+                express_type=#{express_type},
+            </if>
+            <if test="change_130_time!=null">
+                change_130_time=#{change_130_time},
+            </if>
+            <if test="operator_name!=null">
+                operator_name=#{operator_name}
+            </if>
+            <if test="merchant_remark!=null">
+                merchant_remark=#{merchant_remark}
+            </if>
+        </trim>
+        WHERE finance_no = #{finance_no}
+    </update>
+
+    <select id="findStatisticFinancesBalance" parameterType="map" resultType="map">
+        SELECT  a.merchant_id,
+        a.merchant_name,
+        ifnull(a.remit_qichu,0) remit_qichu,
+        ifnull(a.remit_daishou,0) remit_daishou,
+        ifnull(b.finances_qichu,0) as finances_qichu,
+        ifnull(b.finances_daifu,0) as finances_daifu,
+        round(ifnull(a.remit_daishou,0)/100,2) as daishou_user,
+        round(ifnull(b.finances_daifu,0)/100,2) as daifu_user,
+        round((ifnull(a.remit_qichu,0) - ifnull(b.finances_qichu,0))/100,2) as qichu_balance,
+        round((ifnull(a.remit_qichu,0) - ifnull(b.finances_qichu,0) + ifnull(a.remit_daishou,0) - ifnull(b.finances_daifu,0))/100,2) as qimo_balance
+        FROM (
+                SELECT merchant_id,
+                    merchant_name,
+                    sum(CASE WHEN DATE(huazhang_time) <![CDATA[ < ]]> #{startDate} THEN income_amount-refund_pay_fee ELSE 0 END) remit_qichu,
+                    sum(CASE WHEN DATE(huazhang_time) <![CDATA[ >= ]]> #{startDate} AND DATE(huazhang_time) <![CDATA[ <= ]]> #{endDate} THEN income_amount-refund_pay_fee ELSE 0 END) remit_daishou
+                    FROM ( SELECT m.merchant_id,
+                    m.merchant_name,
+                    p.trades_id,
+                    p.pay_time huazhang_time,
+                    sum(CASE WHEN  p.trades_status = '在线支付' OR p.pay_style = 'wx' THEN IFNULL(p.income_amount,0) ELSE 0 END) income_amount,
+                    abs(sum(CASE WHEN  p.trades_status = '交易退款' OR p.pay_style = 'wx' THEN IFNULL(p.spending_amount,0) ELSE 0 END)) refund_pay_fee
+                FROM yb_pay_data_import p
+                    LEFT JOIN b_trades t ON t.trades_id = p.trades_id
+                    LEFT JOIN yb_merchant m ON ifnull(t.site_id,LEFT(p.trades_id,6)) = m.merchant_id
+                WHERE p.data_type = 3 AND p.trades_status IN ('在线支付','退费','交易退款','收费','SUCCESS','REFUND','REVOKED')
+                GROUP BY m.merchant_id,m.merchant_name,p.trades_id,huazhang_time
+                ) a
+                GROUP BY merchant_id,merchant_name
+        ) a
+        LEFT JOIN(
+            SELECT seller_id,
+                  SUM(CASE WHEN pay_date <![CDATA[ < ]]> #{startDate} THEN IFNULL(total_pay,0)-IFNULL(refund_total,0) ELSE 0 END) finances_qichu,
+                  SUM(CASE WHEN STATUS = 900 and pay_date <![CDATA[ >=]]> #{startDate} AND pay_date<![CDATA[ <= ]]> #{endDate} THEN IFNULL(total_pay,0)-IFNULL(refund_total,0) ELSE 0 END) finances_daifu
+            FROM yb_finances
+                    GROUP BY seller_id
+        ) b ON a.merchant_id = b.seller_id
+        WHERE 1=1
+          AND a.merchant_id IS NOT NULL
+        <if test="siteId!='' and siteId!= null ">
+             AND a.merchant_id=#{siteId}
+        </if>
+        <if test="merchantName!='' and merchantName!= null ">
+            AND a.merchant_name like concat(#{merchantName},'%')
+        </if>
+    </select>
+
+
+
+
+
+
+
+    <select id="getFinancesBalanceStatic" resultType="java.util.Map">
+        SELECT  sum(ifnull(a.remit_qichu,0)) remit_qichu,
+        sum(ifnull(a.remit_daishou,0)) remit_daishou,
+        sum(ifnull(b.finances_qichu,0)) as finances_qichu,
+        sum(ifnull(b.finances_daifu,0)) as finances_daifu
+        FROM (
+        SELECT merchant_id,
+        merchant_name,
+        sum(CASE WHEN DATE(huazhang_time) <![CDATA[ < ]]> #{startDate} THEN income_amount-refund_pay_fee ELSE 0 END) remit_qichu,
+        sum(CASE WHEN DATE(huazhang_time) <![CDATA[ >= ]]> #{startDate} AND DATE(huazhang_time) <![CDATA[ <= ]]> #{endDate} THEN income_amount-refund_pay_fee ELSE 0 END) remit_daishou
+        FROM ( SELECT m.merchant_id,
+        m.merchant_name,
+        p.trades_id,
+        p.pay_time huazhang_time,
+        sum(CASE WHEN  p.trades_status = '在线支付' OR p.pay_style = 'wx' THEN IFNULL(p.income_amount,0) ELSE 0 END) income_amount,
+        abs(sum(CASE WHEN  p.trades_status = '交易退款' OR p.pay_style = 'wx' THEN IFNULL(p.spending_amount,0) ELSE 0 END)) refund_pay_fee
+        FROM yb_pay_data_import p
+        LEFT JOIN b_trades t ON t.trades_id = p.trades_id
+        LEFT JOIN yb_merchant m ON ifnull(t.site_id,LEFT(p.trades_id,6)) = m.merchant_id
+        WHERE p.data_type = 3 AND p.trades_status IN ('在线支付','退费','交易退款','收费','SUCCESS','REFUND','REVOKED')
+        GROUP BY m.merchant_id,m.merchant_name,p.trades_id,huazhang_time
+        ) a
+        GROUP BY merchant_id,merchant_name
+        ) a
+        LEFT JOIN(
+        SELECT seller_id,
+        SUM(CASE WHEN pay_date <![CDATA[ < ]]> #{startDate} THEN IFNULL(total_pay,0)-IFNULL(refund_total,0) ELSE 0 END) finances_qichu,
+        SUM(CASE WHEN STATUS = 900 and pay_date <![CDATA[ >=]]> #{startDate} AND pay_date<![CDATA[ <= ]]> #{endDate} THEN IFNULL(total_pay,0)-IFNULL(refund_total,0) ELSE 0 END) finances_daifu
+        FROM yb_finances
+        GROUP BY seller_id
+        ) b ON a.merchant_id = b.seller_id
+        WHERE 1=1
+        AND a.merchant_id IS NOT NULL
+        <if test="siteId!='' and siteId!= null ">
+            AND a.merchant_id=#{siteId}
+        </if>
+        <if test="merchantName!='' and merchantName!= null ">
+            AND a.merchant_name like concat(#{merchantName},'%')
+        </if>
+    </select>
+
+</mapper>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.persistence.mapper.WxThemeMapper">
+    <resultMap id="ResultMap" type="com.jk51.model.theme.WxTheme">
+        <id column="site_id" property="siteId"/>
+        <result column="theme_id" property="themeId"/>
+        <result column="title" property="title"/>
+        <result column="link" property="link"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="is_delete" property="isDelete"/>
+    </resultMap>
+
+    <select id="getLstBySiteId" parameterType="com.jk51.model.theme.WxThemeParm" resultMap="ResultMap">
+        SELECT * FROM b_wx_theme WHERE site_id=#{siteId} AND is_delete=0
+        <if test="type==1">
+          AND create_time IS NOT NULL
+        </if>
+        <if test="title != null">
+            AND title LIKE concat('%',#{title},'%')
+        </if>
+        ORDER BY theme_id DESC
+    </select>
+
+    <select id="getWxTheme" parameterType="com.jk51.model.theme.WxTheme" resultMap="ResultMap">
+        SELECT * FROM b_wx_theme WHERE title = #{title} AND site_id=#{siteId} AND is_delete=0 limit 1
+    </select>
+
+    <insert id="add" useGeneratedKeys="true" keyProperty="themeId" parameterType="com.jk51.model.theme.WxTheme">
+        insert into b_wx_theme(site_id, theme_id, title, link, create_time, update_time, is_delete)
+        VALUES (#{siteId}, #{themeId}, #{title}, #{link}, #{createTime}, #{updateTime}, 0)
+    </insert>
+
+    <update id="update" parameterType="com.jk51.model.theme.WxTheme">
+        update b_wx_theme
+        <set>
+            <if test="title != null">
+                title = #{title},
+            </if>
+            <if test="link != null">
+                link = #{link},
+            </if>
+            <if test="createTime != null">
+                create_time = now(),
+            </if>
+            <if test="updateTime != null">
+                update_time = now(),
+            </if>
+        </set>
+        where theme_id = #{themeId} and site_id = #{siteId}
+    </update>
+
+    <delete id="del" parameterType="com.jk51.model.theme.WxTheme" >
+        update b_wx_theme SET is_delete=1
+        where theme_id = #{themeId} and site_id = #{siteId}
+    </delete>
+
+
+</mapper>

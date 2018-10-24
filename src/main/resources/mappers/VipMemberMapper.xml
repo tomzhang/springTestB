@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jk51.modules.member.mapper.VipMemberMapper">
+    <select id="getMemberList" resultType="com.jk51.model.role.VipMember">
+        SELECT
+        G.site_id siteId,G.member_id memberId,G.mobile,
+        G.name NAME,G.create_time createTime,G.last_time lastTime,G.order_num orderNum,
+        G.order_fee orderFee, B.name store_name,G.integrate, I.invite_code inviteCode, S.`name` adminName
+        FROM
+        b_member G
+
+        LEFT JOIN b_member_info I ON G.`site_id`=I.`site_id` AND G.member_id =I.member_id
+        LEFT JOIN b_store_adminext S ON G.`site_id`=S.`site_id` AND G.register_clerks=S.id
+        LEFT JOIN b_stores B ON G.`site_id`=B.`site_id` AND G.register_stores =B.id
+        <where>
+
+            G.site_id = #{vipMemberSelectParam.site_id} AND G.ban_status<![CDATA[ <> ]]>-9
+            <if test="vipMemberSelectParam.mobile!=null and vipMemberSelectParam.mobile!=''">
+                AND G.mobile = #{vipMemberSelectParam.mobile}
+            </if>
+            <if test="vipMemberSelectParam.start_time!=null ">
+                AND G.create_time <![CDATA[ >= ]]>  #{vipMemberSelectParam.start_time}
+            </if>
+            <if test="vipMemberSelectParam.end_time!=null ">
+                AND G.create_time <![CDATA[ <= ]]>  #{vipMemberSelectParam.end_time}
+            </if>
+            <if test="vipMemberSelectParam.store_name!=null and vipMemberSelectParam.store_name!=''">
+                AND B.name = #{vipMemberSelectParam.store_name}
+            </if>
+        </where>
+        ORDER BY G.member_id desc
+    </select>
+    <select id="getMemberList2" resultType="com.jk51.model.SVipMember">
+        SELECT A.*,B.inviteCode,C.adminName,D.storeName FROM
+        (SELECT site_id siteId,member_id memberId,mobile,NAME NAME,create_time createTime,last_time lastTime,order_num
+        orderNum,order_fee orderFee,integrate,buyer_id,register_stores,ban_status
+        FROM b_member WHERE site_id= #{site_id} and mobile!='null') AS A
+        LEFT JOIN
+        (SELECT member_id,SUBSTRING_INDEX(invite_code,'_',-1) inviteCode
+        FROM b_member_info WHERE site_id= #{site_id}) AS B
+        ON A.buyer_id=B.member_id
+        LEFT JOIN
+        (SELECT SUBSTRING_INDEX(`clerk_invitation_code`,'_',-1) inviteCode,`name` adminName
+        FROM b_store_adminext WHERE site_id= #{site_id} and is_del=0 ) AS C
+        ON B.inviteCode=C.inviteCode
+        LEFT JOIN
+        (SELECT id,NAME storeName
+        FROM b_stores WHERE site_id= #{site_id} ) AS D
+        ON A.register_stores=D.id
+
+        <where>
+            A.ban_status<![CDATA[ <> ]]>-9
+            <if test="mobile != null and mobile != ''">
+                AND A.mobile = #{mobile}
+            </if>
+            <if test="start_time != null ">
+                AND A.createTime <![CDATA[ >= ]]>  #{start_time}
+            </if>
+            <if test="end_time != null ">
+                AND A.createTime <![CDATA[ <= ]]>  #{end_time}
+            </if>
+            <if test="store_name != null and store_name != ''">
+                AND D.storeName = #{store_name}
+            </if>
+        </where>
+        group by A.mobile
+        ORDER BY A.createTime desc,A.name DESC
+    </select>
+    <select id="getMemberList3" resultType="com.jk51.model.SVipMember">
+        SELECT
+        bm.site_id siteId,
+        bm.member_id memberId,
+        bm.mobile,
+        bm. NAME NAME,
+        bm.create_time createTime,
+        bm.last_time lastTime,
+        bm.order_num orderNum,
+        bm.order_fee orderFee,
+        bm.integrate,
+        bm.buyer_id,
+        bm.register_stores,
+        bm.ban_status,
+        bm.mem_source source,
+        SUBSTRING_INDEX(bmi.invite_code,'_',-1) inviteCode,
+        bsa.`name` adminName,
+        bs.`name` storeName,
+        bmi.avatar,
+        order_num as orderNum1,
+        order_fee as orderFee1
+        FROM
+        b_member bm
+        LEFT JOIN b_member_info bmi ON bm.site_id = bmi.site_id AND bm.buyer_id = bmi.member_id
+        LEFT JOIN b_store_adminext bsa ON bsa.site_id = bm.site_id AND bsa.id = bm.register_clerks AND bsa.is_del = 0
+        LEFT JOIN b_stores bs ON bs.site_id = bm.site_id AND bs.id = bm.register_stores AND bs.is_del=1
+        WHERE
+        bm.site_id = #{site_id} AND bm.ban_status<![CDATA[ <> ]]>- 9
+        <if test="mobile != null and mobile != ''">
+            AND bm.mobile = #{mobile}
+        </if>
+        <if test="start_time != null ">
+            AND bm.create_time <![CDATA[ >= ]]>  #{start_time}
+        </if>
+        <if test="end_time != null ">
+            AND bm.create_time <![CDATA[ <= ]]>  #{end_time}
+        </if>
+        <if test="store_name != null and store_name != ''">
+            AND bs.`name` = #{store_name}
+        </if>
+        <if test="invite_code != null">
+            AND bmi.invite_code = #{invite_code}
+        </if>
+        <if test="store_id != null">
+            AND bm.register_stores = #{store_id}
+        </if>
+        <if test="name != null and name != ''">
+            AND bm.`name` = #{name}
+        </if>
+        <if test="source != null and source != ''">
+            AND bm.`mem_source` = #{source}
+        </if>
+        <if test="text != null">
+            AND (bm.`name` like CONCAT("%",#{text},"%") OR bm.mobile like CONCAT("%",#{text},"%"))
+        </if>
+        ORDER BY bm.create_time desc
+        <if test="start!=null and pageSize!=null">
+            limit #{start},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getMemberList3Count" resultType="java.lang.Long" parameterType="java.util.Map">
+        SELECT COUNT(*) FROM b_member bm
+        <if test="invite_code != null">
+            LEFT JOIN b_member_info bmi ON bm.site_id = bmi.site_id AND bm.buyer_id = bmi.member_id
+        </if>
+        <if test="store_name != null and store_name != ''">
+            LEFT JOIN b_stores bs ON bs.site_id = bm.site_id AND bs.id = bm.register_stores AND bs.is_del=1
+        </if>
+        WHERE
+        bm.site_id = #{site_id} AND bm.ban_status<![CDATA[ <> ]]>- 9
+        <if test="mobile != null and mobile != ''">
+            AND bm.mobile = #{mobile}
+        </if>
+        <if test="start_time != null ">
+            AND bm.create_time <![CDATA[ >= ]]>  #{start_time}
+        </if>
+        <if test="end_time != null ">
+            AND bm.create_time <![CDATA[ <= ]]>  #{end_time}
+        </if>
+        <if test="store_name != null and store_name != ''">
+            AND bs.`name` = #{store_name}
+        </if>
+        <if test="invite_code != null">
+            AND bmi.invite_code = #{invite_code}
+        </if>
+        <if test="store_id != null">
+            AND bm.register_stores = #{store_id}
+        </if>
+        <if test="name != null and name != ''">
+            AND bm.`name` = #{name}
+        </if>
+        <if test="text != null">
+            AND (bm.`name` like CONCAT("%",#{text},"%") OR bm.mobile like CONCAT("%",#{text},"%"))
+        </if>
+    </select>
+
+
+    <select id="queryMemberById" resultType="com.jk51.model.role.VipMember">
+        SELECT
+        G.site_id siteId,G.member_id memberId,G.mobile,
+        G.buyer_nick buyerNick,G.create_time createTime,G.last_time lastTime,G.order_num orderNum,
+        G.order_fee orderFee,B.stores_number , B.name,I.integrate, I.invite_code inviteCode
+        FROM
+        b_member G
+        LEFT JOIN  b_stores  B ON G.register_stores =B.id
+        LEFT JOIN b_member_info I ON  G.member_id =I.member_id
+        WHERE
+        G.site_id = #{vipMemberAddSelectParams.site_id} AND
+        G.member_id = #{vipMemberAddSelectParams.memberId}
+
+    </select>
+
+    <select id="getMemberBlackList" resultType="com.jk51.model.role.VipMember">
+        SELECT
+        G.site_id siteId,G.member_id memberId,G.mobile,
+        G.name NAME,G.create_time createTime,G.last_time lastTime,G.order_num orderNum,
+        G.order_fee orderFee, B.name store_name,G.integrate, I.invite_code inviteCode, S.`name` adminName
+        FROM
+        b_member G
+
+        LEFT JOIN b_member_info I ON G.`site_id`=I.`site_id` AND G.member_id =I.member_id
+        LEFT JOIN b_store_adminext S ON G.`site_id`=S.`site_id` AND G.register_clerks=S.id
+        LEFT JOIN b_stores B ON G.`site_id`=B.`site_id` AND G.register_stores =B.id
+        <where>
+
+            G.site_id = #{vipMemberSelectParam.site_id} AND G.ban_status=-9
+            <if test="vipMemberSelectParam.mobile!=null and vipMemberSelectParam.mobile!=''">
+                AND G.mobile = #{vipMemberSelectParam.mobile}
+            </if>
+            <if test="vipMemberSelectParam.start_time!=null ">
+                AND G.create_time <![CDATA[ >= ]]>  #{vipMemberSelectParam.start_time}
+            </if>
+            <if test="vipMemberSelectParam.end_time!=null ">
+                AND G.create_time <![CDATA[ <= ]]>  #{vipMemberSelectParam.end_time}
+            </if>
+            <if test="vipMemberSelectParam.store_name!=null and vipMemberSelectParam.store_name!=''">
+                AND B.name = #{vipMemberSelectParam.store_name}
+            </if>
+        </where>
+        ORDER BY G.member_id desc
+    </select>
+
+    <select id="getMemberReport" resultType="java.util.Map" parameterType="java.util.Map">
+        SELECT
+        A.mobile 手机号码,
+        A.name 姓名,
+        ( CASE A.sex
+        WHEN 0 THEN '女'
+        WHEN 1 THEN '男'
+        WHEN 3 THEN '保密'
+        else '保密'
+        END )性别,
+        date_format(B.birthday,'%Y-%m-%d') 出生日期,
+        date_format(A.createTime,'%Y-%m-%d %H:%i:%S') 注册时间,
+        D.storeName 注册门店,
+        B.inviteCode 邀请码,
+        C.adminName 邀请店员,
+        A.integrate 剩余积分,
+        A.orderNum 成功订单,
+        format(A.orderFee/100,2) 金额
+        FROM
+        (SELECT
+        site_id siteId,member_id memberId,sex,mobile,name name,create_time createTime,last_time lastTime,order_num
+        orderNum,order_fee orderFee,integrate,buyer_id,register_stores,ban_status
+        FROM b_member WHERE site_id= #{siteId} ) AS A
+        LEFT JOIN
+        (SELECT member_id,birthday,SUBSTRING_INDEX(invite_code,'_',-1) inviteCode
+        FROM b_member_info WHERE site_id= #{siteId}) AS B
+        ON A.buyer_id=B.member_id
+        LEFT JOIN
+        (SELECT SUBSTRING_INDEX(`clerk_invitation_code`,'_',-1) inviteCode,`name` adminName
+        FROM b_store_adminext WHERE site_id= #{siteId} AND is_del=0) AS C
+        ON B.inviteCode=C.inviteCode
+        LEFT JOIN
+        (SELECT id,NAME storeName
+        FROM b_stores WHERE site_id= #{siteId} ) AS D
+        ON A.register_stores=D.id
+        LEFT JOIN
+        (
+        SELECT
+        id,
+        real_pay,
+        buyer_id,
+        site_id
+        FROM
+        b_trades
+        WHERE
+        site_id = #{siteId}
+        AND deal_finish_status = 1
+        AND trades_status IN(210,220,230,800)
+        ) T
+        ON T.buyer_id = A.buyer_id
+        <where>
+            A.ban_status<![CDATA[ <> ]]>-9
+            <if test="mobile != null and mobile != ''">
+                AND A.mobile = #{mobile}
+            </if>
+            <if test="start_time != null ">
+                AND A.createTime <![CDATA[ >= ]]>  #{start_time}
+            </if>
+            <if test="end_time != null ">
+                AND A.createTime <![CDATA[ <= ]]>  #{end_time}
+            </if>
+            <if test="store_name != null and store_name != ''">
+                AND D.storeName = #{store_name}
+            </if>
+        </where>
+        GROUP BY A.mobile
+        ORDER BY A.createTime desc,A.name DESC
+    </select>
+
+    <select id="getMemberBlackList2" resultType="com.jk51.model.SVipMember">
+        SELECT
+        A.site_id siteId,A.member_id memberId,A.mobile,A.NAME NAME,A.create_time createTime,
+        A.last_time lastTime,A.order_num orderNum, A.order_fee orderFee,A.integrate,A.buyer_id,
+        A.register_stores,A.ban_status, SUBSTRING_INDEX(B.invite_code,'_',-1) AS inviteCode, C.`name` as adminName,
+        D.`name` as storeName
+        FROM
+        b_member AS A
+        LEFT JOIN
+        b_member_info AS B ON (A.buyer_id=B.member_id AND A.site_id = B.site_id)
+        LEFT JOIN
+        b_store_adminext AS C ON (A.site_id = C.site_id AND B.invite_code = C.clerk_invitation_code)
+        LEFT JOIN
+        b_stores AS D ON (A.site_id = D.site_id AND A.register_stores=D.id)
+        <where>
+            A.site_id= #{site_id} AND A.ban_status=-9
+            <if test="mobile != null and mobile != ''">
+                AND A.mobile = #{mobile}
+            </if>
+            <if test="start_time != null ">
+                AND A.create_time <![CDATA[ >= ]]>  #{start_time}
+            </if>
+            <if test="end_time != null ">
+                AND A.create_time <![CDATA[ <= ]]>  #{end_time}
+            </if>
+            <if test="store_name != null and store_name != ''">
+                AND D.storeName = #{store_name}
+            </if>
+        </where>
+        ORDER BY A.member_id desc
+    </select>
+
+    <select id="getStoreName" resultType="java.util.Map">
+        SELECT id,`name` FROM `b_stores`
+        <where>
+            site_id = #{siteId}
+        </where>
+    </select>
+
+    <select id="getStoreIdByName" resultType="Integer">
+        SELECT id FROM b_stores
+        <where>
+            `name`= #{storeName}
+            AND
+            site_id = #{siteId}
+        </where>
+    </select>
+
+    <update id="removeBlackMember">
+        UPDATE `b_member` SET ban_status=0 WHERE site_id=#{siteId} AND member_id=#{memberId}
+    </update>
+
+    <select id="selectMemberByMobile" resultType="java.lang.Integer">
+        SELECT buyer_id FROM b_member WHERE site_id = #{siteId} AND member_id = #{memberId}
+    </select>
+
+    <update id="removeBlackMemberInfo">
+        UPDATE b_member_info SET status=0 WHERE site_id=#{siteId} AND member_id=#{memberId}
+    </update>
+
+    <select id="getMemberById" resultType="java.util.Map">
+        SELECT
+        S.name store_name,
+        M.member_id,M.buyer_id,M.mobile,M.name member_name,M.sex,M.idcard_number,M.email,M.integrate,M.memo,M.ban_status,M.total_get_integrate,M.total_consume_integrate,
+        MI.birthday,MI.qq,MI.province,MI.city,MI.area,MI.address,MI.membership_number,MI.barcode,MI.tag,M.open_id, SUBSTRING_INDEX(MI.invite_code, '_', -1) inviteCode
+        FROM b_member AS M
+        LEFT JOIN b_member_info AS MI ON M.buyer_id=MI.member_id AND M.site_id=MI.site_id
+        LEFT JOIN b_stores AS S ON M.register_stores=S.id AND M.site_id=S.site_id
+        WHERE M.member_id=#{memberId} AND M.site_id=#{siteId}
+    </select>
+
+    <select id="getStoresIdByStoreNumber" resultType="java.lang.Integer">
+        SELECT id FROM b_stores WHERE site_id=#{siteId} AND stores_number=#{storesNumber}
+    </select>
+    <select id="selectStoreByIvCode" resultType="java.lang.String">
+        select * from b_store_adminext where site_id=#{siteId} and clerk_invitation_code like concat('%',#{ivcode},'%')
+    </select>
+
+    <select id="getStoreIdByClerk" resultType="java.util.Map">
+        SELECT store_id, id FROM b_store_adminext WHERE site_id=#{siteId} AND SUBSTRING_INDEX(clerk_invitation_code,'_',-1)=#{inviteCode}
+    </select>
+
+    <select id="queryAllMembers" parameterType="com.jk51.modules.member.request.MemberDto"
+            resultType="com.jk51.model.goods.PageData">
+        select bm.site_id,bm.member_id,bm.name,bm.is_activated,bm.ban_status,date_format(bm.create_time,'%Y-%m-%d
+        %H:%i:%S') as registerTime,bm.mobile,bs.name as storName
+        from b_member bm
+        LEFT JOIN b_stores bs
+        on (bm.site_id=bs.site_id and bm.register_stores=bs.id)
+        where 1=1
+        <if test="siteId!=null and siteId!=''">
+            and bm.site_id=#{siteId}
+        </if>
+        <if test="startTime!=null and startTime!=''">
+            and bm.create_time <![CDATA[ >= ]]> #{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and bm.create_time <![CDATA[ <= ]]> #{endTime}
+        </if>
+        <if test="mobilePhone!=null and mobilePhone!=''">
+            and bm.mobile=#{mobilePhone}
+        </if>
+        <if test="status!=null  and status ==1">
+            and bm.ban_status=0
+        </if>
+        <if test="status!=null and status ==0 ">
+            and (bm.ban_status=-9 or bm.ban_status=-1)
+        </if>
+        <if test="storeId!=null and storeId!=''">
+            and bm.register_stores=#{storeId}
+        </if>
+    </select>
+
+
+    <select id="serveCustomers" resultType="com.jk51.model.SVipMember">
+        SELECT bm.site_id siteId, bm.member_id memberId, bm.mobile, bm.`name` NAME, bm.create_time createTime,
+        bm.last_time lastTime,
+        bm.order_num orderNum, bm.order_fee orderFee, bm.integrate, bm.buyer_id, bm.register_stores, bm.ban_status,
+        SUBSTRING_INDEX(bmi.invite_code,'_',-1) inviteCode,
+        bsa.`name` adminName, bs.`name` storeName, bmi.avatar
+        FROM
+        b_member bm
+        LEFT JOIN
+        b_member_info bmi ON bm.site_id = bmi.site_id AND bm.buyer_id = bmi.member_id
+        LEFT JOIN
+        b_store_adminext bsa ON bsa.site_id = bm.site_id AND bsa.clerk_invitation_code = bmi.invite_code AND bsa.is_del
+        = 0
+        LEFT JOIN
+        b_stores bs ON bs.site_id = bm.site_id AND bs.id = bm.register_stores
+        JOIN
+        (
+        SELECT
+        SUBSTRING(receiver, LOCATE('_', receiver)+1, LOCATE('_', receiver,LOCATE('_', receiver)+1)-LOCATE('_',
+        receiver)-1) siteId,
+        RIGHT(sender, LENGTH(sender)-LOCATE('_', sender, LOCATE('_',sender)+1)) buyerId
+        FROM `b_im_service` WHERE receiver=CONCAT("helper_",#{siteId},"_",#{storeAdminId}) AND
+        first_reply_time>=DATE_SUB(CURDATE(), INTERVAL 15 DAY)
+        UNION
+        SELECT bm.site_id siteId, bm.buyer_id buyerId FROM b_member bm JOIN b_store_adminext bsa ON
+        bm.site_id=bsa.site_id AND bm.register_clerks=bsa.id
+        WHERE bsa.site_id=#{siteId} AND bsa.id=#{storeAdminExtId} AND bm.create_time>=DATE_SUB(CURDATE(), INTERVAL 15
+        DAY)
+        UNION
+        SELECT bmi.site_id siteId, bmi.member_id buyerId FROM b_member_info bmi JOIN b_store_adminext bsa ON
+        bmi.site_id=bsa.site_id AND bmi.invite_code=bsa.clerk_invitation_code
+        WHERE bsa.site_id=#{siteId} AND bsa.id=#{storeAdminExtId} AND bmi.create_time>=DATE_SUB(CURDATE(), INTERVAL 15
+        DAY)
+        UNION
+        SELECT site_id siteId, buyer_id buyerId FROM b_trades WHERE site_id=#{siteId} AND store_user_id=#{storeAdminId}
+        AND create_time>=DATE_SUB(CURDATE(), INTERVAL 15 DAY)
+        ) m ON bm.site_id=m.siteId AND bm.buyer_id=m.buyerId
+        WHERE
+        bm.site_id=#{siteId} AND bm.ban_status<![CDATA[ <> ]]>- 9
+        <if test="storeId != null">
+            AND bm.register_stores = #{storeId}
+        </if>
+        ORDER BY bm.create_time DESC
+        <if test="start!=null and pageSize!=null">
+            limit #{start},#{pageSize}
+        </if>
+    </select>
+    <select id="serveCustomersCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM
+        b_member bm
+        LEFT JOIN
+        b_member_info bmi ON bm.site_id = bmi.site_id AND bm.buyer_id = bmi.member_id
+        LEFT JOIN
+        b_store_adminext bsa ON bsa.site_id = bm.site_id AND bsa.clerk_invitation_code = bmi.invite_code AND bsa.is_del
+        = 0
+        LEFT JOIN
+        b_stores bs ON bs.site_id = bm.site_id AND bs.id = bm.register_stores
+        JOIN
+        (
+        SELECT
+        SUBSTRING(receiver, LOCATE('_', receiver)+1, LOCATE('_', receiver,LOCATE('_', receiver)+1)-LOCATE('_',
+        receiver)-1) siteId,
+        RIGHT(sender, LENGTH(sender)-LOCATE('_', sender, LOCATE('_',sender)+1)) buyerId
+        FROM `b_im_service` WHERE receiver=CONCAT("helper_",#{siteId},"_",#{storeAdminId}) AND
+        first_reply_time>=DATE_SUB(CURDATE(), INTERVAL 15 DAY)
+        UNION
+        SELECT bm.site_id siteId, bm.buyer_id buyerId FROM b_member bm JOIN b_store_adminext bsa ON
+        bm.site_id=bsa.site_id AND bm.register_clerks=bsa.id
+        WHERE bsa.site_id=#{siteId} AND bsa.id=#{storeAdminExtId} AND bm.create_time>=DATE_SUB(CURDATE(), INTERVAL 15
+        DAY)
+        UNION
+        SELECT bmi.site_id siteId, bmi.member_id buyerId FROM b_member_info bmi JOIN b_store_adminext bsa ON
+        bmi.site_id=bsa.site_id AND bmi.invite_code=bsa.clerk_invitation_code
+        WHERE bsa.site_id=#{siteId} AND bsa.id=#{storeAdminExtId} AND bmi.create_time>=DATE_SUB(CURDATE(), INTERVAL 15
+        DAY)
+        UNION
+        SELECT site_id siteId, buyer_id buyerId FROM b_trades WHERE site_id=#{siteId} AND store_user_id=#{storeAdminId}
+        AND create_time>=DATE_SUB(CURDATE(), INTERVAL 15 DAY)
+        ) m ON bm.site_id=m.siteId AND bm.buyer_id=m.buyerId
+        WHERE
+        bm.site_id=#{siteId} AND bm.ban_status<![CDATA[ <> ]]>- 9
+        <if test="storeId != null">
+            AND bm.register_stores = #{storeId}
+        </if>
+    </select>
+
+
+</mapper>

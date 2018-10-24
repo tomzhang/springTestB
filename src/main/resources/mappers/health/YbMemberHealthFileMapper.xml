@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.health.mapper.YbMemberHealthFileMapper">
+  <resultMap id="BaseResultMap" type="com.jk51.model.health.YbMemberHealthFile">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="memberId" jdbcType="BIGINT" property="memberId" />
+    <result column="cardNo" jdbcType="VARCHAR" property="cardNo" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="fullname" jdbcType="VARCHAR" property="fullname" />
+    <result column="gender" jdbcType="VARCHAR" property="gender" />
+    <result column="nation" jdbcType="VARCHAR" property="nation" />
+    <result column="birthday" jdbcType="DATE" property="birthday" />
+    <result column="addr" jdbcType="VARCHAR" property="addr" />
+    <result column="expire" jdbcType="DATE" property="expire" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, memberId, cardNo, phone, fullname, gender, nation, birthday, addr, expire
+  </sql>
+  <select id="selectByExample" parameterType="com.jk51.model.health.YbMemberHealthFileExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from yb_member_health_file
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limit != null">
+      <if test="offset != null">
+        limit ${offset}, ${limit}
+      </if>
+      <if test="offset == null">
+        limit ${limit}
+      </if>
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yb_member_health_file
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from yb_member_health_file
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jk51.model.health.YbMemberHealthFileExample">
+    delete from yb_member_health_file
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jk51.model.health.YbMemberHealthFile">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into yb_member_health_file (memberId, cardNo, phone, 
+      fullname, gender, nation, 
+      birthday, addr, expire)
+    values (#{memberId,jdbcType=BIGINT}, #{cardNo,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, 
+      #{fullname,jdbcType=VARCHAR}, #{gender,jdbcType=VARCHAR}, #{nation,jdbcType=VARCHAR}, 
+      #{birthday,jdbcType=DATE}, #{addr,jdbcType=VARCHAR}, #{expire,jdbcType=DATE})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jk51.model.health.YbMemberHealthFile">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into yb_member_health_file
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="memberId != null">
+        memberId,
+      </if>
+      <if test="cardNo != null">
+        cardNo,
+      </if>
+      <if test="phone != null">
+        phone,
+      </if>
+      <if test="fullname != null">
+        fullname,
+      </if>
+      <if test="gender != null">
+        gender,
+      </if>
+      <if test="nation != null">
+        nation,
+      </if>
+      <if test="birthday != null">
+        birthday,
+      </if>
+      <if test="addr != null">
+        addr,
+      </if>
+      <if test="expire != null">
+        expire,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="memberId != null">
+        #{memberId,jdbcType=BIGINT},
+      </if>
+      <if test="cardNo != null">
+        #{cardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="fullname != null">
+        #{fullname,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null">
+        #{gender,jdbcType=VARCHAR},
+      </if>
+      <if test="nation != null">
+        #{nation,jdbcType=VARCHAR},
+      </if>
+      <if test="birthday != null">
+        #{birthday,jdbcType=DATE},
+      </if>
+      <if test="addr != null">
+        #{addr,jdbcType=VARCHAR},
+      </if>
+      <if test="expire != null">
+        #{expire,jdbcType=DATE},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jk51.model.health.YbMemberHealthFileExample" resultType="java.lang.Long">
+    select count(*) from yb_member_health_file
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update yb_member_health_file
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.memberId != null">
+        memberId = #{record.memberId,jdbcType=BIGINT},
+      </if>
+      <if test="record.cardNo != null">
+        cardNo = #{record.cardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.phone != null">
+        phone = #{record.phone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fullname != null">
+        fullname = #{record.fullname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.gender != null">
+        gender = #{record.gender,jdbcType=VARCHAR},
+      </if>
+      <if test="record.nation != null">
+        nation = #{record.nation,jdbcType=VARCHAR},
+      </if>
+      <if test="record.birthday != null">
+        birthday = #{record.birthday,jdbcType=DATE},
+      </if>
+      <if test="record.addr != null">
+        addr = #{record.addr,jdbcType=VARCHAR},
+      </if>
+      <if test="record.expire != null">
+        expire = #{record.expire,jdbcType=DATE},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update yb_member_health_file
+    set id = #{record.id,jdbcType=INTEGER},
+      memberId = #{record.memberId,jdbcType=BIGINT},
+      cardNo = #{record.cardNo,jdbcType=VARCHAR},
+      phone = #{record.phone,jdbcType=VARCHAR},
+      fullname = #{record.fullname,jdbcType=VARCHAR},
+      gender = #{record.gender,jdbcType=VARCHAR},
+      nation = #{record.nation,jdbcType=VARCHAR},
+      birthday = #{record.birthday,jdbcType=DATE},
+      addr = #{record.addr,jdbcType=VARCHAR},
+      expire = #{record.expire,jdbcType=DATE}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.health.YbMemberHealthFile">
+    update yb_member_health_file
+    <set>
+      <if test="memberId != null">
+        memberId = #{memberId,jdbcType=BIGINT},
+      </if>
+      <if test="cardNo != null">
+        cardNo = #{cardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="fullname != null">
+        fullname = #{fullname,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null">
+        gender = #{gender,jdbcType=VARCHAR},
+      </if>
+      <if test="nation != null">
+        nation = #{nation,jdbcType=VARCHAR},
+      </if>
+      <if test="birthday != null">
+        birthday = #{birthday,jdbcType=DATE},
+      </if>
+      <if test="addr != null">
+        addr = #{addr,jdbcType=VARCHAR},
+      </if>
+      <if test="expire != null">
+        expire = #{expire,jdbcType=DATE},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jk51.model.health.YbMemberHealthFile">
+    update yb_member_health_file
+    set memberId = #{memberId,jdbcType=BIGINT},
+      cardNo = #{cardNo,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      fullname = #{fullname,jdbcType=VARCHAR},
+      gender = #{gender,jdbcType=VARCHAR},
+      nation = #{nation,jdbcType=VARCHAR},
+      birthday = #{birthday,jdbcType=DATE},
+      addr = #{addr,jdbcType=VARCHAR},
+      expire = #{expire,jdbcType=DATE}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <!--<select id="healthList" resultType="java.util.Map">
+    SELECT m.mobile as phone,
+    IF(yf.fullname = 'user', m.name ,yf.fullname) AS fullname,
+    MAX(ymhf.checkdate) checkdate,
+    s.name storeName, m.`buyer_id` AS member_id , m.`site_id`
+    FROM yb_member_health_file yf
+    LEFT JOIN yb_member_health yh ON yf.memberId=yh.memberId
+    LEFT JOIN b_member m ON yf.memberId=m.`buyer_id` AND m.site_id=#{siteId}
+    LEFT JOIN b_stores s ON m.site_id=s.site_id AND m.register_stores=s.id
+    LEFT JOIN yb_member_health_log ymhf ON ymhf.cardNo=m.mobile or ymhf.cardNo=m.idcard_number
+    WHERE m.site_id=#{siteId}
+      <if test="phone != null">
+          and m.mobile = #{phone}
+      </if>
+      <if test="fullname != null">
+          and m.name = #{fullname}
+      </if>
+      <if test="checkdateBegin != null">
+      and ymhf.checkdate <![CDATA[ >= ]]> #{checkdateBegin}
+      </if>
+      <if test="checkdateEnd != null">
+      and ymhf.checkdate <![CDATA[ <= ]]> #{checkdateEnd}
+      </if>
+      <if test="storeId != null and storeId !=''">
+          and s.id=#{storeId}
+      </if>
+      GROUP BY m.mobile
+  </select>-->
+  <select id="healthList" resultType="java.util.Map">
+    SELECT hf.phone, IF((hf.fullname='' OR hf.fullname='user' OR hf.fullname IS NULL), m.`name`, hf.fullname) fullname,
+    DATE_FORMAT(h.create_time,'%Y-%m-%d %H:%i:%S') checkdate, s.`name` storeName, m.buyer_id member_id , m.site_id,hf.idcardNumber,
+    h.id,hf.id as healthId
+    FROM yb_member_health h
+    LEFT JOIN yb_member_health_file hf ON h.healthFileId=hf.id
+    LEFT JOIN b_member m ON hf.siteId=m.site_id AND hf.memberId=m.buyer_id
+    LEFT JOIN b_stores s ON m.site_id=s.site_id AND m.register_stores=s.id
+    WHERE hf.siteId = #{siteId}
+    <if test="phone != null">
+      AND hf.phone = #{phone}
+    </if>
+    <if test="fullname != null">
+      AND hf.fullname = #{fullname}
+    </if>
+    <if test="checkdateBegin != null">
+      AND DATE_FORMAT(h.create_time,'%Y-%m-%d') <![CDATA[ >= ]]> #{checkdateBegin}
+    </if>
+    <if test="checkdateEnd != null">
+      AND DATE_FORMAT(h.create_time,'%Y-%m-%d') <![CDATA[ <= ]]> #{checkdateEnd}
+    </if>
+    <if test="storeId != null and storeId !=''">
+      AND s.id = #{storeId}
+    </if>
+    ORDER BY h.id DESC
+  </select>
+
+
+  <select id="checkDateList" resultType="java.util.Map">
+    SELECT
+    FROM yb_member_health_file yf
+    LEFT JOIN yb_member_health_log ymhf  ON yf.memberId=yh.memberId
+
+    WHERE m.site_id=#{siteId}
+    <if test="phone != null">
+      and m.mobile = #{phone}
+    </if>
+    <if test="fullname != null">
+      and m.name = #{fullname}
+    </if>
+    <if test="storeId != null and storeId !=''">
+      and s.id=#{storeId}
+    </if>
+    GROUP BY m.mobile
+  </select>
+
+  <update id="updateMobileOrIdCardNum" >
+    UPDATE yb_member_health_file
+    <set>
+      <if test="idCardNum != null">
+        idcardNumber = #{idCardNum},
+      </if>
+      <if test="mobile != null">
+        phone = #{mobile},
+        memberId = #{memberId},
+      </if>
+    </set>
+    WHERE id = #{id} AND siteId = #{siteId}
+  </update>
+</mapper>

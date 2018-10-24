@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.helpCenter.mapper.YbHelpCenterMapper" >
+  <resultMap id="BaseResultMap" type="com.jk51.model.YbHelpCenter" >
+    <id column="id" property="id" />
+    <result column="platform_type" property="platformType"/>
+    <result column="version" property="version"/>
+    <result column="title" property="title" />
+    <result column="attachment" property="attachment" />
+    <result column="status" property="status" />
+    <result column="author" property="author" />
+    <result column="is_del" property="isDel" />
+    <result column="create_time" property="createTime"/>
+    <result column="update_time" property="updateTime"/>
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, platform_type, version, title, attachment, status, author, is_del, create_time,
+    update_time,content
+  </sql>
+
+  <select id="getHelpList" resultMap="BaseResultMap" parameterType="Map">
+    select *
+    from yb_helpcenter
+    where is_del=0
+    <if test="platformType">
+      AND  (platform_type=#{platformType} or platform_type=9999)
+    </if>
+    ORDER BY update_time DESC
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="int" resultMap="BaseResultMap">
+    select *
+    from yb_helpcenter
+    where is_del=0
+    AND id=#{id}
+  </select>
+
+  <insert id="insert" parameterType="com.jk51.model.YbHelpCenter" >
+    insert into yb_helpcenter (id, platform_type, version,
+      title, attachment, status,
+      author, is_del, create_time,
+      update_time, content)
+    values (#{id,jdbcType=INTEGER}, #{platformType,jdbcType=SMALLINT}, #{version,jdbcType=CHAR},
+      #{title,jdbcType=VARCHAR}, #{attachment,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT},
+      #{author,jdbcType=CHAR}, #{isDel,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP},
+      #{updateTime,jdbcType=TIMESTAMP}, #{content,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jk51.model.YbHelpCenter" >
+    insert into yb_helpcenter
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+
+      <if test="platformType != null and platformType !=''" >
+        platform_type,
+      </if>
+      <if test="version != null and version !=''" >
+        version,
+      </if>
+      <if test="title != null and title !=''" >
+        title,
+      </if>
+      <if test="attachment != null and attachment !=''" >
+        attachment,
+      </if>
+      <if test="status != null and status !=''" >
+        status,
+      </if>
+      <if test="author != null and author !=''" >
+        author,
+      </if>
+      <if test="isDel != null and isDel !=''" >
+        is_del,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="content != null and content !=''" >
+        content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="platformType != null" >
+        #{platformType,jdbcType=SMALLINT},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=CHAR},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="attachment != null" >
+        #{attachment,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="author != null" >
+        #{author,jdbcType=CHAR},
+      </if>
+      <if test="isDel != null" >
+        #{isDel,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.YbHelpCenter" >
+    update yb_helpcenter
+    <set >
+      <if test="platformType != null and platformType != ''"   >
+        platform_type = #{platformType,jdbcType=SMALLINT},
+      </if>
+      <if test="version != null and version != ''" >
+        version = #{version,jdbcType=CHAR},
+      </if>
+      <if test="title != null and title != ''" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="attachment != null and attachment != ''" >
+        attachment = #{attachment,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null and status != ''" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="author != null and author != ''" >
+        author = #{author,jdbcType=CHAR},
+      </if>
+      <if test="isDel != null and isDel != ''" >
+        is_del = #{isDel,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      update_time=CURRENT_TIMESTAMP(),
+      <if test="content != null" >
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.jk51.model.YbHelpCenter" >
+    update yb_helpcenter
+    set platform_type = #{platformType,jdbcType=SMALLINT},
+      version = #{version,jdbcType=CHAR},
+      title = #{title,jdbcType=VARCHAR},
+      attachment = #{attachment,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      author = #{author,jdbcType=CHAR},
+      is_del = #{isDel,jdbcType=TINYINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jk51.model.YbHelpCenter" >
+    update yb_helpcenter
+    set platform_type = #{platformType,jdbcType=SMALLINT},
+      version = #{version,jdbcType=CHAR},
+      title = #{title,jdbcType=VARCHAR},
+      attachment = #{attachment,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      author = #{author,jdbcType=CHAR},
+      is_del = #{isDel,jdbcType=TINYINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

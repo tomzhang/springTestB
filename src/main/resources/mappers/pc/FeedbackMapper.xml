@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.pc.mapper.FeedbackMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.pc.Feedback">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="member_id" jdbcType="INTEGER" property="memberId"/>
+        <result column="feedback" jdbcType="VARCHAR" property="feedback"/>
+        <result column="reply" jdbcType="VARCHAR" property="reply"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, site_id, member_id, feedback, reply, status, create_time, update_time
+    </sql>
+
+    <select id="getLst" parameterType="int" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> FROM pc_feedback WHERE site_id = #{siteId} /*AND status = 0*/
+        <if test="buyerId != null">
+            AND member_id &lt;&gt; #{buyerId}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+    <insert id="add" parameterType="com.jk51.model.pc.Feedback" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO pc_feedback (site_id, member_id, feedback, create_time, update_time)
+        VALUES (#{siteId}, #{memberId}, #{feedback}, now(), now())
+    </insert>
+
+    <update id="reply">
+        UPDATE pc_feedback SET reply = #{reply}, status = 1 WHERE site_id = #{siteId} AND id = #{id} AND status=0
+    </update>
+
+    <select id="getLstByUserId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> FROM pc_feedback WHERE site_id = #{siteId} AND member_id=#{memberId} ORDER BY create_time DESC
+    </select>
+
+</mapper>

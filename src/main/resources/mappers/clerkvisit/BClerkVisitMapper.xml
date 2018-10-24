@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.clerkvisit.mapper.BClerkVisitMapper">
+    <resultMap id="BaseResultMap" type="com.jk51.model.clerkvisit.BClerkVisit">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="site_id" jdbcType="INTEGER" property="siteId"/>
+        <result column="store_admin_id" jdbcType="INTEGER" property="storeAdminId"/>
+        <result column="admin_name" jdbcType="VARCHAR" property="adminName"/>
+        <result column="store_id" jdbcType="INTEGER" property="storeId"/>
+        <result column="store_name" jdbcType="VARCHAR" property="storeName"/>
+        <result column="buyer_id" jdbcType="INTEGER" property="buyerId"/>
+        <result column="buyer_name" jdbcType="VARCHAR" property="buyerName"/>
+        <result column="buyer_mobile" jdbcType="BIGINT" property="buyerMobile"/>
+        <result column="visit_type" jdbcType="TINYINT" property="visitType"/>
+        <result column="visit_time" jdbcType="TIMESTAMP" property="visitTime"/>
+        <result column="real_visit_time" jdbcType="TIMESTAMP" property="realVisitTime"/>
+        <result column="goods_ids" jdbcType="VARCHAR" property="goodsIds"/>
+        <result column="activity_ids" jdbcType="VARCHAR" property="activityIds"/>
+        <result column="goods_title" jdbcType="VARCHAR" property="goodsTitle"/>
+        <result column="done_time" jdbcType="TIMESTAMP" property="doneTime"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+    </resultMap>
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Update_By_Example_Where_Clause">
+        <where>
+            <foreach collection="example.oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Base_Column_List">
+    id, site_id, store_admin_id, admin_name, store_id, store_name, buyer_id, buyer_name, 
+    buyer_mobile, activity_ids, goods_ids, type, visit_time, real_visit_time, goods_ids, done_time,
+    remark, status, create_time, update_time
+  </sql>
+
+    <select id="queryTodayWaitForVisit" resultMap="BaseResultMap">
+    SELECT * from b_clerk_visit where status=10
+    AND  DATE_FORMAT(visit_time,'%Y-%m-%d')  = DATE_FORMAT(CURRENT_TIMESTAMP,'%Y-%m-%d');
+  </select>
+
+    <select id="taskGoodsIdsList" resultType="java.lang.String">
+      SELECT goods_ids from b_clerk_visit where id=#{id}
+    </select>
+
+    <select id="getStoreAdminVistList" resultType="map">
+      SELECT
+        c.visitNum visitNum,
+        b.name AS adminName,
+        b.mobile AS mobile,
+        b.storeadmin_id AS storeAdminId
+      FROM b_store_adminext b
+      LEFT JOIN
+      (SELECT COUNT(*) visitNum,store_admin_id,site_id,store_id
+	    from b_clerk_visit
+	    where site_id=#{siteId} and status=20 and store_id=#{storeId} AND  DATE_FORMAT(visit_time,'%Y-%m-%d')  = DATE_FORMAT(CURRENT_TIMESTAMP,'%Y-%m-%d')
+	    GROUP BY store_admin_id) c ON b.site_id = c.site_id AND b.store_id = c.store_id AND b.storeadmin_id = c.store_admin_id
+      WHERE
+	  b.site_id = #{siteId} and b.storeadmin_status=1 and b.store_id = #{storeId} AND b.is_del = 0
+    </select>
+
+    <select id="selectByExample" parameterType="com.jk51.model.clerkvisit.BClerkVisitExample" resultMap="BaseResultMap">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List"/>
+        from b_clerk_visit
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+        <if test="limit != null">
+            <if test="offset != null">
+                limit ${offset}, ${limit}
+            </if>
+            <if test="offset == null">
+                limit ${limit}
+            </if>
+        </if>
+    </select>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        *
+        from b_clerk_visit
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from b_clerk_visit
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <delete id="deleteByExample" parameterType="com.jk51.model.clerkvisit.BClerkVisitExample">
+        delete from b_clerk_visit
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </delete>
+    <insert id="insert" parameterType="com.jk51.model.clerkvisit.BClerkVisit">
+    insert into b_clerk_visit (id, site_id, store_admin_id, 
+      admin_name, store_id, store_name, 
+      buyer_id, buyer_name, buyer_mobile, 
+      visit_type, visit_time, real_visit_time, 
+      goods_id, goods_title, done_time, 
+      remark, status)
+    values (#{id,jdbcType=INTEGER}, #{siteId,jdbcType=INTEGER}, #{storeAdminId,jdbcType=INTEGER}, 
+      #{adminName,jdbcType=VARCHAR}, #{storeId,jdbcType=INTEGER}, #{storeName,jdbcType=VARCHAR}, 
+      #{buyerId,jdbcType=INTEGER}, #{buyerName,jdbcType=VARCHAR}, #{buyerMobile,jdbcType=BIGINT}, 
+      #{visitType,jdbcType=TINYINT}, #{visitTime,jdbcType=TIMESTAMP}, #{realVisitTime,jdbcType=TIMESTAMP}, 
+      #{goodsId,jdbcType=INTEGER}, #{goodsTitle,jdbcType=VARCHAR}, #{doneTime,jdbcType=TIMESTAMP}, 
+      #{remark,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT})
+  </insert>
+    <insert id="insertSelective" parameterType="com.jk51.model.clerkvisit.BClerkVisit">
+        insert into b_clerk_visit
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="storeAdminId != null">
+                store_admin_id,
+            </if>
+            <if test="adminName != null">
+                admin_name,
+            </if>
+            <if test="storeId != null">
+                store_id,
+            </if>
+            <if test="storeName != null">
+                store_name,
+            </if>
+            <if test="buyerId != null">
+                buyer_id,
+            </if>
+            <if test="buyerName != null">
+                buyer_name,
+            </if>
+            <if test="buyerMobile != null">
+                buyer_mobile,
+            </if>
+            <if test="visitType != null">
+                visit_type,
+            </if>
+            <if test="visitTime != null">
+                visit_time,
+            </if>
+            <if test="realVisitTime != null">
+                real_visit_time,
+            </if>
+            <if test="goodsId != null">
+                goods_id,
+            </if>
+            <if test="goodsTitle != null">
+                goods_title,
+            </if>
+            <if test="doneTime != null">
+                done_time,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="storeAdminId != null">
+                #{storeAdminId,jdbcType=INTEGER},
+            </if>
+            <if test="adminName != null">
+                #{adminName,jdbcType=VARCHAR},
+            </if>
+            <if test="storeId != null">
+                #{storeId,jdbcType=INTEGER},
+            </if>
+            <if test="storeName != null">
+                #{storeName,jdbcType=VARCHAR},
+            </if>
+            <if test="buyerId != null">
+                #{buyerId,jdbcType=INTEGER},
+            </if>
+            <if test="buyerName != null">
+                #{buyerName,jdbcType=VARCHAR},
+            </if>
+            <if test="buyerMobile != null">
+                #{buyerMobile,jdbcType=BIGINT},
+            </if>
+            <if test="visitType != null">
+                #{visitType,jdbcType=TINYINT},
+            </if>
+            <if test="visitTime != null">
+                #{visitTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="realVisitTime != null">
+                #{realVisitTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="goodsId != null">
+                #{goodsId,jdbcType=INTEGER},
+            </if>
+            <if test="goodsTitle != null">
+                #{goodsTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="doneTime != null">
+                #{doneTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+        </trim>
+    </insert>
+
+
+    <insert id="insertFeedBack" parameterType="map">
+      insert into b_visit_feedback
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="visitId != null">
+                visit_id,
+            </if>
+            <if test="telResult != null">
+                tel_result,
+            </if>
+            <if test="content != null">
+                content,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteId != null">
+                #{siteId},
+            </if>
+            <if test="visitId != null">
+                #{visitId},
+            </if>
+            <if test="telResult != null">
+                #{telResult},
+            </if>
+            <if test="content != null">
+                #{content},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="getLatelyBimService" resultType="java.lang.String">
+        SELECT
+        substring_index(receiver, "_" ,- 1)
+        FROM
+        b_im_service
+        WHERE
+        site_id=#{siteId}
+        AND substring_index(sender, "_" ,- 1) = #{buyerId}
+        AND receiver IS NOT NULL
+        ORDER BY
+        update_time DESC
+        LIMIT 1
+    </select>
+
+    <select id="getLatelyBClerkVisit" resultType="java.lang.Integer">
+        SELECT
+        store_admin_id
+        FROM
+        b_clerk_visit b
+        WHERE
+        site_id = #{siteId}
+        AND buyer_id = #{buyerId}
+        AND `status` = 30
+        ORDER BY
+        b.real_visit_time DESC
+        LIMIT 1
+    </select>
+
+
+    <select id="countByExample" parameterType="com.jk51.model.clerkvisit.BClerkVisitExample"
+            resultType="java.lang.Long">
+        select count(*) from b_clerk_visit
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
+        update b_clerk_visit
+        <set>
+            <if test="record.id != null">
+                id = #{record.id,jdbcType=INTEGER},
+            </if>
+            <if test="record.siteId != null">
+                site_id = #{record.siteId,jdbcType=INTEGER},
+            </if>
+            <if test="record.storeAdminId != null">
+                store_admin_id = #{record.storeAdminId,jdbcType=INTEGER},
+            </if>
+            <if test="record.adminName != null">
+                admin_name = #{record.adminName,jdbcType=VARCHAR},
+            </if>
+            <if test="record.storeId != null">
+                store_id = #{record.storeId,jdbcType=INTEGER},
+            </if>
+            <if test="record.storeName != null">
+                store_name = #{record.storeName,jdbcType=VARCHAR},
+            </if>
+            <if test="record.buyerId != null">
+                buyer_id = #{record.buyerId,jdbcType=INTEGER},
+            </if>
+            <if test="record.buyerName != null">
+                buyer_name = #{record.buyerName,jdbcType=VARCHAR},
+            </if>
+            <if test="record.buyerMobile != null">
+                buyer_mobile = #{record.buyerMobile,jdbcType=BIGINT},
+            </if>
+            <if test="record.visitType != null">
+                visit_type = #{record.visitType,jdbcType=TINYINT},
+            </if>
+            <if test="record.visitTime != null">
+                visit_time = #{record.visitTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="record.realVisitTime != null">
+                real_visit_time = #{record.realVisitTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="record.goodsId != null">
+                goods_id = #{record.goodsId,jdbcType=INTEGER},
+            </if>
+            <if test="record.goodsTitle != null">
+                goods_title = #{record.goodsTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="record.doneTime != null">
+                done_time = #{record.doneTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="record.remark != null">
+                remark = #{record.remark,jdbcType=VARCHAR},
+            </if>
+            <if test="record.status != null">
+                status = #{record.status,jdbcType=TINYINT},
+            </if>
+        </set>
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByExample" parameterType="map">
+        update b_clerk_visit
+        set id = #{record.id,jdbcType=INTEGER},
+        site_id = #{record.siteId,jdbcType=INTEGER},
+        store_admin_id = #{record.storeAdminId,jdbcType=INTEGER},
+        admin_name = #{record.adminName,jdbcType=VARCHAR},
+        store_id = #{record.storeId,jdbcType=INTEGER},
+        store_name = #{record.storeName,jdbcType=VARCHAR},
+        buyer_id = #{record.buyerId,jdbcType=INTEGER},
+        buyer_name = #{record.buyerName,jdbcType=VARCHAR},
+        buyer_mobile = #{record.buyerMobile,jdbcType=BIGINT},
+        visit_type = #{record.visitType,jdbcType=TINYINT},
+        visit_time = #{record.visitTime,jdbcType=TIMESTAMP},
+        real_visit_time = #{record.realVisitTime,jdbcType=TIMESTAMP},
+        goods_id = #{record.goodsId,jdbcType=INTEGER},
+        goods_title = #{record.goodsTitle,jdbcType=VARCHAR},
+        done_time = #{record.doneTime,jdbcType=TIMESTAMP},
+        remark = #{record.remark,jdbcType=VARCHAR},
+        status = #{record.status,jdbcType=TINYINT}
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.clerkvisit.BClerkVisit">
+        update b_clerk_visit
+        <set>
+            <if test="siteId != null">
+                site_id = #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="storeAdminId != null">
+                store_admin_id = #{storeAdminId,jdbcType=INTEGER},
+            </if>
+            <if test="adminName != null">
+                admin_name = #{adminName,jdbcType=VARCHAR},
+            </if>
+            <if test="storeId != null">
+                store_id = #{storeId,jdbcType=INTEGER},
+            </if>
+            <if test="storeName != null">
+                store_name = #{storeName,jdbcType=VARCHAR},
+            </if>
+            <if test="buyerId != null">
+                buyer_id = #{buyerId,jdbcType=INTEGER},
+            </if>
+            <if test="buyerName != null">
+                buyer_name = #{buyerName,jdbcType=VARCHAR},
+            </if>
+            <if test="buyerMobile != null">
+                buyer_mobile = #{buyerMobile,jdbcType=BIGINT},
+            </if>
+            <if test="visitType != null">
+                visit_type = #{visitType,jdbcType=TINYINT},
+            </if>
+            <if test="visitTime != null">
+                visit_time = #{visitTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="realVisitTime != null">
+                real_visit_time = #{realVisitTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="goodsIds != null">
+                goods_ids = #{goodsIds,jdbcType=INTEGER},
+            </if>
+            <if test="goodsTitle != null">
+                goods_title = #{goodsTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="status == 30  or status ==50">
+                real_visit_time = CURRENT_TIMESTAMP(),
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.jk51.model.clerkvisit.BClerkVisit">
+    update b_clerk_visit
+    set site_id = #{siteId,jdbcType=INTEGER},
+      store_admin_id = #{storeAdminId,jdbcType=INTEGER},
+      admin_name = #{adminName,jdbcType=VARCHAR},
+      store_id = #{storeId,jdbcType=INTEGER},
+      store_name = #{storeName,jdbcType=VARCHAR},
+      buyer_id = #{buyerId,jdbcType=INTEGER},
+      buyer_name = #{buyerName,jdbcType=VARCHAR},
+      buyer_mobile = #{buyerMobile,jdbcType=BIGINT},
+      visit_type = #{visitType,jdbcType=TINYINT},
+      visit_time = #{visitTime,jdbcType=TIMESTAMP},
+      real_visit_time = #{realVisitTime,jdbcType=TIMESTAMP},
+      goods_id = #{goodsId,jdbcType=INTEGER},
+      goods_title = #{goodsTitle,jdbcType=VARCHAR},
+      done_time = #{doneTime,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+    <update id="updateVisitStatus">
+      UPDATE b_clerk_visit set `status`=#{status} where id IN
+        <foreach collection="list" open="(" close=")" separator="," item="v">
+            #{v.id}
+        </foreach>
+    </update>
+
+    <select id="queryFeedBack" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT * from b_visit_feedback where site_id=#{siteId} and visit_id =#{visitId} limit 1
+    </select>
+
+    <update id="updateFeedBack">
+        UPDATE b_visit_feedback
+        <set>
+            <if test="telResult != null and telResult != ''">
+                tel_result = #{telResult},
+            </if>
+            <if test="content != null and content != ''">
+                content =#{content},
+            </if>
+        </set>
+         where visit_id =#{visitId}
+    </update>
+    
+    <update id="updateReturnTaskStatus">
+        UPDATE b_clerk_visit
+        SET STATUS = 40
+        WHERE
+        id IN (
+            SELECT
+                a.id
+            FROM
+                (
+                    SELECT
+                        id
+                    FROM
+                        b_clerk_visit
+                    WHERE
+                        DATE_FORMAT(
+                            CURRENT_TIMESTAMP,
+                            '%Y-%m-%d'
+                        ) = DATE_FORMAT(visit_time, '%Y-%m-%d')
+                    AND STATUS != 30
+                ) a
+        )
+    </update>
+
+    <select id="queryByTrades" parameterType="com.jk51.model.order.Trades" resultMap="BaseResultMap">
+       select * from b_clerk_visit
+       where buyer_id=#{buyerId}
+	   and store_admin_id=#{storeUserId}
+	   and store_id=#{tradesStore}
+    </select>
+
+    <select id="queryVisitInfos" resultType="java.util.Map">
+        SELECT bs.*,br.goods_ids as goodsIds,br.visit_time as visitTime,bg.visitCount from b_visit_statistics  bs
+        LEFT JOIN (
+        SELECT bv.goods_ids,bv.visit_time, bv.site_id,bv.bvs_id from b_clerk_visit bv where bv.site_id =#{siteId} and bv.bvs_id=#{bvsId} LIMIT 1
+        ) br on br.site_id =bs.site_id and br.bvs_id=bs.id
+        LEFT JOIN(
+		SELECT COUNT(1) as visitCount ,bv.site_id,bv.bvs_id from b_clerk_visit bv where bv.bvs_id =#{bvsId} and bv.site_id =#{siteId}
+		) bg on bg.site_id =bs.site_id and bg.bvs_id =bs.id
+        where bs.id=#{bvsId} and bs.site_id =#{siteId}
+    </select>
+
+</mapper>

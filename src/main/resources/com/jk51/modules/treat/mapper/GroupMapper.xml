@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.treat.mapper.GroupMapper">
+  <resultMap id="BaseResultMap" type="com.jk51.model.Group">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="group_name" jdbcType="VARCHAR" property="group_name" />
+    <result column="site_id" jdbcType="INTEGER" property="site_id" />
+    <result column="create_at" jdbcType="TIMESTAMP" property="create_at" />
+    <result column="update_at" jdbcType="TIMESTAMP" property="update_at" />
+    <result column="is_close" jdbcType="BIT" property="is_close" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, group_name, site_id, create_at, update_at, is_close
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ch_group
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectBySiteId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    FROM ch_group
+    where site_id=#{siteId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from ch_group
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.jk51.model.Group">
+    insert into ch_group (id, group_name, site_id, 
+      create_at, update_at, is_close
+      )
+    values (#{id,jdbcType=INTEGER}, #{group_name,jdbcType=VARCHAR}, #{site_id,jdbcType=INTEGER}, 
+      #{create_at,jdbcType=TIMESTAMP}, #{update_at,jdbcType=TIMESTAMP}, #{is_close,jdbcType=BIT}
+      )
+  </insert>
+  <insert id="insertList" parameterType="com.jk51.model.Group">
+    insert into ch_group ( group_name, site_id,create_at,update_at )
+    values
+    <foreach collection="groups" item="item" index="index" separator=",">
+      (#{item.group_name,jdbcType=VARCHAR}, #{merchantId,jdbcType=INTEGER},CURRENT_TIMESTAMP ,CURRENT_TIMESTAMP )
+    </foreach>
+  </insert>
+  <insert id="insertSelective" parameterType="com.jk51.model.Group">
+    insert into ch_group
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="group_name != null">
+        group_name,
+      </if>
+      <if test="site_id != null">
+        site_id,
+      </if>
+      <if test="create_at != null">
+        create_at,
+      </if>
+      <if test="update_at != null">
+        update_at,
+      </if>
+      <if test="is_close != null">
+        is_close,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="group_name != null">
+        #{group_name,jdbcType=VARCHAR},
+      </if>
+      <if test="site_id != null">
+        #{site_id,jdbcType=INTEGER},
+      </if>
+      <if test="create_at != null">
+        #{create_at,jdbcType=TIMESTAMP},
+      </if>
+      <if test="update_at != null">
+        #{update_at,jdbcType=TIMESTAMP},
+      </if>
+      <if test="is_close != null">
+        #{is_close,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.Group">
+    update ch_group
+    <set>
+      <if test="group_name != null">
+        group_name = #{group_name,jdbcType=VARCHAR},
+      </if>
+      <if test="site_id != null">
+        site_id = #{site_id,jdbcType=INTEGER},
+      </if>
+      <if test="create_at != null">
+        create_at = #{create_at,jdbcType=TIMESTAMP},
+      </if>
+      <if test="update_at != null">
+        update_at = #{update_at,jdbcType=TIMESTAMP},
+      </if>
+      <if test="is_close != null">
+        is_close = #{is_close,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jk51.model.Group">
+    update ch_group
+    set group_name = #{group_name,jdbcType=VARCHAR},
+      site_id = #{site_id,jdbcType=INTEGER},
+      create_at = #{create_at,jdbcType=TIMESTAMP},
+      update_at = #{update_at,jdbcType=TIMESTAMP},
+      is_close = #{is_close,jdbcType=BIT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

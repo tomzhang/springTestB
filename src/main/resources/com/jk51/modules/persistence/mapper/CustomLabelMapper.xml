@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.persistence.mapper.CustomLabelMapper">
+    <sql id="baseQuery">
+        site_id,id,label_name,crowd_sort,label_description,member_count,member_ids,label_sort,create_time,update_time,is_del
+    </sql>
+    <insert id="insertCustomLabel">
+        insert into b_custom_label
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="siteId != null">
+                site_id,
+            </if>
+            <if test="labelName != null">
+                label_name,
+            </if>
+            <if test="crowdSort != null">
+                crowd_sort,
+            </if>
+            <if test="labelDescription != null">
+                label_description,
+            </if>
+            <if test="memberCount != null">
+                member_count,
+            </if>
+            <if test="memberIds != null">
+                member_ids,
+            </if>
+            <if test="labelSort != null">
+                label_sort,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="isDel != null">
+                is_del,
+            </if>
+            <if test="creater != null">
+                creater,
+            </if>
+            <if test="modifier != null">
+                modifier,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="siteId != null">
+                #{siteId,jdbcType=INTEGER},
+            </if>
+            <if test="labelName != null">
+                #{labelName,jdbcType=VARCHAR},
+            </if>
+            <if test="crowdSort != null">
+                #{crowdSort,jdbcType=VARCHAR},
+            </if>
+            <if test="labelDescription != null">
+                #{labelDescription,jdbcType=VARCHAR},
+            </if>
+            <if test="memberCount != null">
+                #{memberCount,jdbcType=INTEGER},
+            </if>
+            <if test="memberIds != null">
+                #{memberIds,jdbcType=VARCHAR},
+            </if>
+            <if test="labelSort != null">
+                #{labelSort,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDel != null">
+                #{isDel,jdbcType=INTEGER},
+            </if>
+            <if test="creater != null">
+                #{creater,jdbcType=VARCHAR},
+            </if>
+            <if test="modifier != null">
+                #{modifier,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateCustom" parameterType="map">
+        update b_custom_label
+        <set>
+            <if test="labelName != null">
+                label_name = #{labelName,jdbcType=VARCHAR},
+            </if>
+            <if test="crowdSort != null">
+                crowd_sort = #{crowdSort,jdbcType=VARCHAR},
+            </if>
+            <if test="labelDescription != null">
+                label_description = #{labelDescription,jdbcType=VARCHAR},
+            </if>
+            <if test="memberCount != null">
+                member_count = #{memberCount,jdbcType=INTEGER},
+            </if>
+            <if test="memberIds != null">
+                member_ids = #{memberIds,jdbcType=VARCHAR},
+            </if>
+            <if test="labelSort != null">
+                label_sort = #{labelSort,jdbcType=VARCHAR},
+            </if>
+            <if test="isDel != null">
+                is_del = #{isDel,jdbcType=INTEGER},
+            </if>
+            <if test="creater != null">
+                creater = #{creater,jdbcType=VARCHAR},
+            </if>
+            <if test="modifier != null">
+                modifier = #{modifier,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+        and site_id = #{siteId,jdbcType=INTEGER}
+    </update>
+    <select id="getClickName" resultType="map">
+        SELECT b.name name,b.mobile mobile
+        FROM b_store_admin a
+        LEFT JOIN b_store_adminext b ON a.site_id=b.site_id AND a.id=b.storeadmin_id
+        WHERE a.site_id=#{siteId} AND a.user_name=#{username}
+    </select>
+    <select id="selectCustomAll" resultType="map" parameterType="map">
+        SELECT
+            id id,
+            label_name name,
+            label_description description,
+            label_sort sort,
+            member_ids memberIds,
+            creater creater,
+            create_time createtime,
+            IFNULL(modifier,creater) modifier,
+            update_time updatetime
+        FROM b_custom_label
+        WHERE site_id=#{siteId}
+        <if test="labelName != null">
+            AND label_name LIKE CONCAT('%',#{labelName},'%')
+        </if>
+        AND is_del=0
+        ORDER BY id DESC
+    </select>
+    <select id="selectCrowdSortmById" resultType="map" parameterType="map">
+        SELECT *
+        FROM b_custom_label
+        WHERE site_id=#{siteId} AND id=#{id}
+    </select>
+    <update id="deleteCustom" parameterType="map">
+        UPDATE b_custom_label SET is_del=1 WHERE site_id=#{siteId} AND id=#{id}
+    </update>
+    <select id="booleanCustom" resultType="map" parameterType="map">
+        SELECT label_name name,id
+        FROM b_custom_label
+        WHERE site_id=#{siteId} AND label_name=#{labelName} AND is_del=0
+    </select>
+    <select id="selectMemberByMemberId" resultType="map" parameterType="list">
+        SELECT IFNULL(name,'---') name, mobile mobile
+        FROM b_member
+        WHERE site_id=#{siteId} AND buyer_id IN
+        <foreach collection="list" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        GROUP BY name,mobile
+    </select>
+    <select id="getDimByCustom" resultType="map" parameterType="map">
+        SELECT label_name name,label_description description,label_sort sort,member_count count,creater creater,create_time createtime,IFNULL(modifier,creater) modifier,update_time updatetime
+        FROM b_custom_label
+        WHERE site_id=#{siteId}
+        <if test="labelName != null">
+          AND label_name like CONCAT('%',#{labelName},'%')
+        </if>
+        AND is_del=0
+    </select>
+    <select id="getMemberID" resultType="String" parameterType="map">
+        SELECT member_id
+        FROM b_member
+        WHERE site_id=#{siteId} AND id=#{id}
+    </select>
+    <select id="getCrowdAll" resultType="map" parameterType="map">
+        SELECT IFNULL(crowd_name,'') name,IFNULL(scene,'') scene,IFNULL(custom_ids,'') customIds
+        FROM b_member_label
+        WHERE site_id=#{siteId}
+    </select>
+    <select id="getBasicsMap" resultType="map" parameterType="map">
+        SELECT IFNULL(bmi.birthday,'0000-00-00') birthday,IFNULL(bm.sex,3) sex,yb.name city,yc.name country,bmi.address address,yd.name province
+        FROM b_member bm
+        LEFT JOIN b_member_info bmi ON bm.site_id=bmi.site_id AND bm.buyer_id=bmi.member_id
+        LEFT JOIN b_address bad ON bm.site_id=bad.site_id AND bm.buyer_id=bad.buyer_id AND bad.is_default=1
+        LEFT JOIN yb_area yb ON yb.areaid=bad.city
+        LEFT JOIN yb_area yc ON yc.areaid=bad.province_code
+        LEFT JOIN yb_area yd ON yd.areaid=bad.province
+        WHERE bm.site_id= #{siteId} AND bm.member_id=#{memberId}
+    </select>
+    <select id="getTrandsCount" resultType="map" parameterType="map">
+        select IFNULL(SUM(case when t.is_refund in (0,110) and t.deal_finish_status = 1 then t.real_pay else 0 end)*0.01,0) pay
+				,IFNULL(count(t.trades_id),0) num
+        from b_trades t
+        LEFT JOIN b_member m on t.site_id = m.site_id and t.buyer_id = m.buyer_id
+        WHERE t.site_id= #{siteId} AND m.member_id=#{memberId} and t.is_payment = 1
+    </select>
+    <select id="getTime" resultType="map" parameterType="map">
+        SELECT IFNULL(bt.create_time,'0') time
+        FROM b_member bm
+        LEFT JOIN b_trades bt ON bm.site_id=bt.site_id AND bm.buyer_id=bt.buyer_id
+        WHERE bm.site_id= #{siteId} AND bm.member_id=#{memberId}
+        ORDER BY bt.create_time DESC
+        LIMIT 1
+    </select>
+    <select id="getCustomLabelAll" resultType="map" >
+        SELECT label_name name,member_ids ids
+        FROM b_custom_label
+        WHERE site_id=#{siteId} AND is_del=0
+    </select>
+    <update id="updateCustomByName">
+        UPDATE b_custom_label SET member_ids=#{ids} WHERE site_id=#{siteId} AND label_name=#{name}
+    </update>
+    <select id="getIDSByName" resultType="String" >
+        SELECT member_ids ids
+        FROM b_custom_label
+        WHERE site_id=#{siteId} AND label_name=#{name} AND is_del=0
+    </select>
+    <select id="getIDSAndSortByName" resultType="map" >
+        SELECT member_ids ids,crowd_sort customSort
+        FROM b_custom_label
+        WHERE site_id=#{siteId} AND label_name=#{customName} AND is_del=0
+    </select>
+    <update id="updateCustomSort">
+        UPDATE b_custom_label SET crowd_sort=#{crowdname} WHERE site_id=#{siteId} AND label_name=#{customName}
+    </update>
+    <select id="getLabels" resultType="String" >
+        SELECT labels
+        FROM b_member_info
+        WHERE site_id=#{siteId} AND member_id=#{buyerId}
+    </select>
+    <update id="updateLabels">
+        UPDATE b_member_info SET labels=#{nameList} WHERE site_id=#{siteId} AND member_id=#{buyerId}
+    </update>
+    <update id="updateTagLabels">
+        UPDATE b_member_info SET tag=#{nameList} WHERE site_id=#{siteId} AND member_id=#{buyerId}
+    </update>
+    <select id="getIDSById" resultType="String" parameterType="map">
+        SELECT member_ids ids,crowd_sort customSort
+        FROM b_custom_label
+        WHERE site_id=#{siteId} AND id=#{id}
+    </select>
+    <select id="getLabelsByMemberId" resultType="String">
+        SELECT labels
+        FROM b_member bm
+        LEFT JOIN b_member_info bmi ON bm.site_id=bmi.site_id AND  bm.buyer_id=bmi.member_id
+        WHERE bm.site_id=#{siteId} AND bm.member_id=#{memberId}
+    </select>
+    <select id="getBuyerIdByMember" resultType="Integer">
+        SELECT buyer_id
+        FROM b_member
+        WHERE site_id=#{siteId} AND member_id=#{memberId}
+    </select>
+    <select id="getAllMember" resultType="map" parameterType="map">
+        SELECT
+        bm.member_id,
+        bm.mobile,
+        IFNULL(bm.name,'---') name,
+        bm.create_time,
+        REPLACE(left(bm.last_time,10),'0000-00-00','---') last_time,
+        IFNULL(GROUP_CONCAT(distinct CONCAT(right(bmi.invite_code,5),'(',bsa.name ,')')),'---') as register_code,
+        IFNULL(CONCAT(IFNULL(bmi.labels, ''),',',IFNULL(bmi.tag, '')),'---') labels,
+        IFNULL(ad.addr,'---') addr,
+        IFNULL(left(bm.first_order,10),'---') first_order,
+        IFNULL(GROUP_CONCAT(distinct CONCAT(right(basd.clerk_invitation_code,5),'(',basd.name ,')')),'---') as order_code
+        FROM b_member bm
+        LEFT JOIN b_member_info bmi ON bmi.site_id=bm.site_id AND bmi.member_id=bm.buyer_id
+        LEFT JOIN b_store_adminext bsa ON bsa.site_id=bmi.site_id AND bmi.invite_code=bsa.clerk_invitation_code
+        LEFT JOIN b_address ad ON bm.site_id=ad.site_id AND bm.buyer_id=ad.buyer_id  AND ad.is_default=1
+        LEFT JOIN b_trades bt ON bt.site_id=bm.site_id AND bt.buyer_id=bm.buyer_id
+        LEFT JOIN b_store_adminext basd ON basd.site_id=bm.site_id AND bt.recommend_user_id=basd.storeadmin_id
+        WHERE bm.site_id=#{siteId} AND bm.register_stores=#{storeId}
+        <if test="memberName != null">
+        AND bm.name LIKE CONCAT('%',#{memberName},'%')
+        </if>
+        <if test="mobile != null">
+        AND bm.mobile=#{mobile}
+        </if>
+        <if test="registerCode != null">
+        AND bsa.clerk_invitation_code=#{registerCode}
+        </if>
+        <if test="orderCode != null">
+        AND basd.clerk_invitation_code=#{orderCode}
+        </if>
+        <if test="customName != null">
+            AND (bmi.labels LIKE CONCAT('%',#{customName},'%') OR bmi.tag LIKE CONCAT('%',#{tagName},'%'))
+        </if>
+        <if test="tagName != null">
+            AND bmi.tag LIKE CONCAT('%',#{tagName},'%')
+        </if>
+        <if test="address != null">
+        AND locate(#{address}, ad.addr)
+        </if>
+        <if test="createStart != null and createEnd != null">
+        AND bm.create_time BETWEEN #{createStart} AND #{createEnd}
+        </if>
+        <if test="firstStart != null and firstEnd != null">
+        AND bm.first_order BETWEEN #{firstStart} AND #{firstEnd}
+        </if>
+        <if test="lastStart != null and lastEnd != null">
+        AND bm.last_time BETWEEN #{lastStart} AND #{lastEnd}
+        </if>
+        GROUP BY bm.member_id
+        ORDER BY bm.member_id DESC
+
+    </select>
+    <!--LIMIT #{start},#{end}-->
+    <select id="getLabelSlowAndCustom" resultType="map" parameterType="map">
+        SELECT tag,labels
+        FROM b_member bm
+        LEFT JOIN b_member_info bmi ON bm.site_id=bmi.site_id AND bm.buyer_id=bmi.member_id
+        WHERE bm.site_id=#{siteId} AND bm.member_id=#{memberId}
+    </select>
+    <select id="getCustomLabelBySiteId" resultType="String" parameterType="map">
+        SELECT label_name
+        FROM b_custom_label
+        WHERE site_id=#{siteId} AND is_del=0
+    </select>
+    <update id="updateSlowLabel">
+        UPDATE b_member_info SET tag=#{tag} WHERE site_id=#{siteId} AND member_id=#{buyerId}
+    </update>
+    <select id="getFirstOrder" resultType="String" >
+        SELECT create_time
+        FROM b_trades
+        WHERE site_id=#{siteId} AND buyer_id=#{buyerId}
+        ORDER BY create_time ASC
+        LIMIT 1
+    </select>
+    <update id="updateFirstOrderToMember">
+        UPDATE b_member SET first_order=#{date} WHERE site_id=#{siteId} AND buyer_id=#{buyerId}
+    </update>
+    <select id="getBuyerIdBySiteId" resultType="Integer" >
+        SELECT DISTINCT buyer_id
+        FROM b_trades
+        WHERE site_id=#{siteId}
+    </select>
+    <select id="selectOrderFirst" resultType="String" >
+        SELECT first_order
+        FROM b_member
+        WHERE site_id=#{siteId} AND buyer_id=#{buyerId}
+    </select>
+    <select id="selectCustomById" resultType="map" parameterType="map">
+        SELECT label_name name,label_description description
+        FROM b_custom_label
+        WHERE site_id=#{siteId} AND id=#{id}
+    </select>
+    <select id="getNameById" resultType="String" >
+        SELECT label_name
+        FROM b_custom_label
+        WHERE site_id=#{siteId} AND id=#{id}
+    </select>
+    <select id="getCustomIds" resultType="String" >
+        SELECT custom_ids
+        FROM b_member_label
+        WHERE site_id=#{siteId} AND crowd_name=#{name}
+    </select>
+    <update id="updataLabelsByMemberId">
+        UPDATE b_member_info SET labels=#{labelsName} WHERE site_id=#{siteId} AND member_id=#{buyerId}
+    </update>
+    <select id="getLabelsByBuyerIdAndSiteId" resultType="java.util.Map">
+        SELECT IFNULL(tag,"") as tag,IFNULL(labels,"") as labels
+        FROM b_member_info
+        WHERE site_id=#{siteId} AND member_id=#{buyerId}
+    </select>
+    <select id="getSlowLabel" resultType="String" parameterType="map">
+        SELECT tag
+        FROM b_member bm
+        LEFT JOIN b_member_info bmi ON bm.site_id=bmi.site_id AND bm.buyer_id=bmi.member_id
+        WHERE bm.site_id=#{siteId} AND bm.member_id=#{memberId}
+    </select>
+</mapper>

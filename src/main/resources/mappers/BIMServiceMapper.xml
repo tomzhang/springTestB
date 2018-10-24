@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk51.modules.im.mapper.BIMServiceMapper" >
+
+    <select id="checkIMEndAndIMReced" resultType="java.lang.Integer">
+        SELECT IF(race_status=1,1,(if(im_end_type is null,0,1))) racedOrIMEnd from b_im_service where id = #{imServiceId}
+    </select>
+    <select id="selectEndTypeByPrimaryKey" resultType="java.lang.Integer">
+        SELECT im_end_type from b_im_service where id = #{imServiceId}
+    </select>
+    <select id="selectByPrimaryKey" resultType="com.jk51.model.BIMService">
+        SELECT * from b_im_service where id = #{imServiceId}
+    </select>
+    <update id="updateEvaluate">
+      update b_im_service
+      set evaluate = #{evaluateParam},im_end_type=1,im_end_time=now()
+      where id = #{imServiceId}
+    </update>
+    <update id="updateRaceTimeAndReceiver">
+        UPDATE b_im_service
+        set race_time = #{date} ,receiver = #{receiver},race_status = 1
+        where id = #{imServiceId}
+    </update>
+    <update id="updateFirstReplyTimeIFFirstReplyTimeISNULL">
+        UPDATE b_im_service
+        set first_reply_time = CURRENT_TIMESTAMP
+        WHERE id = #{imServiceId} and first_reply_time is null
+    </update>
+    <insert id="insertSelective" parameterType="com.jk51.model.BIMService" useGeneratedKeys="true" keyProperty="id">
+        INSERT into b_im_service
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sender!=null and sender!=''">
+                sender,
+            </if>
+            <if test="receiver!=null and receiver!=''">
+                receiver,
+            </if>
+            <if test="first_reply_time!=null">
+                first_reply_time,
+            </if>
+            <if test="start_time!=null ">
+                start_time,
+            </if>
+            <if test="race_time!=null">
+                race_time,
+            </if>
+            <if test="im_end_time!=null">
+                im_end_time,
+            </if>
+            <if test="im_end_type!=null">
+                im_end_type,
+            </if>
+            <if test="evaluate!=null">
+                evaluate,
+            </if>
+            <if test="race_status!=null">
+                race_status,
+            </if>
+            <if test="im_type!=null">
+                im_type,
+            </if>
+            <if test="site_id!=null">
+                site_id,
+            </if>
+            <if test="store_id!=null">
+                store_id,
+            </if>
+            create_time,
+            update_time
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sender!=null and sender!=''">
+                #{sender},
+            </if>
+            <if test="receiver!=null and receiver!=''">
+                #{receiver},
+            </if>
+            <if test="first_reply_time!=null">
+                #{first_reply_time},
+            </if>
+            <if test="start_time!=null ">
+                #{start_time},
+            </if>
+            <if test="race_time!=null">
+                #{race_time},
+            </if>
+            <if test="im_end_time!=null">
+                #{im_end_time},
+            </if>
+            <if test="im_end_type!=null">
+                #{im_end_type},
+            </if>
+            <if test="evaluate!=null">
+                #{evaluate},
+            </if>
+            <if test="race_status!=null">
+                #{race_status},
+            </if>
+            <if test="im_type!=null">
+                #{im_type},
+            </if>
+            <if test="site_id!=null">
+                #{site_id},
+            </if>
+            <if test="store_id!=null">
+                #{store_id},
+            </if>
+            CURRENT_TIMESTAMP ,
+            CURRENT_TIMESTAMP
+        </trim>
+    </insert>
+    <update id="updateImEndType">
+        UPDATE
+        b_im_service
+        SET im_end_type = #{im_end_type},im_end_time = CURRENT_TIMESTAMP
+        WHERE
+        id = #{imServiceId}
+    </update>
+
+
+    <select id="findBIMServiceCountBySiteIdAndQueryTime" resultMap="countResult">
+        SELECT count(1)  `value`,DATE_FORMAT(start_time, "%Y-%m-%d") day_str
+        from b_im_service
+        where site_id = #{site_id}
+        and start_time BETWEEN #{startDay} and #{endDay}
+        and race_status = 1
+        GROUP BY
+        DATE_FORMAT(start_time, "%Y-%m-%d")
+
+    </select>
+
+    <resultMap id="countResult" type="com.jk51.modules.im.util.CountResult">
+        <result  column="value" property="value" jdbcType="FLOAT" javaType="java.lang.Float"/>
+        <result column="day_str" property="day_str" javaType="java.lang.String"/>
+    </resultMap>
+    <select id="findEvaluateList" resultMap="countResult">
+        SELECT truncate(AVG(evaluate),1) `value`,DATE_FORMAT(start_time, "%Y-%m-%d") day_str
+        from b_im_service
+        where site_id = #{site_id}
+        and start_time BETWEEN #{startDay} and #{endDay}
+        and  evaluate is not null
+        GROUP BY
+        DATE_FORMAT(start_time, "%Y-%m-%d")
+
+    </select>
+    <select id="countLostNum" resultMap="countResult">
+        SELECT count(1) `value`,DATE_FORMAT(start_time, "%Y-%m-%d") day_str
+        from b_im_service
+        where site_id = #{site_id}
+        and start_time BETWEEN #{startDay} and #{endDay}
+        AND race_status = 0
+        GROUP BY
+        DATE_FORMAT(start_time, "%Y-%m-%d")
+
+    </select>
+    <select id="countClerkNum" resultMap="countResult">
+        SELECT COUNT(1) `value` ,DATE_FORMAT(a.start_time, "%Y-%m-%d") day_str from (SELECT DISTINCT receiver,start_time
+        from b_im_service
+        where site_id = #{site_id}
+        and start_time BETWEEN #{startDay} and #{endDay}) a
+        GROUP BY
+        DATE_FORMAT(a.start_time, "%Y-%m-%d")
+
+    </select>
+    <select id="findBySiteIdAndCreateTiemAndHasRace" resultMap="countResult">
+        SELECT
+        truncate(avg(a.time_gap),1) `value`,
+        DATE_FORMAT(a.time_day, "%Y-%m-%d") day_str
+        FROM
+        (
+        SELECT
+        (
+        UNIX_TIMESTAMP(race_time) - UNIX_TIMESTAMP(start_time)
+        ) AS time_gap,
+        DATE_FORMAT(start_time, "%Y-%m-%d") time_day
+        FROM
+        b_im_service
+        WHERE
+        site_id = #{site_id}
+        AND evaluate IS NOT NULL
+        and start_time BETWEEN #{startDay} and #{endDay}
+        ) a
+        GROUP BY
+        DATE_FORMAT(a.time_day, "%Y-%m-%d")
+
+    </select>
+    <select id="findBySiteIdAndCreateTiemAndHasReply" resultMap="countResult">
+        SELECT
+        truncate(avg(a.time_gap),1) `value`,
+        DATE_FORMAT(a.time_day, "%Y-%m-%d") day_str
+        FROM
+        (
+        SELECT
+        (
+        UNIX_TIMESTAMP(first_reply_time) - UNIX_TIMESTAMP(start_time)
+        ) AS time_gap,
+        DATE_FORMAT(start_time, "%Y-%m-%d") time_day
+        FROM
+        b_im_service
+        WHERE
+        site_id = #{site_id}
+        AND evaluate IS NOT NULL
+        and start_time BETWEEN #{startDay} and #{endDay}
+        ) a
+        GROUP BY
+        DATE_FORMAT(a.time_day, "%Y-%m-%d")
+
+    </select>
+    <select id="findBySiteIdAndCreateTiemAndHasClosed" resultMap="countResult">
+        SELECT
+        truncate(avg(a.time_gap),1) `value`,
+        DATE_FORMAT(a.time_day, "%Y-%m-%d") day_str
+        FROM
+        (
+        SELECT
+        (
+        UNIX_TIMESTAMP(im_end_time) - UNIX_TIMESTAMP(start_time)
+        ) AS time_gap,
+        DATE_FORMAT(start_time, "%Y-%m-%d") time_day
+        FROM
+        b_im_service
+        WHERE
+        site_id = #{site_id}
+        AND evaluate IS NOT NULL
+        and start_time BETWEEN #{startDay} and #{endDay}
+        ) a
+        GROUP BY
+        DATE_FORMAT(a.time_day, "%Y-%m-%d")
+
+    </select>
+    <select id="countClerkTimeOutTime" resultMap="countResult">
+        SELECT count(1) `value`,DATE_FORMAT(start_time, "%Y-%m-%d") day_str
+        FROM b_im_service
+        WHERE
+        site_id = #{site_id}
+        and start_time BETWEEN #{startDay} and #{endDay}
+        and im_end_type = 2
+        GROUP BY
+        DATE_FORMAT(start_time, "%Y-%m-%d")
+
+    </select>
+    <select id="finClerkAnalyzeBySiteIdAndStartTime" resultType="com.jk51.modules.im.service.clerkAnalyze.response.ClerkAnalyze" parameterType="com.jk51.modules.im.controller.request.ClerkAnalyzeParam">
+        SELECT
+        b.`name`,
+        b.mobile,
+        s.`name` storeName,
+        truncate(ifnull(a.serviceSatisfaction,0),1) serviceSatisfaction,
+        ifnull(a.advisoryNum,0) advisoryNum,
+        ifnull(a.clerkTimeOutTimeNum,0) clerkTimeOutTimeNum,
+        truncate(ifnull(a.memberWaitAverageTime,0) ,1) memberWaitAverageTime,
+        truncate(ifnull(a.clerkReplyAverageTime,0) ,1) clerkReplyAverageTime,
+        truncate(ifnull(a.serviceAverageTime,0) ,1) serviceAverageTime
+        FROM
+        (
+        SELECT
+        substring_index(receiver, "_" ,- 1) store_admin_id,
+        avg(evaluate) serviceSatisfaction,
+        count(*) advisoryNum,
+        count(case when im_end_type =2 then 1 else null end) clerkTimeOutTimeNum,
+        avg(UNIX_TIMESTAMP(race_time) - UNIX_TIMESTAMP(start_time)) memberWaitAverageTime,
+        avg(
+        UNIX_TIMESTAMP(first_reply_time) - UNIX_TIMESTAMP(start_time)
+        ) clerkReplyAverageTime,
+        avg(UNIX_TIMESTAMP(im_end_time) - UNIX_TIMESTAMP(start_time)) serviceAverageTime
+        FROM
+        b_im_service
+        WHERE
+        site_id = #{site_id}
+        and start_time BETWEEN #{startDay} and #{endDay}
+        and receiver is not null
+        GROUP BY
+        receiver
+        ) a
+        LEFT JOIN b_store_adminext b ON a.store_admin_id = b.storeadmin_id
+        AND b.site_id = #{site_id}
+        LEFT JOIN b_stores s ON s.id = b.store_id
+        AND s.site_id = #{site_id}
+        WHERE
+            1=1
+            <if test="param!=null and param!=''">
+                and  (b.`name` like CONCAT("%",#{param},"%") or b.mobile like CONCAT("%",#{param},"%"))
+            </if>
+			<if test="storeId!=null">
+                and b.store_id= #{storeId}
+            </if>
+
+    </select>
+    <select id="findEvaluateAVGByMonth" resultType="com.jk51.modules.im.service.clerkAnalyze.response.Satisfactions">
+        SELECT
+        (@i :=@i + 1) num,
+        s.`name`,
+        t.`name` store_name,
+        a.`value`
+        FROM
+        (
+        SELECT
+        truncate(AVG(evaluate),1) `value`,
+        substring_index(receiver, "_" ,- 1) store_admin_id,
+        site_id
+        FROM
+        b_im_service
+        WHERE
+        site_id = #{site_id}
+        AND start_time LIKE CONCAT("%", #{month}, "%")
+        AND evaluate IS NOT NULL
+        GROUP BY
+        substring_index(receiver, "_" ,- 1)
+        order by AVG(evaluate) desc
+        LIMIT 10
+        ) a
+        LEFT JOIN b_store_adminext s ON storeadmin_id = a.store_admin_id
+        AND a.site_id = s.site_id
+        LEFT JOIN b_stores t ON t.id = s.store_id
+        AND t.site_id = s.site_id,
+        (SELECT @i := 0) it
+    </select>
+    <select id="findEvaluateAVGByMonthAfter10" resultType="com.jk51.modules.im.service.clerkAnalyze.response.Satisfactions">
+        SELECT
+        (@i :=@i + 1) num,
+        s.`name`,
+        t.`name` store_name,
+        a.`value`
+        FROM
+        (
+        SELECT
+        AVG(evaluate) `value`,
+        substring_index(receiver, "_" ,- 1) store_admin_id,
+        site_id
+        FROM
+        b_im_service
+        WHERE
+        site_id = #{site_id}
+        AND start_time LIKE CONCAT("%", #{month}, "%")
+        AND evaluate IS NOT NULL
+        GROUP BY
+        substring_index(receiver, "_" ,- 1)
+        ORDER BY AVG(evaluate) asc
+        LIMIT 10
+        ) a
+        LEFT JOIN b_store_adminext s ON storeadmin_id = a.store_admin_id
+        AND a.site_id = s.site_id
+        LEFT JOIN b_stores t ON t.id = s.store_id
+        AND t.site_id = s.site_id,
+        (SELECT @i := 0) it
+    </select>
+    <select id="findJoinIMClerkNum" resultType="java.lang.Integer">
+       SELECT count(DISTINCT receiver) from b_im_service where site_id = #{site_id} and date_format(race_time,'%Y-%m-%d') =#{end_day}
+
+    </select>
+    <select id="getAdvisoryByDays" resultType="map">
+          SELECT count(1) `value`,date(start_time) query_time from b_im_service where site_id = #{site_id} and start_time BETWEEN #{dates.start} and #{dates.end} and race_status =1 GROUP BY query_time
+    </select>
+
+</mapper>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.official.mapper.YbRecruitmentMapper">
+  <resultMap id="BaseResultMap" type="com.jk51.model.official.YbRecruitment">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="job" jdbcType="VARCHAR" property="job" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="resume" jdbcType="VARCHAR" property="resume" />
+    <result column="attachment" jdbcType="VARCHAR" property="attachment" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, name, phone, job, email, resume, attachment,create_time
+  </sql>
+
+  <select id="queryOne" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yb_recruitment
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <insert id="add" parameterType="com.jk51.model.official.YbRecruitment">
+    insert into yb_recruitment
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="name != null">
+        name,
+      </if>
+      <if test="phone != null">
+        phone,
+      </if>
+      <if test="job != null">
+        job,
+      </if>
+      <if test="email != null">
+        email,
+      </if>
+      <if test="resume != null">
+        resume,
+      </if>
+      <if test="attachment != null">
+        attachment,
+      </if>
+      create_time
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="job != null">
+        #{job,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="resume != null">
+        #{resume,jdbcType=VARCHAR},
+      </if>
+      <if test="attachment != null">
+        #{attachment,jdbcType=VARCHAR},
+      </if>
+      CURRENT_TIMESTAMP()
+    </trim>
+  </insert>
+
+
+  <select id="queryList" resultMap="BaseResultMap" parameterType="com.jk51.model.official.YbRecruitment">
+    SELECT *
+    FROM yb_recruitment
+    <where>
+      1=1
+      <if test="job != null and job !=''">
+       AND job LIKE CONCAT(CONCAT('%',#{job},'%'))
+      </if>
+      <if test="name != null and name != ''">
+        AND name LIKE CONCAT(CONCAT('%',#{name},'%'))
+      </if>
+      <if test="phone != null and phone != ''">
+        AND phone =#{phone}
+      </if>
+      <choose>
+        <when test="createTime!=null and endTime!=null">
+          AND create_time &gt;= #{createTime} AND create_time &lt;= #{endTime}
+        </when>
+        <when test="createTime!=null">
+          AND create_time &gt;= #{createTime}
+        </when>
+        <when test="endTime!=null">
+          AND create_time &lt;= #{endTime}
+        </when>
+      </choose>
+    </where>
+    ORDER BY create_time DESC
+
+  </select>
+
+
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.official.YbRecruitment">
+    update yb_recruitment
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="job != null">
+        job = #{job,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="resume != null">
+        resume = #{resume,jdbcType=VARCHAR},
+      </if>
+      <if test="attachment != null">
+        resume = #{attachment,jdbcType=VARCHAR},
+      </if>
+
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+</mapper>

@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jk51.modules.persistence.mapper.SStoreAdminDeployMapper">
+  <resultMap id="BaseResultMap" type="com.jk51.model.order.SStoreAdminDeploy">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <id column="site_id" jdbcType="INTEGER" property="site_id" />
+    <result column="store_admin_id" jdbcType="INTEGER" property="store_admin_id" />
+    <result column="pre_store_id" jdbcType="INTEGER" property="pre_store_id" />
+    <result column="new_store_id" jdbcType="INTEGER" property="new_store_id" />
+    <result column="operator_id" jdbcType="INTEGER" property="operator_id" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="create_time" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, site_id, store_admin_id, pre_store_id, new_store_id, operator_id, create_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from b_store_admin_deploy
+    where id = #{id,jdbcType=INTEGER}
+      and site_id = #{site_id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByStore" parameterType="java.lang.Integer" resultType="com.jk51.model.order.SStoreAdminDeploy">
+    SELECT
+    	d.*
+    FROM
+	  b_store_admin_deploy d LEFT JOIN  b_store_adminext a ON d.site_id= a.site_id AND d.store_admin_id = a.storeadmin_id
+    where
+	  d.site_id = #{site_id}
+    <if test="store_id != null">
+      AND (
+      d.pre_store_id = #{store_id}
+      OR d.new_store_id = #{store_id}
+      )
+    </if>
+    <if test="clerkName!=null">
+      AND a.name like concat('%',#{clerkName},'%')
+    </if>
+    <if test="mobile!=null">
+      AND a.mobile like concat('%',#{mobile},'%')
+    </if>
+    order by d.create_time desc
+
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from b_store_admin_deploy
+    where id = #{id,jdbcType=INTEGER}
+      and site_id = #{site_id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.jk51.model.order.SStoreAdminDeploy">
+    insert into b_store_admin_deploy (id, site_id, store_admin_id, 
+      pre_store_id, new_store_id, operator_id, 
+      create_time)
+    values (#{id,jdbcType=INTEGER}, #{site_id,jdbcType=INTEGER}, #{store_admin_id,jdbcType=INTEGER}, 
+      #{pre_store_id,jdbcType=INTEGER}, #{new_store_id,jdbcType=INTEGER}, #{operator_id,jdbcType=INTEGER}, 
+      #{create_time,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jk51.model.order.SStoreAdminDeploy">
+    insert into b_store_admin_deploy
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="site_id != null">
+        site_id,
+      </if>
+      <if test="store_admin_id != null">
+        store_admin_id,
+      </if>
+      <if test="pre_store_id != null">
+        pre_store_id,
+      </if>
+      <if test="new_store_id != null">
+        new_store_id,
+      </if>
+      <if test="operator_id != null">
+        operator_id,
+      </if>
+      <if test="create_time != null">
+        create_time,
+      </if>
+      <if test="merchant_user != null">
+        merchant_user,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="site_id != null">
+        #{site_id,jdbcType=INTEGER},
+      </if>
+      <if test="store_admin_id != null">
+        #{store_admin_id,jdbcType=INTEGER},
+      </if>
+      <if test="pre_store_id != null">
+        #{pre_store_id,jdbcType=INTEGER},
+      </if>
+      <if test="new_store_id != null">
+        #{new_store_id,jdbcType=INTEGER},
+      </if>
+      <if test="operator_id != null">
+        #{operator_id,jdbcType=INTEGER},
+      </if>
+      <if test="create_time != null">
+        #{create_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="merchant_user != null">
+        #{merchant_user,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk51.model.order.SStoreAdminDeploy">
+    update b_store_admin_deploy
+    <set>
+      <if test="store_admin_id != null">
+        store_admin_id = #{store_admin_id,jdbcType=INTEGER},
+      </if>
+      <if test="pre_store_id != null">
+        pre_store_id = #{pre_store_id,jdbcType=INTEGER},
+      </if>
+      <if test="new_store_id != null">
+        new_store_id = #{new_store_id,jdbcType=INTEGER},
+      </if>
+      <if test="operator_id != null">
+        operator_id = #{operator_id,jdbcType=INTEGER},
+      </if>
+      <if test="create_time != null">
+        create_time = #{create_time,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+      and site_id = #{site_id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jk51.model.order.SStoreAdminDeploy">
+    update b_store_admin_deploy
+    set store_admin_id = #{store_admin_id,jdbcType=INTEGER},
+      pre_store_id = #{pre_store_id,jdbcType=INTEGER},
+      new_store_id = #{new_store_id,jdbcType=INTEGER},
+      operator_id = #{operator_id,jdbcType=INTEGER},
+      create_time = #{create_time,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+      and site_id = #{site_id,jdbcType=INTEGER}
+  </update>
+
+    <sql id="visitlist">
+        bcv.id, bcv.site_id siteId, bcv.store_admin_id storeAdminId, bcv.admin_name adminName, bcv.store_id storeId, bcv.store_name storeName,
+        bcv.buyer_id buyerId, bcv.buyer_name buyerName, bcv.buyer_mobile buyerMobile, bcv.visit_time visitTime,
+        bcv.real_visit_time realVisitTime, bcv.remark, bcv.status,bcv.type,bcv.goods_ids
+    </sql>
+    
+    <sql id="visit_log_column">
+      id,site_id,clerk_visit_id,pre_store_id,pre_admin_id,pre_admin_name,store_id,admin_id,admin_name,operator_id,operator_name,create_time,update_time
+    </sql>
+
+    <!--查询回访列表APP接口-->
+    <select id="selectClerkVisitList" parameterType="java.util.Map" resultType="java.util.Map">
+      SELECT <include refid="visitlist"/>,bvd.pre_store_id preStoreId, bvd.pre_admin_id preAdminId, bvd.pre_admin_name preAdminName,
+      bvd.store_id bvdStoreId, bvd.admin_id adminId, bvd.admin_name adminName, bvd.operator_id operatorId,bcv.bvs_id bvsId,
+      bvd.operator_name operatorName, bvd.create_time deployCreateTime, bm.member_id memberId,bvf.content,bvs.major_activity_ids activityIds
+        FROM b_clerk_visit bcv
+        LEFT JOIN b_visit_feedback bvf ON  bcv.id=bvf.visit_id
+        LEFT JOIN (SELECT <include refid="visit_log_column"/> FROM(
+                      SELECT <include refid="visit_log_column"/> FROM b_visit_deploy WHERE site_id = #{siteId} ORDER BY create_time DESC ) tt GROUP BY clerk_visit_id
+                  )bvd ON bcv.site_id = bvd.site_id AND bcv.id = bvd.clerk_visit_id
+        LEFT JOIN b_member bm ON bcv.site_id = bm.site_id AND bcv.buyer_id = bm.buyer_id
+      LEFT JOIN b_visit_statistics bvs on bvs.site_id =bcv.site_id and bvs.id = bcv.bvs_id
+        <where>
+            bcv.site_id = #{siteId}
+            AND bcv.store_id = #{storeId}
+            <if test="buyerName != null and buyerName != ''">
+              AND bcv.buyer_name LIKE concat('%',#{buyerName},'%')
+            </if>
+            <if test="buyerMobile != null and buyerMobile != ''">
+              AND bcv.buyer_mobile LIKE concat('%',#{buyerMobile},'%')
+            </if>
+            <if test="adminName != null and adminName != ''">
+              AND bcv.admin_name LIKE concat('%',#{adminName},'%')
+            </if>
+            <if test="storeAdminId != null and storeAdminId != ''">
+              AND bcv.store_admin_id =#{storeAdminId}
+            </if>
+            <if test="status != null and status != '' and status != 0">
+              AND bcv.status = #{status}
+            </if>
+            <if test="visitTime1 != null and visitTime1 != '' and visitTime2 != null and visitTime2 != ''">
+              AND bcv.visit_time <![CDATA[ >= ]]>  #{visitTime1}
+              AND bcv.visit_time <![CDATA[ <= ]]>  #{visitTime2}
+            </if>
+          AND bcv.status!=10
+        </where>
+      ORDER BY bcv.visit_time DESC
+    </select>
+
+    <!--查询回访列表记录-->
+    <!--<select id="selectClerkListLog" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT bvd.clerk_visit_id clerkVisitId, bvd.pre_store_id preStoreId, bvd.pre_admin_id preAdminId, bvd.pre_admin_name preAdminName,
+        bvd.store_id bvdStoreId, bvd.admin_id adminId, bvd.admin_name adminName,
+        bvd.operator_id operatorId, bvd.operator_name operatorName, bvd.create_time deployCreateTime
+        FROM b_visit_deploy bvd
+        LEFT JOIN b_clerk_visit bcv ON bcv.site_id = bvd.site_id AND bcv.id = bvd.clerk_visit_id
+        WHERE bcv.site_id = #{siteId}
+            AND bcv.store_id = #{storeId}
+        ORDER BY bvd.create_time DESC
+    </select>-->
+
+    <update id="changeClerkStatus" parameterType="java.util.Map">
+        UPDATE b_clerk_visit SET  status = IF (NOW()>DATE_ADD(date_format(visit_time,'%Y-%m-%d'),interval 1 day), 50, 30),real_visit_time=CURRENT_TIMESTAMP WHERE site_id = #{siteId} AND store_id = #{storeId}
+        <if test="idsList != null and idsList != ''">
+            AND id IN
+            <foreach collection="idsList" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+    </update>
+
+</mapper>
